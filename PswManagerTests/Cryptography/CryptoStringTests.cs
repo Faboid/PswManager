@@ -19,6 +19,8 @@ namespace PswManagerTests.Cryptography {
 
             //act
             var encryptedValue = crypto.Encrypt(valueToTest);
+
+
             var decryptedValue = crypto.Decrypt(encryptedValue);
 
             //assert
