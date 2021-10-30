@@ -1,16 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace PswManagerLibrary.Commands {
 
     /// <summary>
     /// Used as a lookup table to convert a simple word string into an enum that represents a specific command.
     /// </summary>
-    internal class CommandTypeAnalyzer {
+    public static class CommandTypeAnalyzer {
 
-        internal static CommandType Get(string command) => command switch {
-            "psw" => CommandType.Psw,
-            _ => throw new NotImplementedException()
-        };
+        private static readonly Dictionary<string, CommandType> dict = new Dictionary<string, CommandType>();
+
+        static CommandTypeAnalyzer() {
+            dict.Add("psw", CommandType.Psw);
+        }
+
+        public static CommandType Get(string command) {
+            if(dict.TryGetValue(command, out CommandType output)) {
+                return output;
+            } else {
+                throw new NotImplementedException();
+            }
+        }
 
     }
 
