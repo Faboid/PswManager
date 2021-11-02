@@ -1,4 +1,5 @@
 ﻿using PswManagerLibrary.Commands;
+using PswManagerLibrary.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,10 @@ namespace PswManagerTests.Commands {
 
         [Theory]
         [InlineData("psw", CommandType.Psw)]
+        [InlineData("get", CommandType.Get)]
+        [InlineData("create", CommandType.Create)]
+        [InlineData("edit", CommandType.Edit)]
+        [InlineData("delete", CommandType.Delete)]
         public void HashTableIsCorrect(string input, CommandType expectedType) {
 
             //arrange
@@ -21,6 +26,19 @@ namespace PswManagerTests.Commands {
 
             //assert
             Assert.Equal(expectedType, result);
+
+        }
+
+        [Fact]
+        public void HashTableWithInvalidInputGivesCorrectException() {
+
+            //arrange
+            string nonsensicalInput = "justsomerandomthingthatcannotbevalid";
+
+            //act
+
+            //assert
+            Assert.Throws<InvalidCommandException>(() => CommandTypeAnalyzer.Get(nonsensicalInput));
 
         }
 
