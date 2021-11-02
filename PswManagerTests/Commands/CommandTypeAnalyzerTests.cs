@@ -16,7 +16,7 @@ namespace PswManagerTests.Commands {
         [InlineData("create", CommandType.Create)]
         [InlineData("edit", CommandType.Edit)]
         [InlineData("delete", CommandType.Delete)]
-        public void HashTableIsCorrect(string input, CommandType expectedType) {
+        public void IsCorrect(string input, CommandType expectedType) {
 
             //arrange
             CommandType result;
@@ -30,7 +30,7 @@ namespace PswManagerTests.Commands {
         }
 
         [Fact]
-        public void HashTableWithInvalidInputGivesCorrectException() {
+        public void InvalidInputGivesCorrectException() {
 
             //arrange
             string nonsensicalInput = "justsomerandomthingthatcannotbevalid";
