@@ -2,13 +2,13 @@
 namespace PswManagerLibrary {
     public interface IPasswordManager {
 
-        public void CreatePassword();
+        public void CreatePassword(AccountModel account);
 
-        public string GetPassword();
+        public AccountModel GetPassword(string name);
 
-        public void EditPassword();
+        public void EditPassword(AccountModel account, string newPassword);
 
-        public void DeletePassword();
+        public void DeletePassword(AccountModel account);
 
     }
 }

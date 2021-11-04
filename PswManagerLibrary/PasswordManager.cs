@@ -8,25 +8,25 @@ namespace PswManagerLibrary {
     /// </summary>
     public class PasswordManager : IPasswordManager {
 
-        private readonly CryptoString password;
+        private readonly CryptoString cryptoString;
 
         public PasswordManager(string password) {
-            this.password = new CryptoString(password);
+            this.cryptoString = new CryptoString(password);
         }
 
-        public void CreatePassword() {
+        public void CreatePassword(AccountModel account) {
             throw new NotImplementedException();
         }
 
-        string IPasswordManager.GetPassword() {
+        public AccountModel GetPassword(string name) {
             throw new NotImplementedException();
         }
 
-        public void EditPassword() {
+        public void EditPassword(AccountModel account, string newPassword) {
             throw new NotImplementedException();
         }
 
-        public void DeletePassword() {
+        public void DeletePassword(AccountModel account) {
             throw new NotImplementedException();
         }
     }
