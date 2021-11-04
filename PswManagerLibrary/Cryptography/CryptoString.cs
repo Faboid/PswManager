@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PswManagerLibrary.Cryptography {
     public class CryptoString {
@@ -21,7 +18,7 @@ namespace PswManagerLibrary.Cryptography {
         public string Encrypt(string plainText) {
 
             byte[] bites = Encoding.Unicode.GetBytes(plainText);
-            
+
             using(Aes encryptor = GetAes()) {
 
                 using(MemoryStream ms = new MemoryStream()) {
