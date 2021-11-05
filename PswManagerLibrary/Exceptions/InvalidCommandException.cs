@@ -9,6 +9,8 @@ namespace PswManagerLibrary.Exceptions {
 
         public readonly string InvalidCommand;
 
+        public InvalidCommandException(string message) : base(message) { }
+
         public InvalidCommandException(string command, string message) : base (message) {
             InvalidCommand = command;
         }
