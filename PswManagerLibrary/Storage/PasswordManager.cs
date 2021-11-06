@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace PswManagerLibrary {
+namespace PswManagerLibrary.Storage {
 
     /// <summary>
     /// Organizes the storing of the encrypted passwords.

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Linq;
 using PswManagerLibrary.Global;
 using PswManagerLibrary.Exceptions;
+using PswManagerLibrary.Storage;
 
 namespace PswManagerLibrary.Commands {
 

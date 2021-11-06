@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PswManagerLibrary {
+namespace PswManagerLibrary.Global {
 
     /// <summary>
     /// A model that stores a single account's information.

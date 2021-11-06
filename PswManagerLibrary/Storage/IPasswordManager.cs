@@ -1,5 +1,5 @@
 ﻿
-namespace PswManagerLibrary {
+namespace PswManagerLibrary.Storage {
     public interface IPasswordManager {
 
         public void CreatePassword(string name, string password, string email);
