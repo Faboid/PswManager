@@ -15,10 +15,12 @@ namespace PswManagerLibrary.Storage {
 
         private readonly CryptoString passCryptoString;
         private readonly CryptoString emaCryptoString;
+        private readonly AccountBuilder accBuilder;
         private readonly IPaths paths;
 
         public PasswordManager(IPaths paths, string passPassword, string emaPassword) {
             this.paths = paths;
+            this.accBuilder = new AccountBuilder(paths);
             this.passCryptoString = new CryptoString(passPassword);
             this.emaCryptoString = new CryptoString(emaPassword);
         }
@@ -29,7 +31,7 @@ namespace PswManagerLibrary.Storage {
 
             if(File.Exists(paths.AccountsFilePath)) {
                 //check for same-named accounts
-                existing = File.ReadAllLines(paths.AccountsFilePath).Any(x => x == name);
+                existing = accBuilder.Search(name) is not null;
             }
 
             if(existing) {
