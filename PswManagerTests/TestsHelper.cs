@@ -24,7 +24,7 @@ namespace PswManagerTests {
 
             //set the needed classes in public(or protected) class instances
             query = new CommandQuery(paths);
-            query.Start(new Command("psw pswpassword email password"));
+            query.Start(new Command("psw pswpassword emapassword"));
         }
 
         public void Dispose() {
