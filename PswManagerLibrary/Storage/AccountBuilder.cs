@@ -1,4 +1,5 @@
-﻿using PswManagerLibrary.Global;
+﻿using PswManagerLibrary.Exceptions;
+using PswManagerLibrary.Global;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +14,7 @@ namespace PswManagerLibrary.Storage {
     /// </summary>
     public class AccountBuilder {
 
-        IPaths paths;
+        readonly IPaths paths;
 
         public AccountBuilder(IPaths paths) {
             this.paths = paths;
@@ -39,16 +40,22 @@ namespace PswManagerLibrary.Storage {
             return position;
         }
 
-        public string GetOne(int position) {
+        public (string name, string password, string email) GetOne(int position) {
 
             string name = File.ReadAllLines(paths.AccountsFilePath).Skip(position).Take(1).First();
             string password = File.ReadAllLines(paths.PasswordsFilePath).Skip(position).Take(1).First();
             string email = File.ReadAllLines(paths.EmailsFilePath).Skip(position).Take(1).First();
 
-            return StringToAccount(name, password, email);
+            return (name, password, email);
         }
 
-        public static string StringToAccount(string name, string email, string password) => $"{name}:{Environment.NewLine}{email}{Environment.NewLine}{password}";
+        public (string name, string password, string email) GetOne(string name) {
+
+            int position = Search(name) ?? throw new InvalidCommandException("The given account doesn't exist.");
+
+            return GetOne(position);
+        }
+
 
     }
 }

@@ -27,14 +27,7 @@ namespace PswManagerLibrary.Storage {
 
         public void CreatePassword(string name, string password, string email = null) {
 
-            bool existing = false;
-
-            if(File.Exists(paths.AccountsFilePath)) {
-                //check for same-named accounts
-                existing = accBuilder.Search(name) is not null;
-            }
-
-            if(existing) {
+            if(AccountExist(name)) {
                 throw new InvalidCommandException("The account you're trying to create exists already.");
             }
 
@@ -50,7 +43,19 @@ namespace PswManagerLibrary.Storage {
         }
 
         public string GetPassword(string name) {
-            throw new NotImplementedException();
+            
+            if(AccountExist(name) is false) {
+                throw new InvalidCommandException("The given account doesn't exist.");
+            }
+
+            //get values
+            var output = accBuilder.GetOne(name);
+
+            //decrypt values
+            output.password = passCryptoString.Decrypt(output.password);
+            output.email = emaCryptoString.Decrypt(output.email);
+
+            return String.Join(' ', new[] { output.name, output.password, output.email });
         }
 
         public void EditPassword(string name, string oldPassword, string newPassword) {
@@ -59,6 +64,17 @@ namespace PswManagerLibrary.Storage {
 
         public void DeletePassword(string name, string password) {
             throw new NotImplementedException();
+        }
+
+        public bool AccountExist(string name) {
+            bool existing = false;
+
+            if(File.Exists(paths.AccountsFilePath)) {
+                //check for same-named accounts
+                existing = accBuilder.Search(name) is not null;
+            }
+
+            return existing;
         }
     }
 }
