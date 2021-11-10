@@ -25,5 +25,7 @@ namespace PswManagerLibrary.Global {
 
         public string EmailsFilePath => $"{WorkingDirectory}\\Emails.txt";
 
+        public string TokenFilePath => $"{WorkingDirectory}\\Token.txt";
+
     }
 }

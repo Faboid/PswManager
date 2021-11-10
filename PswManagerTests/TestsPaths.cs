@@ -20,6 +20,8 @@ namespace PswManagerTests {
 
         public string EmailsFilePath => $"{WorkingDirectory}\\Emails.txt";
 
+        public string TokenFilePath => $"{WorkingDirectory}\\Token.txt";
+
         public static string GetNonExistentFolderPath() {
             string output;
 

@@ -14,5 +14,7 @@ namespace PswManagerLibrary.Global {
         string AccountsFilePath { get; }
 
         string EmailsFilePath { get; }
+
+        string TokenFilePath { get; }
     }
 }
