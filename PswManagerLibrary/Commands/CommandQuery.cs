@@ -25,6 +25,10 @@ namespace PswManagerLibrary.Commands {
             pssManager = customPasswordManager;
         }
 
+        public string Start(string command) {
+            return Start(new Command(command));
+        }
+
         public string Start(Command command) {
 
             var arguments = command.Arguments;
