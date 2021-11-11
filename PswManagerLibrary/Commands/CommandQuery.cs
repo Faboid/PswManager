@@ -16,7 +16,7 @@ namespace PswManagerLibrary.Commands {
     public class CommandQuery {
 
         IUserInput userInput;
-        IPasswordManager pssManager;
+        IPasswordManager pswManager;
         IPaths mainPaths;
         IToken token;
 
@@ -27,7 +27,7 @@ namespace PswManagerLibrary.Commands {
 
         public CommandQuery(IPaths paths, IUserInput userInput, IPasswordManager customPasswordManager) {
             mainPaths = paths;
-            pssManager = customPasswordManager;
+            pswManager = customPasswordManager;
             this.userInput = userInput;
         }
 
@@ -68,7 +68,7 @@ namespace PswManagerLibrary.Commands {
 
                     if(userInput.YesOrNo(askTokens)) {
                         //yes
-                        pssManager = new PasswordManager(mainPaths, arguments[0], arguments[1]);
+                        pswManager = new PasswordManager(mainPaths, arguments[0], arguments[1]);
                         return "A new password has been set up successfully.";
 
                     } else {
@@ -78,16 +78,16 @@ namespace PswManagerLibrary.Commands {
                     }
 
                 case CommandType.Get:
-                    var account = pssManager.GetPassword(arguments[0]);
+                    var account = pswManager.GetPassword(arguments[0]);
                     return account;
                 case CommandType.Create:
-                    pssManager.CreatePassword(arguments[0], arguments[1], arguments[2]);
+                    pswManager.CreatePassword(arguments[0], arguments[1], arguments[2]);
                     return "A new password has been saved successfully.";
                 case CommandType.Edit:
-                    pssManager.EditPassword(arguments[0], arguments[1], arguments[2]);
+                    pswManager.EditPassword(arguments[0], arguments[1], arguments[2]);
                     return "temporary end-process message";
                 case CommandType.Delete:
-                    pssManager.DeletePassword(arguments[0], arguments[1]);
+                    pswManager.DeletePassword(arguments[0], arguments[1]);
                     return "temporary end-process message";
                 default:
                     throw new InvalidCommandException(nameof(command.MainCommand), "The given command has found some unknown error.");
