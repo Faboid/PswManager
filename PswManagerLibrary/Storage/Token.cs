@@ -27,7 +27,12 @@ namespace PswManagerLibrary.Storage {
             File.WriteAllLines(paths.TokenFilePath, tokens);
         }
 
-        public (string passToken, string emaToken) Get() {
+        public (string passToken, string emaToken)? Get() {
+
+            if(File.Exists(paths.TokenFilePath) is false || File.ReadAllText(paths.TokenFilePath) == "") {
+                return null;
+            }
+
             var savedToken = File.ReadAllLines(paths.TokenFilePath);
 
             //decrypt saved tokens
@@ -35,7 +40,7 @@ namespace PswManagerLibrary.Storage {
         }
 
         public bool Confront(string passToken, string emaToken) {
-            if(File.Exists(paths.TokenFilePath) is false) {
+            if(File.Exists(paths.TokenFilePath) is false || File.ReadAllText(paths.TokenFilePath) == "") {
                 return false;
             }
 

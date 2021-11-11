@@ -11,7 +11,7 @@ namespace PswManagerLibrary.Storage {
 
         bool Confront(string passToken, string emaToken);
 
-        (string passToken, string emaToken) Get();
+        (string passToken, string emaToken)? Get();
 
     }
 }
