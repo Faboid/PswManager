@@ -13,12 +13,13 @@ namespace PswManagerConsole {
         }
 
         public string RequestAnswer(string message) {
-            SendMessage(message);
+            Console.WriteLine(message);
             return RequestAnswer();
         }
 
         public void SendMessage(string message) {
             Console.WriteLine(message);
+            Console.ReadKey();
         }
 
         public bool YesOrNo(string question) {

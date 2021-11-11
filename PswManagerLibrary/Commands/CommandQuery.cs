@@ -50,30 +50,45 @@ namespace PswManagerLibrary.Commands {
                     var result = token.Get();
 
                     if(result == null) {
-                        string question = "The tokens are missing or not set up. Do you want to create new tokens?";
+                        string question = $"The tokens are missing or not set up. Do you want to create new tokens? {Environment.NewLine}" +
+                            "Tokens will be used to verify you inserted the correct password(in the next uses).";
                         
                         if(userInput.YesOrNo(question)) {
-                            //yes
+                            userInput.SendMessage(
+                                "You will now insert two tokens: make sure they are easy to remember; it's also suggested to write them somewhere." +
+                                Environment.NewLine + "They are the only way to check, in future, if you've inserted the correct passwords."
+                            );
 
+                            //yes
+                            token.Set(
+                                userInput.RequestAnswer("Write your new first token and press enter. This token will be used to verify your passwords' password."), 
+                                userInput.RequestAnswer("Write your new second token and press enter. This token will be used to verify your emails' password.")
+                            );
+
+                            userInput.SendMessage("The tokens have been set up correctly.");
+
+                            pswManager = new PasswordManager(mainPaths, arguments[0], arguments[1]);
+                            return "The new passwords have been set up successfully.";
 
                         } else {
                             //no
-
+                            return "The operation has been canceled. Tokens are needed to set up the passwords.";
 
                         }
 
                     }
 
-                    string askTokens = $"The tokens are:{Environment.NewLine} {result.Value.passToken}, {result.Value.emaToken}.{Environment.NewLine} Correct?";
+                    string askTokens = $"The tokens are:{Environment.NewLine} {result.Value.passToken}, {result.Value.emaToken}.{Environment.NewLine} Correct?{Environment.NewLine}" +
+                        $"Note: if the tokens aren't the ones you've inserted, accepting them as true will give erroneous information and might corrupt the saved data.";
 
                     if(userInput.YesOrNo(askTokens)) {
                         //yes
                         pswManager = new PasswordManager(mainPaths, arguments[0], arguments[1]);
-                        return "A new password has been set up successfully.";
+                        return "The new passwords have been set up successfully.";
 
                     } else {
                         //no
-                        return "The operation has been canceled. Enter your passwords once more to make sure the tokens are correct.";
+                        return "The operation has been canceled. Enter your passwords once more to obtain the correct tokens.";
 
                     }
 
