@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Xunit;
 
-namespace PswManagerTests {
+namespace PswManagerTests.TestsHelpers {
     public class TestsPathsTests {
     
         [Fact]

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PswManagerTests;
+using PswManagerTests.TestsHelpers;
 using Xunit;
 
 namespace PswManagerTests.Storage {
