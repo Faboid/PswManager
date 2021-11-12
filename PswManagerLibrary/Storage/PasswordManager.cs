@@ -18,11 +18,11 @@ namespace PswManagerLibrary.Storage {
         private readonly AccountBuilder accBuilder;
         private readonly IPaths paths;
 
-        public PasswordManager(IPaths paths, string passPassword, string emaPassword) {
+        public PasswordManager(IPaths paths, CryptoString passPassword, CryptoString emaPassword) {
             this.paths = paths;
             this.accBuilder = new AccountBuilder(paths);
-            this.passCryptoString = new CryptoString(passPassword);
-            this.emaCryptoString = new CryptoString(emaPassword);
+            this.passCryptoString = passPassword;
+            this.emaCryptoString = emaPassword;
         }
 
         public void CreatePassword(string name, string password, string email = null) {

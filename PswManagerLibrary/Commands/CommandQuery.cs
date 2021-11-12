@@ -67,7 +67,7 @@ namespace PswManagerLibrary.Commands {
 
                             userInput.SendMessage("The tokens have been set up correctly.");
 
-                            pswManager = new PasswordManager(mainPaths, arguments[0], arguments[1]);
+                            pswManager = new PasswordManager(mainPaths, passCryptoString, emaCryptoString);
                             return "The new passwords have been set up successfully.";
 
                         } else {
@@ -83,7 +83,7 @@ namespace PswManagerLibrary.Commands {
 
                     if(userInput.YesOrNo(askTokens)) {
                         //yes
-                        pswManager = new PasswordManager(mainPaths, arguments[0], arguments[1]);
+                        pswManager = new PasswordManager(mainPaths, passCryptoString, emaCryptoString);
                         return "The new passwords have been set up successfully.";
 
                     } else {
