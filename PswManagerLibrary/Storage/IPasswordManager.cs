@@ -8,7 +8,7 @@ namespace PswManagerLibrary.Storage {
 
         public void EditPassword(string name, string oldPassword, string newPassword);
 
-        public void DeletePassword(string name, string password);
+        public void DeletePassword(string name);
 
     }
 }

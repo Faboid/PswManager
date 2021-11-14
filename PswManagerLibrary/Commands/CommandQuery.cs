@@ -53,28 +53,50 @@ namespace PswManagerLibrary.Commands {
             //todo - add proper results' returns
             switch(command.MainCommand) {
                 case CommandType.Psw:
+                    ThrowIfWrongNumberArguments(2, arguments.Length, "With the command 'psw', it's needed to give two arguments: [password1] [password2]");
+
                     return InitializeSetup(arguments[0], arguments[1]);
 
                 case CommandType.Get:
+                    ThrowIfWrongNumberArguments(1, arguments.Length, "With the command 'get', it's needed to give one argument: [name account]");
+
                     var account = pswManager.GetPassword(arguments[0]);
                     return account;
 
                 case CommandType.Create:
+                    ThrowIfWrongNumberArguments(3, arguments.Length, "With the command 'create', it's needed to give three arguments: [name account] [password account] [email account]");
+
                     pswManager.CreatePassword(arguments[0], arguments[1], arguments[2]);
                     return "A new password has been saved successfully.";
 
                 case CommandType.Edit:
+                    //todo - implement editing an account
+                    ThrowIfWrongNumberArguments(3, arguments.Length, "With the command 'edit', it's needed to give three arguments: [name account] [WIP] [WIP]");
+
                     pswManager.EditPassword(arguments[0], arguments[1], arguments[2]);
                     return "temporary end-process message";
 
                 case CommandType.Delete:
-                    pswManager.DeletePassword(arguments[0], arguments[1]);
+                    //todo - implement deleting an account
+                    ThrowIfWrongNumberArguments(1, arguments.Length, "With the command 'delete', it's needed to give one argument: [name account]");
+
+                    var result = userInput.YesOrNo("Are you sure? This account will be deleted forever.");
+
+                    if(result == false) { return "The operation has been stopped."; }
+
+                    pswManager.DeletePassword(arguments[0]);
                     return "temporary end-process message";
 
                 default:
                     throw new InvalidCommandException(nameof(command.MainCommand), "The given command has found some unknown error.");
             }
 
+        }
+
+        private void ThrowIfWrongNumberArguments(int expected, int actual, string message) {
+            if(expected != actual) {
+                throw new InvalidCommandException($"Invalid number of arguments.{Environment.NewLine}{message}");
+            }
         }
     }
 }

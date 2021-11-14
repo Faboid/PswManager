@@ -62,7 +62,7 @@ namespace PswManagerLibrary.Storage {
             throw new NotImplementedException();
         }
 
-        public void DeletePassword(string name, string password) {
+        public void DeletePassword(string name) {
             throw new NotImplementedException();
         }
 
