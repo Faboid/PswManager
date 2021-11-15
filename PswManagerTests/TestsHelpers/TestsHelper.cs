@@ -36,7 +36,7 @@ namespace PswManagerTests.TestsHelpers {
             CryptoString emaCryptoString = new CryptoString("emapassword");
 
             pswManager = new PasswordManager(paths, passCryptoString, emaCryptoString);
-            token = new Token(passCryptoString, emaCryptoString, paths);
+            token = new Token(passCryptoString, emaCryptoString, paths, autoInput);
         }
 
         public static void SetUpDefault() {
