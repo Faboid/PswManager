@@ -4,6 +4,7 @@ using PswManagerLibrary.Global;
 using PswManagerLibrary.Storage;
 using PswManagerLibrary.UIConnection;
 using System;
+using System.Linq;
 
 namespace PswManagerLibrary.Commands {
 
@@ -75,7 +76,7 @@ namespace PswManagerLibrary.Commands {
                         "With the command 'edit', it's needed to give the account name and at least one optional argument in the following format:", 
                         "[name account] ?[name:new name]? ?[password:new password]? ?[email:new email]?");
 
-                    pswManager.EditPassword(arguments[0], arguments[1], arguments[2]);
+                    pswManager.EditPassword(arguments[0], arguments.Skip(1).ToArray());
                     return "temporary end-process message";
 
                 case CommandType.Delete:
