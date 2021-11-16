@@ -56,6 +56,29 @@ namespace PswManagerLibrary.Storage {
             return GetOne(position);
         }
 
+        public void EditOne(string name, string newName, string newPassword, string newEmail) {
+            EditOne(
+                Search(name) ?? throw new InvalidCommandException("The given account doesn't exist."), 
+                newName, newPassword, newEmail
+                );
+        }
+
+        public void EditOne(int position, string newName, string newPassword, string newEmail) {
+
+            EditValue(paths.AccountsFilePath, position, newName);
+            EditValue(paths.PasswordsFilePath, position, newPassword);
+            EditValue(paths.EmailsFilePath, position, newEmail);
+
+        }
+
+        private void EditValue(string path, int position, string value) {
+            if(value is not null) {
+                var list = File.ReadAllLines(path);
+                list[position] = value;
+                File.WriteAllLines(path, list);
+
+            }
+        }
 
     }
 }

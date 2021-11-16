@@ -88,8 +88,7 @@ namespace PswManagerLibrary.Storage {
                 throw new InvalidCommandException("Lack of valid arguments for the editing process. Please rewrite the command with valid arguments.");
             }
 
-            //todo - using the gained values, edit one set of data
-            throw new NotImplementedException();
+            accBuilder.EditOne(name, values["name"], passCryptoString.Encrypt(values["password"]), emaCryptoString.Encrypt(values["email"]));
         }
 
         public void DeletePassword(string name) {
