@@ -1,5 +1,6 @@
 ﻿using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.Global;
+using PswManagerLibrary.UIConnection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,11 +14,69 @@ namespace PswManagerLibrary.Storage {
         readonly CryptoString passCryptoString;
         readonly CryptoString emaCryptoString;
         readonly IPaths paths;
+        readonly IUserInput userInput;
 
-        public Token(CryptoString passCryptoString, CryptoString emaCryptoString, IPaths paths) {
+        public Token(CryptoString passCryptoString, CryptoString emaCryptoString, IPaths paths, IUserInput userInput) {
             this.passCryptoString = passCryptoString;
             this.emaCryptoString = emaCryptoString;
             this.paths = paths;
+            this.userInput = userInput;
+        }
+
+        public bool GetUserConfirmation(out string failureMessage) {
+            failureMessage = "";
+
+            //tries to get values
+            var result = TryGet();
+
+            //if the values don't exist
+            if(result == null) {
+                string question = $"The tokens are missing or not set up. Do you want to create new tokens? {Environment.NewLine}" +
+                    "Tokens will be used to verify you inserted the correct password(in the future uses). If you refuse to create new, the initialization will be canceled.";
+
+                //if the user wants to set up new tokens
+                if(userInput.YesOrNo(question)) {
+                    userInput.SendMessage(
+                        "You will now insert two tokens: make sure they are easy to remember; it's also suggested to write them somewhere." +
+                        Environment.NewLine + "They are the only way to check, in future, if you've inserted the correct passwords."
+                    );
+
+                    //yes
+                    Set(
+                        userInput.RequestAnswer("Write your new first token and press enter. This token will be used to verify your passwords' password."),
+                        userInput.RequestAnswer("Write your new second token and press enter. This token will be used to verify your emails' password.")
+                    );
+
+                    userInput.SendMessage("The tokens have been set up correctly.");
+
+                    return true;
+                } else {
+                    //no
+
+                    failureMessage = "To avoid compomising data in the future, it's necessary to set up the tokens.";
+
+                    return false;
+                }
+
+            }
+
+            string askTokens = $"The tokens are:{Environment.NewLine} {result.Value.passToken}, {result.Value.emaToken}.{Environment.NewLine} Correct?{Environment.NewLine}" +
+                $"Note: if the tokens aren't the ones you've inserted, accepting them as true will give erroneous information and might corrupt the saved data.";
+
+            //if the user recognize the tokens as correct
+            if(userInput.YesOrNo(askTokens)) {
+                //yes
+
+                return true;
+
+            } else {
+                //no
+
+                failureMessage = "Enter correct passwords to obtain the correct tokens.";
+
+                return false;
+
+            }
         }
 
         public void Set(string passToken, string emaToken) {
@@ -27,7 +86,10 @@ namespace PswManagerLibrary.Storage {
             File.WriteAllLines(paths.TokenFilePath, tokens);
         }
 
-        public (string passToken, string emaToken)? Get() {
+        /// <summary>
+        /// Attempts to get token values. Return null if they don't exist.
+        /// </summary>
+        public (string passToken, string emaToken)? TryGet() {
 
             if(File.Exists(paths.TokenFilePath) is false || File.ReadAllText(paths.TokenFilePath) == "") {
                 return null;

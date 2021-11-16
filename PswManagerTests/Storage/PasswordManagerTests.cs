@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PswManagerTests;
+using PswManagerTests.TestsHelpers;
 using Xunit;
 
 namespace PswManagerTests.Storage {
@@ -37,27 +38,31 @@ namespace PswManagerTests.Storage {
             string expected = "defaultName1 defaultPassword1 defaultEmail1";
 
             //act
-            var result = manager.GetPassword("defaultName1");
+            var actual = manager.GetPassword("defaultName1");
 
             //assert
-            Assert.Equal(expected, result);
+            Assert.Equal(expected, actual);
 
         }
 
+        [Fact]
         public void UpdatePasswordSuccess() {
-            //todo - complete this test
-
 
             //arrange
             TestsHelper.SetUpDefault();
             var manager = TestsHelper.pswManager;
             string name = "defaultName1";
-            string oldPassword = "defaultPassword1";
-            string newPasword = "newPassword1";
+            string newPassword = "password:newPassword1";
+            string newEmail = "email:newEmail1";
+            string expected = "defaultName1 newPassword1 newEmail1";
+            string actual;
 
             //act
+            manager.EditPassword(name, new[] { newPassword, newEmail });
+            actual = manager.GetPassword(name);
 
             //assert
+            Assert.Equal(expected, actual);
 
         }
 

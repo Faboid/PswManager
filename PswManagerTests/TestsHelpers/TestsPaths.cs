@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PswManagerTests {
+namespace PswManagerTests.TestsHelpers {
     public class TestsPaths : IPaths {
 
         public TestsPaths() { }

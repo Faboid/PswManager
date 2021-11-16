@@ -8,9 +8,11 @@ namespace PswManagerConsole {
     class Program {
         static void Main(string[] args) {
 
+            UserInput userInput = new UserInput();
+
             Console.WriteLine("Welcome to PswManager! Please insert a command.");
 
-            CommandQuery cq = new CommandQuery(new PswManagerLibrary.Global.Paths());
+            CommandQuery cq = new CommandQuery(new PswManagerLibrary.Global.Paths(), userInput);
 
             //todo - a temporary password for testing. Will be removed once the initial setup is fully complete.
             string tempPassword = "psw gheerwiahgkth ewrgrthrer";
