@@ -59,11 +59,15 @@ namespace PswManagerLibrary.Storage {
         }
 
         public void EditPassword(string name, string[] arguments) {
+            const string nameText = "name";
+            const string passText = "password";
+            const string emaText = "email";
+
             //generate a dictionary with all the possible values
             Dictionary<string, string> values = new Dictionary<string, string>();
-            values.Add("name", null);
-            values.Add("password", null);
-            values.Add("email", null);
+            values.Add(nameText, null);
+            values.Add(passText, null);
+            values.Add(emaText, null);
 
             //split keys and values from the arguments
             var splitArgs = arguments.Select(x => x.Split(':'));
@@ -88,7 +92,14 @@ namespace PswManagerLibrary.Storage {
                 throw new InvalidCommandException("Lack of valid arguments for the editing process. Please rewrite the command with valid arguments.");
             }
 
-            accBuilder.EditOne(name, values["name"], passCryptoString.Encrypt(values["password"]), emaCryptoString.Encrypt(values["email"]));
+            if(values[passText] is not null) {
+                values[passText] = passCryptoString.Encrypt(values[passText]);
+            }
+            if(values[emaText] is not null) {
+                values[emaText] = emaCryptoString.Encrypt(values[emaText]);
+            }
+
+            accBuilder.EditOne(name, values[nameText], values[passText], values[emaText]);
         }
 
         public void DeletePassword(string name) {

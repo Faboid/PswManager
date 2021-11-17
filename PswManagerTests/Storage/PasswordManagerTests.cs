@@ -45,21 +45,20 @@ namespace PswManagerTests.Storage {
 
         }
 
-        [Fact]
-        public void UpdatePasswordSuccess() {
+        [Theory]
+        [InlineData("defaultName1", "defaultName1", new[] { "password:newPassword1", "email:newEmail1" }, "defaultName1 newPassword1 newEmail1")]
+        [InlineData("defaultName2", "newName2", new[] { "name:newName2", "email:newEmail2" }, "newName2 defaultPassword2 newEmail2")]
+        [InlineData("defaultName3", "fixedName", new[] { "name:fixedName", "password:passfix", "email:fixed@email.com" }, "fixedName passfix fixed@email.com")]
+        public void UpdatePasswordSuccess(string name, string newName, string[] args, string expected) {
 
             //arrange
             TestsHelper.SetUpDefault();
             var manager = TestsHelper.pswManager;
-            string name = "defaultName1";
-            string newPassword = "password:newPassword1";
-            string newEmail = "email:newEmail1";
-            string expected = "defaultName1 newPassword1 newEmail1";
             string actual;
 
             //act
-            manager.EditPassword(name, new[] { newPassword, newEmail });
-            actual = manager.GetPassword(name);
+            manager.EditPassword(name, args);
+            actual = manager.GetPassword(newName);
 
             //assert
             Assert.Equal(expected, actual);
