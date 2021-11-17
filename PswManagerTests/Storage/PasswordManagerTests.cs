@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PswManagerLibrary.Exceptions;
 using PswManagerTests;
 using PswManagerTests.TestsHelpers;
 using Xunit;
@@ -62,6 +63,25 @@ namespace PswManagerTests.Storage {
 
             //assert
             Assert.Equal(expected, actual);
+
+        }
+
+        [Fact]
+        public void DeletePasswordSuccess() {
+
+            //arrange
+            TestsHelper.SetUpDefault();
+            var manager = TestsHelper.pswManager;
+            string name = "defaultName1";
+            bool exist;
+
+            //act
+            exist = manager.GetPassword(name) is string;
+            manager.DeletePassword(name);
+
+            //assert
+            Assert.True(exist);
+            Assert.Throws<InvalidCommandException>(() => manager.GetPassword(name));
 
         }
 

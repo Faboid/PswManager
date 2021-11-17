@@ -80,5 +80,21 @@ namespace PswManagerLibrary.Storage {
             }
         }
 
+        public void DeleteOne(string name) {
+            DeleteOne(Search(name) ?? throw new InvalidCommandException("The given account doesn't exist."));
+        }
+
+        private void DeleteOne(int position) {
+            DeleteValue(paths.AccountsFilePath, position);
+            DeleteValue(paths.PasswordsFilePath, position);
+            DeleteValue(paths.EmailsFilePath, position);
+        }
+
+        private void DeleteValue(string path, int position) {
+            List<string> list = File.ReadAllLines(path).ToList();
+            list.RemoveAt(position);
+            File.WriteAllLines(path, list);
+        }
+
     }
 }
