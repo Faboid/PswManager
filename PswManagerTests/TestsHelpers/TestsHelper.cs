@@ -13,11 +13,15 @@ namespace PswManagerTests.TestsHelpers {
 
     public class TestsHelper : IDisposable {
 
+        //todo - insert static values that represent the default strings inserted in the fake database
+
         public static readonly TestsPaths paths;
         public static readonly CommandQuery query;
         public static readonly PasswordManager pswManager;
         public static readonly AutoInput autoInput;
         public static readonly Token token;
+        public static readonly CryptoString passCryptoString;
+        public static readonly CryptoString emaCryptoString;
 
         static TestsHelper() {
             //get non-existing path to create a folder
@@ -32,8 +36,8 @@ namespace PswManagerTests.TestsHelpers {
             query = new CommandQuery(paths, autoInput);
             query.Start(new Command("psw pswpassword emapassword"));
 
-            CryptoString passCryptoString = new CryptoString("pswpassword");
-            CryptoString emaCryptoString = new CryptoString("emapassword");
+            passCryptoString = new CryptoString("pswpassword");
+            emaCryptoString = new CryptoString("emapassword");
 
             pswManager = new PasswordManager(paths, passCryptoString, emaCryptoString);
             token = new Token(passCryptoString, emaCryptoString, paths, autoInput);
