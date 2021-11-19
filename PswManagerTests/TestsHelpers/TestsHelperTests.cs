@@ -11,9 +11,11 @@ namespace PswManagerTests.TestsHelpers {
     public class TestsHelperTests {
 
         [Theory]
+        [InlineData("defaultName0", "defaultPassword0", "defaultEmail0")]
         [InlineData("defaultName1", "defaultPassword1", "defaultEmail1")]
         [InlineData("defaultName2", "defaultPassword2", "defaultEmail2")]
         [InlineData("defaultName3", "defaultPassword3", "defaultEmail3")]
+        [InlineData("defaultName4", "defaultPassword4", "defaultEmail4")]
         public void SetUpDefaultCorrectly(string name, string password, string email) {
 
             //arrange

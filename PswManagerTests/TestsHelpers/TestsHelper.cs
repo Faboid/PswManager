@@ -22,6 +22,7 @@ namespace PswManagerTests.TestsHelpers {
         public static readonly Token token;
         public static readonly CryptoString passCryptoString;
         public static readonly CryptoString emaCryptoString;
+        public static readonly DefaultValues defaultValues;
 
         static TestsHelper() {
             //get non-existing path to create a folder
@@ -32,6 +33,8 @@ namespace PswManagerTests.TestsHelpers {
             File.Create(paths.EmailsFilePath).Close();
 
             //set the needed classes in public(or protected) class instances
+            defaultValues = new DefaultValues(5);
+            
             autoInput = new AutoInput();
             query = new CommandQuery(paths, autoInput);
             query.Start(new Command("psw pswpassword emapassword"));
@@ -41,6 +44,9 @@ namespace PswManagerTests.TestsHelpers {
 
             pswManager = new PasswordManager(paths, passCryptoString, emaCryptoString);
             token = new Token(passCryptoString, emaCryptoString, paths, autoInput);
+
+            //set up default values
+            SetUpDefault();
         }
 
         public static void SetUpDefault() {
@@ -50,9 +56,9 @@ namespace PswManagerTests.TestsHelpers {
             File.WriteAllText(paths.EmailsFilePath, "");
             
             //creates three default entries
-            query.Start(new Command("create defaultName1 defaultPassword1 defaultEmail1"));
-            query.Start(new Command("create defaultName2 defaultPassword2 defaultEmail2"));
-            query.Start(new Command("create defaultName3 defaultPassword3 defaultEmail3"));
+            foreach(string value in defaultValues.values) {
+                query.Start($"create {value}");
+            }
 
             autoInput.SetDefault();
         }

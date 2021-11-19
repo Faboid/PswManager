@@ -19,7 +19,7 @@ namespace PswManagerTests.Storage {
             TestsHelper.SetUpDefault();
             AccountBuilder builder = new AccountBuilder(TestsHelper.paths);
             int? actual;
-            int expected = 1;
+            int expected = 2;
 
             //act
             actual = builder.Search("defaultName2");
