@@ -13,7 +13,7 @@ namespace PswManagerTests.TestsHelpers {
 
     public class TestsHelper : IDisposable {
 
-        //todo - insert static values that represent the default strings inserted in the fake database
+        //todo - turn every static value into non-static.
 
         public static readonly TestsPaths paths;
         public static readonly CommandQuery query;

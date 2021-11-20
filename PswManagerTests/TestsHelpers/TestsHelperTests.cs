@@ -34,5 +34,7 @@ namespace PswManagerTests.TestsHelpers {
 
         }
 
+        //todo - add a test to make sure TestsHelper.Dispose deleted the folder
+
     }
 }
