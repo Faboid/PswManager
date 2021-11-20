@@ -12,13 +12,16 @@ namespace PswManagerTests.TestsHelpers {
     public class DefaultValues {
 
         public DefaultValues(int generateAmount) {
+            var values = new List<string>();
+
             for(int i = 0; i < generateAmount; i++) {
                 values.Add($"defaultName{i} defaultPassword{i} defaultEmail{i}");
             }
 
+            this.values = values.AsReadOnly();
         }
 
-        public readonly List<string> values = new List<string>();
+        public readonly IList<string> values;
 
         public string GetValue(int position, TypeValue type) {
             return values[position].Split(' ')[(int)type];
