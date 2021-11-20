@@ -10,12 +10,15 @@ namespace PswManagerTests.TestsHelpers {
     [Collection("TestHelperCollection")]
     public class TestsHelperTests {
 
+        public static IEnumerable<object[]> DefaultData() {
+            foreach(string s in TestsHelper.defaultValues.values) {
+                var values = s.Split(' ');
+                yield return values;
+            }
+        }
+
         [Theory]
-        [InlineData("defaultName0", "defaultPassword0", "defaultEmail0")]
-        [InlineData("defaultName1", "defaultPassword1", "defaultEmail1")]
-        [InlineData("defaultName2", "defaultPassword2", "defaultEmail2")]
-        [InlineData("defaultName3", "defaultPassword3", "defaultEmail3")]
-        [InlineData("defaultName4", "defaultPassword4", "defaultEmail4")]
+        [MemberData(nameof(DefaultData))]
         public void SetUpDefaultCorrectly(string name, string password, string email) {
 
             //arrange
