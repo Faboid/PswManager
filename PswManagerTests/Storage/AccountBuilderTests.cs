@@ -69,11 +69,26 @@ namespace PswManagerTests.Storage {
 
         }
 
+        public static IEnumerable<object[]> EditOneCorrectlyData() {
+            var def = TestsHelper.defaultValues;
+
+            yield return new string[] { 
+                def.GetValue(1, DefaultValues.TypeValue.Name), "newName1", "newPassword1", "newEmail1", 
+                "newName1 newPassword1 newEmail1" 
+            };
+            yield return new string[] { 
+                def.GetValue(2, DefaultValues.TypeValue.Name), null, "randompassword2", null, 
+                $"{def.GetValue(2, DefaultValues.TypeValue.Name)} randompassword2 {def.GetValue(2, DefaultValues.TypeValue.Email)}" 
+            };
+            yield return new string[] {
+                def.GetValue(1, DefaultValues.TypeValue.Name), null, null, "updatedEmail1",
+                $"{def.GetValue(1, DefaultValues.TypeValue.Name)} {def.GetValue(1, DefaultValues.TypeValue.Password)} updatedEmail1"
+            };
+        }
+
         //todo - fix this mess of a test
         [Theory]
-        [InlineData("defaultName1", "newName1", "newPassword1", "newEmail1", "newName1 newPassword1 newEmail1")]
-        [InlineData("defaultName2", null, "randompassword2", null, "defaultName2 randompassword2 defaultEmail2")]
-        [InlineData("defaultName1", null, null, "updatedEmail1", "defaultName1 defaultPassword1 updatedEmail1")]
+        [MemberData(nameof(EditOneCorrectlyData))]
         public void EditOneCorrectly(string name, string newName, string newPassword, string newEmail, string expectedstring) {
 
             //arrange
