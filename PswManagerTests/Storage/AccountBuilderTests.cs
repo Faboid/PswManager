@@ -22,7 +22,7 @@ namespace PswManagerTests.Storage {
             int expected = 2;
 
             //act
-            actual = builder.Search("defaultName2");
+            actual = builder.Search(TestsHelper.defaultValues.GetValue(2, DefaultValues.TypeValue.Name));
 
             //assert
             Assert.Equal(expected, actual);
@@ -51,8 +51,12 @@ namespace PswManagerTests.Storage {
             //arrange
             TestsHelper.SetUpDefault();
             AccountBuilder builder = new AccountBuilder(TestsHelper.paths);
-            string name = "defaultName1";
-            (string name, string password, string email) expected = ("defaultName1", "defaultPassword1", "defaultEmail1");
+            string name = TestsHelper.defaultValues.GetValue(1, DefaultValues.TypeValue.Name);
+            (string name, string password, string email) expected = (
+                TestsHelper.defaultValues.GetValue(1, DefaultValues.TypeValue.Name), 
+                TestsHelper.defaultValues.GetValue(1, DefaultValues.TypeValue.Password), 
+                TestsHelper.defaultValues.GetValue(1, DefaultValues.TypeValue.Email)
+                );
             (string name, string password, string email) actual;
 
             //act
@@ -104,7 +108,7 @@ namespace PswManagerTests.Storage {
             //arrange
             TestsHelper.SetUpDefault();
             AccountBuilder builder = new AccountBuilder(TestsHelper.paths);
-            string name = "defaultName1";
+            string name = TestsHelper.defaultValues.GetValue(1, DefaultValues.TypeValue.Name);
             bool exists;
 
             //act

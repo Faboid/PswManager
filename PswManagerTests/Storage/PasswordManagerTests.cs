@@ -36,10 +36,10 @@ namespace PswManagerTests.Storage {
             //arrange
             TestsHelper.SetUpDefault();
             var manager = TestsHelper.pswManager;
-            string expected = "defaultName1 defaultPassword1 defaultEmail1";
+            string expected = TestsHelper.defaultValues.values[1];
 
             //act
-            var actual = manager.GetPassword("defaultName1");
+            var actual = manager.GetPassword(TestsHelper.defaultValues.GetValue(1, DefaultValues.TypeValue.Name));
 
             //assert
             Assert.Equal(expected, actual);
@@ -72,7 +72,7 @@ namespace PswManagerTests.Storage {
             //arrange
             TestsHelper.SetUpDefault();
             var manager = TestsHelper.pswManager;
-            string name = "defaultName1";
+            string name = TestsHelper.defaultValues.GetValue(1, DefaultValues.TypeValue.Name);
             bool exist;
 
             //act
