@@ -46,10 +46,31 @@ namespace PswManagerTests.Storage {
 
         }
 
+        public static IEnumerable<object[]> UpdatePasswordSuccessData() {
+            var def = TestsHelper.defaultValues;
+
+            yield return new object[] {
+                def.GetValue(1, DefaultValues.TypeValue.Name),
+                def.GetValue(1, DefaultValues.TypeValue.Name),
+                new[] { "password:newPassword1", "email:newEmail1" },
+                $"{def.GetValue(1, DefaultValues.TypeValue.Name)} newPassword1 newEmail1"
+            };
+            yield return new object[] {
+                def.GetValue(2, DefaultValues.TypeValue.Name),
+                "newName2",
+                new[] { "name:newName2", "email:newEmail2" },
+                $"newName2 {def.GetValue(2, DefaultValues.TypeValue.Password)} newEmail2"
+            };
+            yield return new object[] {
+                def.GetValue(3, DefaultValues.TypeValue.Name),
+                "fixedName",
+                new[] { "name:fixedName", "password:passfix", "email:fixed@email.com" },
+                "fixedName passfix fixed@email.com"
+            };
+        }
+
         [Theory]
-        [InlineData("defaultName1", "defaultName1", new[] { "password:newPassword1", "email:newEmail1" }, "defaultName1 newPassword1 newEmail1")]
-        [InlineData("defaultName2", "newName2", new[] { "name:newName2", "email:newEmail2" }, "newName2 defaultPassword2 newEmail2")]
-        [InlineData("defaultName3", "fixedName", new[] { "name:fixedName", "password:passfix", "email:fixed@email.com" }, "fixedName passfix fixed@email.com")]
+        [MemberData(nameof(UpdatePasswordSuccessData))]
         public void UpdatePasswordSuccess(string name, string newName, string[] args, string expected) {
 
             //arrange
