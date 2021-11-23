@@ -11,6 +11,7 @@ namespace PswManagerTests.Commands {
 
         [Fact]
         public void RetainPasswordCorrectly() {
+            //todo - delete or change this. The test is outdated.
 
             //arrange
             Command command;

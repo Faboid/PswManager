@@ -22,7 +22,7 @@ namespace PswManagerLibrary.Commands {
             mainPaths = paths;
             this.userInput = userInput;
         }
-
+        //todo - instead of having this extra constructor, create a factory class to manage IPasswordManager's and IToken's construction
         public CommandQuery(IPaths paths, IUserInput userInput, IPasswordManager customPasswordManager) {
             mainPaths = paths;
             pswManager = customPasswordManager;
@@ -103,7 +103,7 @@ namespace PswManagerLibrary.Commands {
         }
 
         private void ThrowIfArgumentsOutOfRange(int min, int max, int actual, string message, string format) {
-            if(min < actual || actual > max) {
+            if(min > actual || actual > max) {
                 throw new InvalidCommandException($"Number of arguments out of range.{Environment.NewLine}{message}{Environment.NewLine}{format}");
             }
         }
