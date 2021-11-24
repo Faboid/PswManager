@@ -8,6 +8,7 @@ using Xunit;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Storage;
 using PswManagerLibrary.Cryptography;
+using PswManagerLibrary.Factories;
 
 namespace PswManagerTests.TestsHelpers {
 
@@ -36,7 +37,7 @@ namespace PswManagerTests.TestsHelpers {
             defaultValues = new DefaultValues(5);
             
             autoInput = new AutoInput();
-            query = new CommandQuery(paths, autoInput);
+            query = new CommandQuery(paths, autoInput, new PasswordManagerFactory());
             query.Start(new Command("psw pswpassword emapassword"));
 
             passCryptoString = new CryptoString("pswpassword");

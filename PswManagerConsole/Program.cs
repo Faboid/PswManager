@@ -3,6 +3,7 @@ using System.Threading;
 using PswManagerLibrary;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Exceptions;
+using PswManagerLibrary.Factories;
 
 namespace PswManagerConsole {
     class Program {
@@ -12,7 +13,7 @@ namespace PswManagerConsole {
 
             Console.WriteLine("Welcome to PswManager! Please insert a command.");
 
-            CommandQuery cq = new CommandQuery(new PswManagerLibrary.Global.Paths(), userInput);
+            CommandQuery cq = new CommandQuery(new PswManagerLibrary.Global.Paths(), userInput, new PasswordManagerFactory());
 
             //todo - a temporary password for testing. Will be removed once the initial setup is fully complete.
             string tempPassword = "psw gheerwiahgkth ewrgrthrer";
