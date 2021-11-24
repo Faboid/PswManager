@@ -1,5 +1,6 @@
 ﻿using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.Exceptions;
+using PswManagerLibrary.Factories;
 using PswManagerLibrary.Global;
 using PswManagerLibrary.Storage;
 using PswManagerLibrary.UIConnection;
@@ -13,34 +14,15 @@ namespace PswManagerLibrary.Commands {
     /// </summary>
     public class CommandQuery {
 
+        IPasswordManagerFactory pswManagerFactory;
         IUserInput userInput;
         IPaths mainPaths;
         IPasswordManager pswManager;
-        IToken token;
 
-        public CommandQuery(IPaths paths, IUserInput userInput) {
+        public CommandQuery(IPaths paths, IUserInput userInput, IPasswordManagerFactory pswManagerFactory) {
             mainPaths = paths;
             this.userInput = userInput;
-        }
-        //todo - instead of having this extra constructor, create a factory class to manage IPasswordManager's and IToken's construction
-        public CommandQuery(IPaths paths, IUserInput userInput, IPasswordManager customPasswordManager) {
-            mainPaths = paths;
-            pswManager = customPasswordManager;
-            this.userInput = userInput;
-        }
-
-        public string InitializeSetup(string passPassword, string emaPassword) {
-            CryptoString passCryptoString = new CryptoString(passPassword);
-            CryptoString emaCryptoString = new CryptoString(emaPassword);
-
-            token = new Token(passCryptoString, emaCryptoString, mainPaths, userInput);
-
-            if(token.GetUserConfirmation(out string message) is false) {
-                return $"The operation has been canceled. Reason: {message}";
-            }
-
-            pswManager = new PasswordManager(mainPaths, passCryptoString, emaCryptoString);
-            return "The new passwords have been set up successfully.";
+            this.pswManagerFactory = pswManagerFactory;
         }
 
         public string Start(string command) {
@@ -56,7 +38,11 @@ namespace PswManagerLibrary.Commands {
                 case CommandType.Psw:
                     ThrowIfWrongNumberArguments(2, arguments.Length, "With the command 'psw', it's needed to give two arguments", "[password1] [password2]");
 
-                    return InitializeSetup(arguments[0], arguments[1]);
+                    CryptoString passCryptoString = new CryptoString(arguments[0]);
+                    CryptoString emaCryptoString = new CryptoString(arguments[1]);
+
+                    pswManager = pswManagerFactory.CreatePasswordManager(userInput, mainPaths, passCryptoString, emaCryptoString);
+                    return "The new passwords have been set up successfully.";
 
                 case CommandType.Get:
                     ThrowIfWrongNumberArguments(1, arguments.Length, "With the command 'get', it's needed to give one argument:", "[name account]");
@@ -71,7 +57,6 @@ namespace PswManagerLibrary.Commands {
                     return "A new password has been saved successfully.";
 
                 case CommandType.Edit:
-                    //todo - implement editing an account
                     ThrowIfArgumentsOutOfRange(2, 4, arguments.Length, 
                         "With the command 'edit', it's needed to give the account name and at least one optional argument in the following format:", 
                         "[name account] ?[name:new name]? ?[password:new password]? ?[email:new email]?");
@@ -80,7 +65,6 @@ namespace PswManagerLibrary.Commands {
                     return "temporary end-process message";
 
                 case CommandType.Delete:
-                    //todo - implement deleting an account
                     ThrowIfWrongNumberArguments(1, arguments.Length, "With the command 'delete', it's needed to give one argument:", "[name account]");
 
                     var result = userInput.YesOrNo("Are you sure? This account will be deleted forever.");

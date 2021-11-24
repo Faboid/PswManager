@@ -23,8 +23,6 @@ namespace PswManagerLibrary.Storage {
             this.accBuilder = new AccountBuilder(paths);
             this.passCryptoString = passPassword;
             this.emaCryptoString = emaPassword;
-
-            //todo - insert request to userinput to get user approval for given passwords
         }
 
         public void CreatePassword(string name, string password, string email = null) {
