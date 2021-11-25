@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PswManagerTests.TestsHelpers.MockFactories {
     public class EmptyPasswordManagerFactory : IPasswordManagerFactory {
-        public IPasswordManager CreatePasswordManager(IUserInput userInput, IPaths paths, CryptoString passCryptoString, CryptoString emaCryptoString) {
+        public IPasswordManager CreatePasswordManager(IUserInput userInput, IPaths paths, string passPassword, string emaPassword) {
             return new EmptyPasswordManager();
         }
     }

@@ -21,8 +21,7 @@ namespace PswManagerTests.TestsHelpers {
         public static readonly PasswordManager pswManager;
         public static readonly AutoInput autoInput;
         public static readonly Token token;
-        public static readonly CryptoString passCryptoString;
-        public static readonly CryptoString emaCryptoString;
+        public static readonly CryptoAccount cryptoAccount;
         public static readonly DefaultValues defaultValues;
 
         static TestsHelper() {
@@ -40,11 +39,10 @@ namespace PswManagerTests.TestsHelpers {
             query = new CommandQuery(paths, autoInput, new PasswordManagerFactory());
             query.Start(new Command("psw pswpassword emapassword"));
 
-            passCryptoString = new CryptoString("pswpassword");
-            emaCryptoString = new CryptoString("emapassword");
+            cryptoAccount = new CryptoAccount("pswpassword", "emapassword");
 
-            pswManager = new PasswordManager(paths, passCryptoString, emaCryptoString);
-            token = new Token(passCryptoString, emaCryptoString, paths, autoInput);
+            pswManager = new PasswordManager(paths, cryptoAccount);
+            token = new Token(cryptoAccount, paths, autoInput);
 
             //set up default values
             SetUpDefault();

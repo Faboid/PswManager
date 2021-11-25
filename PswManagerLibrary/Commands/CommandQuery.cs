@@ -38,10 +38,7 @@ namespace PswManagerLibrary.Commands {
                 case CommandType.Psw:
                     ThrowIfWrongNumberArguments(2, arguments.Length, "With the command 'psw', it's needed to give two arguments", "[password1] [password2]");
 
-                    CryptoString passCryptoString = new CryptoString(arguments[0]);
-                    CryptoString emaCryptoString = new CryptoString(arguments[1]);
-
-                    pswManager = pswManagerFactory.CreatePasswordManager(userInput, mainPaths, passCryptoString, emaCryptoString);
+                    pswManager = pswManagerFactory.CreatePasswordManager(userInput, mainPaths, arguments[0], arguments[1]);
                     return "The new passwords have been set up successfully.";
 
                 case CommandType.Get:

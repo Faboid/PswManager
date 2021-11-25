@@ -28,8 +28,7 @@ namespace PswManagerTests.Storage.AccountBuilderTests {
 
             //act
             actual = builder.GetOne(name);
-            actual.password = TestsHelper.passCryptoString.Decrypt(actual.password);
-            actual.email = TestsHelper.emaCryptoString.Decrypt(actual.email);
+            (actual.password, actual.email) = TestsHelper.cryptoAccount.Decrypt(actual.password, actual.email);
 
             //assert
             Assert.Equal(expected, actual);

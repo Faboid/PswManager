@@ -13,16 +13,14 @@ namespace PswManagerLibrary.Storage {
     /// </summary>
     public class PasswordManager : IPasswordManager {
 
-        private readonly CryptoString passCryptoString;
-        private readonly CryptoString emaCryptoString;
+        private readonly CryptoAccount cryptoAccount;
         private readonly AccountBuilder accBuilder;
         private readonly IPaths paths;
 
-        public PasswordManager(IPaths paths, CryptoString passPassword, CryptoString emaPassword) {
+        public PasswordManager(IPaths paths, CryptoAccount cryptoAccount) {
             this.paths = paths;
             this.accBuilder = new AccountBuilder(paths);
-            this.passCryptoString = passPassword;
-            this.emaCryptoString = emaPassword;
+            this.cryptoAccount = cryptoAccount;
         }
 
         public void CreatePassword(string name, string password, string email = null) {
@@ -35,10 +33,10 @@ namespace PswManagerLibrary.Storage {
             File.AppendAllLines(paths.AccountsFilePath, new [] { name });
 
             //create new password
-            File.AppendAllLines(paths.PasswordsFilePath, new[] { passCryptoString.Encrypt(password) });
+            File.AppendAllLines(paths.PasswordsFilePath, new[] { cryptoAccount.passCryptoString.Encrypt(password) });
 
             //create new email
-            File.AppendAllLines(paths.EmailsFilePath, new[] { emaCryptoString.Encrypt(email ?? "") });
+            File.AppendAllLines(paths.EmailsFilePath, new[] { cryptoAccount.emaCryptoString.Encrypt(email ?? "") });
 
         }
 
@@ -52,8 +50,7 @@ namespace PswManagerLibrary.Storage {
             var output = accBuilder.GetOne(name);
 
             //decrypt values
-            output.password = passCryptoString.Decrypt(output.password);
-            output.email = emaCryptoString.Decrypt(output.email);
+            (output.password, output.email) = cryptoAccount.Decrypt(output.password, output.email);
 
             return String.Join(' ', new[] { output.name, output.password, output.email });
         }
@@ -93,10 +90,10 @@ namespace PswManagerLibrary.Storage {
             }
 
             if(values[passText] is not null) {
-                values[passText] = passCryptoString.Encrypt(values[passText]);
+                values[passText] = cryptoAccount.passCryptoString.Encrypt(values[passText]);
             }
             if(values[emaText] is not null) {
-                values[emaText] = emaCryptoString.Encrypt(values[emaText]);
+                values[emaText] = cryptoAccount.emaCryptoString.Encrypt(values[emaText]);
             }
 
             accBuilder.EditOne(name, values[nameText], values[passText], values[emaText]);

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace PswManagerLibrary.Factories {
     public interface IPasswordManagerFactory {
 
-        IPasswordManager CreatePasswordManager(IUserInput userInput, IPaths paths, CryptoString passCryptoString, CryptoString emaCryptoString);
+        IPasswordManager CreatePasswordManager(IUserInput userInput, IPaths paths, string passPassword, string emaPassword);
 
     }
 }

@@ -37,10 +37,10 @@ namespace PswManagerTests.Storage.AccountBuilderTests {
             //arrange
             TestsHelper.SetUpDefault();
             if(newPassword is not null) {
-                newPassword = TestsHelper.passCryptoString.Encrypt(newPassword);
+                newPassword = TestsHelper.cryptoAccount.passCryptoString.Encrypt(newPassword);
             }
             if(newEmail is not null) {
-                newEmail = TestsHelper.emaCryptoString.Encrypt(newEmail);
+                newEmail = TestsHelper.cryptoAccount.emaCryptoString.Encrypt(newEmail);
             }
 
             AccountBuilder builder = new AccountBuilder(TestsHelper.paths);
@@ -52,8 +52,7 @@ namespace PswManagerTests.Storage.AccountBuilderTests {
             //act
             builder.EditOne(name, newName, newPassword, newEmail);
             actual = builder.GetOne(newName ?? name);
-            actual.password = TestsHelper.passCryptoString.Decrypt(actual.password);
-            actual.email = TestsHelper.emaCryptoString.Decrypt(actual.email);
+            (actual.password, actual.email) = TestsHelper.cryptoAccount.Decrypt(actual.password, actual.email);
 
             //assert
             Assert.Equal(expected, actual);

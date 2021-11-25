@@ -12,16 +12,18 @@ using System.Threading.Tasks;
 namespace PswManagerLibrary.Factories {
     public class PasswordManagerFactory : IPasswordManagerFactory {
 
-        public IPasswordManager CreatePasswordManager(IUserInput userInput, IPaths paths, CryptoString passCryptoString, CryptoString emaCryptoString) {
+        public IPasswordManager CreatePasswordManager(IUserInput userInput, IPaths paths, string passPassword, string emaPassword) {
 
-            IToken token = new Token(passCryptoString, emaCryptoString, paths, userInput);
+            CryptoAccount cryptoAccount = new CryptoAccount(passPassword, emaPassword);
+
+            IToken token = new Token(cryptoAccount, paths, userInput);
 
             if(token.GetUserConfirmation(out string message) is false) {
                 //todo - set up a proper exception for this case
                 throw new InvalidCommandException($"The operation has been canceled. Reason: {message}");
             }
 
-            return new PasswordManager(paths, passCryptoString, emaCryptoString);
+            return new PasswordManager(paths, cryptoAccount);
 
         }
         

@@ -11,14 +11,12 @@ using System.Threading.Tasks;
 namespace PswManagerLibrary.Storage {
     public class Token : IToken {
 
-        readonly CryptoString passCryptoString;
-        readonly CryptoString emaCryptoString;
+        readonly CryptoAccount cryptoAccount;
         readonly IPaths paths;
         readonly IUserInput userInput;
 
-        public Token(CryptoString passCryptoString, CryptoString emaCryptoString, IPaths paths, IUserInput userInput) {
-            this.passCryptoString = passCryptoString;
-            this.emaCryptoString = emaCryptoString;
+        public Token(CryptoAccount cryptoAccount, IPaths paths, IUserInput userInput) {
+            this.cryptoAccount = cryptoAccount;
             this.paths = paths;
             this.userInput = userInput;
         }
@@ -81,7 +79,8 @@ namespace PswManagerLibrary.Storage {
 
         public void Set(string passToken, string emaToken) {
 
-            var tokens = new[] { passCryptoString.Encrypt(passToken), emaCryptoString.Encrypt(emaToken) };
+            var encrypted = cryptoAccount.Encrypt(passToken, emaToken);
+            var tokens = new[] { encrypted.encryptedPassword, encrypted.encryptedEmail };
 
             File.WriteAllLines(paths.TokenFilePath, tokens);
         }
@@ -98,7 +97,7 @@ namespace PswManagerLibrary.Storage {
             var savedToken = File.ReadAllLines(paths.TokenFilePath);
 
             //decrypt saved tokens
-            return (passCryptoString.Decrypt(savedToken[0]), emaCryptoString.Decrypt(savedToken[1]));
+            return cryptoAccount.Decrypt(savedToken[0], savedToken[1]);
         }
 
         public bool Confront(string passToken, string emaToken) {
@@ -107,13 +106,13 @@ namespace PswManagerLibrary.Storage {
             }
 
             //put the tokens in an array to facilitate comparison
-            var tokens = new[] { passToken, emaToken };
+            var tokens = ( passToken, emaToken );
 
             //get encrypted tokens
             var savedToken = File.ReadAllLines(paths.TokenFilePath);
 
             //decrypt saved tokens
-            var savedTokens = new[] { passCryptoString.Decrypt(savedToken[0]), emaCryptoString.Decrypt(savedToken[1]) };
+            var savedTokens = cryptoAccount.Decrypt(savedToken[0], savedToken[1]);
 
             //compare given and decrypted tokens
             return savedTokens == tokens;
