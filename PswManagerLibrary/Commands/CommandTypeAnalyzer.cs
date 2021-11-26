@@ -1,6 +1,7 @@
 ﻿using PswManagerLibrary.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace PswManagerLibrary.Commands {
 
@@ -9,9 +10,11 @@ namespace PswManagerLibrary.Commands {
     /// </summary>
     public static class CommandTypeAnalyzer {
 
-        private static readonly Dictionary<string, CommandType> dict = new Dictionary<string, CommandType>();
+        private static readonly IReadOnlyDictionary<string, CommandType> _dict;
 
         static CommandTypeAnalyzer() {
+
+            Dictionary<string, CommandType> dict = new Dictionary<string, CommandType>();
             
             //commands related to the main password
             dict.Add("psw", CommandType.Psw);
@@ -27,10 +30,12 @@ namespace PswManagerLibrary.Commands {
 
             //commands that consists in deleting an existing entry
             dict.Add("delete", CommandType.Delete);
+
+            _dict = new ReadOnlyDictionary<string, CommandType>(dict);
         }
 
         public static CommandType Get(string command) {
-            if(dict.TryGetValue(command, out CommandType output)) {
+            if(_dict.TryGetValue(command, out CommandType output)) {
                 return output;
             } else {
                 throw new InvalidCommandException(command, $"The command \"{command}\" is invalid.");
