@@ -7,21 +7,26 @@ using System.Threading.Tasks;
 namespace PswManagerLibrary.Cryptography {
     public class CryptoAccount {
 
-        public CryptoString passCryptoString { get; }
-        public CryptoString emaCryptoString { get; }
+        public CryptoString PassCryptoString { get; }
+        public CryptoString EmaCryptoString { get; }
 
         public CryptoAccount(string passPassword, string emaPassword) {
-            passCryptoString = new CryptoString(passPassword);
-            emaCryptoString = new CryptoString(emaPassword);
+            PassCryptoString = new CryptoString(passPassword);
+            EmaCryptoString = new CryptoString(emaPassword);
         }
 
         public (string encryptedPassword, string encryptedEmail) Encrypt(string password, string email) {
-            return (passCryptoString.Encrypt(password), emaCryptoString.Encrypt(email));
+            return (PassCryptoString.Encrypt(password), EmaCryptoString.Encrypt(email));
         }
 
         public (string decryptedPassword, string decryptedEmail) Decrypt(string encryptedPassword, string encryptedEmail) {
-            return (passCryptoString.Decrypt(encryptedPassword), emaCryptoString.Decrypt(encryptedEmail));
+            return (PassCryptoString.Decrypt(encryptedPassword), EmaCryptoString.Decrypt(encryptedEmail));
         }
 
+
+
+        public (string encryptedPassword, string encryptedEmail) Encrypt((string password, string email) values) => Encrypt(values.password, values.email);
+
+        public (string decryptedPassword, string decryptedEmail) Decrypt((string encryptedPassword, string encryptedEmail) values) => Decrypt(values.encryptedPassword, values.encryptedEmail);
     }
 }

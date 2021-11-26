@@ -15,7 +15,7 @@ namespace PswManagerTests.Storage.PasswordManagerTests {
         public void CreatePasswordSuccess() {
 
             //arrange
-            var manager = TestsHelper.pswManager;
+            var manager = TestsHelper.PswManager;
             string name = "name";
             string password = "psw";
             string email = "ema@il";

@@ -17,16 +17,15 @@ namespace PswManagerTests.Cryptography {
         public void EncryptAndDecryptCorrectly() {
 
             //arrange
-            string passValue = "hellothere";
-            string emaValue = "thsiis#[@this";
+            (string passValue, string emaValue) values = ("hellothere", "thsiis#[@this");
 
             //act
-            var encryptedValues = cryptoAccount.Encrypt(passValue, emaValue);
-            var decryptedValues = cryptoAccount.Decrypt(encryptedValues.encryptedPassword, encryptedValues.encryptedEmail);
+            var encryptedValues = cryptoAccount.Encrypt(values);
+            var decryptedValues = cryptoAccount.Decrypt(encryptedValues);
 
             //assert
             Assert.NotEqual(decryptedValues, encryptedValues);
-            Assert.Equal((passValue, emaValue), decryptedValues);
+            Assert.Equal(values, decryptedValues);
 
         }
 
@@ -34,16 +33,17 @@ namespace PswManagerTests.Cryptography {
         public void EncryptToCorrectValue() {
 
             //arrange
-            string passValue = "somerandomvalue";
-            string emaValue = "some@colmplex!!value";
-            string expectedPassValue = "EtQsQcCTtJmvYk2MBPCmOnZyhbv6EFtLgVMBfGVtlvg=";
-            string expectedEmaValue = "5VlDYV/r4pUzhwzmBp3i05Jms1zopvqyVQg+ugaa5I9XIH5KUhhych6f6zokWXRa";
+            (string passValue, string emaValue) values = ("somerandomvalue", "some@colmplex!!value");
+            (string expectedPassValue, string expectedEmaValue) expected = (
+                "EtQsQcCTtJmvYk2MBPCmOnZyhbv6EFtLgVMBfGVtlvg=", 
+                "5VlDYV/r4pUzhwzmBp3i05Jms1zopvqyVQg+ugaa5I9XIH5KUhhych6f6zokWXRa"
+                );
 
             //act
-            var encryptedValues = cryptoAccount.Encrypt(passValue, emaValue);
+            var encryptedValues = cryptoAccount.Encrypt(values);
 
             //assert
-            Assert.Equal((expectedPassValue, expectedEmaValue), encryptedValues);
+            Assert.Equal(expected, encryptedValues);
 
         }
 
@@ -51,16 +51,17 @@ namespace PswManagerTests.Cryptography {
         public void DecryptToCorrectValue() {
 
             //arrange
-            string encryptedPassValue = "EtQsQcCTtJmvYk2MBPCmOnZyhbv6EFtLgVMBfGVtlvg=";
-            string encryptedEmaValue = "5VlDYV/r4pUzhwzmBp3i05Jms1zopvqyVQg+ugaa5I9XIH5KUhhych6f6zokWXRa";
-            string expectedPassValue = "somerandomvalue";
-            string expectedEmaValue = "some@colmplex!!value";
+            (string encryptedPassValue, string encryptedEmaValue) encryptedValues = (
+                "EtQsQcCTtJmvYk2MBPCmOnZyhbv6EFtLgVMBfGVtlvg=",
+                "5VlDYV/r4pUzhwzmBp3i05Jms1zopvqyVQg+ugaa5I9XIH5KUhhych6f6zokWXRa"
+                );
+            (string expectedPassValue, string expectedEmaValue) expectedValues = ("somerandomvalue", "some@colmplex!!value");
 
             //act
-            var decryptedValues = cryptoAccount.Decrypt(encryptedPassValue, encryptedEmaValue);
+            var decryptedValues = cryptoAccount.Decrypt(encryptedValues);
 
             //assert
-            Assert.Equal((expectedPassValue, expectedEmaValue), decryptedValues);
+            Assert.Equal(expectedValues, decryptedValues);
 
         }
 

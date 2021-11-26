@@ -19,7 +19,7 @@ namespace PswManagerTests.Storage.PasswordManagerTests {
             bool exists;
 
             //act
-            exists = TestsHelper.pswManager.AccountExist(TestsHelper.defaultValues.GetValue(0, DefaultValues.TypeValue.Name));
+            exists = TestsHelper.PswManager.AccountExist(TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name));
 
             //assert
             Assert.True(exists);
@@ -34,7 +34,7 @@ namespace PswManagerTests.Storage.PasswordManagerTests {
             bool exists;
 
             //act
-            exists = TestsHelper.pswManager.AccountExist("fgghawhgri");
+            exists = TestsHelper.PswManager.AccountExist("fgghawhgri");
 
             //arrange
             Assert.False(exists);

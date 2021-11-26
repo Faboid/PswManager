@@ -16,11 +16,11 @@ namespace PswManagerTests.Storage.PasswordManagerTests {
 
             //arrange
             TestsHelper.SetUpDefault();
-            var manager = TestsHelper.pswManager;
-            string expected = TestsHelper.defaultValues.values[1];
+            var manager = TestsHelper.PswManager;
+            string expected = TestsHelper.DefaultValues.values[1];
 
             //act
-            var actual = manager.GetPassword(TestsHelper.defaultValues.GetValue(1, DefaultValues.TypeValue.Name));
+            var actual = manager.GetPassword(TestsHelper.DefaultValues.GetValue(1, DefaultValues.TypeValue.Name));
 
             //assert
             Assert.Equal(expected, actual);

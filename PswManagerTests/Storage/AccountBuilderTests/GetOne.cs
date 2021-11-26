@@ -17,18 +17,18 @@ namespace PswManagerTests.Storage.AccountBuilderTests {
 
             //arrange
             TestsHelper.SetUpDefault();
-            AccountBuilder builder = new AccountBuilder(TestsHelper.paths);
-            string name = TestsHelper.defaultValues.GetValue(1, DefaultValues.TypeValue.Name);
+            AccountBuilder builder = new AccountBuilder(TestsHelper.Paths);
+            string name = TestsHelper.DefaultValues.GetValue(1, DefaultValues.TypeValue.Name);
             (string name, string password, string email) expected = (
-                TestsHelper.defaultValues.GetValue(1, DefaultValues.TypeValue.Name),
-                TestsHelper.defaultValues.GetValue(1, DefaultValues.TypeValue.Password),
-                TestsHelper.defaultValues.GetValue(1, DefaultValues.TypeValue.Email)
+                TestsHelper.DefaultValues.GetValue(1, DefaultValues.TypeValue.Name),
+                TestsHelper.DefaultValues.GetValue(1, DefaultValues.TypeValue.Password),
+                TestsHelper.DefaultValues.GetValue(1, DefaultValues.TypeValue.Email)
                 );
             (string name, string password, string email) actual;
 
             //act
             actual = builder.GetOne(name);
-            (actual.password, actual.email) = TestsHelper.cryptoAccount.Decrypt(actual.password, actual.email);
+            (actual.password, actual.email) = TestsHelper.CryptoAccount.Decrypt(actual.password, actual.email);
 
             //assert
             Assert.Equal(expected, actual);

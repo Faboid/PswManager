@@ -17,8 +17,8 @@ namespace PswManagerTests.Storage.PasswordManagerTests {
 
             //arrange
             TestsHelper.SetUpDefault();
-            var manager = TestsHelper.pswManager;
-            string name = TestsHelper.defaultValues.GetValue(1, DefaultValues.TypeValue.Name);
+            var manager = TestsHelper.PswManager;
+            string name = TestsHelper.DefaultValues.GetValue(1, DefaultValues.TypeValue.Name);
             bool exist;
 
             //act

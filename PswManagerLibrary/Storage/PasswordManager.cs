@@ -33,10 +33,10 @@ namespace PswManagerLibrary.Storage {
             File.AppendAllLines(paths.AccountsFilePath, new [] { name });
 
             //create new password
-            File.AppendAllLines(paths.PasswordsFilePath, new[] { cryptoAccount.passCryptoString.Encrypt(password) });
+            File.AppendAllLines(paths.PasswordsFilePath, new[] { cryptoAccount.PassCryptoString.Encrypt(password) });
 
             //create new email
-            File.AppendAllLines(paths.EmailsFilePath, new[] { cryptoAccount.emaCryptoString.Encrypt(email ?? "") });
+            File.AppendAllLines(paths.EmailsFilePath, new[] { cryptoAccount.EmaCryptoString.Encrypt(email ?? "") });
 
         }
 
@@ -90,10 +90,10 @@ namespace PswManagerLibrary.Storage {
             }
 
             if(values[passText] is not null) {
-                values[passText] = cryptoAccount.passCryptoString.Encrypt(values[passText]);
+                values[passText] = cryptoAccount.PassCryptoString.Encrypt(values[passText]);
             }
             if(values[emaText] is not null) {
-                values[emaText] = cryptoAccount.emaCryptoString.Encrypt(values[emaText]);
+                values[emaText] = cryptoAccount.EmaCryptoString.Encrypt(values[emaText]);
             }
 
             accBuilder.EditOne(name, values[nameText], values[passText], values[emaText]);

@@ -12,7 +12,7 @@ namespace PswManagerTests.Storage.PasswordManagerTests {
     public class EditPassword {
 
         public static IEnumerable<object[]> UpdatePasswordSuccessData() {
-            var def = TestsHelper.defaultValues;
+            var def = TestsHelper.DefaultValues;
 
             yield return new object[] {
                 def.GetValue(1, DefaultValues.TypeValue.Name),
@@ -40,7 +40,7 @@ namespace PswManagerTests.Storage.PasswordManagerTests {
 
             //arrange
             TestsHelper.SetUpDefault();
-            var manager = TestsHelper.pswManager;
+            var manager = TestsHelper.PswManager;
             string actual;
 
             //act

@@ -17,8 +17,8 @@ namespace PswManagerTests.Storage.AccountBuilderTests {
 
             //arrange
             TestsHelper.SetUpDefault();
-            AccountBuilder builder = new AccountBuilder(TestsHelper.paths);
-            string name = TestsHelper.defaultValues.GetValue(1, DefaultValues.TypeValue.Name);
+            AccountBuilder builder = new AccountBuilder(TestsHelper.Paths);
+            string name = TestsHelper.DefaultValues.GetValue(1, DefaultValues.TypeValue.Name);
             bool exists;
 
             //act

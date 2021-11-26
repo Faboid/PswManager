@@ -11,7 +11,7 @@ namespace PswManagerTests.TestsHelpers {
     public class TestsHelperTests {
 
         public static IEnumerable<object[]> DefaultData() {
-            foreach(string s in TestsHelper.defaultValues.values) {
+            foreach(string s in TestsHelper.DefaultValues.values) {
                 var values = s.Split(' ');
                 yield return values;
             }
@@ -22,7 +22,7 @@ namespace PswManagerTests.TestsHelpers {
         public void SetUpDefaultCorrectly(string name, string password, string email) {
 
             //arrange
-            var pswManager = TestsHelper.pswManager;
+            var pswManager = TestsHelper.PswManager;
             var list = new[] { name, password, email };
 
             //act

@@ -16,33 +16,33 @@ namespace PswManagerTests.TestsHelpers {
 
         //todo - turn every static value into non-static.
 
-        public static readonly TestsPaths paths;
-        public static readonly CommandQuery query;
-        public static readonly PasswordManager pswManager;
-        public static readonly AutoInput autoInput;
-        public static readonly Token token;
-        public static readonly CryptoAccount cryptoAccount;
-        public static readonly DefaultValues defaultValues;
+        public static readonly TestsPaths Paths;
+        public static readonly CommandQuery Query;
+        public static readonly PasswordManager PswManager;
+        public static readonly AutoInput AutoInput;
+        public static readonly Token Token;
+        public static readonly CryptoAccount CryptoAccount;
+        public static readonly DefaultValues DefaultValues;
 
         static TestsHelper() {
             //get non-existing path to create a folder
-            paths = new TestsPaths();
-            Directory.CreateDirectory(paths.WorkingDirectory);
-            File.Create(paths.AccountsFilePath).Close();
-            File.Create(paths.PasswordsFilePath).Close();
-            File.Create(paths.EmailsFilePath).Close();
+            Paths = new TestsPaths();
+            Directory.CreateDirectory(Paths.WorkingDirectory);
+            File.Create(Paths.AccountsFilePath).Close();
+            File.Create(Paths.PasswordsFilePath).Close();
+            File.Create(Paths.EmailsFilePath).Close();
 
             //set the needed classes in public(or protected) class instances
-            defaultValues = new DefaultValues(5);
+            DefaultValues = new DefaultValues(5);
             
-            autoInput = new AutoInput();
-            query = new CommandQuery(paths, autoInput, new PasswordManagerFactory());
-            query.Start(new Command("psw pswpassword emapassword"));
+            AutoInput = new AutoInput();
+            Query = new CommandQuery(Paths, AutoInput, new PasswordManagerFactory());
+            Query.Start(new Command("psw pswpassword emapassword"));
 
-            cryptoAccount = new CryptoAccount("pswpassword", "emapassword");
+            CryptoAccount = new CryptoAccount("pswpassword", "emapassword");
 
-            pswManager = new PasswordManager(paths, cryptoAccount);
-            token = new Token(cryptoAccount, paths, autoInput);
+            PswManager = new PasswordManager(Paths, CryptoAccount);
+            Token = new Token(CryptoAccount, Paths, AutoInput);
 
             //set up default values
             SetUpDefault();
@@ -50,22 +50,22 @@ namespace PswManagerTests.TestsHelpers {
 
         public static void SetUpDefault() {
             //resets files to empty
-            File.WriteAllText(paths.AccountsFilePath, "");
-            File.WriteAllText(paths.PasswordsFilePath, "");
-            File.WriteAllText(paths.EmailsFilePath, "");
+            File.WriteAllText(Paths.AccountsFilePath, "");
+            File.WriteAllText(Paths.PasswordsFilePath, "");
+            File.WriteAllText(Paths.EmailsFilePath, "");
             
             //creates three default entries
-            foreach(string value in defaultValues.values) {
-                query.Start($"create {value}");
+            foreach(string value in DefaultValues.values) {
+                Query.Start($"create {value}");
             }
 
-            autoInput.SetDefault();
+            AutoInput.SetDefault();
         }
 
         public void Dispose() {
 
             //delete the created folder and all its contents
-            Directory.Delete(paths.WorkingDirectory, true);
+            Directory.Delete(Paths.WorkingDirectory, true);
 
         }
 

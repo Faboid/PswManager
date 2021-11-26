@@ -13,7 +13,7 @@ namespace PswManagerTests.Storage.AccountBuilderTests {
     public class EditOne {
 
         public static IEnumerable<object[]> EditOneCorrectlyData() {
-            var def = TestsHelper.defaultValues;
+            var def = TestsHelper.DefaultValues;
 
             yield return new string[] {
                 def.GetValue(1, DefaultValues.TypeValue.Name), "newName1", "newPassword1", "newEmail1",
@@ -37,13 +37,13 @@ namespace PswManagerTests.Storage.AccountBuilderTests {
             //arrange
             TestsHelper.SetUpDefault();
             if(newPassword is not null) {
-                newPassword = TestsHelper.cryptoAccount.passCryptoString.Encrypt(newPassword);
+                newPassword = TestsHelper.CryptoAccount.PassCryptoString.Encrypt(newPassword);
             }
             if(newEmail is not null) {
-                newEmail = TestsHelper.cryptoAccount.emaCryptoString.Encrypt(newEmail);
+                newEmail = TestsHelper.CryptoAccount.EmaCryptoString.Encrypt(newEmail);
             }
 
-            AccountBuilder builder = new AccountBuilder(TestsHelper.paths);
+            AccountBuilder builder = new AccountBuilder(TestsHelper.Paths);
 
             var splitstrings = expectedstring.Split(' ');
             (string name, string password, string email) expected = (splitstrings[0], splitstrings[1], splitstrings[2]);
@@ -52,7 +52,7 @@ namespace PswManagerTests.Storage.AccountBuilderTests {
             //act
             builder.EditOne(name, newName, newPassword, newEmail);
             actual = builder.GetOne(newName ?? name);
-            (actual.password, actual.email) = TestsHelper.cryptoAccount.Decrypt(actual.password, actual.email);
+            (actual.password, actual.email) = TestsHelper.CryptoAccount.Decrypt(actual.password, actual.email);
 
             //assert
             Assert.Equal(expected, actual);

@@ -17,12 +17,12 @@ namespace PswManagerTests.Storage.AccountBuilderTests {
 
             //arrange
             TestsHelper.SetUpDefault();
-            AccountBuilder builder = new AccountBuilder(TestsHelper.paths);
+            AccountBuilder builder = new AccountBuilder(TestsHelper.Paths);
             int? actual;
             int expected = 2;
 
             //act
-            actual = builder.Search(TestsHelper.defaultValues.GetValue(2, DefaultValues.TypeValue.Name));
+            actual = builder.Search(TestsHelper.DefaultValues.GetValue(2, DefaultValues.TypeValue.Name));
 
             //assert
             Assert.Equal(expected, actual);
@@ -33,7 +33,7 @@ namespace PswManagerTests.Storage.AccountBuilderTests {
         public void SearchInexistentGetNull() {
 
             //arrange
-            AccountBuilder builder = new AccountBuilder(TestsHelper.paths);
+            AccountBuilder builder = new AccountBuilder(TestsHelper.Paths);
             int? actual;
             int? expected = null;
 

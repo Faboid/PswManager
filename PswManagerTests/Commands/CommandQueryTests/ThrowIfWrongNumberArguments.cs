@@ -19,7 +19,7 @@ namespace PswManagerTests.Commands.CommandQueryTests {
 
         public ThrowIfWrongNumberArguments() {
 
-            query = new CommandQuery(TestsHelper.paths, TestsHelper.autoInput, new EmptyPasswordManagerFactory());
+            query = new CommandQuery(TestsHelper.Paths, TestsHelper.AutoInput, new EmptyPasswordManagerFactory());
             query.Start(new Command("psw pswpassword emapassword"));
         }
     
