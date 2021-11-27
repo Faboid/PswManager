@@ -36,7 +36,7 @@ namespace PswManagerTests.TestsHelpers {
             DefaultValues = new DefaultValues(5);
             
             AutoInput = new AutoInput();
-            Query = new CommandQuery(Paths, AutoInput, new PasswordManagerFactory());
+            Query = new CommandQuery(Paths, AutoInput, new PasswordManagerFactory(new CryptoAccountFactory()));
             Query.Start(new Command("psw pswpassword emapassword"));
 
             CryptoAccount = new CryptoAccount("pswpassword", "emapassword");

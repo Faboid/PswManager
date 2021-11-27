@@ -12,9 +12,15 @@ using System.Threading.Tasks;
 namespace PswManagerLibrary.Factories {
     public class PasswordManagerFactory : IPasswordManagerFactory {
 
+        private ICryptoAccountFactory cryptoAccountFactory;
+
+        public PasswordManagerFactory(ICryptoAccountFactory cryptoAccountFactory) {
+            this.cryptoAccountFactory = cryptoAccountFactory;
+        }
+
         public IPasswordManager CreatePasswordManager(IUserInput userInput, IPaths paths, string passPassword, string emaPassword) {
 
-            CryptoAccount cryptoAccount = new CryptoAccount(passPassword, emaPassword);
+            ICryptoAccount cryptoAccount = cryptoAccountFactory.CreateCryptoAccount(passPassword, emaPassword);
 
             IToken token = new Token(cryptoAccount, paths, userInput);
 

@@ -13,11 +13,11 @@ namespace PswManagerLibrary.Storage {
     /// </summary>
     public class PasswordManager : IPasswordManager {
 
-        private readonly CryptoAccount cryptoAccount;
-        private readonly AccountBuilder accBuilder;
+        private readonly ICryptoAccount cryptoAccount;
         private readonly IPaths paths;
+        private readonly AccountBuilder accBuilder;
 
-        public PasswordManager(IPaths paths, CryptoAccount cryptoAccount) {
+        public PasswordManager(IPaths paths, ICryptoAccount cryptoAccount) {
             this.paths = paths;
             this.accBuilder = new AccountBuilder(paths);
             this.cryptoAccount = cryptoAccount;
@@ -33,10 +33,10 @@ namespace PswManagerLibrary.Storage {
             File.AppendAllLines(paths.AccountsFilePath, new [] { name });
 
             //create new password
-            File.AppendAllLines(paths.PasswordsFilePath, new[] { cryptoAccount.PassCryptoString.Encrypt(password) });
+            File.AppendAllLines(paths.PasswordsFilePath, new[] { cryptoAccount.GetPassCryptoString().Encrypt(password) });
 
             //create new email
-            File.AppendAllLines(paths.EmailsFilePath, new[] { cryptoAccount.EmaCryptoString.Encrypt(email ?? "") });
+            File.AppendAllLines(paths.EmailsFilePath, new[] { cryptoAccount.GetEmaCryptoString().Encrypt(email ?? "") });
 
         }
 
@@ -90,10 +90,10 @@ namespace PswManagerLibrary.Storage {
             }
 
             if(values[passText] is not null) {
-                values[passText] = cryptoAccount.PassCryptoString.Encrypt(values[passText]);
+                values[passText] = cryptoAccount.GetPassCryptoString().Encrypt(values[passText]);
             }
             if(values[emaText] is not null) {
-                values[emaText] = cryptoAccount.EmaCryptoString.Encrypt(values[emaText]);
+                values[emaText] = cryptoAccount.GetEmaCryptoString().Encrypt(values[emaText]);
             }
 
             accBuilder.EditOne(name, values[nameText], values[passText], values[emaText]);

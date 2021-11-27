@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 namespace PswManagerLibrary.Storage {
     public class Token : IToken {
 
-        readonly CryptoAccount cryptoAccount;
+        readonly ICryptoAccount cryptoAccount;
         readonly IPaths paths;
         readonly IUserInput userInput;
 
-        public Token(CryptoAccount cryptoAccount, IPaths paths, IUserInput userInput) {
+        public Token(ICryptoAccount cryptoAccount, IPaths paths, IUserInput userInput) {
             this.cryptoAccount = cryptoAccount;
             this.paths = paths;
             this.userInput = userInput;
