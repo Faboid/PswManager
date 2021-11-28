@@ -1,4 +1,5 @@
-﻿using PswManagerTests.TestsHelpers;
+﻿using PswManagerLibrary.Exceptions;
+using PswManagerTests.TestsHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,28 @@ namespace PswManagerTests.Storage.PasswordManagerTests {
 
             //assert
             Assert.True(manager.AccountExist(name));
+
+        }
+
+        [Fact]
+        public void CreatePasswordFailure_NameExists() {
+
+            //arrange
+            var manager = TestsHelper.PswManager;
+            string name = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            string password = "somepass";
+            string email = "someemail";
+            bool exists;
+            string errorMessage = "The account you're trying to create exists already.";
+
+            //act
+            var exception = Record.Exception(() => manager.CreatePassword(name, password, email));
+            exists = manager.AccountExist(name);
+
+            //assert
+            Assert.True(exists);
+            Assert.IsType<InvalidCommandException>(exception);
+            Assert.Equal(errorMessage, exception.Message);
 
         }
 
