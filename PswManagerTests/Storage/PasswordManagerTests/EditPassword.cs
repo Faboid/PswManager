@@ -1,4 +1,5 @@
-﻿using PswManagerTests.TestsHelpers;
+﻿using PswManagerLibrary.Exceptions;
+using PswManagerTests.TestsHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,6 +50,31 @@ namespace PswManagerTests.Storage.PasswordManagerTests {
 
             //assert
             Assert.Equal(expected, actual);
+
+        }
+
+        [Fact]
+        public void UpdatePasswordFailure_NameDontExist() {
+
+            //arrange
+            TestsHelper.SetUpDefault();
+            var manager = TestsHelper.PswManager;
+            string name = "ThisnameDoesn'tExist";
+            string[] arguments = new[] {
+                "name:somerandomName", "password:heyhey"
+            };
+
+            bool exists;
+            string errorMessage = "The given account doesn't exist.";
+
+            //act
+            var exception = Record.Exception(() => manager.EditPassword(name, arguments));
+            exists = manager.AccountExist(name);
+
+            //assert
+            Assert.False(exists);
+            Assert.IsType<InvalidCommandException>(exception);
+            Assert.Equal(errorMessage, exception.Message);
 
         }
 
