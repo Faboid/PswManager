@@ -27,7 +27,7 @@ namespace PswManagerTests.Storage.PasswordManagerTests {
 
             //assert
             Assert.True(exist);
-            Assert.Throws<InvalidCommandException>(() => manager.GetPassword(name));
+            Assert.Throws<InexistentAccountException>(() => manager.GetPassword(name));
 
         }
 

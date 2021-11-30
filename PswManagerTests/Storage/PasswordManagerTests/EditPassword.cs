@@ -73,7 +73,7 @@ namespace PswManagerTests.Storage.PasswordManagerTests {
 
             //assert
             Assert.False(exists);
-            Assert.IsType<InvalidCommandException>(exception);
+            Assert.IsType<InexistentAccountException>(exception);
             Assert.Equal(errorMessage, exception.Message);
 
         }

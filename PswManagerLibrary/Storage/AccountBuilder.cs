@@ -51,14 +51,14 @@ namespace PswManagerLibrary.Storage {
 
         public (string name, string password, string email) GetOne(string name) {
 
-            int position = Search(name) ?? throw new InvalidCommandException("The given account doesn't exist.");
+            int position = Search(name) ?? throw new InexistentAccountException("The given account doesn't exist.");
 
             return GetOne(position);
         }
 
         public void EditOne(string name, string newName, string newPassword, string newEmail) {
             EditOne(
-                Search(name) ?? throw new InvalidCommandException("The given account doesn't exist."), 
+                Search(name) ?? throw new InexistentAccountException("The given account doesn't exist."), 
                 newName, newPassword, newEmail
                 );
         }
@@ -81,7 +81,7 @@ namespace PswManagerLibrary.Storage {
         }
 
         public void DeleteOne(string name) {
-            DeleteOne(Search(name) ?? throw new InvalidCommandException("The given account doesn't exist."));
+            DeleteOne(Search(name) ?? throw new InexistentAccountException("The given account doesn't exist."));
         }
 
         private void DeleteOne(int position) {

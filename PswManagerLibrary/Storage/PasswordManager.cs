@@ -1,5 +1,6 @@
 ﻿using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.Exceptions;
+using PswManagerLibrary.Generic;
 using PswManagerLibrary.Global;
 using System;
 using System.Collections.Generic;
@@ -25,9 +26,7 @@ namespace PswManagerLibrary.Storage {
 
         public void CreatePassword(string name, string password, string email = null) {
 
-            if(AccountExist(name)) {
-                throw new InvalidCommandException("The account you're trying to create exists already.");
-            }
+            AccountExist(name).IfTrueThrow(new InvalidCommandException("The account you're trying to create exists already."));
 
             //create new account
             File.AppendAllLines(paths.AccountsFilePath, new [] { name });
@@ -41,10 +40,8 @@ namespace PswManagerLibrary.Storage {
         }
 
         public string GetPassword(string name) {
-            
-            if(AccountExist(name) is false) {
-                throw new InvalidCommandException("The given account doesn't exist.");
-            }
+
+            AccountExist(name).IfFalseThrow(new InexistentAccountException("The given account doesn't exist."));
 
             //get values
             var output = accBuilder.GetOne(name);
