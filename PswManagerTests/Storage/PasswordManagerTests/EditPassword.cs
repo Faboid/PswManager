@@ -37,7 +37,7 @@ namespace PswManagerTests.Storage.PasswordManagerTests {
 
         [Theory]
         [MemberData(nameof(UpdatePasswordSuccessData))]
-        public void UpdatePasswordSuccess(string name, string newName, string[] args, string expected) {
+        public void EditSuccess(string name, string newName, string[] args, string expected) {
 
             //arrange
             TestsHelper.SetUpDefault();
@@ -54,7 +54,7 @@ namespace PswManagerTests.Storage.PasswordManagerTests {
         }
 
         [Fact]
-        public void UpdatePasswordFailure_NameDontExist() {
+        public void EditFailure_NameDontExist() {
 
             //arrange
             TestsHelper.SetUpDefault();
@@ -75,6 +75,57 @@ namespace PswManagerTests.Storage.PasswordManagerTests {
             Assert.False(exists);
             Assert.IsType<InexistentAccountException>(exception);
             Assert.Equal(errorMessage, exception.Message);
+
+        }
+
+        [Fact]
+        public void EditFailure_WrongFormat() {
+
+            //arrange
+            TestsHelper.SetUpDefault();
+            var manager = TestsHelper.PswManager;
+            string name = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            string[] args = new[] {
+                "name:value:wrongformat", "password:correctFormat"
+            };
+
+            //act
+
+            //assert
+            Assert.Throws<InvalidCommandFormatException>(() => manager.EditPassword(name, args));
+        }
+
+        [Fact]
+        public void EditFailure_InexistantParameterKey() {
+
+            //arrange
+            TestsHelper.SetUpDefault();
+            var manager = TestsHelper.PswManager;
+            string name = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            string[] args = new[] {
+                "name:value", "password:correctFormat", "fakeKey:whatisthis"
+            };
+
+            //act
+
+            //assert
+            Assert.Throws<InvalidCommandException>(() => manager.EditPassword(name, args));
+
+        }
+
+        [Fact]
+        public void EditFailure_LackOfParameters() {
+
+            //arrange
+            TestsHelper.SetUpDefault();
+            var manager = TestsHelper.PswManager;
+            string name = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            string[] args = Array.Empty<string>();
+
+            //act
+
+            //assert
+            Assert.Throws<InvalidCommandException>(() => manager.EditPassword(name, args));
 
         }
 
