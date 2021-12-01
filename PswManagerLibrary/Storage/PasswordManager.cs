@@ -26,7 +26,7 @@ namespace PswManagerLibrary.Storage {
 
         public void CreatePassword(string name, string password, string email = null) {
 
-            AccountExist(name).IfTrueThrow(new InvalidCommandException("The account you're trying to create exists already."));
+            AccountExist(name).IfTrueThrow(new AccountExistsAlreadyException("The account you're trying to create exists already."));
 
             //create new account
             File.AppendAllLines(paths.AccountsFilePath, new [] { name });
@@ -57,6 +57,9 @@ namespace PswManagerLibrary.Storage {
             const string passText = "password";
             const string emaText = "email";
 
+            AccountExist(name).IfFalseThrow(new InexistentAccountException("The given account doesn't exist."));
+            (arguments.Length is 0).IfTrueThrow(new InvalidCommandException("Lack of valid arguments for the editing process. Please rewrite the command with valid arguments."));
+
             //generate a dictionary with all the possible values
             Dictionary<string, string> values = new Dictionary<string, string>();
             values.Add(nameText, null);
@@ -69,7 +72,7 @@ namespace PswManagerLibrary.Storage {
             //for every pair, try to insert the value into the dictionary
             foreach(string[] args in splitArgs) {
                 if(args.Length != 2) {
-                    throw new InvalidCommandException("Invalid format for editing values. The correct argument format is: [key:newValue]. Possible keys: name, password, email.");
+                    throw new InvalidCommandFormatException("Invalid format for editing values. The correct argument format is: [key:newValue]. Possible keys: name, password, email.");
                 }
 
                 if(values.ContainsKey(args[0])) {
