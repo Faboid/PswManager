@@ -1,4 +1,5 @@
 ﻿using PswManagerLibrary.Exceptions;
+using PswManagerLibrary.Generic;
 using PswManagerLibrary.Global;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,20 @@ namespace PswManagerLibrary.Storage {
 
         public AccountBuilder(IPaths paths) {
             this.paths = paths;
+        }
+
+        //todo - turn this function into part of the constructor to set up an instance variable
+        //(note: this is a possible future optimization. It's not necessary yet)
+        public int CurrentLength() {
+            int length = 0;
+
+            using(StreamReader reader = new StreamReader(paths.AccountsFilePath)) {
+                while(reader.ReadLine() != null) {
+                    length++;
+                }
+            }
+
+            return length;
         }
 
         /// <summary>
@@ -41,6 +56,7 @@ namespace PswManagerLibrary.Storage {
         }
 
         public (string name, string password, string email) GetOne(int position) {
+            (position < 0 || position > CurrentLength()).IfTrueThrow(new InexistentAccountException("The given number is out of range."));
 
             string name = File.ReadAllLines(paths.AccountsFilePath).Skip(position).Take(1).First();
             string password = File.ReadAllLines(paths.PasswordsFilePath).Skip(position).Take(1).First();
@@ -64,6 +80,7 @@ namespace PswManagerLibrary.Storage {
         }
 
         public void EditOne(int position, string newName, string newPassword, string newEmail) {
+            (position < 0 || position > CurrentLength()).IfTrueThrow(new InexistentAccountException("The given number is out of range."));
 
             EditValue(paths.AccountsFilePath, position, newName);
             EditValue(paths.PasswordsFilePath, position, newPassword);
