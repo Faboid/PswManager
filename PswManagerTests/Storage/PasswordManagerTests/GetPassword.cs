@@ -1,4 +1,5 @@
-﻿using PswManagerTests.TestsHelpers;
+﻿using PswManagerLibrary.Exceptions;
+using PswManagerTests.TestsHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace PswManagerTests.Storage.PasswordManagerTests {
     public class GetPassword {
 
         [Fact]
-        public void GetPasswordSuccess() {
+        public void GetSuccess() {
 
             //arrange
             TestsHelper.SetUpDefault();
@@ -24,6 +25,21 @@ namespace PswManagerTests.Storage.PasswordManagerTests {
 
             //assert
             Assert.Equal(expected, actual);
+
+        }
+
+        [Fact]
+        public void GetFailure_NameInexistent() {
+
+            //arrange
+            TestsHelper.SetUpDefault();
+            var manager = TestsHelper.PswManager;
+            string fakeName = "randomInexistentName";
+
+            //act
+
+            //assert
+            Assert.Throws<InexistentAccountException>(() => manager.GetPassword(fakeName));
 
         }
 

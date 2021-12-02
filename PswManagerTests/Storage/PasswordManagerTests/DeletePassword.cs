@@ -31,5 +31,20 @@ namespace PswManagerTests.Storage.PasswordManagerTests {
 
         }
 
+        [Fact]
+        public void DeleteFailure_NameInexistent() {
+
+            //arrange
+            TestsHelper.SetUpDefault();
+            var manager = TestsHelper.PswManager;
+            string fakeName = "randomInexistentName";
+
+            //act
+
+            //assert
+            Assert.Throws<InexistentAccountException>(() => manager.DeletePassword(fakeName));
+
+        }
+
     }
 }

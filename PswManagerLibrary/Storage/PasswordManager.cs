@@ -100,6 +100,8 @@ namespace PswManagerLibrary.Storage {
         }
 
         public void DeletePassword(string name) {
+            AccountExist(name).IfFalseThrow(new InexistentAccountException("The given account doesn't exist."));
+
             accBuilder.DeleteOne(name);
 
         }
