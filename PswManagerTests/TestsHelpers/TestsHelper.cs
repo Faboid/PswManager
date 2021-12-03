@@ -23,6 +23,8 @@ namespace PswManagerTests.TestsHelpers {
         public static readonly Token Token;
         public static readonly CryptoAccount CryptoAccount;
         public static readonly DefaultValues DefaultValues;
+        public const string pswPassword = "pswpassword";
+        public const string emaPassword = "emapassword";
 
         static TestsHelper() {
             //get non-existing path to create a folder
@@ -37,9 +39,9 @@ namespace PswManagerTests.TestsHelpers {
             
             AutoInput = new AutoInput();
             Query = new CommandQuery(Paths, AutoInput, new PasswordManagerFactory(new CryptoAccountFactory()));
-            Query.Start(new Command("psw pswpassword emapassword"));
+            Query.Start(new Command($"psw {pswPassword} {emaPassword}"));
 
-            CryptoAccount = new CryptoAccount("pswpassword", "emapassword");
+            CryptoAccount = new CryptoAccount(pswPassword, emaPassword);
 
             PswManager = new PasswordManager(Paths, CryptoAccount);
             Token = new Token(CryptoAccount, Paths, AutoInput);

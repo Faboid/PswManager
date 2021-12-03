@@ -49,8 +49,10 @@ namespace PswManagerLibrary.Cryptography {
         private Aes GetAes() {
             Aes aes = Aes.Create();
             Rfc2898DeriveBytes rfc = new Rfc2898DeriveBytes(key, salt);
+            //aes.Padding = PaddingMode.None;
             aes.Key = rfc.GetBytes(32);
             aes.IV = rfc.GetBytes(16);
+            aes.Padding = PaddingMode.PKCS7;
 
             return aes;
         }
