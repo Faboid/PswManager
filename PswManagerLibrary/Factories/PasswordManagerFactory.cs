@@ -25,8 +25,7 @@ namespace PswManagerLibrary.Factories {
             IToken token = new Token(cryptoAccount, paths, userInput);
 
             if(token.GetUserConfirmation(out string message) is false) {
-                //todo - set up a proper exception for this case
-                throw new InvalidCommandException($"The operation has been canceled. Reason: {message}");
+                throw new CanceledCommandException($"The operation has been canceled. Reason: {message}");
             }
 
             return new PasswordManager(paths, cryptoAccount);

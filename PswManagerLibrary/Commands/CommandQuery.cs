@@ -79,13 +79,13 @@ namespace PswManagerLibrary.Commands {
 
         private void ThrowIfWrongNumberArguments(int expected, int actual, string message, string format) {
             if(expected != actual) {
-                throw new InvalidCommandException($"Invalid number of arguments.{Environment.NewLine}{message}{Environment.NewLine}{format}");
+                throw new CommandArgumentsOutOfRangeException($"Invalid number of arguments.{Environment.NewLine}{message}{Environment.NewLine}{format}");
             }
         }
 
         private void ThrowIfArgumentsOutOfRange(int min, int max, int actual, string message, string format) {
             if(min > actual || actual > max) {
-                throw new InvalidCommandException($"Number of arguments out of range.{Environment.NewLine}{message}{Environment.NewLine}{format}");
+                throw new CommandArgumentsOutOfRangeException($"Number of arguments out of range.{Environment.NewLine}{message}{Environment.NewLine}{format}");
             }
         }
 

@@ -33,7 +33,7 @@ namespace PswManagerTests.Commands.CommandQueryTests {
         public void Throw_IncorrectArgumentsNumber(string command) {
 
             //assert
-            Assert.Throws<InvalidCommandException>(() => query.Start(command));
+            Assert.Throws<CommandArgumentsOutOfRangeException>(() => query.Start(command));
 
         }
 
