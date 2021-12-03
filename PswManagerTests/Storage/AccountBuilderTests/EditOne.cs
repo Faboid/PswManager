@@ -1,4 +1,5 @@
-﻿using PswManagerLibrary.Storage;
+﻿using PswManagerLibrary.Exceptions;
+using PswManagerLibrary.Storage;
 using PswManagerTests.TestsHelpers;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,7 @@ namespace PswManagerTests.Storage.AccountBuilderTests {
 
         [Theory]
         [MemberData(nameof(EditOneCorrectlyData))]
-        public void EditOneCorrectly(string name, string newName, string newPassword, string newEmail, (string expName, string expPass, string expEma) expected) {
+        public void EditOneCorrectly_WithName(string name, string newName, string newPassword, string newEmail, (string expName, string expPass, string expEma) expected) {
 
             //arrange
             TestsHelper.SetUpDefault();
@@ -39,19 +40,63 @@ namespace PswManagerTests.Storage.AccountBuilderTests {
             AccountBuilder builder = new AccountBuilder(TestsHelper.Paths);
 
             //act
-            var actual = GenericAct(builder, name, newName, newPassword, newEmail);
+            builder.EditOne(name, newName, newPassword, newEmail);
+            var actual = builder.GetOne(newName ?? name);
+            actual = Decrypt(actual);
 
             //assert
             Assert.Equal(expected, actual);
 
         }
 
-        private static (string name, string password, string email) GenericAct(AccountBuilder builder, string name, string newName, string newPassword, string newEmail) {
-            builder.EditOne(name, newName, newPassword, newEmail);
-            var output = builder.GetOne(newName ?? name);
-            (output.password, output.email) = TestsHelper.CryptoAccount.Decrypt(output.password, output.email);
+        [Theory]
+        [MemberData(nameof(EditOneCorrectlyData))]
+        public void EditOneCorrectly_WithPosition(string name, string newName, string newPassword, string newEmail, (string expName, string expPass, string expEma) expected) {
 
-            return output;
+            //arrange
+            TestsHelper.SetUpDefault();
+            (newPassword, newEmail) = Encrypt(newPassword, newEmail);
+            AccountBuilder builder = new AccountBuilder(TestsHelper.Paths);
+            int position = builder.Search(name) ?? throw new InexistentAccountException("error in provided test values");
+
+            //act
+            builder.EditOne(position, newName, newPassword, newEmail);
+            var actual = builder.GetOne(position);
+            actual = Decrypt(actual);
+
+            //assert
+            Assert.Equal(expected, actual);
+
+        }
+
+        [Fact]
+        public void EditOneFailure_InexistentName() {
+
+            //arrange
+            AccountBuilder builder = new AccountBuilder(TestsHelper.Paths);
+            string inexistantName = "erighty";
+            string arg = "empty";
+
+            //act
+
+            //assert
+            Assert.Throws<InexistentAccountException>(() => builder.EditOne(inexistantName, arg, arg, arg));
+
+        }
+
+        [Fact]
+        public void EditOneFailure_InexistentPosition() {
+
+            //arrange
+            AccountBuilder builder = new AccountBuilder(TestsHelper.Paths);
+            int inexistentPos = 100;
+            string arg = "empty";
+
+            //act
+
+            //assert
+            Assert.Throws<InexistentAccountException>(() => builder.EditOne(inexistentPos, arg, arg, arg));
+
         }
 
         private static (string password, string email) Encrypt(string pass, string ema) {
@@ -63,6 +108,17 @@ namespace PswManagerTests.Storage.AccountBuilderTests {
             }
 
             return (pass, ema);
+        }
+
+        private static (string name, string password, string email) Decrypt((string name, string pass, string ema) values) {
+            if(values.pass is not null) {
+                values.pass = TestsHelper.CryptoAccount.PassCryptoString.Decrypt(values.pass);
+            }
+            if(values.ema is not null) {
+                values.ema = TestsHelper.CryptoAccount.EmaCryptoString.Decrypt(values.ema);
+            }
+
+            return values;
         }
 
     }

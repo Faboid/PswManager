@@ -1,4 +1,5 @@
-﻿using PswManagerLibrary.Storage;
+﻿using PswManagerLibrary.Exceptions;
+using PswManagerLibrary.Storage;
 using PswManagerTests.TestsHelpers;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,24 @@ namespace PswManagerTests.Storage.AccountBuilderTests {
             //assert
             Assert.True(exists);
             Assert.Null(builder.Search(name));
+
+        }
+
+        [Fact]
+        public void DeleteFailure_NonExistentName() {
+
+            //arrange
+            TestsHelper.SetUpDefault();
+            AccountBuilder builder = new AccountBuilder(TestsHelper.Paths);
+            string name = "randomInexistentName";
+            bool exists;
+
+            //act
+            exists = builder.Search(name) is not null;
+
+            //assert
+            Assert.False(exists);
+            Assert.Throws<InexistentAccountException>(() => builder.DeleteOne(name));
 
         }
 
