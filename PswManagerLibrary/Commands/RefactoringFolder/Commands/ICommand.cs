@@ -8,19 +8,12 @@ namespace PswManagerLibrary.Commands.RefactoringFolder.Commands {
     public interface ICommand {
 
 #nullable enable
-        (string message, string? value) Run();
+        (string message, string? value) Run(string[] arguments);
 
-        (bool success, string? errorMessage) Validate();
+        (bool success, string? errorMessage) Validate(string[] arguments);
 #nullable disable
 
-        /// <summary>
-        /// Sets up the arguments to execute the command.
-        /// </summary>
-        /// <param name="arguments"></param>
-        /// <returns>An instance of itself.</returns>
-        void SetUp(string[] arguments);
-
-        void Clear();
+        string GetSyntax();
 
     }
 }

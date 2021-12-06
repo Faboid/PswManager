@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PswManagerLibrary.Exceptions;
+using PswManagerLibrary.Generic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,26 +9,22 @@ using System.Threading.Tasks;
 namespace PswManagerLibrary.Commands.RefactoringFolder.Commands {
     public abstract class BaseCommand : ICommand {
 
-        protected string[] cachedArguments;
-        protected bool isValidated;
+        protected abstract (string message, string value) RunLogic(string[] arguments);
+        protected abstract (bool success, string errorMessage) RunValidation(string[] arguments);
 
-        public abstract (string message, string value) Run();
-        public abstract (bool success, string errorMessage) RunValidation();
+        public (string message, string value) Run(string[] arguments) {
+            var result = Validate(arguments);
+            result.success.IfFalseThrow(new InvalidCommandException(result.errorMessage));
 
-        public (bool success, string errorMessage) Validate() {
-            string errorMessage;
-            (isValidated, errorMessage) = RunValidation();
+            return RunLogic(arguments);
+        }
+
+        public (bool success, string errorMessage) Validate(string[] arguments) {
+            var(isValidated, errorMessage) = RunValidation(arguments);
             return (isValidated, errorMessage);
         }
 
-        public void SetUp(string[] arguments) {
-            cachedArguments = arguments;
-            isValidated = false;
-        }
+        public abstract string GetSyntax();
 
-        public void Clear() {
-            cachedArguments = null;
-            isValidated = false;
-        }
     }
 }

@@ -26,22 +26,8 @@ namespace PswManagerLibrary.Commands.RefactoringFolder {
             var args = query.Skip(1).ToArray();
 
             try {
-                commands[cmmType].SetUp(args);
-                
-                var (isValid, errorMessage) = commands[cmmType].Validate();
-                
-                if(isValid == false) {
-                    if(errorMessage is not null) {
-                        return (errorMessage, null);
-                    } else {
-                        return ("Failed the validation of the command for an unknown reason.", null);
-                    }
-                }
 
-                var output = commands[cmmType].Run();
-                commands[cmmType].Clear();
-
-                return output;
+                return commands[cmmType].Run(args);
 
             } catch(InvalidCommandException ex) {
                 return (ex.Message, null);
