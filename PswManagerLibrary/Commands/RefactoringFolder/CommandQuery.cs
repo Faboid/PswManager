@@ -14,7 +14,7 @@ namespace PswManagerLibrary.Commands.RefactoringFolder {
 
         public CommandQuery() {
             Dictionary<string, ICommand> temp = new();
-            temp.Add("add", new CreateAccountCommand());
+            temp.Add("add", new AddCommand());
 
             commands = new ReadOnlyDictionary<string, ICommand>(temp);
         }
@@ -30,7 +30,11 @@ namespace PswManagerLibrary.Commands.RefactoringFolder {
                 return commands[cmmType].Run(args);
 
             } catch(InvalidCommandException ex) {
+                //todo - implement a string interpolation that shows both message and correct syntax
                 return (ex.Message, null);
+            } catch(KeyNotFoundException) {
+
+                return ("The given command doesn't exist. For a list of commands, write \"help\".", null);
             }
         }
 #nullable disable

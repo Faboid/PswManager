@@ -10,7 +10,7 @@ namespace PswManagerLibrary.Commands.RefactoringFolder.Commands {
 #nullable enable
         (string message, string? value) Run(string[] arguments);
 
-        (bool success, string? errorMessage) Validate(string[] arguments);
+        (bool success, IEnumerable<string> errorMessages) Validate(string[] arguments);
 #nullable disable
 
         string GetSyntax();

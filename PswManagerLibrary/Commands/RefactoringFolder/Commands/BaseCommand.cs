@@ -1,4 +1,5 @@
-﻿using PswManagerLibrary.Exceptions;
+﻿using PswManagerLibrary.Commands.RefactoringFolder.Commands.Validation;
+using PswManagerLibrary.Exceptions;
 using PswManagerLibrary.Generic;
 using System;
 using System.Collections.Generic;
@@ -8,22 +9,34 @@ using System.Threading.Tasks;
 
 namespace PswManagerLibrary.Commands.RefactoringFolder.Commands {
     public abstract class BaseCommand : ICommand {
-
-        protected abstract (string message, string value) RunLogic(string[] arguments);
-        protected abstract (bool success, string errorMessage) RunValidation(string[] arguments);
+        protected abstract IReadOnlyList<ConditionValidator> GetConditions();
 
         public (string message, string value) Run(string[] arguments) {
-            var result = Validate(arguments);
-            result.success.IfFalseThrow(new InvalidCommandException(result.errorMessage));
+            var (success, errorMessages) = Validate(arguments);
+            success.IfFalseThrow(new InvalidCommandException(FormatErrors(errorMessages)));
 
             return RunLogic(arguments);
         }
 
-        public (bool success, string errorMessage) Validate(string[] arguments) {
-            var(isValidated, errorMessage) = RunValidation(arguments);
-            return (isValidated, errorMessage);
+        public (bool success, IEnumerable<string> errorMessages) Validate(string[] arguments) {
+            var errorMessages = GetConditions().Where(x => x.Validate(arguments)).Select(x => x.ErrorMessage);
+            ExtraValidation(arguments);
+            return (errorMessages.Any() == false, errorMessages);
         }
 
+        private string FormatErrors(IEnumerable<string> errors) {
+            StringBuilder sb = new();
+            errors.ForEach(x => sb.AppendLine(x));
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// In case there is the need to validate something that can't fit in <see cref="GetConditions()"/>, this method can be overridden to add such checks.
+        /// </summary>
+        /// <param name="arguments"></param>
+        protected virtual void ExtraValidation(string[] arguments) { }
+
+        protected abstract (string message, string value) RunLogic(string[] arguments);
         public abstract string GetSyntax();
 
     }
