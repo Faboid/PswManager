@@ -10,5 +10,7 @@ namespace PswManagerLibrary.Storage {
 
         public void DeletePassword(string name);
 
+        public bool AccountExist(string name);
+
     }
 }
