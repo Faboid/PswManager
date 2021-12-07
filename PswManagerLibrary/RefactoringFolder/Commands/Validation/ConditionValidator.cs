@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PswManagerLibrary.Commands.RefactoringFolder.Commands.Validation {
+namespace PswManagerLibrary.RefactoringFolder.Commands.Validation {
     public class ConditionValidator {
 
         public ConditionValidator(Func<string[], bool> validateFunction, string errorMessage) {

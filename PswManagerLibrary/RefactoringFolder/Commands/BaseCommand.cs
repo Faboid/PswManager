@@ -1,4 +1,4 @@
-﻿using PswManagerLibrary.Commands.RefactoringFolder.Commands.Validation;
+﻿using PswManagerLibrary.RefactoringFolder.Commands.Validation;
 using PswManagerLibrary.Exceptions;
 using PswManagerLibrary.Generic;
 using System;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PswManagerLibrary.Commands.RefactoringFolder.Commands {
+namespace PswManagerLibrary.RefactoringFolder.Commands {
     public abstract class BaseCommand : ICommand {
         protected abstract IReadOnlyList<ConditionValidator> GetConditions();
 

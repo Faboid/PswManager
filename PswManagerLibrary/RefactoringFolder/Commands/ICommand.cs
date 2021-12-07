@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PswManagerLibrary.Commands.RefactoringFolder.Commands {
+namespace PswManagerLibrary.RefactoringFolder.Commands {
     public interface ICommand {
 
 #nullable enable
