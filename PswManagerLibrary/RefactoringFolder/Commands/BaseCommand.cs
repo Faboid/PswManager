@@ -1,5 +1,4 @@
-﻿using PswManagerLibrary.RefactoringFolder.Commands.Validation;
-using PswManagerLibrary.Exceptions;
+﻿using PswManagerLibrary.Exceptions;
 using PswManagerLibrary.Generic;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PswManagerLibrary.RefactoringFolder.Commands {
     public abstract class BaseCommand : ICommand {
-        protected abstract IReadOnlyList<ConditionValidator> GetConditions();
+        protected abstract IReadOnlyList<(bool condition, string errorMessage)> GetConditions(string[] args);
 
         public (string message, string value) Run(string[] arguments) {
             var (success, errorMessages) = Validate(arguments);
@@ -19,8 +18,8 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
         }
 
         public (bool success, IEnumerable<string> errorMessages) Validate(string[] arguments) {
-            var errorMessages = GetConditions().Where(x => x.Validate(arguments)).Select(x => x.ErrorMessage);
-            ExtraValidation(arguments);
+            var errorMessages = GetConditions(arguments).Where(x => x.condition is false).Select(x => x.errorMessage);
+            errorMessages = errorMessages.Concat(ExtraValidation(arguments) ?? Enumerable.Empty<string>());
             return (errorMessages.Any() == false, errorMessages);
         }
 
@@ -31,10 +30,10 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
         }
 
         /// <summary>
-        /// In case there is the need to validate something that can't fit in <see cref="GetConditions()"/>, this method can be overridden to add such checks.
+        /// In case there is the need to validate something that can't fit in <see cref="GetConditions"/>, this method can be overridden to add such checks.
         /// </summary>
         /// <param name="arguments"></param>
-        protected virtual void ExtraValidation(string[] arguments) { }
+        protected virtual IReadOnlyList<string> ExtraValidation(string[] arguments) { return Array.Empty<string>(); }
 
         protected abstract (string message, string value) RunLogic(string[] arguments);
         public abstract string GetSyntax();

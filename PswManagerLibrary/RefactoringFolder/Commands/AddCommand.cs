@@ -1,5 +1,4 @@
-﻿using PswManagerLibrary.RefactoringFolder.Commands.Validation;
-using PswManagerLibrary.Cryptography;
+﻿using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.Global;
 using System;
 using System.Collections.Generic;
@@ -20,10 +19,11 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
             this.pswManager = pswManager;
         }
 
-        protected override IReadOnlyList<ConditionValidator> GetConditions() {
-            List<ConditionValidator> conditions = new() {
-                new ConditionValidator((string[] args) => { return args.Length == 3; }, "Incorrect arguments number."),
-                new ConditionValidator((string[] args) => { return pswManager.AccountExist(args[0]); }, "The account you're trying to create exists already.")
+        protected override IReadOnlyList<(bool condition, string errorMessage)> GetConditions(string[] args) {
+
+            List<(bool, string)> conditions = new() {
+                (args.Length == 3, "Incorrect arguments number."),
+                (pswManager.AccountExist(args[0]), "The account you're trying to create exists already.")
             };
 
             return conditions.AsReadOnly();
