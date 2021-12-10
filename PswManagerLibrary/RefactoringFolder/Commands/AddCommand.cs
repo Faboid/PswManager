@@ -23,7 +23,7 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
 
             List<(bool, string)> conditions = new() {
                 (args.Length == 3, "Incorrect arguments number."),
-                (pswManager.AccountExist(args[0]), "The account you're trying to create exists already.")
+                (pswManager.AccountExist(args[0]) == false, "The account you're trying to create exists already.")
             };
 
             return conditions.AsReadOnly();

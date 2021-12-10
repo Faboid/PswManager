@@ -6,17 +6,15 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PswManagerLibrary.Storage;
 
 namespace PswManagerLibrary.RefactoringFolder {
     public class CommandQuery {
 
-        readonly IReadOnlyDictionary<string, ICommand> commands;
+        readonly IReadOnlyDictionary<string, ICommand> _commandsDictionary;
 
-        public CommandQuery() {
-            Dictionary<string, ICommand> temp = new();
-            temp.Add("add", new AddCommand());
-
-            commands = new ReadOnlyDictionary<string, ICommand>(temp);
+        public CommandQuery(IReadOnlyDictionary<string, ICommand> commandsDictionary) {
+            _commandsDictionary = commandsDictionary;
         }
 
 #nullable enable
@@ -27,7 +25,7 @@ namespace PswManagerLibrary.RefactoringFolder {
 
             try {
 
-                return commands[cmmType].Run(args);
+                return _commandsDictionary[cmmType].Run(args);
 
             } catch(InvalidCommandException ex) {
                 //todo - implement a string interpolation that shows both message and correct syntax

@@ -36,6 +36,11 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
         protected virtual IReadOnlyList<string> ExtraValidation(string[] arguments) { return Array.Empty<string>(); }
 
         protected abstract (string message, string value) RunLogic(string[] arguments);
+
+        /// <summary>
+        /// Gets a string that shows the syntax used by the command.
+        /// </summary>
+        /// <returns></returns>
         public abstract string GetSyntax();
 
     }
