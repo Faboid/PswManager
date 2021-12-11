@@ -1,4 +1,5 @@
-﻿using PswManagerLibrary.RefactoringFolder.Commands;
+﻿using PswManagerLibrary.Exceptions;
+using PswManagerLibrary.RefactoringFolder.Commands;
 using PswManagerLibrary.Storage;
 using PswManagerTests.TestsHelpers;
 using System;
@@ -16,10 +17,11 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
         public AddCommandTests() {
             pswManager = TestsHelper.PswManager;
             addCommand = new AddCommand(pswManager);
+            TestsHelper.SetUpDefault();
         }
 
-        IPasswordManager pswManager;
-        ICommand addCommand;
+        readonly IPasswordManager pswManager;
+        readonly ICommand addCommand;
 
         [Theory]
         [InlineData("justSomeName#9839", "random@#[ssword", "random@email.it")]
@@ -40,6 +42,47 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
             Assert.True(pswManager.AccountExist(name));
 
         }
+
+        public static IEnumerable<object[]> IncorrectNumberArgumentsData() {
+            yield return new object[] { new string[] { "validName", "validEmail@emaildomain.com" } };
+            yield return new object[] { new string[] { "justAName" } };
+            yield return new object[] { Array.Empty<string>() };
+            yield return new object[] { new string[] { "firstName", "secondName", "passwordhere", "validEmail@emaildomain.com" } };
+        }
+
+        [Theory]
+        [MemberData(nameof(IncorrectNumberArgumentsData))]
+        public void CommandFailure_IncorrectNumberArguments(string[] args) {
+
+            //arrange
+            bool valid;
+
+            //act
+            valid = addCommand.Validate(args).success;
+
+            //assert
+            Assert.False(valid);
+            Assert.Throws<InvalidCommandException>(() => addCommand.Run(args));
+
+        }
+
+        [Theory]
+        [InlineData("", "somePassValue", "Someemail@value.com")]
+        [InlineData("someNameValue", "", "Someemail@value.com")]
+        [InlineData("someNameValue", "somePassValue", "")]
+        public void CommandFailure_EmptyValues(string name, string password, string email) {
+
+            //arrange
+            var args = new string[] { name, password, email };
+            bool valid;
+
+            //act
+            valid = addCommand.Validate(args).success;
+
+            //assert
+            Assert.False(valid);
+            Assert.Throws<InvalidCommandException>(() => addCommand.Run(args));
+        } 
 
     }
 }

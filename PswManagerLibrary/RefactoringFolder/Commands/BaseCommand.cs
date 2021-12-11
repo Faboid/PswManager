@@ -18,7 +18,8 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
         }
 
         public (bool success, IEnumerable<string> errorMessages) Validate(string[] arguments) {
-            var errorMessages = GetConditions(arguments).Where(x => x.condition is false).Select(x => x.errorMessage);
+            var conditions = GetConditions(arguments);
+            var errorMessages = conditions.Where(x => x.condition is false).Select(x => x.errorMessage);
             errorMessages = errorMessages.Concat(ExtraValidation(arguments) ?? Enumerable.Empty<string>());
             return (errorMessages.Any() == false, errorMessages);
         }
