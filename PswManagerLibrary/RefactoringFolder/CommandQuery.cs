@@ -19,6 +19,7 @@ namespace PswManagerLibrary.RefactoringFolder {
 
 #nullable enable
         public (string message, string? value) Query(string command) {
+            //todo - implement a proper parser
             var query = command.Split(' ');
             string cmmType = query.First();
             var args = query.Skip(1).ToArray();

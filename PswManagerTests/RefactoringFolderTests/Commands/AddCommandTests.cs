@@ -43,6 +43,33 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
 
         }
 
+        [Fact]
+        public void CommandFailure_AccountExistsAlready() {
+
+            //arrange
+            TestsHelper.SetUpDefault();
+            var args = new string[] { TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name), "randompass", "randomemail" };
+
+            //act & assert
+            Failure_DefaultTestType_ThrowInvalidCommandException(args);
+
+        }
+
+        public static IEnumerable<object[]> NullArgumentsData() {
+            yield return new object[] { null };
+            yield return new object[] { new string[] { null, "&&%£@#[][+*é", "valueNameHere@thisdomain.com" } };
+            yield return new object[] { new string[] { "valuenare", null, "valueNameHere@thisdomain.com" } };
+            yield return new object[] { new string[] { "justvalue##", "riewhguyrui", null } };
+        }
+
+        [Theory]
+        [MemberData(nameof(NullArgumentsData))]
+        public void CommandFailure_NullArguments(string[] args) {
+
+            Failure_DefaultTestType_ThrowInvalidCommandException(args);
+
+        }
+
         public static IEnumerable<object[]> IncorrectNumberArgumentsData() {
             yield return new object[] { new string[] { "validName", "validEmail@emaildomain.com" } };
             yield return new object[] { new string[] { "justAName" } };
@@ -54,15 +81,8 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
         [MemberData(nameof(IncorrectNumberArgumentsData))]
         public void CommandFailure_IncorrectNumberArguments(string[] args) {
 
-            //arrange
-            bool valid;
-
-            //act
-            valid = addCommand.Validate(args).success;
-
-            //assert
-            Assert.False(valid);
-            Assert.Throws<InvalidCommandException>(() => addCommand.Run(args));
+            //act & assert
+            Failure_DefaultTestType_ThrowInvalidCommandException(args);
 
         }
 
@@ -74,6 +94,14 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
 
             //arrange
             var args = new string[] { name, password, email };
+
+            //act & assert
+            Failure_DefaultTestType_ThrowInvalidCommandException(args);
+        } 
+
+        private void Failure_DefaultTestType_ThrowInvalidCommandException(string[] args) {
+
+            //arrange
             bool valid;
 
             //act
@@ -82,7 +110,8 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
             //assert
             Assert.False(valid);
             Assert.Throws<InvalidCommandException>(() => addCommand.Run(args));
-        } 
+
+        }
 
     }
 }
