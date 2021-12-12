@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using PswManagerLibrary.RefactoringFolder.Storage;
 using PswManagerLibrary.RefactoringFolder.Models;
 using PswManagerLibrary.Storage;
+using PswManagerLibrary.RefactoringFolder.Commands.Validation;
 
 namespace PswManagerLibrary.RefactoringFolder.Commands {
     public class AddCommand : BaseCommand {
@@ -19,14 +20,15 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
             this.pswManager = pswManager;
         }
 
-        protected override IReadOnlyList<(bool condition, string errorMessage)> GetConditions(string[] args) {
+        protected override IReadOnlyList<(bool condition, string errorMessage)> GetConditions(string[] arguments) {
 
-            List<(bool, string)> conditions = new();
-            conditions.Add((args.Length == 3, "Incorrect arguments number."));
-            conditions.Add((IfThrowReturnFalse((args) => pswManager.AccountExist(args[0]) == false, args), "The account you're trying to create exists already."));
-            conditions.Add((args.All(x => string.IsNullOrEmpty(x) == false), "No value can be left empty."));
+            ValidationCollection collection = new(arguments);
+            collection.Add(arguments != null, "The arguments cannot be null.");
+            collection.Add((args) => args.Length == 3, "Incorrect arguments number.");
+            collection.Add((args) => pswManager.AccountExist(args[0]) == false, "The account you're trying to create exists already.");
+            collection.Add((args) => args.All(x => string.IsNullOrEmpty(x) == false), "No value can be left empty.");
 
-            return conditions.AsReadOnly();
+            return collection.Get();
         }
 
         public override string GetSyntax() {
