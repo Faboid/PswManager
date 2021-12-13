@@ -7,11 +7,9 @@ using System.Threading.Tasks;
 namespace PswManagerLibrary.RefactoringFolder.Commands {
     public interface ICommand {
 
-#nullable enable
-        (string message, string? value) Run(string[] arguments);
+        CommandResult Run(string[] arguments);
 
         (bool success, IEnumerable<string> errorMessages) Validate(string[] arguments);
-#nullable disable
 
         string GetSyntax();
 

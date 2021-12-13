@@ -35,11 +35,11 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
             return "add [name] [password] [email]";
         }
 
-        protected override (string message, string value) RunLogic(string[] arguments) {
+        protected override CommandResult RunLogic(string[] arguments) {
 
             pswManager.CreatePassword(arguments[0], arguments[1], arguments[2]);
 
-            return ("The account has been created successfully.", null);
+            return new CommandResult("The account has been created successfully.", true);
         }
 
     }

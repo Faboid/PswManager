@@ -10,9 +10,11 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
     public abstract class BaseCommand : ICommand {
         protected abstract IReadOnlyList<(bool condition, string errorMessage)> GetConditions(string[] args);
 
-        public (string message, string value) Run(string[] arguments) {
+        public CommandResult Run(string[] arguments) {
             var (success, errorMessages) = Validate(arguments);
-            success.IfFalseThrow(new InvalidCommandException(FormatErrors(errorMessages)));
+            if(!success) {
+                return new CommandResult("The command has failed the validation process.", false, null, errorMessages.ToArray());
+            }
 
             return RunLogic(arguments);
         }
@@ -24,19 +26,13 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
             return (errorMessages.Any() == false, errorMessages);
         }
 
-        private string FormatErrors(IEnumerable<string> errors) {
-            StringBuilder sb = new();
-            errors.ForEach(x => sb.AppendLine(x));
-            return sb.ToString();
-        }
-
         /// <summary>
         /// In case there is the need to validate something that can't fit in <see cref="GetConditions"/>, this method can be overridden to add such checks.
         /// </summary>
         /// <param name="arguments"></param>
         protected virtual IReadOnlyList<string> ExtraValidation(string[] arguments) { return Array.Empty<string>(); }
 
-        protected abstract (string message, string value) RunLogic(string[] arguments);
+        protected abstract CommandResult RunLogic(string[] arguments);
 
         /// <summary>
         /// Gets a string that shows the syntax used by the command.

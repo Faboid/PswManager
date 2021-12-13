@@ -1,4 +1,5 @@
 ﻿using PswManagerLibrary.Exceptions;
+using PswManagerLibrary.RefactoringFolder;
 using PswManagerLibrary.RefactoringFolder.Commands;
 using PswManagerLibrary.Storage;
 using PswManagerTests.TestsHelpers;
@@ -32,13 +33,15 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
             //arrange
             var args = new string[] { name, password, email };
             bool exists;
+            CommandResult result;
 
             //act
             exists = pswManager.AccountExist(name);
-            addCommand.Run(args);
+            result = addCommand.Run(args);
 
             //assert
             Assert.False(exists);
+            Assert.True(result.Success);
             Assert.True(pswManager.AccountExist(name));
 
         }
@@ -103,13 +106,16 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
 
             //arrange
             bool valid;
+            CommandResult result;
 
             //act
             valid = addCommand.Validate(args).success;
+            result = addCommand.Run(args);
 
             //assert
             Assert.False(valid);
-            Assert.Throws<InvalidCommandException>(() => addCommand.Run(args));
+            Assert.False(result.Success);
+            Assert.NotEmpty(result.ErrorMessages);
 
         }
 

@@ -18,7 +18,7 @@ namespace PswManagerLibrary.RefactoringFolder {
         }
 
 #nullable enable
-        public (string message, string? value) Query(string command) {
+        public CommandResult Query(string command) {
             //todo - implement a proper parser
             var query = command.Split(' ');
             string cmmType = query.First();
@@ -30,10 +30,10 @@ namespace PswManagerLibrary.RefactoringFolder {
 
             } catch(InvalidCommandException ex) {
                 //todo - implement a string interpolation that shows both message and correct syntax
-                return (ex.Message, null);
+                return new CommandResult(ex.Message, false);
             } catch(KeyNotFoundException) {
 
-                return ("The given command doesn't exist. For a list of commands, write \"help\".", null);
+                return new CommandResult("The given command doesn't exist. For a list of commands, write \"help\".", false);
             }
         }
 #nullable disable
