@@ -42,14 +42,5 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
             return ("The account has been created successfully.", null);
         }
 
-        //todo - move this somewhere else. Maybe to a validation class.
-        public static bool IfThrowReturnFalse(Func<string[], bool> function, string[] args) {
-            try {
-                return function.Invoke(args);
-            } catch(Exception) {
-                return false;
-            }
-        }
-
     }
 }
