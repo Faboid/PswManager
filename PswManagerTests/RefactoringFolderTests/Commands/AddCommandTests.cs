@@ -93,6 +93,7 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
         [InlineData("", "somePassValue", "Someemail@value.com")]
         [InlineData("someNameValue", "", "Someemail@value.com")]
         [InlineData("someNameValue", "somePassValue", "")]
+        [InlineData("someNameValue", "      ", "Someemail@value.com")]
         public void CommandFailure_EmptyValues(string name, string password, string email) {
 
             //arrange

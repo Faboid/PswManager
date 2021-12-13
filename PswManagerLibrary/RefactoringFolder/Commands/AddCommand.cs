@@ -26,7 +26,8 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
             collection.Add(arguments != null, "The arguments cannot be null.");
             collection.Add((args) => args.Length == 3, "Incorrect arguments number.");
             collection.Add((args) => pswManager.AccountExist(args[0]) == false, "The account you're trying to create exists already.");
-            collection.Add((args) => args.All(x => string.IsNullOrEmpty(x) == false), "No value can be left empty.");
+            collection.Add((args) => args.All(x => string.IsNullOrWhiteSpace(x) == false), "No value can be left empty.");
+            //todo - add fake email check
 
             return collection.Get();
         }
