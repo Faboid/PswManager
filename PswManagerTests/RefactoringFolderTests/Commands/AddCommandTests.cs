@@ -54,7 +54,7 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
             var args = new string[] { TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name), "randompass", "randomemail" };
 
             //act & assert
-            Failure_DefaultTestType_ThrowInvalidCommandException(args);
+            Failure_GenericTestType(args);
 
         }
 
@@ -69,7 +69,7 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
         [MemberData(nameof(NullArgumentsData))]
         public void CommandFailure_NullArguments(string[] args) {
 
-            Failure_DefaultTestType_ThrowInvalidCommandException(args);
+            Failure_GenericTestType(args);
 
         }
 
@@ -85,7 +85,7 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
         public void CommandFailure_IncorrectNumberArguments(string[] args) {
 
             //act & assert
-            Failure_DefaultTestType_ThrowInvalidCommandException(args);
+            Failure_GenericTestType(args);
 
         }
 
@@ -100,10 +100,10 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
             var args = new string[] { name, password, email };
 
             //act & assert
-            Failure_DefaultTestType_ThrowInvalidCommandException(args);
+            Failure_GenericTestType(args);
         } 
 
-        private void Failure_DefaultTestType_ThrowInvalidCommandException(string[] args) {
+        private void Failure_GenericTestType(string[] args) {
 
             //arrange
             bool valid;
