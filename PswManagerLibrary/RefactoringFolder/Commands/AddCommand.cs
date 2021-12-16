@@ -23,10 +23,8 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
         protected override IReadOnlyList<(bool condition, string errorMessage)> GetConditions(string[] arguments) {
 
             ValidationCollection collection = new(arguments);
-            collection.Add(arguments != null, "The arguments cannot be null.");
-            collection.Add((args) => args.Length == 3, "Incorrect arguments number.");
+            collection.AddCommonConditions(3, 3);
             collection.Add((args) => pswManager.AccountExist(args[0]) == false, "The account you're trying to create exists already.");
-            collection.Add((args) => args.All(x => string.IsNullOrWhiteSpace(x) == false), "No value can be left empty.");
             //todo - add fake email check
 
             return collection.Get();

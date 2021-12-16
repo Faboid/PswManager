@@ -22,10 +22,8 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
 
         protected override IReadOnlyList<(bool condition, string errorMessage)> GetConditions(string[] args) {
             ValidationCollection collection = new ValidationCollection(args);
-            collection.Add(args != null, "The arguments cannot be null.");
-            collection.Add((args) => args.Length == 1, "Incorrect arguments number.");
-            collection.Add((args) => pswManager.AccountExist(args[0]) == true, "The given account doesn't exist.");
-            collection.Add((args) => string.IsNullOrWhiteSpace(args[0]) == false, "The name cannot be left empty.");
+            collection.AddCommonConditions(1, 1);
+            collection.AddAccountShouldExistCondition(pswManager);
 
             return collection.Get();
         }

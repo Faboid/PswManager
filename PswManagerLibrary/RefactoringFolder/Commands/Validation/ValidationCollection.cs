@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PswManagerLibrary.Storage;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,5 +45,23 @@ namespace PswManagerLibrary.RefactoringFolder.Commands.Validation {
             }
         }
 
+        /// <summary>
+        /// Adds conditions to check whether the arguments are null, empty, or the wrong number.
+        /// </summary>
+        /// <param name="minLength">The minimum number of arguments there should be.</param>
+        /// <param name="maxLength">The maximum number of arguments there should be.</param>
+        public void AddCommonConditions(int minLength, int maxLength) {
+            Add(args != null, "The arguments cannot be null.");
+            Add((args) => args.Length >= minLength && args.Length <= maxLength, "Incorrect arguments number.");
+            Add((args) => args.All(x => string.IsNullOrWhiteSpace(x) == false), "No value can be left empty.");
+        }
+
+        /// <summary>
+        /// Adds a condition to make sure the account exists.
+        /// </summary>
+        /// <param name="pswManager"></param>
+        public void AddAccountShouldExistCondition(IPasswordManager pswManager) {
+            Add((args) => pswManager.AccountExist(args[0]) == true, "The given account doesn't exist.");
+        }
     }
 }
