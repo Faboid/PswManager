@@ -20,12 +20,11 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
             return "delete [name]";
         }
 
-        protected override IReadOnlyList<(bool condition, string errorMessage)> GetConditions(string[] args) {
-            ValidationCollection collection = new ValidationCollection(args);
+        protected override IValidationCollection GetConditions(IValidationCollection collection) {
             collection.AddCommonConditions(1, 1);
             collection.AddAccountShouldExistCondition(pswManager);
 
-            return collection.Get();
+            return collection;
         }
 
         protected override CommandResult RunLogic(string[] arguments) {

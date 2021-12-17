@@ -20,14 +20,13 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
             this.pswManager = pswManager;
         }
 
-        protected override IReadOnlyList<(bool condition, string errorMessage)> GetConditions(string[] arguments) {
+        protected override IValidationCollection GetConditions(IValidationCollection collection) {
 
-            ValidationCollection collection = new(arguments);
             collection.AddCommonConditions(3, 3);
             collection.Add((args) => pswManager.AccountExist(args[0]) == false, "The account you're trying to create exists already.");
             //todo - add fake email check
 
-            return collection.Get();
+            return collection;
         }
 
         public override string GetSyntax() {

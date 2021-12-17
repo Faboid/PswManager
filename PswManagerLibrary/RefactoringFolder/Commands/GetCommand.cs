@@ -19,13 +19,12 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
             return "get [name]";
         }
 
-        protected override IReadOnlyList<(bool condition, string errorMessage)> GetConditions(string[] arguments) {
+        protected override IValidationCollection GetConditions(IValidationCollection collection) {
 
-            ValidationCollection collection = new(arguments);
             collection.AddCommonConditions(1, 1);
             collection.AddAccountShouldExistCondition(pswManager);
 
-            return collection.Get();
+            return collection;
         }
 
         protected override CommandResult RunLogic(string[] arguments) {

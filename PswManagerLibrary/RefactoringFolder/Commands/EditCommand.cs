@@ -19,13 +19,12 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
             return "edit [name] name:[new name]? password:[new password]? email:[new email]?";
         }
 
-        protected override IReadOnlyList<(bool condition, string errorMessage)> GetConditions(string[] args) {
-            ValidationCollection collection = new ValidationCollection(args);
+        protected override IValidationCollection GetConditions(IValidationCollection collection) {
             collection.AddCommonConditions(2, 4);
             collection.AddAccountShouldExistCondition(pswManager);
             //todo - add fake email check
 
-            return collection.Get();
+            return collection;
         }
 
         protected override CommandResult RunLogic(string[] arguments) {

@@ -10,9 +10,9 @@ namespace PswManagerLibrary.RefactoringFolder.Commands.Validation {
     /// <summary>
     /// Provides a list that represents whether conditions are represented and their respective error messages.
     /// </summary>
-    public class ValidationCollection {
+    public class ValidationCollection : IValidationCollection {
 
-        readonly List<(bool, string)> validators = new List<(bool, string)>();
+        readonly List<(bool, string)> validators = new();
         readonly string[] args;
 
         //several default string that gets used as error messages. They are being assigned this way mostly for unit testing purposes.
@@ -29,8 +29,16 @@ namespace PswManagerLibrary.RefactoringFolder.Commands.Validation {
         /// Returns a <see cref="IReadOnlyList{(bool, string)}"/> that represents whether the conditions were respected, and their respective error messages.
         /// </summary>
         /// <returns></returns>
-        public IReadOnlyList<(bool, string)> Get() {
+        public IReadOnlyList<(bool condition, string errorMessage)> GetResult() {
             return validators.AsReadOnly();
+        }
+
+        /// <summary>
+        /// Returns the stored arguments.
+        /// </summary>
+        /// <returns></returns>
+        public string[] GetArguments() {
+            return args;
         }
 
         /// <summary>
