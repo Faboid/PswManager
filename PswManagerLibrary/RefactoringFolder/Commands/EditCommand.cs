@@ -19,7 +19,7 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
             return "edit [name] name:[new name]? password:[new password]? email:[new email]?";
         }
 
-        protected override IValidationCollection GetConditions(IValidationCollection collection) {
+        protected override IValidationCollection AddConditions(IValidationCollection collection) {
             collection.AddCommonConditions(2, 4);
             collection.AddAccountShouldExistCondition(pswManager);
             //todo - add fake email check

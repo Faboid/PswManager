@@ -20,7 +20,7 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
             this.pswManager = pswManager;
         }
 
-        protected override IValidationCollection GetConditions(IValidationCollection collection) {
+        protected override IValidationCollection AddConditions(IValidationCollection collection) {
 
             collection.AddCommonConditions(3, 3);
             collection.Add((args) => pswManager.AccountExist(args[0]) == false, "The account you're trying to create exists already.");

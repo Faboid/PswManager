@@ -20,7 +20,7 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
             return "delete [name]";
         }
 
-        protected override IValidationCollection GetConditions(IValidationCollection collection) {
+        protected override IValidationCollection AddConditions(IValidationCollection collection) {
             collection.AddCommonConditions(1, 1);
             collection.AddAccountShouldExistCondition(pswManager);
 
