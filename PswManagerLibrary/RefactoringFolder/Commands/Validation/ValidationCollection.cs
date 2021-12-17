@@ -15,6 +15,12 @@ namespace PswManagerLibrary.RefactoringFolder.Commands.Validation {
         readonly List<(bool, string)> validators = new List<(bool, string)>();
         readonly string[] args;
 
+        //several default string that gets used as error messages. They are being assigned this way mostly for unit testing purposes.
+        public const string ArgumentsNullMessage = "The arguments' array cannot be null.";
+        public const string ArgumentsNullOrEmptyMessage = "No value can be left empty.";
+        public const string WrongArgumentsNumberMessage = "Incorrect arguments number.";
+        public const string InexistentAccountMessage = "The given account doesn't exist.";
+
         public ValidationCollection(string[] arguments) {
             args = arguments;
         }
@@ -51,9 +57,9 @@ namespace PswManagerLibrary.RefactoringFolder.Commands.Validation {
         /// <param name="minLength">The minimum number of arguments there should be.</param>
         /// <param name="maxLength">The maximum number of arguments there should be.</param>
         public void AddCommonConditions(int minLength, int maxLength) {
-            Add(args != null, "The arguments cannot be null.");
-            Add((args) => args.Length >= minLength && args.Length <= maxLength, "Incorrect arguments number.");
-            Add((args) => args.All(x => string.IsNullOrWhiteSpace(x) == false), "No value can be left empty.");
+            Add(args != null, ArgumentsNullMessage);
+            Add((args) => args.Length >= minLength && args.Length <= maxLength, WrongArgumentsNumberMessage);
+            Add((args) => args.All(x => string.IsNullOrWhiteSpace(x) == false), ArgumentsNullOrEmptyMessage);
         }
 
         /// <summary>
@@ -61,7 +67,7 @@ namespace PswManagerLibrary.RefactoringFolder.Commands.Validation {
         /// </summary>
         /// <param name="pswManager"></param>
         public void AddAccountShouldExistCondition(IPasswordManager pswManager) {
-            Add((args) => pswManager.AccountExist(args[0]) == true, "The given account doesn't exist.");
+            Add((args) => pswManager.AccountExist(args[0]) == true, InexistentAccountMessage);
         }
     }
 }
