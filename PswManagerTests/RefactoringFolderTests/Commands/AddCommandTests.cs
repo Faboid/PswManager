@@ -1,6 +1,7 @@
 ﻿using PswManagerLibrary.Exceptions;
 using PswManagerLibrary.RefactoringFolder;
 using PswManagerLibrary.RefactoringFolder.Commands;
+using PswManagerLibrary.RefactoringFolder.Commands.Validation;
 using PswManagerLibrary.Storage;
 using PswManagerTests.TestsHelpers;
 using System;
@@ -54,38 +55,38 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
             var args = new string[] { TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name), "randompass", "randomemail" };
 
             //act & assert
-            Failure_GenericTestType(args);
+            Failure_GenericTestType(AddCommand.AccountExistsErrorMessage, args);
 
         }
 
         public static IEnumerable<object[]> NullArgumentsData() {
-            yield return new object[] { null };
-            yield return new object[] { new string[] { null, "&&%£@#[][+*é", "valueNameHere@thisdomain.com" } };
-            yield return new object[] { new string[] { "valuenare", null, "valueNameHere@thisdomain.com" } };
-            yield return new object[] { new string[] { "justvalue##", "riewhguyrui", null } };
+            yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
+            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null, "&&%£@#[][+*é", "valueNameHere@thisdomain.com" } };
+            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "valuenare", null, "valueNameHere@thisdomain.com" } };
+            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "justvalue##", "riewhguyrui", null } };
         }
 
         [Theory]
         [MemberData(nameof(NullArgumentsData))]
-        public void CommandFailure_NullArguments(string[] args) {
+        public void CommandFailure_NullArguments(string failureMessage, string[] args) {
 
-            Failure_GenericTestType(args);
+            Failure_GenericTestType(failureMessage, args);
 
         }
 
         public static IEnumerable<object[]> IncorrectNumberArgumentsData() {
-            yield return new object[] { new string[] { "validName", "validEmail@emaildomain.com" } };
-            yield return new object[] { new string[] { "justAName" } };
-            yield return new object[] { Array.Empty<string>() };
-            yield return new object[] { new string[] { "firstName", "secondName", "passwordhere", "validEmail@emaildomain.com" } };
+            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { "validName", "validEmail@emaildomain.com" } };
+            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { "justAName" } };
+            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
+            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { "firstName", "secondName", "passwordhere", "validEmail@emaildomain.com" } };
         }
 
         [Theory]
         [MemberData(nameof(IncorrectNumberArgumentsData))]
-        public void CommandFailure_IncorrectNumberArguments(string[] args) {
+        public void CommandFailure_IncorrectNumberArguments(string failureMessage, string[] args) {
 
             //act & assert
-            Failure_GenericTestType(args);
+            Failure_GenericTestType(failureMessage, args);
 
         }
 
@@ -100,7 +101,7 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
             var args = new string[] { name, password, email };
 
             //act & assert
-            Failure_GenericTestType(args);
+            Failure_GenericTestType(ValidationCollection.ArgumentsNullOrEmptyMessage, args);
         } 
 
         private void Failure_GenericTestType(string[] args) {
@@ -117,6 +118,24 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
             Assert.False(valid);
             Assert.False(result.Success);
             Assert.NotEmpty(result.ErrorMessages);
+
+        }
+
+        private void Failure_GenericTestType(string expectedErrorMessage, string[] args) {
+
+            //arrange
+            bool valid;
+            CommandResult result;
+
+            //act
+            valid = addCommand.Validate(args).success;
+            result = addCommand.Run(args);
+
+            //assert
+            Assert.False(valid);
+            Assert.False(result.Success);
+            Assert.NotEmpty(result.ErrorMessages);
+            Assert.Contains(expectedErrorMessage, result.ErrorMessages);
 
         }
 

@@ -15,6 +15,7 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
     public class AddCommand : BaseCommand {
 
         private readonly IPasswordManager pswManager;
+        public const string AccountExistsErrorMessage = "The account you're trying to create exists already.";
 
         public AddCommand(IPasswordManager pswManager) {
             this.pswManager = pswManager;
@@ -23,7 +24,7 @@ namespace PswManagerLibrary.RefactoringFolder.Commands {
         protected override IValidationCollection AddConditions(IValidationCollection collection) {
 
             collection.AddCommonConditions(3, 3);
-            collection.Add((args) => pswManager.AccountExist(args[0]) == false, "The account you're trying to create exists already.");
+            collection.Add((args) => pswManager.AccountExist(args[0]) == false, AccountExistsErrorMessage);
             //todo - add fake email check
 
             return collection;
