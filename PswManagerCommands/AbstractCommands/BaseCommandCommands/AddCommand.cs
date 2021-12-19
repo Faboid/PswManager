@@ -1,17 +1,8 @@
-﻿using PswManagerLibrary.Cryptography;
-using PswManagerLibrary.Global;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PswManagerLibrary.RefactoringFolder.Storage;
-using PswManagerLibrary.RefactoringFolder.Models;
-using PswManagerLibrary.Storage;
-using PswManagerLibrary.RefactoringFolder.Commands.Validation;
+﻿using PswManagerLibrary.Storage;
+using PswManagerCommands.Validation;
+using PswManagerCommands.ConcreteCommands;
 
-namespace PswManagerLibrary.RefactoringFolder.Commands {
+namespace PswManagerCommands.AbstractCommands.BaseCommandCommands {
     public class AddCommand : BaseCommand {
 
         private readonly IPasswordManager pswManager;

@@ -1,7 +1,8 @@
-﻿using PswManagerLibrary.Exceptions;
+﻿using PswManagerCommands;
+using PswManagerCommands.AbstractCommands.BaseCommandCommands;
+using PswManagerCommands.Validation;
+using PswManagerLibrary.Exceptions;
 using PswManagerLibrary.RefactoringFolder;
-using PswManagerLibrary.RefactoringFolder.Commands;
-using PswManagerLibrary.RefactoringFolder.Commands.Validation;
 using PswManagerLibrary.Storage;
 using PswManagerTests.TestsHelpers;
 using System;

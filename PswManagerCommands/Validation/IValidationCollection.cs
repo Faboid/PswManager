@@ -1,11 +1,8 @@
 ﻿using PswManagerLibrary.Storage;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PswManagerLibrary.RefactoringFolder.Commands.Validation {
+namespace PswManagerCommands.Validation {
     public interface IValidationCollection {
 
         public IReadOnlyList<(bool condition, string errorMessage)> GetResult();

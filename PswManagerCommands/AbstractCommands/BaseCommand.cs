@@ -1,13 +1,9 @@
-﻿using PswManagerLibrary.Exceptions;
-using PswManagerLibrary.Generic;
-using PswManagerLibrary.RefactoringFolder.Commands.Validation;
+﻿using PswManagerCommands.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PswManagerLibrary.RefactoringFolder.Commands {
+namespace PswManagerCommands.ConcreteCommands {
     public abstract class BaseCommand : ICommand {
         protected abstract IValidationCollection AddConditions(IValidationCollection collection);
 

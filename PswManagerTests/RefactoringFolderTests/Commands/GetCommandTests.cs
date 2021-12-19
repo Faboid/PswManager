@@ -1,11 +1,8 @@
-﻿using PswManagerLibrary.RefactoringFolder;
-using PswManagerLibrary.RefactoringFolder.Commands;
+﻿using PswManagerCommands;
+using PswManagerCommands.AbstractCommands.BaseCommandCommands;
 using PswManagerTests.TestsHelpers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.RefactoringFolderTests.Commands {

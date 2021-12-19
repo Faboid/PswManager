@@ -2,10 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PswManagerLibrary.RefactoringFolder.Commands.Validation {
+namespace PswManagerCommands.Validation {
 
     /// <summary>
     /// Provides a list that represents whether conditions are represented and their respective error messages.
@@ -54,7 +52,7 @@ namespace PswManagerLibrary.RefactoringFolder.Commands.Validation {
         public void Add(Func<string[], bool> conditionFunction, string errorMessage) {
             try {
                 Add(conditionFunction.Invoke(args), errorMessage);
-            } catch (Exception) {
+            } catch(Exception) {
                 Add(false, errorMessage);
             }
         }

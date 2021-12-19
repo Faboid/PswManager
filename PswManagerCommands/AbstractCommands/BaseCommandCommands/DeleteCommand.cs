@@ -1,12 +1,8 @@
-﻿using PswManagerLibrary.RefactoringFolder.Commands.Validation;
+﻿using PswManagerCommands.ConcreteCommands;
+using PswManagerCommands.Validation;
 using PswManagerLibrary.Storage;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PswManagerLibrary.RefactoringFolder.Commands {
+namespace PswManagerCommands.AbstractCommands.BaseCommandCommands {
     public class DeleteCommand : BaseCommand {
 
         //todo - implement tests for this command

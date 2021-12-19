@@ -1,14 +1,8 @@
-﻿using PswManagerLibrary.RefactoringFolder.Commands;
-using PswManagerLibrary.Exceptions;
-using System;
+﻿using PswManagerLibrary.Exceptions;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PswManagerLibrary.Storage;
 
-namespace PswManagerLibrary.RefactoringFolder {
+namespace PswManagerCommands {
     public class CommandQuery {
 
         readonly IReadOnlyDictionary<string, ICommand> _commandsDictionary;
