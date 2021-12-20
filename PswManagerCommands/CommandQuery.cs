@@ -5,10 +5,10 @@ using System.Linq;
 namespace PswManagerCommands {
     public class CommandQuery {
 
-        readonly IReadOnlyDictionary<string, ICommand> _commandsDictionary;
+        readonly IReadOnlyCommandsCollection _commands;
 
-        public CommandQuery(IReadOnlyDictionary<string, ICommand> commandsDictionary) {
-            _commandsDictionary = commandsDictionary;
+        public CommandQuery(IReadOnlyCommandsCollection commands) {
+            _commands = commands;
         }
 
 #nullable enable
@@ -20,7 +20,7 @@ namespace PswManagerCommands {
 
             try {
 
-                return _commandsDictionary[cmmType].Run(args);
+                return _commands[cmmType].Run(args);
 
             } catch(InvalidCommandException ex) {
                 //todo - implement a string interpolation that shows both message and correct syntax
