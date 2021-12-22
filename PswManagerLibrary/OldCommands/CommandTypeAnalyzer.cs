@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace PswManagerLibrary.Commands {
+namespace PswManagerLibrary.OldCommands {
 
     /// <summary>
     /// Used as a lookup table to convert a simple word string into an enum that represents a specific command.

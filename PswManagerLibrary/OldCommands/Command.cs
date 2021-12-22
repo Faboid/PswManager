@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace PswManagerLibrary.Commands {
+namespace PswManagerLibrary.OldCommands {
 
     /// <summary>
     /// A class that contains a main command and its arguments.

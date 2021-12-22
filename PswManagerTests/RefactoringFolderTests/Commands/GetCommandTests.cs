@@ -1,5 +1,5 @@
 ﻿using PswManagerCommands;
-using PswManagerCommands.AbstractCommands.BaseCommandCommands;
+using PswManagerLibrary.Commands;
 using PswManagerTests.TestsHelpers;
 using System;
 using System.Collections.Generic;

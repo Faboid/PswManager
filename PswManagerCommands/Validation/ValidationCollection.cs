@@ -1,5 +1,4 @@
-﻿using PswManagerLibrary.Storage;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,7 +16,6 @@ namespace PswManagerCommands.Validation {
         public const string ArgumentsNullMessage = "The arguments' array cannot be null.";
         public const string ArgumentsNullOrEmptyMessage = "No value can be left empty.";
         public const string WrongArgumentsNumberMessage = "Incorrect arguments number.";
-        public const string InexistentAccountMessage = "The given account doesn't exist.";
 
         public ValidationCollection(string[] arguments) {
             args = arguments;
@@ -66,14 +64,6 @@ namespace PswManagerCommands.Validation {
             Add(args != null, ArgumentsNullMessage);
             Add((args) => args.Length >= minLength && args.Length <= maxLength, WrongArgumentsNumberMessage);
             Add((args) => args.All(x => string.IsNullOrWhiteSpace(x) == false), ArgumentsNullOrEmptyMessage);
-        }
-
-        /// <summary>
-        /// Adds a condition to make sure the account exists.
-        /// </summary>
-        /// <param name="pswManager"></param>
-        public void AddAccountShouldExistCondition(IPasswordManager pswManager) {
-            Add((args) => pswManager.AccountExist(args[0]) == true, InexistentAccountMessage);
         }
     }
 }

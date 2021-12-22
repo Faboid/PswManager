@@ -1,13 +1,11 @@
-﻿using PswManagerCommands.AbstractCommands.BaseCommandCommands;
-using PswManagerLibrary.Storage;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace PswManagerCommands {
-    public class CommandsCollection : ICommandsCollection, IReadOnlyCommandsCollection {
+    public class CommandsCollection : ICommandsCollection {
 
         Dictionary<string, ICommand> _commands = new Dictionary<string, ICommand>();
 
@@ -17,20 +15,8 @@ namespace PswManagerCommands {
             _commands.Add(key, command);
         }
 
-        //todo - remove IPasswordManager dependency from the commands
-        public void AddDefault(IPasswordManager pswManager) {
-            //CRUD commands
-            _commands.Add("add", new AddCommand(pswManager));
-            _commands.Add("get", new GetCommand(pswManager));
-            _commands.Add("edit", new EditCommand(pswManager));
-            _commands.Add("delete", new DeleteCommand(pswManager));
-
-            //todo - add a command to change paths 
+        public IReadOnlyDictionary<string, ICommand> AsReadOnly() {
+            return _commands;
         }
-
-        public IReadOnlyCommandsCollection AsReadOnly() {
-            return this;
-        }
-
     }
 }

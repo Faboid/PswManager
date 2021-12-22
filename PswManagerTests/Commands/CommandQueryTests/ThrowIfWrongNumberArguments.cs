@@ -1,4 +1,4 @@
-﻿using PswManagerLibrary.Commands;
+﻿using PswManagerLibrary.OldCommands;
 using PswManagerLibrary.Exceptions;
 using PswManagerTests.TestsHelpers;
 using PswManagerTests.TestsHelpers.MockFactories;

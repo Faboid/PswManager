@@ -1,8 +1,10 @@
-﻿using PswManagerCommands.ConcreteCommands;
+﻿using PswManagerCommands;
+using PswManagerCommands.ConcreteCommands;
 using PswManagerCommands.Validation;
+using PswManagerLibrary.Extensions;
 using PswManagerLibrary.Storage;
 
-namespace PswManagerCommands.AbstractCommands.BaseCommandCommands {
+namespace PswManagerLibrary.Commands {
     public class DeleteCommand : BaseCommand {
 
         //todo - implement tests for this command

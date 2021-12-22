@@ -1,4 +1,4 @@
-﻿using PswManagerLibrary.Commands;
+﻿using PswManagerLibrary.OldCommands;
 using PswManagerLibrary.Exceptions;
 using System;
 using System.Collections.Generic;

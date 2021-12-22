@@ -1,9 +1,11 @@
-﻿using PswManagerCommands.ConcreteCommands;
+﻿using PswManagerCommands;
+using PswManagerCommands.ConcreteCommands;
 using PswManagerCommands.Validation;
+using PswManagerLibrary.Extensions;
 using PswManagerLibrary.Storage;
 using System.Linq;
 
-namespace PswManagerCommands.AbstractCommands.BaseCommandCommands {
+namespace PswManagerLibrary.Commands {
     public class EditCommand : BaseCommand {
         //todo - implement tests for this command
         private readonly IPasswordManager pswManager;

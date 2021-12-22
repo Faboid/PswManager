@@ -7,7 +7,7 @@ using PswManagerLibrary.UIConnection;
 using System;
 using System.Linq;
 
-namespace PswManagerLibrary.Commands {
+namespace PswManagerLibrary.OldCommands {
 
     /// <summary>
     /// Takes in commands and analyze them to call their appropriate function.

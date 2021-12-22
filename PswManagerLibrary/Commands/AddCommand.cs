@@ -1,8 +1,9 @@
 ﻿using PswManagerLibrary.Storage;
 using PswManagerCommands.Validation;
 using PswManagerCommands.ConcreteCommands;
+using PswManagerCommands;
 
-namespace PswManagerCommands.AbstractCommands.BaseCommandCommands {
+namespace PswManagerLibrary.Commands {
     public class AddCommand : BaseCommand {
 
         private readonly IPasswordManager pswManager;

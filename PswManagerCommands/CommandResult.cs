@@ -1,5 +1,4 @@
-﻿using PswManagerLibrary.Generic;
-using System;
+﻿using System;
 using System.Text;
 
 namespace PswManagerCommands {
@@ -40,7 +39,9 @@ namespace PswManagerCommands {
         /// <returns></returns>
         public string GetAllErrorsAsSingleString() {
             StringBuilder sb = new();
-            ErrorMessages.ForEach(x => sb.AppendLine(x));
+            foreach(string s in ErrorMessages) {
+                sb.AppendLine(s);
+            }
             return sb.ToString();
         }
 
