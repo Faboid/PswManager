@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PswManagerLibrary.Commands.NotImplementedYet {
-    public class HelpCommand : BaseCommand {
+    public class GetAllAccountNamesCommand : BaseCommand {
         public override string GetSyntax() {
             throw new NotImplementedException();
         }

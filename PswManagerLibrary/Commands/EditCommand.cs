@@ -1,5 +1,5 @@
 ﻿using PswManagerCommands;
-using PswManagerCommands.ConcreteCommands;
+using PswManagerCommands.AbstractCommands;
 using PswManagerCommands.Validation;
 using PswManagerLibrary.Extensions;
 using PswManagerLibrary.Storage;

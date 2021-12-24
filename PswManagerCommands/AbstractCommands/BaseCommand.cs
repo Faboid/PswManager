@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PswManagerCommands.ConcreteCommands {
+namespace PswManagerCommands.AbstractCommands {
     public abstract class BaseCommand : ICommand {
         protected abstract IValidationCollection AddConditions(IValidationCollection collection);
 

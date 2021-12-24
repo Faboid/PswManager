@@ -1,6 +1,6 @@
 ﻿using PswManagerLibrary.Storage;
 using PswManagerCommands.Validation;
-using PswManagerCommands.ConcreteCommands;
+using PswManagerCommands.AbstractCommands;
 using PswManagerCommands;
 
 namespace PswManagerLibrary.Commands {
