@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PswManagerLibrary.Extensions {
-    public static class ExtendingIValidationCollection {
+    public static class IValidationCollectionExtensions {
 
         public static string InexistentAccountMessage(this IValidationCollection collection) => "The given account doesn't exist.";
 
