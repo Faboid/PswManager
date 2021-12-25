@@ -42,7 +42,7 @@ namespace PswManagerLibrary.UIConnection {
         public void Start() {
 
             string command;
-            while((command = userInput.RequestAnswer().ToLowerInvariant()) is not "exit") {
+            while((command = userInput.RequestAnswer()).ToLowerInvariant() is not "exit") {
 
                 var result = query.Query(command);
 

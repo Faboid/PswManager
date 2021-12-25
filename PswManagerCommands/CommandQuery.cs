@@ -13,7 +13,7 @@ namespace PswManagerCommands {
         public CommandResult Query(string command) {
             //todo - implement a proper parser
             var query = command.Split(' ');
-            string cmdType = query.First();
+            string cmdType = query.First().ToLowerInvariant();
             var args = query.Skip(1).ToArray();
 
             if(_commands.TryGetValue(cmdType, out var cmd)) {
