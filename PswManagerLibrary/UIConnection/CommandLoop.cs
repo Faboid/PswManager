@@ -15,7 +15,7 @@ namespace PswManagerLibrary.UIConnection {
         private IUserInput userInput;
         private CommandQuery query;
 
-        public CommandLoop(IUserInput userInput, IPasswordManager pswManager, IReadOnlyDictionary<string, ICommand> extraCommands = null) {
+        public CommandLoop(IUserInput userInput, IPasswordManager pswManager, IReadOnlyDictionary<string, ICommand> extraCommands = default) {
             this.userInput = userInput;
             SetUp(pswManager, extraCommands);
         }
@@ -23,7 +23,7 @@ namespace PswManagerLibrary.UIConnection {
         private void SetUp(IPasswordManager pswManager, IReadOnlyDictionary<string, ICommand> extraCommands) {
 
             //set up command query
-            CommandsCollection collection = new CommandsCollection();
+            Dictionary<string, ICommand> collection = new();
 
             //basic crud commands
             collection.Add("add", new AddCommand(pswManager));
@@ -36,7 +36,7 @@ namespace PswManagerLibrary.UIConnection {
             collection.Add("movedb", new ChangeDatabaseLocationCommand());
             collection.Add("help", new HelpCommand());
 
-            query = new CommandQuery((IReadOnlyDictionary<string, ICommand>)collection.AsReadOnly().Concat(extraCommands));
+            query = new CommandQuery((IReadOnlyDictionary<string, ICommand>)collection.Concat(extraCommands));
         }
 
         public void Start() {
