@@ -6,7 +6,7 @@ namespace PswManagerCommands {
     public class CommandResult {
 
         /// <summary>
-        /// The basic message of completion/failure of the message.
+        /// The basic message of completion/failure of the command.
         /// </summary>
         public string BackMessage { get; }
 
