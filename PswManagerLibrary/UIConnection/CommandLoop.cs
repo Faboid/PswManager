@@ -29,7 +29,7 @@ namespace PswManagerLibrary.UIConnection {
             collection.Add("add", new AddCommand(pswManager));
             collection.Add("get", new GetCommand(pswManager));
             collection.Add("edit", new EditCommand(pswManager));
-            collection.Add("delete", new DeleteCommand(pswManager));
+            collection.Add("delete", new DeleteCommand(pswManager, userInput));
 
             //todo - implement these commands
             collection.Add("get-all", new GetAllAccountNamesCommand());
@@ -39,22 +39,35 @@ namespace PswManagerLibrary.UIConnection {
             query = new CommandQuery((IReadOnlyDictionary<string, ICommand>)collection.Concat(extraCommands));
         }
 
+        /// <summary>
+        /// This will keep asking for commands until the user breaks out of it by giving "exit" as the new command
+        /// </summary>
         public void Start() {
 
             string command;
             while((command = userInput.RequestAnswer()).ToLowerInvariant() is not "exit") {
 
-                var result = query.Query(command);
-
-                Console.WriteLine(result.BackMessage);
-                if(result.QueryReturnValue != null) {
-                    Console.WriteLine(result.QueryReturnValue);
-                }
-                if(result.Success is false) {
-                    Console.WriteLine(result.GetAllErrorsAsSingleString());
-                }
+                SingleQuery(command);
             }
 
+        }
+
+        private void SingleQuery(string command) {
+            var result = query.Query(command);
+
+            Console.WriteLine(result.BackMessage);
+            if(result.QueryReturnValue != null) {
+                Console.WriteLine(result.QueryReturnValue);
+            }
+            if(result.Success is false && result.ErrorMessages?.Length > 0) {
+                var response = userInput.YesOrNo($"There are {result.ErrorMessages.Length} errors. Do you want to read them?");
+                if(!response) {
+                    return;
+                }
+
+                //todo - consider turning this into a foreach and display a single error message at a time
+                Console.WriteLine(result.GetAllErrorsAsSingleString());
+            }
         }
 
     }
