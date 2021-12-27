@@ -10,6 +10,18 @@ using System.Threading.Tasks;
 namespace PswManagerTests.TestsHelpers.MockPasswordManager {
     public class EmptyPasswordManager : IPasswordManager {
 
+        bool? _accountExists = null;
+
+        public EmptyPasswordManager() { }
+
+        public EmptyPasswordManager(bool accountExists) {
+            _accountExists = accountExists;
+        }
+
+        public bool AccountExist(string name) {
+            return _accountExists ?? throw new NotImplementedException();
+        }
+
         public void CreatePassword(string name, string password, string email) {
             
         }

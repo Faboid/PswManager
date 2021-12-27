@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PswManagerCommands\PswManagerCommands.csproj" />
     <ProjectReference Include="..\PswManagerLibrary\PswManagerLibrary.csproj" />
   </ItemGroup>
 
