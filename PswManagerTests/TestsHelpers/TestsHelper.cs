@@ -1,14 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
-using PswManagerLibrary.OldCommands;
 using PswManagerLibrary.Storage;
 using PswManagerLibrary.Cryptography;
-using PswManagerLibrary.Factories;
+using PswManagerLibrary.UIConnection;
+using PswManagerLibrary.Commands;
 
 namespace PswManagerTests.TestsHelpers {
 
@@ -17,7 +13,6 @@ namespace PswManagerTests.TestsHelpers {
         //todo - turn every static value into non-static.
 
         public static readonly TestsPaths Paths;
-        public static readonly CommandQuery Query;
         public static readonly PasswordManager PswManager;
         public static readonly AutoInput AutoInput;
         public static readonly Token Token;
@@ -25,6 +20,8 @@ namespace PswManagerTests.TestsHelpers {
         public static readonly DefaultValues DefaultValues;
         public const string pswPassword = "pswpassword";
         public const string emaPassword = "emapassword";
+
+        private static AddCommand addCommand;
 
         static TestsHelper() {
             //get non-existing path to create a folder
@@ -38,14 +35,13 @@ namespace PswManagerTests.TestsHelpers {
             DefaultValues = new DefaultValues(5);
             
             AutoInput = new AutoInput();
-            Query = new CommandQuery(Paths, AutoInput, new PasswordManagerFactory(new CryptoAccountFactory()));
-            Query.Start(new Command($"psw {pswPassword} {emaPassword}"));
 
             CryptoAccount = new CryptoAccount(pswPassword, emaPassword);
 
             PswManager = new PasswordManager(Paths, CryptoAccount);
             Token = new Token(CryptoAccount, Paths, AutoInput);
 
+            addCommand = new AddCommand(PswManager);
             //set up default values
             SetUpDefault();
         }
@@ -55,10 +51,15 @@ namespace PswManagerTests.TestsHelpers {
             File.WriteAllText(Paths.AccountsFilePath, "");
             File.WriteAllText(Paths.PasswordsFilePath, "");
             File.WriteAllText(Paths.EmailsFilePath, "");
-            
+
             //creates three default entries
-            foreach(string value in DefaultValues.values) {
-                Query.Start($"create {value}");
+            int entries = DefaultValues.values.Count;
+            for(int i = 0; i < entries; i++) {
+                PswManager.CreatePassword(
+                    DefaultValues.GetValue(i, DefaultValues.TypeValue.Name),
+                    DefaultValues.GetValue(i, DefaultValues.TypeValue.Password),
+                    DefaultValues.GetValue(i, DefaultValues.TypeValue.Email)
+                );
             }
 
             AutoInput.SetDefault();
