@@ -15,7 +15,9 @@ namespace PswManagerLibrary.UIConnection {
         private IUserInput userInput;
         private CommandQuery query;
 
-        public CommandLoop(IUserInput userInput, IPasswordManager pswManager, IReadOnlyDictionary<string, ICommand> extraCommands = default) {
+        public CommandLoop(IUserInput userInput, IPasswordManager pswManager, IReadOnlyDictionary<string, ICommand> extraCommands = null) {
+            extraCommands ??= new Dictionary<string, ICommand>();
+
             this.userInput = userInput;
             SetUp(pswManager, extraCommands);
         }
@@ -32,11 +34,11 @@ namespace PswManagerLibrary.UIConnection {
             collection.Add("delete", new DeleteCommand(pswManager, userInput));
 
             //todo - implement these commands
-            collection.Add("get-all", new GetAllAccountNamesCommand());
+            collection.Add("get-all", new GetAllCommand());
             collection.Add("movedb", new ChangeDatabaseLocationCommand());
             collection.Add("help", new HelpCommand());
 
-            query = new CommandQuery((IReadOnlyDictionary<string, ICommand>)collection.Concat(extraCommands));
+            query = new CommandQuery(collection.Concat(extraCommands).ToDictionary(x => x.Key, x => x.Value));
         }
 
         /// <summary>
@@ -52,12 +54,12 @@ namespace PswManagerLibrary.UIConnection {
 
         }
 
-        private void SingleQuery(string command) {
+        public void SingleQuery(string command) {
             var result = query.Query(command);
 
-            Console.WriteLine(result.BackMessage);
+            userInput.SendMessage(result.BackMessage);
             if(result.QueryReturnValue != null) {
-                Console.WriteLine(result.QueryReturnValue);
+                userInput.SendMessage(result.QueryReturnValue);
             }
             if(result.Success is false && result.ErrorMessages?.Length > 0) {
                 var response = userInput.YesOrNo($"There are {result.ErrorMessages.Length} errors. Do you want to read them?");
@@ -66,7 +68,7 @@ namespace PswManagerLibrary.UIConnection {
                 }
 
                 //todo - consider turning this into a foreach and display a single error message at a time
-                Console.WriteLine(result.GetAllErrorsAsSingleString());
+                userInput.SendMessage(result.GetAllErrorsAsSingleString());
             }
         }
 
