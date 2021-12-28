@@ -16,7 +16,6 @@ namespace PswManagerConsole {
 
         public void SendMessage(string message) {
             Console.WriteLine(message);
-            Console.ReadKey();
         }
 
         public bool YesOrNo(string question) {

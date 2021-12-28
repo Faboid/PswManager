@@ -43,12 +43,10 @@ namespace PswManagerLibrary.UIConnection {
         /// </summary>
         public void Start() {
 
-            //todo - fix bug: for some reason, obtaining the command sometimes leaves out the first character
             string command;
             while((command = userInput.RequestAnswer()).ToLowerInvariant() != "exit") {
 
                 SingleQuery(command);
-                command = "";
             }
 
         }
