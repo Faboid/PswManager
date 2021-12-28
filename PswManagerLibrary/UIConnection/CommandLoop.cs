@@ -2,14 +2,11 @@
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Commands.NotImplementedYet;
 using PswManagerLibrary.Storage;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PswManagerLibrary.UIConnection {
-//todo - this class is doing too much. Split it into multiple classes and use proper DI
+    //todo - this class is doing too much. Split it into multiple classes and use proper DI
     public class CommandLoop {
 
         private IUserInput userInput;
@@ -46,10 +43,12 @@ namespace PswManagerLibrary.UIConnection {
         /// </summary>
         public void Start() {
 
+            //todo - fix bug: for some reason, obtaining the command sometimes leaves out the first character
             string command;
-            while((command = userInput.RequestAnswer()).ToLowerInvariant() is not "exit") {
+            while((command = userInput.RequestAnswer()).ToLowerInvariant() != "exit") {
 
                 SingleQuery(command);
+                command = "";
             }
 
         }

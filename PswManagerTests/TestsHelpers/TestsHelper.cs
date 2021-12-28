@@ -3,7 +3,6 @@ using System.IO;
 using Xunit;
 using PswManagerLibrary.Storage;
 using PswManagerLibrary.Cryptography;
-using PswManagerLibrary.UIConnection;
 using PswManagerLibrary.Commands;
 
 namespace PswManagerTests.TestsHelpers {

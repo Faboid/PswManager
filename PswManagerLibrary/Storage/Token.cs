@@ -2,11 +2,7 @@
 using PswManagerLibrary.Global;
 using PswManagerLibrary.UIConnection;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PswManagerLibrary.Storage {
     public class Token : IToken {

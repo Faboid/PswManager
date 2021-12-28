@@ -1,15 +1,10 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.Validation;
 using PswManagerLibrary.Commands;
-using PswManagerLibrary.Exceptions;
-using PswManagerLibrary.RefactoringFolder;
 using PswManagerLibrary.Storage;
 using PswManagerTests.TestsHelpers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.RefactoringFolderTests.Commands {
@@ -103,23 +98,6 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
 
             //act & assert
             Failure_GenericTestType(ValidationCollection.ArgumentsNullOrEmptyMessage, args);
-        } 
-
-        private void Failure_GenericTestType(string[] args) {
-
-            //arrange
-            bool valid;
-            CommandResult result;
-
-            //act
-            valid = addCommand.Validate(args).success;
-            result = addCommand.Run(args);
-
-            //assert
-            Assert.False(valid);
-            Assert.False(result.Success);
-            Assert.NotEmpty(result.ErrorMessages);
-
         }
 
         private void Failure_GenericTestType(string expectedErrorMessage, string[] args) {

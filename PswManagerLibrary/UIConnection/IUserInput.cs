@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PswManagerLibrary.UIConnection {
+﻿namespace PswManagerLibrary.UIConnection {
     public interface IUserInput {
 
         bool YesOrNo(string question);
