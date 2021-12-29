@@ -8,7 +8,6 @@ using PswManagerLibrary.UIConnection;
 namespace PswManagerLibrary.Commands {
     public class DeleteCommand : BaseCommand {
 
-        //todo - implement tests for this command
         private readonly IPasswordManager pswManager;
         private readonly IUserInput userInput;
 

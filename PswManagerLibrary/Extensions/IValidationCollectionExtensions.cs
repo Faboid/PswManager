@@ -4,6 +4,7 @@ using PswManagerLibrary.Storage;
 namespace PswManagerLibrary.Extensions {
     public static class IValidationCollectionExtensions {
 
+        //todo - turn this into a constant value. Consider moving it to ValidationCollection
         public static string InexistentAccountMessage(this IValidationCollection collection) => "The given account doesn't exist.";
 
         /// <summary>
