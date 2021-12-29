@@ -20,8 +20,6 @@ namespace PswManagerTests.TestsHelpers {
         public const string pswPassword = "pswpassword";
         public const string emaPassword = "emapassword";
 
-        private static AddCommand addCommand;
-
         static TestsHelper() {
             //get non-existing path to create a folder
             Paths = new TestsPaths();
@@ -40,7 +38,6 @@ namespace PswManagerTests.TestsHelpers {
             PswManager = new PasswordManager(Paths, CryptoAccount);
             Token = new Token(CryptoAccount, Paths, AutoInput);
 
-            addCommand = new AddCommand(PswManager);
             //set up default values
             SetUpDefault();
         }
