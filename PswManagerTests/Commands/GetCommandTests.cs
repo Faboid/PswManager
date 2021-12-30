@@ -1,5 +1,7 @@
 ﻿using PswManagerCommands;
+using PswManagerCommands.Validation;
 using PswManagerLibrary.Commands;
+using PswManagerLibrary.Extensions;
 using PswManagerTests.TestsHelpers;
 using System;
 using System.Collections.Generic;
@@ -10,11 +12,7 @@ namespace PswManagerTests.Commands {
     [Collection("TestHelperCollection")]
     public class GetCommandTests {
 
-        readonly GetCommand getCommand;
-
-        public GetCommandTests() {
-            getCommand = new(TestsHelper.PswManager);
-        }
+        readonly GetCommand getCommand = new(TestsHelper.PswManager);
 
         [Fact]
         public void CommandSuccess() {
@@ -30,59 +28,28 @@ namespace PswManagerTests.Commands {
 
         }
 
-        [Fact]
-        public void CommandFailure_AccountDoesNotExist() {
+        public static IEnumerable<object[]> ExpectedValidationFailuresData() {
+            string validName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
 
-            //arrange
-            TestsHelper.SetUpDefault();
-            var args = new string[] { "notexistentname" };
+            yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
 
-            //act & assert
-            Failure_GenericTestType(args);
+            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null } };
+            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "" } };
+            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "     " } };
 
-        }
+            yield return new object[] { new ValidationCollection(null).InexistentAccountMessage(), new string[] { "fakeAccountName" } };
 
-        public static IEnumerable<object[]> NullArgumentsData() {
-            yield return new object[] { null };
-            yield return new object[] { new string[] { null } };
-        }
-
-        [Theory]
-        [MemberData(nameof(NullArgumentsData))]
-        public void CommandFailure_NullArguments(string[] args) {
-
-            //assert & act
-            Failure_GenericTestType(args);
-
-        }
-
-        public static IEnumerable<object[]> IncorrectNumberArgumentsData() {
-            yield return new object[] { new string[] { "validName", "validEmail@emaildomain.com" } };
-            yield return new object[] { new string[] { "justAName", "thisPassword", "validEmail@emaildomain.com" } };
-            yield return new object[] { Array.Empty<string>() };
-            yield return new object[] { new string[] { "firstName", "secondName", "passwordhere", "validEmail@emaildomain.com" } };
+            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
+            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "eiwghrywhgi" } };
+            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "tirhtewygh", "email@somewhere.com" } };
+            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "tirhtewygh", "email@somewhere.com", "something" } };
         }
 
         [Theory]
-        [MemberData(nameof(IncorrectNumberArgumentsData))]
-        public void CommandFailure_IncorrectNumberArguments(string[] args) {
-
-            //act & assert
-            Failure_GenericTestType(args);
-
-        }
-
-        [Fact]
-        public void CommandFailure_EmptyName() {
+        [MemberData(nameof(ExpectedValidationFailuresData))]
+        public void ExpectedValidationFailures(string expectedErrorMessage, params string[] args) {
 
             //arrange
-            var args = new string[] { "" };
-
-            //act & assert
-            Failure_GenericTestType(args);
-        }
-
-        private void Failure_GenericTestType(string[] args) {
             bool valid;
             CommandResult result;
 
@@ -94,6 +61,9 @@ namespace PswManagerTests.Commands {
             Assert.False(valid);
             Assert.False(result.Success);
             Assert.NotEmpty(result.ErrorMessages);
+            Assert.Contains(expectedErrorMessage, result.ErrorMessages);
+
         }
+
     }
 }
