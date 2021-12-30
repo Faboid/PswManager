@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace PswManagerTests.RefactoringFolderTests.Commands {
+namespace PswManagerTests.Commands {
 
     [Collection("TestHelperCollection")]
     public class GetCommandTests {

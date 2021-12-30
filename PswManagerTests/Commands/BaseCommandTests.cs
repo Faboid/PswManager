@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PswManagerTests.RefactoringFolderTests.Commands {
+namespace PswManagerTests.Commands {
 
     //todo - either implement remaining tests or find a cleaner way of handling generic tests
 
@@ -38,7 +38,7 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
         }
 
         private ITestOutputHelper _output;
-        protected abstract CommandTestsHelper GetHelper(); 
+        protected abstract CommandTestsHelper GetHelper();
 
         /// <summary>
         /// Some commands require the account to exist, while others the reverse. Using <see cref="ExpectAccountExistance"/>, this is written in a generic manner to be used on both cases.
@@ -50,7 +50,7 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
                 _output.WriteLine("Test skipped because this command does not require the existence of the account.");
                 return;
             }
-            
+
             //arrange
             TestsHelper.SetUpDefault();
             var args = GetHelper().AccountExistenceArguments;

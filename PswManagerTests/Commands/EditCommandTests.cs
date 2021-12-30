@@ -5,7 +5,7 @@ using PswManagerTests.TestsHelpers;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace PswManagerTests.RefactoringFolderTests.Commands {
+namespace PswManagerTests.Commands {
     [Collection("TestHelperCollection")]
     public class EditCommandTests : BaseCommandTests {
 
