@@ -9,6 +9,7 @@ namespace PswManagerLibrary.Commands {
     public class EditCommand : BaseCommand {
         //todo - implement tests for this command
         private readonly IPasswordManager pswManager;
+        public const string InvalidSyntaxMessage = "Invalid syntax used for this command. For more informations, run [help edit]";
 
         public EditCommand(IPasswordManager pswManager) {
             this.pswManager = pswManager;
@@ -21,7 +22,7 @@ namespace PswManagerLibrary.Commands {
         protected override IValidationCollection AddConditions(IValidationCollection collection) {
             collection.AddCommonConditions(2, 4);
             collection.AddAccountShouldExistCondition(pswManager);
-            //todo - add fake email check
+            //todo - add fake email check and something to check the peculiar syntax required by this command
 
             return collection;
         }
