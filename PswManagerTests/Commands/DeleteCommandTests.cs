@@ -1,6 +1,7 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.Validation;
 using PswManagerLibrary.Commands;
+using PswManagerLibrary.Extensions;
 using PswManagerTests.TestsHelpers;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace PswManagerTests.Commands {
     [Collection("TestHelperCollection")]
     public class DeleteCommandTests {
 
-        DeleteCommand delCommand = new DeleteCommand(TestsHelper.PswManager, TestsHelper.AutoInput);
+        readonly DeleteCommand delCommand = new DeleteCommand(TestsHelper.PswManager, TestsHelper.AutoInput);
 
         [Fact]
         public void DeleteSuccessfully() {
@@ -33,14 +34,25 @@ namespace PswManagerTests.Commands {
 
         }
 
+        public static IEnumerable<object[]> ExpectedValidationFailuresData() {
+            string validName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+
+            yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
+
+            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null } };
+            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "" } };
+            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "     " } };
+
+            yield return new object[] { new ValidationCollection(null).InexistentAccountMessage(), new string[] { "fakeAccountName" } };
+
+            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
+            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "eiwghrywhgi" } };
+            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "tirhtewygh", "email@somewhere.com"} };
+            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "tirhtewygh", "email@somewhere.com", "something"} };
+        }
+
         [Theory]
-        [InlineData(ValidationCollection.ArgumentsNullMessage, null)]
-        [InlineData(ValidationCollection.ArgumentsNullOrEmptyMessage, null)]
-        [InlineData(ValidationCollection.WrongArgumentsNumberMessage)]
-        [InlineData(ValidationCollection.WrongArgumentsNumberMessage, "expectedName", "oneTooMany")]
-        [InlineData(ValidationCollection.WrongArgumentsNumberMessage, "expectedName", "oneTooMany", "twoTooMany")]
-        [InlineData(ValidationCollection.WrongArgumentsNumberMessage, "expectedName", "oneTooMany", "twoTooMany", "threeTooMany")]
-        [InlineData("The given account doesn't exist.", "fakeNonExistentAccount")]
+        [MemberData(nameof(ExpectedValidationFailuresData))]
         public void ExpectedValidationFailures(string expectedErrorMessage, params string[] args) {
 
             //arrange
