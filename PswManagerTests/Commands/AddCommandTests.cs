@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace PswManagerTests.RefactoringFolderTests.Commands {
+namespace PswManagerTests.Commands {
 
     [Collection("TestHelperCollection")]
     public class AddCommandTests {
@@ -25,7 +25,7 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
         [InlineData("justSomeName#9839", "random@#[ssword", "random@email.it")]
         [InlineData("xmlnyyx", "ightueghtuy", "this@mail.com")]
         [InlineData("valueNamehere", "&&%£@#[][+*é", "valueNameHere@thisdomain.com")]
-        public void CommandSuccess(string name, string password, string email) {
+        public void AddSuccessfully(string name, string password, string email) {
 
             //arrange
             var args = new string[] { name, password, email };
@@ -43,64 +43,27 @@ namespace PswManagerTests.RefactoringFolderTests.Commands {
 
         }
 
-        [Fact]
-        public void CommandFailure_AccountExistsAlready() {
+        public static IEnumerable<object[]> ExpectedValidationFailuresData() {
+            string validName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
 
-            //arrange
-            TestsHelper.SetUpDefault();
-            var args = new string[] { TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name), "randompass", "randomemail" };
-
-            //act & assert
-            Failure_GenericTestType(AddCommand.AccountExistsErrorMessage, args);
-
-        }
-
-        public static IEnumerable<object[]> NullArgumentsData() {
             yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null, "&&%£@#[][+*é", "valueNameHere@thisdomain.com" } };
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "valuenare", null, "valueNameHere@thisdomain.com" } };
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "justvalue##", "riewhguyrui", null } };
-        }
 
-        [Theory]
-        [MemberData(nameof(NullArgumentsData))]
-        public void CommandFailure_NullArguments(string failureMessage, string[] args) {
+            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null } };
+            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, null, "email@this.it" } };
+            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, "fiehgywightuy", "      " } };
+            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, "", "email@this.com" } };
 
-            Failure_GenericTestType(failureMessage, args);
+            yield return new object[] { AddCommand.AccountExistsErrorMessage, new string[] { validName } };
 
-        }
-
-        public static IEnumerable<object[]> IncorrectNumberArgumentsData() {
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { "validName", "validEmail@emaildomain.com" } };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { "justAName" } };
             yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { "firstName", "secondName", "passwordhere", "validEmail@emaildomain.com" } };
+            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName } };
+            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "eiwghrywhgi" } };
+            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "tirhtewygh", "email@somewhere.com", "oneTooMany" } };
         }
 
         [Theory]
-        [MemberData(nameof(IncorrectNumberArgumentsData))]
-        public void CommandFailure_IncorrectNumberArguments(string failureMessage, string[] args) {
-
-            //act & assert
-            Failure_GenericTestType(failureMessage, args);
-
-        }
-
-        [Theory]
-        [InlineData("", "somePassValue", "Someemail@value.com")]
-        [InlineData("someNameValue", "", "Someemail@value.com")]
-        [InlineData("someNameValue", "somePassValue", "")]
-        [InlineData("someNameValue", "      ", "Someemail@value.com")]
-        public void CommandFailure_EmptyValues(string name, string password, string email) {
-
-            //arrange
-            var args = new string[] { name, password, email };
-
-            //act & assert
-            Failure_GenericTestType(ValidationCollection.ArgumentsNullOrEmptyMessage, args);
-        }
-
-        private void Failure_GenericTestType(string expectedErrorMessage, string[] args) {
+        [MemberData(nameof(ExpectedValidationFailuresData))]
+        public void ExpectedValidationFailures(string expectedErrorMessage, params string[] args) {
 
             //arrange
             bool valid;
