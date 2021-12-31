@@ -70,9 +70,13 @@ namespace PswManagerLibrary.Storage {
             var splitArgs = arguments.Select(x => x.Split(':'));
 
             //for every pair, try to insert the value into the dictionary
-            foreach(string[] args in splitArgs) {
-                if(args.Length != 2) {
+            foreach(string[] pair in splitArgs) {
+                var args = pair;
+
+                if(args.Length < 2) {
                     throw new InvalidCommandFormatException("Invalid format for editing values. The correct argument format is: [key:newValue]. Possible keys: name, password, email.");
+                } else if(args.Length > 2) {
+                    args = new string[] { pair[0], string.Join(':', pair.Skip(1)) };
                 }
 
                 if(values.ContainsKey(args[0])) {

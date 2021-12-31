@@ -22,17 +22,17 @@ namespace PswManagerTests.Commands {
             //[1]newName
             //[2]expected return string
             yield return new object[] {
-                new[] { def.GetValue(1, DefaultValues.TypeValue.Name), "password:newPassword1", "email:newEmail1" },
+                new[] { def.GetValue(1, DefaultValues.TypeValue.Name), "email:newEmail1", "password:newPassword1" },
                 def.GetValue(1, DefaultValues.TypeValue.Name),
                 $"{def.GetValue(1, DefaultValues.TypeValue.Name)} newPassword1 newEmail1"
             };
             yield return new object[] {
-                new[] { def.GetValue(2, DefaultValues.TypeValue.Name), "name:newName2", "email:newEmail2" },
-                "newName2",
-                $"newName2 {def.GetValue(2, DefaultValues.TypeValue.Password)} newEmail2"
+                new[] { def.GetValue(2, DefaultValues.TypeValue.Name), "name:new:Name2", "email:newEmail2" },
+                "new:Name2",
+                $"new:Name2 {def.GetValue(2, DefaultValues.TypeValue.Password)} newEmail2"
             };
             yield return new object[] {
-                new[] { def.GetValue(3, DefaultValues.TypeValue.Name), "name:fixedName", "password:passfix", "email:fixed@email.com" },
+                new[] { def.GetValue(3, DefaultValues.TypeValue.Name), "password:passfix", "name:fixedName", "email:fixed@email.com" },
                 "fixedName",
                 "fixedName passfix fixed@email.com"
             };
@@ -74,7 +74,13 @@ namespace PswManagerTests.Commands {
             yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName } };
             yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "password:newPassword1", "email:email@somewhere.com", "name:newName", "password:newvalidPassword" } };
 
-            //todo - insert syntax check
+            yield return new object[] { EditCommand.InvalidSyntaxMessage, new string[] { validName, "newPassword" } };
+            yield return new object[] { EditCommand.InvalidSyntaxMessage, new string[] { validName, "pass@eqwwr" } };
+
+            //todo - These two should return an "InvalidKeyFound" error message, not an "InvalidSyntaxMessage".
+            //While the they are correctly stopped even with the code there's right now, the error returned to the user should be more explicit.
+            yield return new object[] { EditCommand.InvalidSyntaxMessage, new string[] { validName, "password:qrqrewqe", "nam:newname" } };
+            yield return new object[] { EditCommand.InvalidSyntaxMessage, new string[] { validName, "name:newname", "password:qweqwed" , "ema:email@thisone.com"} };
         }
 
         [Theory]
