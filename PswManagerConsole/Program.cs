@@ -11,7 +11,7 @@ namespace PswManagerConsole {
 
             Paths paths = new Paths();
             UserInput userInput = new UserInput();
-            //todo - a temporary password for testing. Will be removed once the initial setup is fully complete.
+            //a temporary password for testing. Will be removed once the initial setup is fully complete.
             CryptoAccount cryptoAccount = new CryptoAccount("gheerwiahgkth", "ewrgrthrer");
 
             Console.WriteLine("Welcome to PswManager! Please insert a command.");
