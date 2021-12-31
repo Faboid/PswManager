@@ -37,7 +37,7 @@ namespace PswManagerLibrary.Commands {
             return new CommandResult("The account has been edited successfully.", true);
         }
 
-        private bool CheckSyntax(string[] args) {
+        private static bool CheckSyntax(string[] args) {
             var toTest = args.Skip(1); //skips the name
             string[] types = new string[] { "name", "password", "email" };
 
@@ -51,11 +51,11 @@ namespace PswManagerLibrary.Commands {
             return corretCount == toTest.Count();
         }
 
-        private bool CheckRegex(IEnumerable<string> args, string constantSide) {
+        private static bool CheckRegex(IEnumerable<string> args, string constantSide) {
             return args.Any(x => GetRegex(constantSide).IsMatch(x));
         }
 
-        private Regex GetRegex(string constantSide) {
+        private static Regex GetRegex(string constantSide) {
             return new Regex($"^{constantSide}:");
         }
     }
