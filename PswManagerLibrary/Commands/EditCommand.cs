@@ -22,7 +22,7 @@ namespace PswManagerLibrary.Commands {
         protected override IValidationCollection AddConditions(IValidationCollection collection) {
             collection.AddCommonConditions(2, 4);
             collection.AddAccountShouldExistCondition(pswManager);
-            //todo - add fake email check and something to check the peculiar syntax required by this command
+            //todo - add something to check the peculiar syntax required by this command
 
             return collection;
         }

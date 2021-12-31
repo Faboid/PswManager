@@ -68,16 +68,5 @@ namespace PswManagerCommands.Validation {
             Add((args) => args.All(x => string.IsNullOrWhiteSpace(x) == false), ArgumentsNullOrEmptyMessage);
         }
 
-        /// <summary>
-        /// [WIP] - Adds a condition to check whether the provided email is valid.
-        /// </summary>
-        /// <param name="stringToCheck">Since certain commands do not require to insert the email in a specific index, it's possible to pass in the string to check directly.</param>
-        public void AddEmailCheck(string stringToCheck) {
-            throw new NotImplementedException();
-            //todo - implement regex
-            Regex regex = new Regex("");
-
-            Add(regex.IsMatch(stringToCheck), InvalidEmailMessage);
-        }
     }
 }
