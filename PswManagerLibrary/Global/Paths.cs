@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 
 namespace PswManagerLibrary.Global {
@@ -8,19 +9,47 @@ namespace PswManagerLibrary.Global {
     /// </summary>
     public class Paths : IPaths {
 
-        public Paths() { }
+        public Paths() { 
+            if(!File.Exists(ConfigFilePath) || !Directory.Exists(GetMain())) {
+                SetDefaultMain();
+            }
+        }
 
 
-        public static string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public readonly static string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private readonly static string ConfigFilePath = Path.Combine(WorkingDirectory, "Config.txt");
 
-        //todo - temporary stored location. Will change to storing it in a config or a txt file
-        public string PasswordsFilePath => $"{WorkingDirectory}\\Passwords.txt";
+        public string PasswordsFilePath => $"{GetMain()}\\Passwords.txt";
 
-        public string AccountsFilePath => $"{WorkingDirectory}\\Accounts.txt";
+        public string AccountsFilePath => $"{GetMain()}\\Accounts.txt";
 
-        public string EmailsFilePath => $"{WorkingDirectory}\\Emails.txt";
+        public string EmailsFilePath => $"{GetMain()}\\Emails.txt";
 
-        public string TokenFilePath => $"{WorkingDirectory}\\Token.txt";
+        public string TokenFilePath => $"{GetMain()}\\Token.txt";
+
+        /// <summary>
+        /// Changes the path to the accounts WITHOUT dealing with the current saved data. Any folder and files at the previous path will remain.
+        /// </summary>
+        /// <param name="path"></param>
+        public void SetMain(string path) {
+            if(Directory.Exists(path) == false) {
+                throw new ArgumentException("The given path doesn't point to an existing directory.", nameof(path));
+            }
+
+            File.WriteAllText(ConfigFilePath, path);
+        }
+
+        public void MoveMain(string path) {
+            throw new NotImplementedException();
+        }
+
+        private string GetMain() {
+            return File.ReadAllText(ConfigFilePath);
+        }
+
+        private void SetDefaultMain() {
+            SetMain(WorkingDirectory);
+        }
 
     }
 }
