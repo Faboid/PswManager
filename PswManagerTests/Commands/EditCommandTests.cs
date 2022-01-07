@@ -13,7 +13,7 @@ namespace PswManagerTests.Commands {
     [Collection("TestHelperCollection")]
     public class EditCommandTests {
 
-        readonly EditCommand editCommand = new EditCommand(TestsHelper.PswManager);
+        readonly EditCommand editCommand = new(TestsHelper.PswManager);
 
         public static IEnumerable<object[]> EditSuccessfullyData() {
             var def = TestsHelper.DefaultValues;

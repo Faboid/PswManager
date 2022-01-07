@@ -49,7 +49,7 @@ namespace PswManagerLibrary.Commands {
         }
 
         private static SyntaxCheckResult CheckSyntax(in string[] args) {
-            SyntaxCheckResult result = new SyntaxCheckResult();
+            var result = new SyntaxCheckResult();
 
             try {
                 var argsToTest = args.Skip(1); //skips the name

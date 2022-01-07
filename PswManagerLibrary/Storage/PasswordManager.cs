@@ -61,10 +61,11 @@ namespace PswManagerLibrary.Storage {
             (arguments.Length is 0).IfTrueThrow(new InvalidCommandException("Lack of valid arguments for the editing process. Please rewrite the command with valid arguments."));
 
             //generate a dictionary with all the possible values
-            Dictionary<string, string> values = new Dictionary<string, string>();
-            values.Add(nameText, null);
-            values.Add(passText, null);
-            values.Add(emaText, null);
+            var values = new Dictionary<string, string> {
+                { nameText, null },
+                { passText, null },
+                { emaText, null }
+            };
 
             //split keys and values from the arguments
             var splitArgs = arguments.Select(x => x.Split(':'));
