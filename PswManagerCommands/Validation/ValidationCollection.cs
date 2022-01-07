@@ -40,14 +40,20 @@ namespace PswManagerCommands.Validation {
         }
 
         /// <summary>
-        /// Adds the values to the list.
+        /// Adds the values to the list.<br/>
+        /// <paramref name="condition"/>:
+        /// <br/>- true = validation succeeds
+        /// <br/>- false = validation failure
         /// </summary>
         public void Add(bool condition, string errorMessage) {
             validators.Add((condition, errorMessage));
         }
 
         /// <summary>
-        /// Runs <paramref name="conditionFunction"/> within a trycatch and inserts the value as false in case an exception is thrown.
+        /// Runs <paramref name="conditionFunction"/> within a trycatch and inserts the value as false in case an exception is thrown.<br/>
+        /// Note:
+        /// <br/>- true = validation succeeds
+        /// <br/>- false = validation failure
         /// </summary>
         public void Add(Func<string[], bool> conditionFunction, string errorMessage) {
             try {
