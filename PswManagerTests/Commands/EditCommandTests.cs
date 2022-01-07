@@ -77,10 +77,11 @@ namespace PswManagerTests.Commands {
             yield return new object[] { EditCommand.InvalidSyntaxMessage, new string[] { validName, "newPassword" } };
             yield return new object[] { EditCommand.InvalidSyntaxMessage, new string[] { validName, "pass@eqwwr" } };
 
-            //todo - These two should return an "InvalidKeyFound" error message, not an "InvalidSyntaxMessage".
-            //While the they are correctly stopped even with the code there's right now, the error returned to the user should be more explicit.
-            yield return new object[] { EditCommand.InvalidSyntaxMessage, new string[] { validName, "password:qrqrewqe", "nam:newname" } };
-            yield return new object[] { EditCommand.InvalidSyntaxMessage, new string[] { validName, "name:newname", "password:qweqwed" , "ema:email@thisone.com"} };
+            yield return new object[] { EditCommand.InvalidKeyFound, new string[] { validName, "password:qrqrewqe", "nam:newname" } };
+            yield return new object[] { EditCommand.InvalidKeyFound, new string[] { validName, "name:newname", "password:qweqwed" , "ema:email@thisone.com"} };
+
+            yield return new object[] { EditCommand.DuplicateKeyFound, new string[] { validName, "email:email@somewhere.com", "email:someEma@here.com" } };
+            yield return new object[] { EditCommand.DuplicateKeyFound, new string[] { validName, "password:newPassword1", "email:email@somewhere.com", "name:newName", "password:newvalidPassword" } };
         }
 
         [Theory]

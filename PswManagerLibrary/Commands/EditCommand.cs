@@ -3,6 +3,7 @@ using PswManagerCommands.AbstractCommands;
 using PswManagerCommands.Validation;
 using PswManagerLibrary.Extensions;
 using PswManagerLibrary.Storage;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -12,7 +13,14 @@ namespace PswManagerLibrary.Commands {
 
         private readonly IPasswordManager pswManager;
         public const string InvalidSyntaxMessage = "Invalid syntax used for this command. For more informations, run [help edit]";
-        public const string InvalidKeyFound = "Invalid key has been found:";
+        public const string InvalidKeyFound = "Invalid key(s) has been found. Valid keys: name, password, email.";
+        public const string DuplicateKeyFound = "Duplicate keys aren't allowed.";
+
+        private record SyntaxCheckResult {
+            public bool ValidSyntax { get; set; } = true;
+            public bool ValidKeys { get; set; } = true;
+            public bool NoDuplicateKeys { get; set; } = true;
+        }
 
         public EditCommand(IPasswordManager pswManager) {
             this.pswManager = pswManager;
@@ -25,8 +33,11 @@ namespace PswManagerLibrary.Commands {
         protected override IValidationCollection AddConditions(IValidationCollection collection) {
             collection.AddCommonConditions(2, 4);
             collection.AddAccountShouldExistCondition(pswManager);
-            collection.Add(CheckSyntax, InvalidSyntaxMessage);
-            //todo - add check for invalid keys
+
+            var syntaxCheckResult = CheckSyntax(collection.GetArguments());
+            collection.Add(syntaxCheckResult.ValidSyntax, InvalidSyntaxMessage);
+            collection.Add(syntaxCheckResult.ValidKeys, InvalidKeyFound);
+            collection.Add(syntaxCheckResult.NoDuplicateKeys, DuplicateKeyFound);
 
             return collection;
         }
@@ -37,26 +48,53 @@ namespace PswManagerLibrary.Commands {
             return new CommandResult("The account has been edited successfully.", true);
         }
 
-        private static bool CheckSyntax(string[] args) {
-            var toTest = args.Skip(1); //skips the name
-            string[] types = new string[] { "name", "password", "email" };
+        private static SyntaxCheckResult CheckSyntax(in string[] args) {
+            SyntaxCheckResult result = new SyntaxCheckResult();
 
-            int corretCount = 0;
-            foreach(string type in types) {
-                if(CheckRegex(toTest, type)) {
-                    corretCount++;
+            try {
+                var argsToTest = args.Skip(1); //skips the name
+
+                if(argsToTest.Any(x => !x.Contains(':'))) {
+                    result.ValidSyntax = false;
+                    return result;
                 }
+
+                //string key, bool isUsed
+                Dictionary<string, bool> keys = GetValidKeys();
+
+                var givenKeyArguments = argsToTest.Select(x => x.Split(':').First());
+
+                CheckKeys(ref result, keys, givenKeyArguments);
+            } catch(Exception) {
+                result.ValidSyntax = false;
             }
 
-            return corretCount == toTest.Count();
+            return result;
         }
 
-        private static bool CheckRegex(IEnumerable<string> args, string constantSide) {
-            return args.Any(x => GetRegex(constantSide).IsMatch(x));
+        private static void CheckKeys(ref SyntaxCheckResult result, Dictionary<string, bool> keys, IEnumerable<string> givenKeyArguments) {
+
+            foreach(string s in givenKeyArguments) {
+
+                if(keys.ContainsKey(s)) {
+
+                    if(keys[s] == true) {
+                        result.NoDuplicateKeys= false;
+                    }
+                    keys[s] = true;
+
+                } else {
+                    result.ValidKeys = false;
+                }
+            }
         }
 
-        private static Regex GetRegex(string constantSide) {
-            return new Regex($"^{constantSide}:");
+        private static Dictionary<string, bool> GetValidKeys() {
+            Dictionary<string, bool> keys = new();
+            keys.Add("name", false);
+            keys.Add("password", false);
+            keys.Add("email", false);
+            return keys;
         }
     }
 }
