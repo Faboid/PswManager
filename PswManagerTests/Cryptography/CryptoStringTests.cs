@@ -19,8 +19,8 @@ namespace PswManagerTests.Cryptography {
             var decryptedValue = crypto.Decrypt(encryptedValue);
 
             //assert
-            Assert.NotEqual(encryptedValue, valueToTest);
-            Assert.Equal(decryptedValue, valueToTest);
+            Assert.NotEqual(valueToTest, encryptedValue);
+            Assert.Equal(valueToTest, decryptedValue);
 
         }
 
