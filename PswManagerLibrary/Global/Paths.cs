@@ -19,13 +19,13 @@ namespace PswManagerLibrary.Global {
         public readonly static string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private readonly static string ConfigFilePath = Path.Combine(WorkingDirectory, "Config.txt");
 
-        public string PasswordsFilePath => $"{GetMain()}\\Passwords.txt";
+        public string PasswordsFilePath => Path.Combine(GetMain(), "Passwords.txt");
 
-        public string AccountsFilePath => $"{GetMain()}\\Accounts.txt";
+        public string AccountsFilePath => Path.Combine(GetMain(), "Accounts.txt");
 
-        public string EmailsFilePath => $"{GetMain()}\\Emails.txt";
+        public string EmailsFilePath => Path.Combine(GetMain(), "Emails.txt");
 
-        public string TokenFilePath => $"{GetMain()}\\Token.txt";
+        public string TokenFilePath => Path.Combine(GetMain(), "Token.txt");
 
         /// <summary>
         /// Changes the path to the accounts WITHOUT dealing with the current saved data. Any folder and files at the previous path will remain.
