@@ -15,12 +15,12 @@ namespace PswManagerTests.Global {
         static readonly string TempMainPath = Path.Combine(WorkingDirectory, "ewfsgeweqrqrqrttwqagrthhrjyjewrew"); //gibberish to make sure it's not an existing folder
         static readonly string ConfigFilePath = Path.Combine(WorkingDirectory, "Config.txt");
 
-        private record FourPaths (string main) {
+        private record FourPaths (string MainPath) {
 
-            public readonly string ExpectedPasswordsFilePath = Path.Combine(main, "Passwords.txt");
-            public readonly string ExpectedAccountsFilePath = Path.Combine(main, "Accounts.txt");
-            public readonly string ExpectedEmailsFilePath = Path.Combine(main, "Emails.txt");
-            public readonly string ExpectedTokenFilePath = Path.Combine(main, "Token.txt");
+            public readonly string ExpectedPasswordsFilePath = Path.Combine(MainPath, "Passwords.txt");
+            public readonly string ExpectedAccountsFilePath = Path.Combine(MainPath, "Accounts.txt");
+            public readonly string ExpectedEmailsFilePath = Path.Combine(MainPath, "Emails.txt");
+            public readonly string ExpectedTokenFilePath = Path.Combine(MainPath, "Token.txt");
 
             public void ForEach(Action<string> action) {
                 action.Invoke(ExpectedPasswordsFilePath);
