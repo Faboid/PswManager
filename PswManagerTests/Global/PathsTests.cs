@@ -12,13 +12,24 @@ namespace PswManagerTests.Global {
     public class PathsTests : IDisposable {
 
         static readonly string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        static readonly string TempMainPath = Path.Combine(WorkingDirectory, "TempMainPath");
+        static readonly string TempMainPath = Path.Combine(WorkingDirectory, "ewfsgeweqrqrqrttwqagrthhrjyjewrew"); //gibberish to make sure it's not an existing folder
         static readonly string ConfigFilePath = Path.Combine(WorkingDirectory, "Config.txt");
-        private record FourPaths {
-            public string ExpectedPasswordsFilePath { get; set; }
-            public string ExpectedAccountsFilePath { get; set; }
-            public string ExpectedEmailsFilePath { get; set; }
-            public string ExpectedTokenFilePath { get; set; }
+        private record FourPaths (string MainPath) {
+
+            public readonly string ExpectedPasswordsFilePath = Path.Combine(MainPath, "Passwords.txt");
+            public readonly string ExpectedAccountsFilePath = Path.Combine(MainPath, "Accounts.txt");
+            public readonly string ExpectedEmailsFilePath = Path.Combine(MainPath, "Emails.txt");
+            public readonly string ExpectedTokenFilePath = Path.Combine(MainPath, "Token.txt");
+
+            public void ForEach(Action<string> action) {
+                action.Invoke(ExpectedPasswordsFilePath);
+                action.Invoke(ExpectedAccountsFilePath);
+                action.Invoke(ExpectedEmailsFilePath);
+                action.Invoke(ExpectedTokenFilePath);
+            }
+
+            public void Create() => ForEach(x => File.Create(x));
+            public void Delete() => ForEach(x => File.Delete(x));
         }
 
         public PathsTests() {
@@ -32,7 +43,7 @@ namespace PswManagerTests.Global {
             //arrange
             bool configFileExisted;
             bool configFileExist;
-            FourPaths expectedPaths = GetExpectedFourPaths(WorkingDirectory);
+            FourPaths expectedPaths = new(WorkingDirectory);
 
             //act
             configFileExisted = File.Exists(ConfigFilePath);
@@ -53,7 +64,7 @@ namespace PswManagerTests.Global {
 
             //arrange
             Paths paths = new Paths();
-            FourPaths expectedPaths = GetExpectedFourPaths(TempMainPath);
+            FourPaths expectedPaths = new(TempMainPath);
 
             //act
             Directory.CreateDirectory(TempMainPath);
@@ -72,17 +83,6 @@ namespace PswManagerTests.Global {
             Assert.Equal(expectedPaths.ExpectedTokenFilePath, paths.TokenFilePath);
         }
 
-        private static FourPaths GetExpectedFourPaths(string main) {
-            FourPaths paths = new FourPaths();
-
-            paths.ExpectedPasswordsFilePath = Path.Combine(main, "Passwords.txt");
-            paths.ExpectedAccountsFilePath = Path.Combine(main, "Accounts.txt");
-            paths.ExpectedEmailsFilePath = Path.Combine(main, "Emails.txt");
-            paths.ExpectedTokenFilePath = Path.Combine(main, "Token.txt");
-
-            return paths;
-        }
-
         public void Dispose() {
             Reset();
         }
@@ -94,7 +94,7 @@ namespace PswManagerTests.Global {
 
         private static void DeleteFolder(string path) {
             if(Directory.Exists(path)) {
-                Directory.Delete(path);
+                Directory.Delete(path, true);
             }
         }
 
