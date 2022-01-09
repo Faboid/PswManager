@@ -12,13 +12,18 @@ namespace PswManagerTests.Global {
     public class PathsTests : IDisposable {
 
         static readonly string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        static readonly string TempMainPath = Path.Combine(WorkingDirectory, "TempMainPath");
         static readonly string ConfigFilePath = Path.Combine(WorkingDirectory, "Config.txt");
+        private record FourPaths {
+            public string ExpectedPasswordsFilePath { get; set; }
+            public string ExpectedAccountsFilePath { get; set; }
+            public string ExpectedEmailsFilePath { get; set; }
+            public string ExpectedTokenFilePath { get; set; }
+        }
 
         public PathsTests() {
-            //resets the file in case a past test run didn't dispose correctly
-            if(File.Exists(ConfigFilePath)) {
-                File.Delete(ConfigFilePath);
-            }
+            //resets the files in case a past test run didn't dispose correctly
+            Reset();
         }
 
         [Fact]
@@ -27,10 +32,7 @@ namespace PswManagerTests.Global {
             //arrange
             bool configFileExisted;
             bool configFileExist;
-            string expectedPasswordsFilePath = Path.Combine(WorkingDirectory, "Passwords.txt");
-            string expectedAccountsFilePath = Path.Combine(WorkingDirectory, "Accounts.txt");
-            string expectedEmailsFilePath = Path.Combine(WorkingDirectory, "Emails.txt");
-            string expectedTokenFilePath = Path.Combine(WorkingDirectory, "Token.txt");
+            FourPaths expectedPaths = GetExpectedFourPaths(WorkingDirectory);
 
             //act
             configFileExisted = File.Exists(ConfigFilePath);
@@ -42,16 +44,46 @@ namespace PswManagerTests.Global {
             Assert.Equal(WorkingDirectory, Paths.WorkingDirectory);
             Assert.True(configFileExist);
 
-            Assert.Equal(expectedPasswordsFilePath, paths.PasswordsFilePath);
-            Assert.Equal(expectedAccountsFilePath, paths.AccountsFilePath);
-            Assert.Equal(expectedEmailsFilePath, paths.EmailsFilePath);
-            Assert.Equal(expectedTokenFilePath, paths.TokenFilePath);
+            AssertEqualPaths(expectedPaths, paths);
 
         }
 
+        private static void AssertEqualPaths(FourPaths expectedPaths, IPaths paths) {
+            Assert.Equal(expectedPaths.ExpectedPasswordsFilePath, paths.PasswordsFilePath);
+            Assert.Equal(expectedPaths.ExpectedAccountsFilePath, paths.AccountsFilePath);
+            Assert.Equal(expectedPaths.ExpectedEmailsFilePath, paths.EmailsFilePath);
+            Assert.Equal(expectedPaths.ExpectedTokenFilePath, paths.TokenFilePath);
+        }
+
+        private static FourPaths GetExpectedFourPaths(string main) {
+            FourPaths paths = new FourPaths();
+
+            paths.ExpectedPasswordsFilePath = Path.Combine(main, "Passwords.txt");
+            paths.ExpectedAccountsFilePath = Path.Combine(main, "Accounts.txt");
+            paths.ExpectedEmailsFilePath = Path.Combine(main, "Emails.txt");
+            paths.ExpectedTokenFilePath = Path.Combine(main, "Token.txt");
+
+            return paths;
+        }
+
         public void Dispose() {
-            if(File.Exists(ConfigFilePath)) {
-                File.Delete(ConfigFilePath);
+            Reset();
+        }
+
+        private static void Reset() {
+            DeleteFile(ConfigFilePath);
+            DeleteFolder(TempMainPath);
+        }
+
+        private static void DeleteFolder(string path) {
+            if(Directory.Exists(path)) {
+                Directory.Delete(path);
+            }
+        }
+
+        private static void DeleteFile(string path) {
+            if(File.Exists(path)) {
+                File.Delete(path);
             }
         }
     }
