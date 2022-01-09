@@ -36,7 +36,7 @@ namespace PswManagerTests.Global {
 
             //act
             configFileExisted = File.Exists(ConfigFilePath);
-            IPaths paths = new Paths();
+            Paths paths = new Paths();
             configFileExist = File.Exists(ConfigFilePath);
 
             //assert
@@ -45,6 +45,23 @@ namespace PswManagerTests.Global {
             Assert.True(configFileExist);
 
             AssertEqualPaths(expectedPaths, paths);
+
+        }
+
+        [Fact]
+        public void SetMain_ShouldChangeMain() {
+
+            //arrange
+            Paths paths = new Paths();
+            FourPaths expectedPaths = GetExpectedFourPaths(TempMainPath);
+
+            //act
+            Directory.CreateDirectory(TempMainPath);
+            paths.SetMain(TempMainPath);
+
+            //assert
+            AssertEqualPaths(expectedPaths, paths);
+            Directory.Delete(TempMainPath, true);
 
         }
 
