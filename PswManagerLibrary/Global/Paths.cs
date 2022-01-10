@@ -57,16 +57,18 @@ namespace PswManagerLibrary.Global {
 
             string[] pathNames = new string[] { passwordsFileName, accountsFileName, emailsFileName, tokenFileName };
             string currentMain = GetMain();
-            
+            string GetOldPath(string s) => Path.Combine(currentMain, s);
+            string GetNewPath(string s) => Path.Combine(path, s);
+
             //checks if there's any existing file among the future new paths
-            if(pathNames.Any(x => File.Exists(Path.Combine(path, x)))) {
+            if(pathNames.Any(x => File.Exists(GetNewPath(x)))) {
                 throw new ArgumentException("The given path is already occupied by same-named files.", nameof(path));
             }
 
             try {
 
                 //moves the files to the new folder
-                pathNames.ForEach(x => File.Move(Path.Combine(currentMain, x), Path.Combine(path, x)));
+                pathNames.ForEach(x => File.Move(GetOldPath(x), GetNewPath(x)));
 
                 //sets main to point to the new directory
                 SetMain(path);
@@ -77,8 +79,8 @@ namespace PswManagerLibrary.Global {
                 SetMain(currentMain);
                 
                 pathNames.ForEach(x => { 
-                    if(File.Exists(Path.Combine(path, x))) 
-                        File.Move(Path.Combine(path, x), Path.Combine(currentMain, x)); 
+                    if(File.Exists(GetNewPath(x))) 
+                        File.Move(GetNewPath(x), GetOldPath(x)); 
                 });
 
                 throw;
