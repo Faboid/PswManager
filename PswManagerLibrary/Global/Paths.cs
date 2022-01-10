@@ -75,6 +75,7 @@ namespace PswManagerLibrary.Global {
 
             } catch (IOException) {
 
+                //todo - find a way to test this
                 //if the operations fail, rollback to the previous version
                 SetMain(currentMain);
                 
