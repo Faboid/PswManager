@@ -16,8 +16,8 @@ namespace PswManagerTests.Commands {
             Mock<ICommand> _mockedCommand = new();
             Mock<ICommand> _mockedTwoCommand = new();
 
-            string fakeReturn = "mocked [isMocked]";
-            string questionFakeReturn = "mockedTwo [isMocked]?";
+            string fakeReturn = "mocked [ismocked]";
+            string questionFakeReturn = "mockedtwo [ismocked]?";
 
             _mockedCommand.Setup(x => x.GetSyntax()).Returns(fakeReturn);
             _mockedTwoCommand.Setup(x => x.GetSyntax()).Returns(questionFakeReturn);
