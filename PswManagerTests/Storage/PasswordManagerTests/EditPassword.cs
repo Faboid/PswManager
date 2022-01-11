@@ -83,7 +83,7 @@ namespace PswManagerTests.Storage.PasswordManagerTests {
             var manager = TestsHelper.PswManager;
             string name = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
             string[] args = new[] {
-                "name:value:wrongformat", "password:correctFormat"
+                "namewrongformat", "password:correctFormat"
             };
 
             //act

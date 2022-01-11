@@ -40,14 +40,20 @@ namespace PswManagerCommands.Validation {
         }
 
         /// <summary>
-        /// Adds the values to the list.
+        /// Adds the values to the list.<br/>
+        /// <paramref name="condition"/>:
+        /// <br/>- true = validation succeeds
+        /// <br/>- false = validation failure
         /// </summary>
         public void Add(bool condition, string errorMessage) {
             validators.Add((condition, errorMessage));
         }
 
         /// <summary>
-        /// Runs <paramref name="conditionFunction"/> within a trycatch and inserts the value as false in case an exception is thrown.
+        /// Runs <paramref name="conditionFunction"/> within a trycatch and inserts the value as false in case an exception is thrown.<br/>
+        /// Note:
+        /// <br/>- true = validation succeeds
+        /// <br/>- false = validation failure
         /// </summary>
         public void Add(Func<string[], bool> conditionFunction, string errorMessage) {
             try {
@@ -68,16 +74,5 @@ namespace PswManagerCommands.Validation {
             Add((args) => args.All(x => string.IsNullOrWhiteSpace(x) == false), ArgumentsNullOrEmptyMessage);
         }
 
-        /// <summary>
-        /// [WIP] - Adds a condition to check whether the provided email is valid.
-        /// </summary>
-        /// <param name="stringToCheck">Since certain commands do not require to insert the email in a specific index, it's possible to pass in the string to check directly.</param>
-        public void AddEmailCheck(string stringToCheck) {
-            throw new NotImplementedException();
-            //todo - implement regex
-            Regex regex = new Regex("");
-
-            Add(regex.IsMatch(stringToCheck), InvalidEmailMessage);
-        }
     }
 }

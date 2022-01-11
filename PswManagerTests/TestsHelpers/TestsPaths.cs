@@ -30,5 +30,12 @@ namespace PswManagerTests.TestsHelpers {
             return output;
         }
 
+        public void SetMain(string path) {
+            throw new System.NotImplementedException();
+        }
+
+        public void MoveMain(string path) {
+            throw new System.NotImplementedException();
+        }
     }
 }
