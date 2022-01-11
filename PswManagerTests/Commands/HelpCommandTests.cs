@@ -108,6 +108,8 @@ namespace PswManagerTests.Commands {
             yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "" } };
 
             yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { "mocked", "extravalue" } };
+
+            yield return new object[] { HelpCommand.CommandInexistentErrorMessage, new string[] { "nonexistentcommand" } };
         }
 
         [Theory]
