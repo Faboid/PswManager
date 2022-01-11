@@ -20,8 +20,8 @@ namespace PswManagerLibrary.Commands {
 
         protected override IValidationCollection AddConditions(IValidationCollection collection) {
             collection.AddCommonConditions(0, 1);
-            if(collection.GetArguments().Length == 1) {
-                collection.Add((args) => commands.ContainsKey(args[0]), CommandInexistentErrorMessage);
+            if(collection.GetArguments()?.Length == 1) {
+                collection.Add((args) => commands.ContainsKey(args[0].ToLowerInvariant()), CommandInexistentErrorMessage);
             }
 
             return collection;
@@ -29,12 +29,18 @@ namespace PswManagerLibrary.Commands {
 
         protected override CommandResult RunLogic(string[] arguments) {
             if(arguments.Length == 0) {
+                if(commands.Count == 0) {
+                    return new CommandResult("There has been an error: the command list is empty.", false);
+                }
+
                 //return generic help message
                 string allCommands = $"List Commands:{Environment.NewLine}{string.Join("  ", commands.Keys)}";
                 string message = "For help regarding a specific command, write \"help [command]\"";
 
                 return new CommandResult(message, true, allCommands);
             }
+
+            arguments[0] = arguments[0].ToLowerInvariant();
 
             //todo - add method in BaseCommand to request a short explanation from each command
             //return command-specific message
