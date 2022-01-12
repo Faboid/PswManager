@@ -16,6 +16,10 @@ namespace PswManagerLibrary.Commands {
             this.userInput = userInput;
         }
 
+        public override string GetDescription() {
+            return "This command deletes an account. Note that the deletion is final: it won't be possible to go back.";
+        }
+
         public override string GetSyntax() {
             return "delete [name]";
         }

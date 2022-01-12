@@ -21,6 +21,10 @@ namespace PswManagerLibrary.Commands {
             return collection;
         }
 
+        public override string GetDescription() {
+            return "This command saves an account that can be later retrieved.";
+        }
+
         public override string GetSyntax() {
             return "add [name] [password] [email]";
         }

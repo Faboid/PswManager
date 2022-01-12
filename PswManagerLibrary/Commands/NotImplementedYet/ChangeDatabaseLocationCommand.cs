@@ -5,6 +5,10 @@ using System;
 
 namespace PswManagerLibrary.Commands.NotImplementedYet {
     public class ChangeDatabaseLocationCommand : BaseCommand {
+        public override string GetDescription() {
+            throw new NotImplementedException();
+        }
+
         public override string GetSyntax() {
             throw new NotImplementedException();
         }

@@ -16,11 +16,15 @@ namespace PswManagerTests.Commands {
             Mock<ICommand> _mockedCommand = new();
             Mock<ICommand> _mockedTwoCommand = new();
 
-            string fakeReturn = "mocked [ismocked]";
-            string questionFakeReturn = "mockedtwo [ismocked]?";
+            string mockedCommandSyntax = "mocked [ismocked]";
+            string mockedTwoCommandSyntax = "mockedtwo [ismocked]?";
+            string mockedCommandDescription = "This command is being mocked and doesn't have any actual functionality.";
+            string mockedTwoCommandDescription = "This command is also being mocked. The only difference with the first is that the argument it requests is optional.";
 
-            _mockedCommand.Setup(x => x.GetSyntax()).Returns(fakeReturn);
-            _mockedTwoCommand.Setup(x => x.GetSyntax()).Returns(questionFakeReturn);
+            _mockedCommand.Setup(x => x.GetSyntax()).Returns(mockedCommandSyntax);
+            _mockedTwoCommand.Setup(x => x.GetSyntax()).Returns(mockedTwoCommandSyntax);
+            _mockedCommand.Setup(x => x.GetDescription()).Returns(mockedCommandDescription);
+            _mockedTwoCommand.Setup(x => x.GetDescription()).Returns(mockedTwoCommandDescription);
 
             Dictionary<string, ICommand> commands = new();
             commands.Add("mocked", _mockedCommand.Object);
@@ -56,14 +60,16 @@ namespace PswManagerTests.Commands {
         public void GetSpecificCommandSyntax() {
 
             //arrange
-            string expected = mockedCommand.GetSyntax();
+            string expectedDescription = mockedCommand.GetDescription();
+            string expectedSyntax = mockedCommand.GetSyntax();
 
             //act
             var result = helpCommand.Run(new string[] { "mOcKed" });
 
             //assert
             Assert.True(result.Success);
-            Assert.Contains(expected, result.QueryReturnValue);
+            Assert.Equal(expectedDescription, result.BackMessage);
+            Assert.Contains(expectedSyntax, result.QueryReturnValue);
 
         }
 
@@ -71,14 +77,16 @@ namespace PswManagerTests.Commands {
         public void GetSpecificCommandSyntaxWithOptionalArguments() {
 
             //arrange
-            string expected = mockedTwoCommand.GetSyntax();
+            string expectedDescription = mockedTwoCommand.GetDescription();
+            string expectedSyntax = mockedTwoCommand.GetSyntax();
 
             //act
             var result = helpCommand.Run(new string[] { "mOcKedTwo" });
 
             //assert
             Assert.True(result.Success);
-            Assert.Contains(expected, result.QueryReturnValue);
+            Assert.Equal(expectedDescription, result.BackMessage);
+            Assert.Contains(expectedSyntax, result.QueryReturnValue);
             Assert.Contains("optional", result.QueryReturnValue);
 
         }

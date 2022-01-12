@@ -13,6 +13,10 @@ namespace PswManagerLibrary.Commands {
             this.pswManager = pswManager;
         }
 
+        public override string GetDescription() {
+            return "Gets the requested command from the saved ones.";
+        }
+
         public override string GetSyntax() {
             return "get [name]";
         }

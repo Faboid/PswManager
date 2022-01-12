@@ -14,6 +14,10 @@ namespace PswManagerLibrary.Commands {
             this.commands = commands;
         }
 
+        public override string GetDescription() {
+            return "If it's used without arguments, provides a list of commands. If it gives a command name as an argument, it displays the description and syntax of that command.";
+        }
+
         public override string GetSyntax() {
             return "help [command]?";
         }
@@ -42,16 +46,16 @@ namespace PswManagerLibrary.Commands {
 
             arguments[0] = arguments[0].ToLowerInvariant();
 
-            //todo - add method in BaseCommand to request a short explanation from each command
             //return command-specific message
-            string commandDetails = "Temporary placeholder for the command details."; //commands[arguments[0]].GetDescription();
+            string commandDetails = commands[arguments[0]].GetDescription();
             string commandSyntax = commands[arguments[0]].GetSyntax();
             string note =
                 commandSyntax.Contains('?') ?
                 $"{Environment.NewLine}Command arguments that end with a question mark are optional and can be omitted."
                 :
                 "";
-            return new CommandResult(commandDetails, true, $"{commandSyntax}{note}");
+            return new CommandResult(commandDetails, true, $"Syntax:{Environment.NewLine}{commandSyntax}{note}");
         }
+
     }
 }

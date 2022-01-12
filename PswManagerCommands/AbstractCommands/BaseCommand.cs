@@ -37,5 +37,11 @@ namespace PswManagerCommands.AbstractCommands {
         /// <returns></returns>
         public abstract string GetSyntax();
 
+        /// <summary>
+        /// Gets a string that describe the command in an user-friendly way.
+        /// </summary>
+        /// <returns></returns>
+        public abstract string GetDescription();
+
     }
 }

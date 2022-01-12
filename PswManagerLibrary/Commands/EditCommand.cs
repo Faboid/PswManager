@@ -26,6 +26,10 @@ namespace PswManagerLibrary.Commands {
             this.pswManager = pswManager;
         }
 
+        public override string GetDescription() {
+            return "Edits an existing account with the provided arguments.";
+        }
+
         public override string GetSyntax() {
             return "edit [name] name:[new name]? password:[new password]? email:[new email]?";
         }

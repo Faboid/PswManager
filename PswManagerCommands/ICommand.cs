@@ -8,6 +8,7 @@ namespace PswManagerCommands {
         (bool success, IEnumerable<string> errorMessages) Validate(string[] arguments);
 
         string GetSyntax();
+        string GetDescription();
 
     }
 }
