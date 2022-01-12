@@ -1,6 +1,6 @@
-﻿using PswManagerLibrary.Cryptography;
+﻿using PswManagerHelperMethods;
+using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.Exceptions;
-using PswManagerLibrary.Generic;
 using PswManagerLibrary.Global;
 using System;
 using System.Collections.Generic;

@@ -9,7 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerConsole", "PswMan
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerTests", "PswManagerTests\PswManagerTests.csproj", "{C4C2C729-7344-4172-AF50-CD1C2FF97522}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManagerCommands", "PswManagerCommands\PswManagerCommands.csproj", "{EDC2911F-7A40-4BD5-9999-17CB72517BDB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerCommands", "PswManagerCommands\PswManagerCommands.csproj", "{EDC2911F-7A40-4BD5-9999-17CB72517BDB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManagerDatabase", "PswManagerDatabase\PswManagerDatabase.csproj", "{5472D15F-056E-492A-B7D8-472357A94E39}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManagerHelperMethods", "PswManagerHelperMethods\PswManagerHelperMethods.csproj", "{F3FB09A3-DB38-470D-BFE1-470D1251A702}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{EDC2911F-7A40-4BD5-9999-17CB72517BDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EDC2911F-7A40-4BD5-9999-17CB72517BDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EDC2911F-7A40-4BD5-9999-17CB72517BDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5472D15F-056E-492A-B7D8-472357A94E39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5472D15F-056E-492A-B7D8-472357A94E39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5472D15F-056E-492A-B7D8-472357A94E39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5472D15F-056E-492A-B7D8-472357A94E39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3FB09A3-DB38-470D-BFE1-470D1251A702}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3FB09A3-DB38-470D-BFE1-470D1251A702}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3FB09A3-DB38-470D-BFE1-470D1251A702}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3FB09A3-DB38-470D-BFE1-470D1251A702}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

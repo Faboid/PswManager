@@ -1,5 +1,5 @@
-﻿using PswManagerLibrary.Exceptions;
-using PswManagerLibrary.Generic;
+﻿using PswManagerHelperMethods;
+using PswManagerLibrary.Exceptions;
 using PswManagerLibrary.Global;
 using PswManagerLibrary.RefactoringFolder.Models;
 using System.Collections.Generic;

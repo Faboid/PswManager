@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PswManagerLibrary.Generic {
+namespace PswManagerHelperMethods {
     public static class ExceptionsHelper {
 
         public static void IfTrueThrow(this bool condition, Exception exception) {

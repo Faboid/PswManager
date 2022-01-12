@@ -4,14 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace PswManagerLibrary.Global {
+namespace PswManagerDatabase.Config {
 
     /// <summary>
     /// Stores global paths.
     /// </summary>
     public class Paths : IPaths {
 
-        public Paths() { 
+        public Paths() {
             if(!File.Exists(ConfigFilePath) || !Directory.Exists(GetMain())) {
                 SetDefaultMain();
             }
@@ -73,15 +73,15 @@ namespace PswManagerLibrary.Global {
                 //sets main to point to the new directory
                 SetMain(path);
 
-            } catch (IOException) {
+            } catch(IOException) {
 
                 //todo - find a way to test this
                 //if the operations fail, rollback to the previous version
                 SetMain(currentMain);
-                
-                pathNames.ForEach(x => { 
-                    if(File.Exists(GetNewPath(x))) 
-                        File.Move(GetNewPath(x), GetOldPath(x)); 
+
+                pathNames.ForEach(x => {
+                    if(File.Exists(GetNewPath(x)))
+                        File.Move(GetNewPath(x), GetOldPath(x));
                 });
 
                 throw;

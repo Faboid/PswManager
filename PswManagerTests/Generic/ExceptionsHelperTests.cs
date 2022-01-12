@@ -1,5 +1,5 @@
-﻿using PswManagerLibrary.Exceptions;
-using PswManagerLibrary.Generic;
+﻿using PswManagerHelperMethods;
+using PswManagerLibrary.Exceptions;
 using System;
 using Xunit;
 
