@@ -7,12 +7,21 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PswManagerDatabase {
+
+    public enum DatabaseType {
+        TextFile
+    }
+
     public class DataFactory : IDataFactory {
 
         private readonly IDataConnection dataConnection;
 
-        public DataFactory() {
-            dataConnection = new DataConnection();
+        public DataFactory(DatabaseType dbType) {
+
+            dataConnection = dbType switch {
+                DatabaseType.TextFile => new TextFileConnection(),
+                _ => throw new ArgumentException("The given DatabaseType enum isn't supported.", nameof(dbType))
+            };
         }
 
         public IDataConnection GetDataConnection() => dataConnection;

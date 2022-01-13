@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess {
-    public class DataConnection : IDataConnection {
+    public class TextFileConnection : IDataConnection {
 
         //IPaths
 
