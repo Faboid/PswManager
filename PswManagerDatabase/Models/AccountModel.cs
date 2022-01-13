@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PswManagerDatabase.Models {
-    public class Account {
+    public class AccountModel {
 
         public string Name { get; set; }
         public string Password { get; set; }
