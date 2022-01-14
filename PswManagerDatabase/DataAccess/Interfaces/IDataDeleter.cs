@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess.Interfaces {
-    public interface IDataDeleter {
+    public interface IDataDeleter : IDataHelper {
     
-        void DeleteAccount(AccountModel model);
+        void DeleteAccount(string name);
 
     }
 }

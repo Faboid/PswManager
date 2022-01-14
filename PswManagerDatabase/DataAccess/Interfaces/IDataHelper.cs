@@ -1,15 +1,13 @@
-﻿using PswManagerDatabase.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess.Interfaces {
-    public interface IDataCreator : IDataHelper {
+    public interface IDataHelper {
 
-        void CreateAccount(AccountModel model);
-
+        bool AccountExist(string name);
 
     }
 }

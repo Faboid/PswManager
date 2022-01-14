@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess.Interfaces {
-    public interface IDataReader {
+    public interface IDataReader : IDataHelper {
 
         List<AccountModel> GetAllAccounts();
         AccountModel GetAccount(string name);
