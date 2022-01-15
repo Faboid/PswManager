@@ -1,4 +1,5 @@
-﻿using PswManagerDatabase.DataAccess;
+﻿using PswManagerDatabase.Config;
+using PswManagerDatabase.DataAccess;
 using PswManagerDatabase.DataAccess.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace PswManagerDatabase {
         public DataFactory(DatabaseType dbType) {
 
             dataConnection = dbType switch {
-                DatabaseType.TextFile => new TextFileConnection(),
+                DatabaseType.TextFile => new TextFileConnection(new Paths()),
                 _ => throw new ArgumentException("The given DatabaseType enum isn't supported.", nameof(dbType))
             };
         }
