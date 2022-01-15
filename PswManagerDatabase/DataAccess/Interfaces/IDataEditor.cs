@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace PswManagerDatabase.DataAccess.Interfaces {
     public interface IDataEditor : IDataHelper {
 
-        AccountModel UpdateAccount(string name, AccountModel newModel);
+        ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel);
 
     }
 }

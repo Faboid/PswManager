@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace PswManagerDatabase.DataAccess.Interfaces {
     public interface IDataDeleter : IDataHelper {
     
-        void DeleteAccount(string name);
+        ConnectionResult DeleteAccount(string name);
 
     }
 }

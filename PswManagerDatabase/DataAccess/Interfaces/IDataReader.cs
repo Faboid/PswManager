@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 namespace PswManagerDatabase.DataAccess.Interfaces {
     public interface IDataReader : IDataHelper {
 
-        List<AccountModel> GetAllAccounts();
-        AccountModel GetAccount(string name);
+        ConnectionResult<List<AccountModel>> GetAllAccounts();
+        ConnectionResult<AccountModel> GetAccount(string name);
 
     }
 }

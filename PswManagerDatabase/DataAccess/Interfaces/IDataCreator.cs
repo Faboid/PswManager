@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace PswManagerDatabase.DataAccess.Interfaces {
     public interface IDataCreator : IDataHelper {
 
-        void CreateAccount(AccountModel model);
+        ConnectionResult CreateAccount(AccountModel model);
 
 
     }
