@@ -1,14 +1,10 @@
 ﻿using PswManagerDatabase.Config;
-using PswManagerDatabase.DataAccess.Interfaces;
-using PswManagerDatabase.DataAccess.TextFileConnHelper;
 using PswManagerDatabase.Models;
 using PswManagerHelperMethods;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess {
 
