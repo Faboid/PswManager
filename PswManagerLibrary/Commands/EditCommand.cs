@@ -35,7 +35,7 @@ namespace PswManagerLibrary.Commands {
         }
 
         protected override IValidationCollection AddConditions(IValidationCollection collection) {
-            collection.AddCommonConditions((0, 1, 2), 2, 4);
+            collection.AddCommonConditions(2, 4);
             collection.AddAccountShouldExistCondition(3, pswManager);
 
             var syntaxCheckResult = CheckSyntax(collection.GetArguments());

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace PswManagerCommands.Validation {
 
@@ -12,6 +11,10 @@ namespace PswManagerCommands.Validation {
 
         readonly Dictionary<int, (bool, string)> validatorsDictionary = new();
         readonly string[] args;
+
+        public const int NullIndexCondition = -1;
+        public const int CorrectArgsNumberIndexCondition = -2;
+        public const int NullOrEmptyArgsIndexCondition = -3;
 
         //several default string that gets used as error messages. They are being assigned this way mostly for unit testing purposes.
         public const string ArgumentsNullMessage = "The arguments' array cannot be null.";
@@ -45,7 +48,7 @@ namespace PswManagerCommands.Validation {
         /// <br/>- true = validation succeeds
         /// <br/>- false = validation failure
         /// </summary>
-        public void Add(int index, bool condition, string errorMessage) {
+        public void Add(ushort index, bool condition, string errorMessage) {
             validatorsDictionary.Add(index, (condition, errorMessage));
         }
 
@@ -55,11 +58,16 @@ namespace PswManagerCommands.Validation {
         /// <br/>- true = validation succeeds
         /// <br/>- false = validation failure
         /// </summary>
-        public void Add(int index, Func<string[], bool> conditionFunction, string errorMessage) {
+        public void Add(ushort index, Func<string[], bool> conditionFunction, string errorMessage) {
+
+            Add((int)index, conditionFunction, errorMessage);
+        }
+
+        private void Add(int index, Func<string[], bool> conditionFunction, string errorMessage) {
             try {
-                Add(index, conditionFunction.Invoke(args), errorMessage);
+                validatorsDictionary.Add(index, (conditionFunction.Invoke(args), errorMessage));
             } catch(Exception) {
-                Add(index, false, errorMessage);
+                validatorsDictionary.Add(index, (false, errorMessage));
             }
         }
 
@@ -68,10 +76,11 @@ namespace PswManagerCommands.Validation {
         /// </summary>
         /// <param name="minLength">The minimum number of arguments there should be.</param>
         /// <param name="maxLength">The maximum number of arguments there should be.</param>
-        public void AddCommonConditions((int nullIndex, int lengthIndex, int nullOrEmptyArgsIndex) indexes, int minLength, int maxLength) {
-            Add(indexes.nullIndex, args != null, ArgumentsNullMessage);
-            Add(indexes.lengthIndex, (args) => args.Length >= minLength && args.Length <= maxLength, WrongArgumentsNumberMessage);
-            Add(indexes.nullOrEmptyArgsIndex, (args) => args.All(x => string.IsNullOrWhiteSpace(x) == false), ArgumentsNullOrEmptyMessage);
+        public void AddCommonConditions(int minLength, int maxLength) {
+
+            validatorsDictionary.Add(NullIndexCondition, (args != null, ArgumentsNullMessage));
+            Add(CorrectArgsNumberIndexCondition, (args) => args.Length >= minLength && args.Length <= maxLength, WrongArgumentsNumberMessage);
+            Add(NullOrEmptyArgsIndexCondition, (args) => args.All(x => string.IsNullOrWhiteSpace(x) == false), ArgumentsNullOrEmptyMessage);
         }
 
     }

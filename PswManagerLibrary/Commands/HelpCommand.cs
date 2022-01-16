@@ -23,7 +23,7 @@ namespace PswManagerLibrary.Commands {
         }
 
         protected override IValidationCollection AddConditions(IValidationCollection collection) {
-            collection.AddCommonConditions((0, 1, 2), 0, 1);
+            collection.AddCommonConditions(0, 1);
             if(collection.GetArguments()?.Length == 1) {
                 collection.Add(3, (args) => commands.ContainsKey(args[0].ToLowerInvariant()), CommandInexistentErrorMessage);
             }

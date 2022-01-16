@@ -22,7 +22,7 @@ namespace PswManagerCommands.Validation {
         /// <br/>- true = validation succeeds
         /// <br/>- false = validation failure
         /// </summary>
-        void Add(int index, bool condition, string errorMessage);
+        void Add(ushort index, bool condition, string errorMessage);
 
         /// <summary>
         /// Runs <paramref name="conditionFunction"/> within a trycatch and inserts the value as false in case an exception is thrown.<br/>
@@ -30,14 +30,14 @@ namespace PswManagerCommands.Validation {
         /// <br/>- true = validation succeeds
         /// <br/>- false = validation failure
         /// </summary>
-        void Add(int index, Func<string[], bool> conditionFunction, string errorMessage);
+        void Add(ushort index, Func<string[], bool> conditionFunction, string errorMessage);
 
         /// <summary>
         /// Adds conditions to check whether the arguments are null, empty, or the wrong number.
         /// </summary>
         /// <param name="minLength">The minimum number of arguments there should be.</param>
         /// <param name="maxLength">The maximum number of arguments there should be.</param>
-        void AddCommonConditions((int nullIndex, int lengthIndex, int nullOrEmptyArgsIndex) indexes, int minLength, int maxLength);
+        void AddCommonConditions(int minLength, int maxLength);
 
     }
 }

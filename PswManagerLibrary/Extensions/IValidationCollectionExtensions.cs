@@ -11,7 +11,7 @@ namespace PswManagerLibrary.Extensions {
         /// Adds a condition to make sure the account exists.
         /// </summary>
         /// <param name="pswManager"></param>
-        public static void AddAccountShouldExistCondition(this IValidationCollection collection, int index, IPasswordManager pswManager) {
+        public static void AddAccountShouldExistCondition(this IValidationCollection collection, ushort index, IPasswordManager pswManager) {
             collection.Add(index, (args) => pswManager.AccountExist(args[0]) == true, collection.InexistentAccountMessage());
         }
 
