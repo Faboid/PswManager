@@ -35,13 +35,13 @@ namespace PswManagerLibrary.Commands {
         }
 
         protected override IValidationCollection AddConditions(IValidationCollection collection) {
-            collection.AddCommonConditions(2, 4);
-            collection.AddAccountShouldExistCondition(pswManager);
+            collection.AddCommonConditions((0, 1, 2), 2, 4);
+            collection.AddAccountShouldExistCondition(3, pswManager);
 
             var syntaxCheckResult = CheckSyntax(collection.GetArguments());
-            collection.Add(syntaxCheckResult.ValidSyntax, InvalidSyntaxMessage);
-            collection.Add(syntaxCheckResult.ValidKeys, InvalidKeyFound);
-            collection.Add(syntaxCheckResult.NoDuplicateKeys, DuplicateKeyFound);
+            collection.Add(4, syntaxCheckResult.ValidSyntax, InvalidSyntaxMessage);
+            collection.Add(5, syntaxCheckResult.ValidKeys, InvalidKeyFound);
+            collection.Add(6, syntaxCheckResult.NoDuplicateKeys, DuplicateKeyFound);
 
             return collection;
         }

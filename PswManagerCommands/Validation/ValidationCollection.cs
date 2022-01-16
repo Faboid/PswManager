@@ -10,7 +10,7 @@ namespace PswManagerCommands.Validation {
     /// </summary>
     public class ValidationCollection : IValidationCollection {
 
-        readonly List<(bool, string)> validators = new();
+        readonly Dictionary<int, (bool, string)> validatorsDictionary = new();
         readonly string[] args;
 
         //several default string that gets used as error messages. They are being assigned this way mostly for unit testing purposes.
@@ -28,7 +28,7 @@ namespace PswManagerCommands.Validation {
         /// </summary>
         /// <returns></returns>
         public IReadOnlyList<(bool condition, string errorMessage)> GetResult() {
-            return validators.AsReadOnly();
+            return validatorsDictionary.Select(x => x.Value).ToList();
         }
 
         /// <summary>
@@ -45,8 +45,8 @@ namespace PswManagerCommands.Validation {
         /// <br/>- true = validation succeeds
         /// <br/>- false = validation failure
         /// </summary>
-        public void Add(bool condition, string errorMessage) {
-            validators.Add((condition, errorMessage));
+        public void Add(int index, bool condition, string errorMessage) {
+            validatorsDictionary.Add(index, (condition, errorMessage));
         }
 
         /// <summary>
@@ -55,11 +55,11 @@ namespace PswManagerCommands.Validation {
         /// <br/>- true = validation succeeds
         /// <br/>- false = validation failure
         /// </summary>
-        public void Add(Func<string[], bool> conditionFunction, string errorMessage) {
+        public void Add(int index, Func<string[], bool> conditionFunction, string errorMessage) {
             try {
-                Add(conditionFunction.Invoke(args), errorMessage);
+                Add(index, conditionFunction.Invoke(args), errorMessage);
             } catch(Exception) {
-                Add(false, errorMessage);
+                Add(index, false, errorMessage);
             }
         }
 
@@ -68,10 +68,10 @@ namespace PswManagerCommands.Validation {
         /// </summary>
         /// <param name="minLength">The minimum number of arguments there should be.</param>
         /// <param name="maxLength">The maximum number of arguments there should be.</param>
-        public void AddCommonConditions(int minLength, int maxLength) {
-            Add(args != null, ArgumentsNullMessage);
-            Add((args) => args.Length >= minLength && args.Length <= maxLength, WrongArgumentsNumberMessage);
-            Add((args) => args.All(x => string.IsNullOrWhiteSpace(x) == false), ArgumentsNullOrEmptyMessage);
+        public void AddCommonConditions((int nullIndex, int lengthIndex, int nullOrEmptyArgsIndex) indexes, int minLength, int maxLength) {
+            Add(indexes.nullIndex, args != null, ArgumentsNullMessage);
+            Add(indexes.lengthIndex, (args) => args.Length >= minLength && args.Length <= maxLength, WrongArgumentsNumberMessage);
+            Add(indexes.nullOrEmptyArgsIndex, (args) => args.All(x => string.IsNullOrWhiteSpace(x) == false), ArgumentsNullOrEmptyMessage);
         }
 
     }
