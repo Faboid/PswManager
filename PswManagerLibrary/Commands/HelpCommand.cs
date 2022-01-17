@@ -25,7 +25,7 @@ namespace PswManagerLibrary.Commands {
         protected override IValidationCollection AddConditions(IValidationCollection collection) {
             collection.AddCommonConditions(0, 1);
             if(collection.GetArguments()?.Length == 1) {
-                collection.Add(3, (args) => commands.ContainsKey(args[0].ToLowerInvariant()), CommandInexistentErrorMessage);
+                collection.Add(new IndexHelper(0), (args) => commands.ContainsKey(args[0].ToLowerInvariant()), CommandInexistentErrorMessage);
             }
 
             return collection;

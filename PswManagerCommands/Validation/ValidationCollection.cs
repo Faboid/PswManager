@@ -12,15 +12,15 @@ namespace PswManagerCommands.Validation {
         readonly Dictionary<int, (bool, string)> validatorsDictionary = new();
         readonly string[] args;
 
-        public const int NullIndexCondition = -1;
-        public const int CorrectArgsNumberIndexCondition = -2;
-        public const int NullOrEmptyArgsIndexCondition = -3;
-
         //several default string that gets used as error messages. They are being assigned this way mostly for unit testing purposes.
         public const string ArgumentsNullMessage = "The arguments' array cannot be null.";
         public const string ArgumentsNullOrEmptyMessage = "No value can be left empty.";
         public const string WrongArgumentsNumberMessage = "Incorrect arguments number.";
         public const string InvalidEmailMessage = "The provided email is invalid.";
+
+        public int NullIndexCondition => -1;
+        public int CorrectArgsNumberIndexCondition => -2;
+        public int NullOrEmptyArgsIndexCondition => -3;
 
         public ValidationCollection(string[] arguments) {
             args = arguments;
@@ -53,34 +53,44 @@ namespace PswManagerCommands.Validation {
         }
 
         /// <summary>
-        /// Runs <paramref name="conditionFunction"/> within a trycatch and inserts the value as false in case an exception is thrown.<br/>
-        /// Note:
+        /// Runs <paramref name="conditionFunction"/> within a trycatch and inserts the value as false in case an exception is thrown.
+        /// <br/>Note:
         /// <br/>- true = validation succeeds
         /// <br/>- false = validation failure
         /// </summary>
-        public void Add(ushort index, Func<string[], bool> conditionFunction, string errorMessage) {
+        /// <param name="index">
+        /// Uses <see cref="IndexHelper.Index"/> to assign the index and checks 
+        /// <see cref="IndexHelper.RequiredSuccesses"/> to see whether this condition requires an already-assigned condition.
+        /// <br/>If one of the required conditions is false or missing, the operation is voided and the condition won't be added.
+        /// </param>
+        public void Add(IndexHelper index, Func<string[], bool> conditionFunction, string errorMessage) {
+            if(!index.RequiredSuccesses.All(x 
+                => validatorsDictionary.TryGetValue(x, out (bool valid, string _) result) && result.valid)) {
+                return;
+            }
 
-            Add((int)index, conditionFunction, errorMessage);
-        }
-
-        private void Add(int index, Func<string[], bool> conditionFunction, string errorMessage) {
             try {
-                validatorsDictionary.Add(index, (conditionFunction.Invoke(args), errorMessage));
+                validatorsDictionary.Add(index.Index, (conditionFunction.Invoke(args), errorMessage));
             } catch(Exception) {
-                validatorsDictionary.Add(index, (false, errorMessage));
+                validatorsDictionary.Add(index.Index, (false, errorMessage));
             }
         }
 
         /// <summary>
         /// Adds conditions to check whether the arguments are null, empty, or the wrong number.
+        /// <br/>The used indexes are: 
+        /// <br/>- <see cref="NullIndexCondition"/>
+        /// <br/>- <see cref="CorrectArgsNumberIndexCondition"/>
+        /// <br/>- <see cref="NullOrEmptyArgsIndexCondition"/>
+        /// <br/><br/>The latter two conditions are only applied if the first is valid.
         /// </summary>
         /// <param name="minLength">The minimum number of arguments there should be.</param>
         /// <param name="maxLength">The maximum number of arguments there should be.</param>
         public void AddCommonConditions(int minLength, int maxLength) {
 
             validatorsDictionary.Add(NullIndexCondition, (args != null, ArgumentsNullMessage));
-            Add(CorrectArgsNumberIndexCondition, (args) => args.Length >= minLength && args.Length <= maxLength, WrongArgumentsNumberMessage);
-            Add(NullOrEmptyArgsIndexCondition, (args) => args.All(x => string.IsNullOrWhiteSpace(x) == false), ArgumentsNullOrEmptyMessage);
+            Add(new IndexHelper(CorrectArgsNumberIndexCondition, NullIndexCondition), (args) => args.Length >= minLength && args.Length <= maxLength, WrongArgumentsNumberMessage);
+            Add(new IndexHelper(NullOrEmptyArgsIndexCondition, NullIndexCondition), (args) => args.All(x => string.IsNullOrWhiteSpace(x) == false), ArgumentsNullOrEmptyMessage);
         }
 
     }

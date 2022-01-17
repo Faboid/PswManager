@@ -36,12 +36,12 @@ namespace PswManagerLibrary.Commands {
 
         protected override IValidationCollection AddConditions(IValidationCollection collection) {
             collection.AddCommonConditions(2, 4);
-            collection.AddAccountShouldExistCondition(3, pswManager);
+            collection.AddAccountShouldExistCondition(0, pswManager);
 
             var syntaxCheckResult = CheckSyntax(collection.GetArguments());
-            collection.Add(4, syntaxCheckResult.ValidSyntax, InvalidSyntaxMessage);
-            collection.Add(5, syntaxCheckResult.ValidKeys, InvalidKeyFound);
-            collection.Add(6, syntaxCheckResult.NoDuplicateKeys, DuplicateKeyFound);
+            collection.Add(1, syntaxCheckResult.ValidSyntax, InvalidSyntaxMessage);
+            collection.Add(2, syntaxCheckResult.ValidKeys, InvalidKeyFound);
+            collection.Add(3, syntaxCheckResult.NoDuplicateKeys, DuplicateKeyFound);
 
             return collection;
         }
