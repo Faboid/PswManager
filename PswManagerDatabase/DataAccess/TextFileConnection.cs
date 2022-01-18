@@ -63,6 +63,7 @@ namespace PswManagerDatabase.DataAccess {
             File.AppendAllLines(paths.PasswordsFilePath, new[] { model.Password });
             File.AppendAllLines(paths.EmailsFilePath, new[] { model.Email });
 
+            currentLength++;
             return new ConnectionResult(true);
         }
 
@@ -100,12 +101,7 @@ namespace PswManagerDatabase.DataAccess {
                 return new ConnectionResult<AccountModel>(false, "The given account doesn't exist.");
             }
 
-            (position < 0 || position > currentLength).IfTrueThrow(
-                new ArgumentOutOfRangeException(
-                    nameof(name), 
-                    "The given name has been found in an out of range position. The files might be corrupted."
-                )
-            );
+            ValidateLength(position);
 
             EditValue(paths.AccountsFilePath, position, newModel.Name);
             EditValue(paths.PasswordsFilePath, position, newModel.Password);
@@ -128,10 +124,13 @@ namespace PswManagerDatabase.DataAccess {
                 return new ConnectionResult(false, "The given account doesn't exist.");
             }
 
+            ValidateLength(position);
+
             DeleteValue(paths.AccountsFilePath, position);
             DeleteValue(paths.PasswordsFilePath, position);
             DeleteValue(paths.EmailsFilePath, position);
 
+            currentLength--;
             return new ConnectionResult(true);
         }
 
@@ -158,6 +157,24 @@ namespace PswManagerDatabase.DataAccess {
             position = (int)temp;
 
             return true;
+        }
+
+        private void ValidateLength(int position) {
+            //stores the function to avoid duplicate logic
+            bool checkLength() => position < 0 || position > currentLength;
+            if(checkLength()) {
+
+                //in case it's a logistic problem, refreshes the length
+                RefreshCurrentLength();
+
+                //if it's still faulty, throws the exception
+                checkLength().IfTrueThrow(
+                    new ArgumentOutOfRangeException(
+                        nameof(position),
+                        "The given name has been found in an out of range position. The files might be corrupted."
+                    )
+                );
+            }
         }
     }
 }
