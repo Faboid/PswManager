@@ -26,7 +26,7 @@ namespace PswManagerLibrary.Commands {
 
         protected override IValidationCollection AddConditions(IValidationCollection collection) {
             collection.AddCommonConditions(1, 1);
-            collection.AddAccountShouldExistCondition(pswManager);
+            collection.AddAccountShouldExistCondition(0, pswManager);
 
             return collection;
         }
