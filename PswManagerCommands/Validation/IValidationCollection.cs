@@ -54,5 +54,11 @@ namespace PswManagerCommands.Validation {
         /// <param name="maxLength">The maximum number of arguments there should be.</param>
         void AddCommonConditions(int minLength, int maxLength);
 
+        /// <summary>
+        /// Returns <see langword="True"/> if the given indexes exist and are valid. Otherwise; <see langword="False"/>.
+        /// </summary>
+        /// <param name="indexes">The indexes of the conditions to check.</param>
+        bool IndexesAreValid(params int[] indexes);
+
     }
 }

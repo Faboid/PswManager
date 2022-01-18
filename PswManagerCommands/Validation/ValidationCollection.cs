@@ -64,16 +64,11 @@ namespace PswManagerCommands.Validation {
         /// <br/>If one of the required conditions is false or missing, the operation is voided and the condition won't be added.
         /// </param>
         public void Add(IndexHelper index, Func<string[], bool> conditionFunction, string errorMessage) {
-            if(!index.RequiredSuccesses.All(x 
-                => validatorsDictionary.TryGetValue(x, out (bool valid, string _) result) && result.valid)) {
+            if(!IndexesAreValid(index.RequiredSuccesses)) {
                 return;
             }
 
-            try {
-                validatorsDictionary.Add(index.Index, (conditionFunction.Invoke(args), errorMessage));
-            } catch(Exception) {
-                validatorsDictionary.Add(index.Index, (false, errorMessage));
-            }
+            validatorsDictionary.Add(index.Index, (conditionFunction.Invoke(args), errorMessage));
         }
 
         /// <summary>
@@ -93,5 +88,11 @@ namespace PswManagerCommands.Validation {
             Add(new IndexHelper(NullOrEmptyArgsIndexCondition, NullIndexCondition), (args) => args.All(x => string.IsNullOrWhiteSpace(x) == false), ArgumentsNullOrEmptyMessage);
         }
 
+        /// <summary><inheritdoc/></summary>
+        /// <param name="indexes"><inheritdoc/></param>
+        public bool IndexesAreValid(params int[] indexes) {
+            return indexes.All(x
+                => validatorsDictionary.TryGetValue(x, out (bool valid, string _) result) && result.valid);
+        }
     }
 }
