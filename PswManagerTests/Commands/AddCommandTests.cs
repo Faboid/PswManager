@@ -44,7 +44,8 @@ namespace PswManagerTests.Commands {
         }
 
         public static IEnumerable<object[]> ExpectedValidationFailuresData() {
-            string validName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            string existingName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            string validName = "someRandomNonexistentAccountName";
 
             yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
 
@@ -53,7 +54,7 @@ namespace PswManagerTests.Commands {
             yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, "fiehgywightuy", "      " } };
             yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, "", "email@this.com" } };
 
-            yield return new object[] { AddCommand.AccountExistsErrorMessage, new string[] { validName } };
+            yield return new object[] { AddCommand.AccountExistsErrorMessage, new string[] { existingName, "somevalidPassword", "someValidEmail@email.com" } };
 
             yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
             yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName } };

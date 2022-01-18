@@ -16,7 +16,9 @@ namespace PswManagerLibrary.Commands {
         protected override IValidationCollection AddConditions(IValidationCollection collection) {
 
             collection.AddCommonConditions(3, 3);
-            collection.Add(new IndexHelper(0), (args) => pswManager.AccountExist(args[0]) == false, AccountExistsErrorMessage);
+            collection.Add(
+                new IndexHelper(0, collection.NullIndexCondition, collection.NullOrEmptyArgsIndexCondition, collection.CorrectArgsNumberIndexCondition), 
+                (args) => pswManager.AccountExist(args[0]) == false, AccountExistsErrorMessage);
             
             return collection;
         }

@@ -38,10 +38,13 @@ namespace PswManagerLibrary.Commands {
             collection.AddCommonConditions(2, 4);
             collection.AddAccountShouldExistCondition(0, pswManager);
 
-            var syntaxCheckResult = CheckSyntax(collection.GetArguments());
-            collection.Add(1, syntaxCheckResult.ValidSyntax, InvalidSyntaxMessage);
-            collection.Add(2, syntaxCheckResult.ValidKeys, InvalidKeyFound);
-            collection.Add(3, syntaxCheckResult.NoDuplicateKeys, DuplicateKeyFound);
+            if(collection.IndexesAreValid(collection.NullIndexCondition, collection.NullOrEmptyArgsIndexCondition, collection.CorrectArgsNumberIndexCondition)) {
+
+                var syntaxCheckResult = CheckSyntax(collection.GetArguments());
+                collection.Add(1, syntaxCheckResult.ValidSyntax, InvalidSyntaxMessage);
+                collection.Add(2, syntaxCheckResult.ValidKeys, InvalidKeyFound);
+                collection.Add(3, syntaxCheckResult.NoDuplicateKeys, DuplicateKeyFound);
+            }
 
             return collection;
         }
