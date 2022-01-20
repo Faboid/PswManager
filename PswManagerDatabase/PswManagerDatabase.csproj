@@ -8,8 +8,4 @@
     <ProjectReference Include="..\PswManagerHelperMethods\PswManagerHelperMethods.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DataAccess\TextFileConnHelper\" />
-  </ItemGroup>
-
 </Project>

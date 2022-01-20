@@ -147,8 +147,9 @@ namespace PswManagerDatabase.DataAccess {
         private bool AccountExist(string name, out int position) {
             position = -1;
 
-            if(!File.Exists(paths.AccountsFilePath))
+            if(!File.Exists(paths.AccountsFilePath)) {
                 return false;
+            }
 
             int? temp = SearchByName(name);
             if(temp == null)

@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 
 namespace PswManagerTests.TestsHelpers {
-    public class TestsPaths : IPaths {
+    public class TestsPaths : IPaths, PswManagerDatabase.Config.IPaths {
 
         public TestsPaths() { }
 
