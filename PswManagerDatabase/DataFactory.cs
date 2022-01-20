@@ -32,5 +32,7 @@ namespace PswManagerDatabase {
         public IDataEditor GetDataEditor() => dataConnection;
 
         public IDataReader GetDataReader() => dataConnection;
+
+        public IDataHelper GetDataHelper() => dataConnection;
     }
 }

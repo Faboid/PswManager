@@ -10,6 +10,7 @@ namespace PswManagerDatabase {
         IDataReader GetDataReader();
         IDataEditor GetDataEditor();
         IDataDeleter GetDataDeleter();
+        IDataHelper GetDataHelper();
 
     }
 }
