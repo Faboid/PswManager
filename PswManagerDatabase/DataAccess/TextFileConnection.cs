@@ -88,7 +88,7 @@ namespace PswManagerDatabase.DataAccess {
             var emails = File.ReadAllLines(paths.EmailsFilePath);
 
             var accounts = Enumerable
-                .Range(0, names.Length - 1)
+                .Range(0, names.Length)
                 .Select(x => new AccountModel(names[x], passwords[x], emails[x]))
                 .ToList();
 
