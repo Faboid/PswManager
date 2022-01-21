@@ -10,9 +10,9 @@ using PswManagerDatabase.DataAccess;
 namespace PswManagerTests.Database.TextFileConnectionTests {
 
     [Collection("TestHelperCollection")]
-    public class DeleteAccount {
+    public class DataDeleter {
 
-        public DeleteAccount() : base() {
+        public DataDeleter() : base() {
             IDataConnection dataConnection = new TextFileConnection(TestsHelper.Paths);
             dataDeleter = dataConnection;
             dataHelper = dataConnection;
