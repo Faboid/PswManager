@@ -1,4 +1,5 @@
 ﻿using PswManagerDatabase.Config;
+using PswManagerDatabase.DataAccess.TextFileConnHelper;
 using PswManagerDatabase.Models;
 using PswManagerHelperMethods;
 using System;
@@ -10,24 +11,18 @@ namespace PswManagerDatabase.DataAccess {
 
     public class TextFileConnection : IDataConnection {
 
-        readonly IPaths paths;
-        private int currentLength;
+        private readonly IPaths paths;
+        private readonly LengthCounter lengthCounter;
+        private readonly AccountBuilder accountBuilder;
 
         public TextFileConnection(IPaths paths) {
             this.paths = paths;
-            RefreshCurrentLength();
+            lengthCounter = new LengthCounter(this.paths);
+            accountBuilder = new AccountBuilder(this.paths);
         }
 
-        private void RefreshCurrentLength() {
-            int length = 0;
-
-            using(StreamReader reader = new StreamReader(paths.AccountsFilePath)) {
-                while(reader.ReadLine() != null) {
-                    length++;
-                }
-            }
-
-            currentLength = length;
+        public IPaths GetPaths() {
+            return paths;
         }
 
         /// <summary>
@@ -50,20 +45,14 @@ namespace PswManagerDatabase.DataAccess {
             return position;
         }
 
-        public IPaths GetPaths() {
-            return paths;
-        }
-
         public ConnectionResult CreateAccount(AccountModel model) {
             if(AccountExist(model.Name)) {
                 return new ConnectionResult(false, "The given account name is already occupied.");
             }
 
-            File.AppendAllLines(paths.AccountsFilePath, new[] { model.Name });
-            File.AppendAllLines(paths.PasswordsFilePath, new[] { model.Password });
-            File.AppendAllLines(paths.EmailsFilePath, new[] { model.Email });
+            accountBuilder.Create(model);
 
-            currentLength++;
+            lengthCounter.AddOne();
             return new ConnectionResult(true);
         }
 
@@ -72,25 +61,14 @@ namespace PswManagerDatabase.DataAccess {
                 return new ConnectionResult<AccountModel>(false, "The given account doesn't exist.");
             }
 
-            AccountModel output = new();
-
-            output.Name = File.ReadAllLines(paths.AccountsFilePath).Skip(position).Take(1).First();
-            output.Password = File.ReadAllLines(paths.PasswordsFilePath).Skip(position).Take(1).First();
-            output.Email = File.ReadAllLines(paths.EmailsFilePath).Skip(position).Take(1).First();
+            AccountModel output = accountBuilder.Get(position);
 
             return new ConnectionResult<AccountModel>(true, output);
         }
 
         public ConnectionResult<List<AccountModel>> GetAllAccounts() {
 
-            var names = File.ReadAllLines(paths.AccountsFilePath);
-            var passwords = File.ReadAllLines(paths.PasswordsFilePath);
-            var emails = File.ReadAllLines(paths.EmailsFilePath);
-
-            var accounts = Enumerable
-                .Range(0, names.Length)
-                .Select(x => new AccountModel(names[x], passwords[x], emails[x]))
-                .ToList();
+            List<AccountModel> accounts = accountBuilder.GetAll();
 
             return new ConnectionResult<List<AccountModel>>(true, accounts);
         }
@@ -101,22 +79,11 @@ namespace PswManagerDatabase.DataAccess {
                 return new ConnectionResult<AccountModel>(false, "The given account doesn't exist.");
             }
 
-            ValidateLength(position);
+            lengthCounter.ValidateLength(position);
 
-            EditValue(paths.AccountsFilePath, position, newModel.Name);
-            EditValue(paths.PasswordsFilePath, position, newModel.Password);
-            EditValue(paths.EmailsFilePath, position, newModel.Email);
+            accountBuilder.Edit(position, newModel);
 
             return GetAccount(newModel.Name ?? name);
-        }
-
-        private static void EditValue(string path, int position, string value) {
-            if(value is not null) {
-                var list = File.ReadAllLines(path);
-                list[position] = value;
-                File.WriteAllLines(path, list);
-
-            }
         }
 
         public ConnectionResult DeleteAccount(string name) {
@@ -124,20 +91,12 @@ namespace PswManagerDatabase.DataAccess {
                 return new ConnectionResult(false, "The given account doesn't exist.");
             }
 
-            ValidateLength(position);
+            lengthCounter.ValidateLength(position);
 
-            DeleteValue(paths.AccountsFilePath, position);
-            DeleteValue(paths.PasswordsFilePath, position);
-            DeleteValue(paths.EmailsFilePath, position);
+            accountBuilder.Delete(position);
 
-            currentLength--;
+            lengthCounter.SubtractOne();
             return new ConnectionResult(true);
-        }
-
-        private static void DeleteValue(string path, int position) {
-            List<string> list = File.ReadAllLines(path).ToList();
-            list.RemoveAt(position);
-            File.WriteAllLines(path, list);
         }
 
         public bool AccountExist(string name) {
@@ -160,22 +119,5 @@ namespace PswManagerDatabase.DataAccess {
             return true;
         }
 
-        private void ValidateLength(int position) {
-            //stores the function to avoid duplicate logic
-            bool checkLength() => position < 0 || position > currentLength;
-            if(checkLength()) {
-
-                //in case it's a logistic problem, refreshes the length
-                RefreshCurrentLength();
-
-                //if it's still faulty, throws the exception
-                checkLength().IfTrueThrow(
-                    new ArgumentOutOfRangeException(
-                        nameof(position),
-                        "The given name has been found in an out of range position. The files might be corrupted."
-                    )
-                );
-            }
-        }
     }
 }
