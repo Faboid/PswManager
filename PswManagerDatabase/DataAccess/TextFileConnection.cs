@@ -14,39 +14,21 @@ namespace PswManagerDatabase.DataAccess {
         private readonly IPaths paths;
         private readonly LengthCounter lengthCounter;
         private readonly AccountBuilder accountBuilder;
+        private readonly AccountSearcher accountSearcher;
 
         internal TextFileConnection(IPaths paths) {
             this.paths = paths;
             lengthCounter = new LengthCounter(this.paths);
             accountBuilder = new AccountBuilder(this.paths);
+            accountSearcher = new AccountSearcher(this.paths);
         }
 
         public IPaths GetPaths() {
             return paths;
         }
 
-        /// <summary>
-        /// Returns the position of the name. If it doesn't find any, returns null.
-        /// </summary>
-        private int? SearchByName(string name) {
-            int position = 0;
-
-            using(var reader = new StreamReader(paths.AccountsFilePath)) {
-                string current;
-                while((current = reader.ReadLine()) != name) {
-                    position++;
-
-                    if(current is null) {
-                        return null;
-                    }
-                }
-            }
-
-            return position;
-        }
-
         public ConnectionResult CreateAccount(AccountModel model) {
-            if(AccountExist(model.Name)) {
+            if(accountSearcher.AccountExist(model.Name)) {
                 return new ConnectionResult(false, "The given account name is already occupied.");
             }
 
@@ -57,7 +39,7 @@ namespace PswManagerDatabase.DataAccess {
         }
 
         public ConnectionResult<AccountModel> GetAccount(string name) {
-            if(!AccountExist(name, out int position)) {
+            if(!accountSearcher.AccountExist(name, out int position)) {
                 return new ConnectionResult<AccountModel>(false, "The given account doesn't exist.");
             }
 
@@ -75,7 +57,7 @@ namespace PswManagerDatabase.DataAccess {
 
         public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {
 
-            if(!AccountExist(name, out int position)) {
+            if(!accountSearcher.AccountExist(name, out int position)) {
                 return new ConnectionResult<AccountModel>(false, "The given account doesn't exist.");
             }
 
@@ -87,7 +69,7 @@ namespace PswManagerDatabase.DataAccess {
         }
 
         public ConnectionResult DeleteAccount(string name) {
-            if(!AccountExist(name, out int position)) {
+            if(!accountSearcher.AccountExist(name, out int position)) {
                 return new ConnectionResult(false, "The given account doesn't exist.");
             }
 
@@ -99,25 +81,7 @@ namespace PswManagerDatabase.DataAccess {
             return new ConnectionResult(true);
         }
 
-        public bool AccountExist(string name) {
-            return File.Exists(paths.AccountsFilePath) && SearchByName(name) != null;
-        }
-
-        private bool AccountExist(string name, out int position) {
-            position = -1;
-
-            if(!File.Exists(paths.AccountsFilePath)) {
-                return false;
-            }
-
-            int? temp = SearchByName(name);
-            if(temp == null)
-                return false;
-
-            position = (int)temp;
-
-            return true;
-        }
+        public bool AccountExist(string name) => accountSearcher.AccountExist(name);
 
     }
 }
