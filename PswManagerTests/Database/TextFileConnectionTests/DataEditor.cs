@@ -6,6 +6,7 @@ using PswManagerTests.TestsHelpers;
 using System.Collections.Generic;
 using Xunit;
 using PswManagerDatabase.Models;
+using PswManagerDatabase;
 
 namespace PswManagerTests.Database.TextFileConnectionTests {
 
@@ -13,7 +14,8 @@ namespace PswManagerTests.Database.TextFileConnectionTests {
     public class DataEditor {
 
         public DataEditor() {
-            dataEditor = new TextFileConnection(TestsHelper.Paths);
+            IDataFactory dataFactory = new DataFactory(TestsHelper.Paths);
+            dataEditor = dataFactory.GetDataEditor();
         }
 
         readonly IDataEditor dataEditor;

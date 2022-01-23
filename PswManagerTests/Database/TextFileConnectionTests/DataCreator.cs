@@ -1,4 +1,5 @@
-﻿using PswManagerDatabase.DataAccess;
+﻿using PswManagerDatabase;
+using PswManagerDatabase.DataAccess;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;
 using PswManagerTests.TestsHelpers;
@@ -15,7 +16,8 @@ namespace PswManagerTests.Database.TextFileConnectionTests {
     public class DataCreator {
 
         public DataCreator() {
-            dataCreator = new TextFileConnection(TestsHelper.Paths);
+            IDataFactory dataFactory = new DataFactory(TestsHelper.Paths);
+            dataCreator = dataFactory.GetDataCreator();
         }
 
         readonly IDataCreator dataCreator;

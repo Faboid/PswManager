@@ -21,6 +21,10 @@ namespace PswManagerDatabase {
             };
         }
 
+        public DataFactory(IPaths customPaths) {
+            dataConnection = new TextFileConnection(customPaths);
+        }
+
         public IDataConnection GetDataConnection() => dataConnection;
 
         public IPathsEditor GetPathsEditor() => dataConnection;

@@ -15,7 +15,7 @@ namespace PswManagerDatabase.DataAccess {
         private readonly LengthCounter lengthCounter;
         private readonly AccountBuilder accountBuilder;
 
-        public TextFileConnection(IPaths paths) {
+        internal TextFileConnection(IPaths paths) {
             this.paths = paths;
             lengthCounter = new LengthCounter(this.paths);
             accountBuilder = new AccountBuilder(this.paths);
@@ -31,7 +31,7 @@ namespace PswManagerDatabase.DataAccess {
         private int? SearchByName(string name) {
             int position = 0;
 
-            using(StreamReader reader = new StreamReader(paths.AccountsFilePath)) {
+            using(var reader = new StreamReader(paths.AccountsFilePath)) {
                 string current;
                 while((current = reader.ReadLine()) != name) {
                     position++;

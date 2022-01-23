@@ -13,9 +13,9 @@ namespace PswManagerTests.Database.TextFileConnectionTests {
     public class DataDeleter {
 
         public DataDeleter() : base() {
-            IDataConnection dataConnection = new TextFileConnection(TestsHelper.Paths);
-            dataDeleter = dataConnection;
-            dataHelper = dataConnection;
+            IDataFactory dataFactory = new DataFactory(TestsHelper.Paths);
+            dataDeleter = dataFactory.GetDataDeleter();
+            dataHelper = dataFactory.GetDataHelper();
         }
 
         readonly IDataDeleter dataDeleter;

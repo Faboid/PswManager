@@ -1,4 +1,5 @@
-﻿using PswManagerDatabase.DataAccess;
+﻿using PswManagerDatabase;
+using PswManagerDatabase.DataAccess;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;
 using PswManagerHelperMethods;
@@ -13,7 +14,8 @@ namespace PswManagerTests.Database.TextFileConnectionTests {
     public class DataReader {
 
         public DataReader() {
-            reader = new TextFileConnection(TestsHelper.Paths);
+            IDataFactory dataFactory = new DataFactory(TestsHelper.Paths);
+            reader = dataFactory.GetDataReader();
             TestsHelper.SetUpDefault();
         }
 
