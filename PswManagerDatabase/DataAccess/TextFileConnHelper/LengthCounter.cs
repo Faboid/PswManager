@@ -1,11 +1,7 @@
 ﻿using PswManagerDatabase.Config;
 using PswManagerHelperMethods;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess.TextFileConnHelper {
     internal class LengthCounter {

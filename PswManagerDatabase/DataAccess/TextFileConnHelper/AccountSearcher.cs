@@ -1,10 +1,5 @@
 ﻿using PswManagerDatabase.Config;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess.TextFileConnHelper {
     internal class AccountSearcher {
