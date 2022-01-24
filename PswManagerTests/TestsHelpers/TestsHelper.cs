@@ -4,6 +4,7 @@ using Xunit;
 using PswManagerLibrary.Storage;
 using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.Commands;
+using PswManagerDatabase;
 
 namespace PswManagerTests.TestsHelpers {
 
@@ -20,6 +21,8 @@ namespace PswManagerTests.TestsHelpers {
         public const string pswPassword = "pswpassword";
         public const string emaPassword = "emapassword";
 
+        private static readonly AddCommand addCommand;
+
         static TestsHelper() {
             //get non-existing path to create a folder
             Paths = new TestsPaths();
@@ -35,8 +38,11 @@ namespace PswManagerTests.TestsHelpers {
 
             CryptoAccount = new CryptoAccount(pswPassword, emaPassword);
 
-            PswManager = new PasswordManager(Paths, CryptoAccount);
             Token = new Token(CryptoAccount, Paths, AutoInput);
+
+            PswManager = new PasswordManager(Paths, CryptoAccount);
+
+            addCommand = new AddCommand(new DataFactory(Paths).GetDataCreator(), CryptoAccount);
 
             //set up default values
             SetUpDefault();
@@ -51,11 +57,12 @@ namespace PswManagerTests.TestsHelpers {
             //creates three default entries
             int entries = DefaultValues.values.Count;
             for(int i = 0; i < entries; i++) {
-                PswManager.CreatePassword(
+                addCommand.Run( new string[] {
+
                     DefaultValues.GetValue(i, DefaultValues.TypeValue.Name),
                     DefaultValues.GetValue(i, DefaultValues.TypeValue.Password),
                     DefaultValues.GetValue(i, DefaultValues.TypeValue.Email)
-                );
+                });
             }
 
             AutoInput.SetDefault();

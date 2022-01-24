@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PswManagerDatabase;
+using PswManagerLibrary.Commands;
+using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -19,15 +21,15 @@ namespace PswManagerTests.TestsHelpers {
         public void SetUpDefaultCorrectly(string name, string password, string email) {
 
             //arrange
-            var pswManager = TestsHelper.PswManager;
+            GetCommand getCommand = new GetCommand(new DataFactory(TestsHelper.Paths).GetDataReader(), TestsHelper.CryptoAccount);
             var list = new[] { name, password, email };
 
             //act
             TestsHelper.SetUpDefault();
-            var res = pswManager.GetPassword(list[0]);
+            var res = getCommand.Run( new string[] { list[0] });
 
             //assert
-            Assert.Equal(String.Join(' ', list), res);
+            Assert.Equal(String.Join(' ', list), res.QueryReturnValue);
 
         }
 
