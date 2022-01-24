@@ -75,7 +75,7 @@ namespace PswManagerTests.Commands {
             yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "     ", "password:tiehwgfuh" } };
             yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, "password:tiehwgfuh", null } };
 
-            yield return new object[] { new ValidationCollection(null).InexistentAccountMessage(), new string[] { "fakeAccountName" } };
+            yield return new object[] { new ValidationCollection(null).InexistentAccountMessage(), new string[] { "fakeAccountName", "password:newPasshere" } };
 
             yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
             yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName } };
@@ -88,7 +88,7 @@ namespace PswManagerTests.Commands {
             yield return new object[] { EditCommand.InvalidKeyFound, new string[] { validName, "name:newname", "password:qweqwed" , "ema:email@thisone.com"} };
 
             yield return new object[] { EditCommand.DuplicateKeyFound, new string[] { validName, "email:email@somewhere.com", "email:someEma@here.com" } };
-            yield return new object[] { EditCommand.DuplicateKeyFound, new string[] { validName, "password:newPassword1", "email:email@somewhere.com", "name:newName", "password:newvalidPassword" } };
+            yield return new object[] { EditCommand.DuplicateKeyFound, new string[] { validName, "password:newPassword1", "email:email@somewhere.com", "password:newvalidPassword" } };
         }
 
         [Theory]

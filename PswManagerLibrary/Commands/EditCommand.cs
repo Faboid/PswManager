@@ -42,12 +42,15 @@ namespace PswManagerLibrary.Commands {
 
         protected override IValidationCollection AddConditions(IValidationCollection collection) {
             collection.AddCommonConditions(2, 4);
-            collection.AddAccountShouldExistCondition(dataEditor);
+            collection.AddAccountShouldExistCondition(0, dataEditor);
 
-            var syntaxCheckResult = CheckSyntax(collection.GetArguments());
-            collection.Add(syntaxCheckResult.ValidSyntax, InvalidSyntaxMessage);
-            collection.Add(syntaxCheckResult.ValidKeys, InvalidKeyFound);
-            collection.Add(syntaxCheckResult.NoDuplicateKeys, DuplicateKeyFound);
+            if(collection.IndexesAreValid(collection.NullIndexCondition, collection.NullOrEmptyArgsIndexCondition, collection.CorrectArgsNumberIndexCondition)) {
+
+                var syntaxCheckResult = CheckSyntax(collection.GetArguments());
+                collection.Add(1, syntaxCheckResult.ValidSyntax, InvalidSyntaxMessage);
+                collection.Add(2, syntaxCheckResult.ValidKeys, InvalidKeyFound);
+                collection.Add(3, syntaxCheckResult.NoDuplicateKeys, DuplicateKeyFound);
+            }
 
             return collection;
         }

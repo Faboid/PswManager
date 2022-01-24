@@ -29,7 +29,7 @@ namespace PswManagerLibrary.Commands {
         protected override IValidationCollection AddConditions(IValidationCollection collection) {
 
             collection.AddCommonConditions(1, 1);
-            collection.AddAccountShouldExistCondition(dataReader);
+            collection.AddAccountShouldExistCondition(0, dataReader);
 
             return collection;
         }

@@ -11,9 +11,10 @@ namespace PswManagerLibrary.Extensions {
         /// <summary>
         /// Adds a condition to make sure the account exists.
         /// </summary>
-        /// <param name="dataHelper"></param>
-        public static void AddAccountShouldExistCondition(this IValidationCollection collection, IDataHelper dataHelper) {
-            collection.Add((args) => dataHelper.AccountExist(args[0]) == true, collection.InexistentAccountMessage());
+        /// <param name="pswManager"></param>
+        public static void AddAccountShouldExistCondition(this IValidationCollection collection, ushort index, IDataHelper dataHelper) {
+            collection.Add(new IndexHelper(index, collection.NullIndexCondition, collection.NullOrEmptyArgsIndexCondition, collection.CorrectArgsNumberIndexCondition), 
+                (args) => dataHelper.AccountExist(args[0]) == true, collection.InexistentAccountMessage());
         }
 
     }
