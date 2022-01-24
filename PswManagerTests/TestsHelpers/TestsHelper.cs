@@ -4,6 +4,7 @@ using Xunit;
 using PswManagerLibrary.Storage;
 using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.Commands;
+using PswManagerDatabase;
 
 namespace PswManagerTests.TestsHelpers {
 
@@ -12,13 +13,14 @@ namespace PswManagerTests.TestsHelpers {
         //todo - turn every static value into non-static.
 
         public static readonly TestsPaths Paths;
-        public static readonly PasswordManager PswManager;
         public static readonly AutoInput AutoInput;
         public static readonly Token Token;
         public static readonly CryptoAccount CryptoAccount;
         public static readonly DefaultValues DefaultValues;
         public const string pswPassword = "pswpassword";
         public const string emaPassword = "emapassword";
+
+        private static readonly AddCommand addCommand;
 
         static TestsHelper() {
             //get non-existing path to create a folder
@@ -35,8 +37,9 @@ namespace PswManagerTests.TestsHelpers {
 
             CryptoAccount = new CryptoAccount(pswPassword, emaPassword);
 
-            PswManager = new PasswordManager(Paths, CryptoAccount);
             Token = new Token(CryptoAccount, Paths, AutoInput);
+
+            addCommand = new AddCommand(new DataFactory(Paths).GetDataCreator(), CryptoAccount);
 
             //set up default values
             SetUpDefault();
@@ -51,11 +54,12 @@ namespace PswManagerTests.TestsHelpers {
             //creates three default entries
             int entries = DefaultValues.values.Count;
             for(int i = 0; i < entries; i++) {
-                PswManager.CreatePassword(
+                addCommand.Run( new string[] {
+
                     DefaultValues.GetValue(i, DefaultValues.TypeValue.Name),
                     DefaultValues.GetValue(i, DefaultValues.TypeValue.Password),
                     DefaultValues.GetValue(i, DefaultValues.TypeValue.Email)
-                );
+                });
             }
 
             AutoInput.SetDefault();
@@ -65,7 +69,7 @@ namespace PswManagerTests.TestsHelpers {
 
             //delete the created folder and all its contents
             Directory.Delete(Paths.WorkingDirectory, true);
-
+            
         }
 
     }

@@ -1,5 +1,5 @@
-﻿using PswManagerLibrary.Cryptography;
-using PswManagerLibrary.Global;
+﻿using PswManagerDatabase.Config;
+using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.UIConnection;
 using System;
 using System.IO;

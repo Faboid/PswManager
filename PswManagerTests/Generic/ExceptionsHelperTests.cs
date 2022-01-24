@@ -1,5 +1,4 @@
-﻿using PswManagerLibrary.Exceptions;
-using PswManagerLibrary.Generic;
+﻿using PswManagerHelperMethods;
 using System;
 using Xunit;
 
@@ -11,13 +10,13 @@ namespace PswManagerTests.Generic {
 
             //arrange
             string message = "message";
-            Exception ex = new InvalidCommandException(message);
+            Exception ex = new ArgumentOutOfRangeException(message);
             bool isTrue = true;
 
             //act
 
             //assert
-            Assert.Throws<InvalidCommandException>(() => isTrue.IfTrueThrow(ex));
+            Assert.Throws<ArgumentOutOfRangeException>(() => isTrue.IfTrueThrow(ex));
 
         }
 
@@ -26,7 +25,7 @@ namespace PswManagerTests.Generic {
 
             //arrange
             string message = "message";
-            Exception ex = new InvalidCommandException(message);
+            Exception ex = new ArgumentOutOfRangeException(message);
             bool isFalse = false;
 
             //act
@@ -42,13 +41,13 @@ namespace PswManagerTests.Generic {
 
             //arrange
             string message = "message";
-            Exception ex = new InvalidCommandException(message);
+            Exception ex = new ArgumentOutOfRangeException(message);
             bool isFalse = false;
 
             //act
 
             //assert
-            Assert.Throws<InvalidCommandException>(() => isFalse.IfFalseThrow(ex));
+            Assert.Throws<ArgumentOutOfRangeException>(() => isFalse.IfFalseThrow(ex));
 
         }
 
@@ -57,7 +56,7 @@ namespace PswManagerTests.Generic {
 
             //arrange
             string message = "message";
-            Exception ex = new InvalidCommandException(message);
+            Exception ex = new ArgumentOutOfRangeException(message);
             bool isTrue = true;
 
             //act

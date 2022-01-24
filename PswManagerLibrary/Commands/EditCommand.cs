@@ -1,6 +1,10 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.AbstractCommands;
 using PswManagerCommands.Validation;
+using PswManagerDatabase.DataAccess.Interfaces;
+using PswManagerDatabase.Models;
+using PswManagerHelperMethods;
+using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.Extensions;
 using PswManagerLibrary.Storage;
 using System;
@@ -9,9 +13,10 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace PswManagerLibrary.Commands {
-    public class EditCommand : BaseCommand {
+    public sealed class EditCommand : BaseCommand {
 
-        private readonly IPasswordManager pswManager;
+        private readonly IDataEditor dataEditor;
+        private readonly ICryptoAccount cryptoAccount;
         public const string InvalidSyntaxMessage = "Invalid syntax used for this command. For more informations, run [help edit]";
         public const string InvalidKeyFound = "Invalid key(s) has been found. Valid keys: name, password, email.";
         public const string DuplicateKeyFound = "Duplicate keys aren't allowed.";
@@ -22,8 +27,9 @@ namespace PswManagerLibrary.Commands {
             public bool NoDuplicateKeys { get; set; } = true;
         }
 
-        public EditCommand(IPasswordManager pswManager) {
-            this.pswManager = pswManager;
+        public EditCommand(IDataEditor dataEditor, ICryptoAccount cryptoAccount) {
+            this.dataEditor = dataEditor;
+            this.cryptoAccount = cryptoAccount;
         }
 
         public override string GetDescription() {
@@ -36,7 +42,7 @@ namespace PswManagerLibrary.Commands {
 
         protected override IValidationCollection AddConditions(IValidationCollection collection) {
             collection.AddCommonConditions(2, 4);
-            collection.AddAccountShouldExistCondition(0, pswManager);
+            collection.AddAccountShouldExistCondition(0, dataEditor);
 
             if(collection.IndexesAreValid(collection.NullIndexCondition, collection.NullOrEmptyArgsIndexCondition, collection.CorrectArgsNumberIndexCondition)) {
 
@@ -50,7 +56,35 @@ namespace PswManagerLibrary.Commands {
         }
 
         protected override CommandResult RunLogic(string[] arguments) {
-            pswManager.EditPassword(arguments[0], arguments.Skip(1).ToArray());
+            string name = arguments[0];
+            AccountModel newValues = new();
+            var keys = arguments
+                .Skip(1)
+                .Select(x => x.Split(':').First().ToLowerInvariant())
+                .ToArray();
+            var values = arguments
+                .Skip(1)
+                .Select(x => x.Split(':').Skip(1))
+                .Select(x => string.Join(':', x))
+                .ToArray();
+
+            for(int i = 0; i < keys.Length; i++) {
+                switch(keys[i]) {
+                    case "name":
+                        newValues.Name = values[i];
+                        break;
+                    case "password":
+                        newValues.Password = cryptoAccount.GetPassCryptoString().Encrypt(values[i]);
+                        break;
+                    case "email":
+                            newValues.Email = cryptoAccount.GetEmaCryptoString().Encrypt(values[i]);
+                        break;
+                    default:
+                        return new CommandResult($"Operation failed. The key [{keys[i]}] is invalid.", false);
+                }
+            }
+
+            dataEditor.UpdateAccount(arguments[0], newValues);
 
             return new CommandResult("The account has been edited successfully.", true);
         }

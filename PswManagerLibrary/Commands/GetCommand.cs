@@ -1,16 +1,21 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.AbstractCommands;
 using PswManagerCommands.Validation;
+using PswManagerDatabase.DataAccess.Interfaces;
+using PswManagerDatabase.Models;
+using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.Extensions;
-using PswManagerLibrary.Storage;
+using System;
 
 namespace PswManagerLibrary.Commands {
     public class GetCommand : BaseCommand {
 
-        private readonly IPasswordManager pswManager;
+        private readonly IDataReader dataReader;
+        private readonly ICryptoAccount cryptoAccount;
 
-        public GetCommand(IPasswordManager pswManager) {
-            this.pswManager = pswManager;
+        public GetCommand(IDataReader dataReader, ICryptoAccount cryptoAccount) {
+            this.dataReader = dataReader;
+            this.cryptoAccount = cryptoAccount;
         }
 
         public override string GetDescription() {
@@ -24,15 +29,21 @@ namespace PswManagerLibrary.Commands {
         protected override IValidationCollection AddConditions(IValidationCollection collection) {
 
             collection.AddCommonConditions(1, 1);
-            collection.AddAccountShouldExistCondition(0, pswManager);
+            collection.AddAccountShouldExistCondition(0, dataReader);
 
             return collection;
         }
 
         protected override CommandResult RunLogic(string[] arguments) {
-            var value = pswManager.GetPassword(arguments[0]);
+            ConnectionResult<AccountModel> result = dataReader.GetAccount(arguments[0]);
 
-            return new CommandResult("The account has been retrieved successfully.", true, value);
+            if(result.Success) {
+                (result.Value.Password, result.Value.Email) = cryptoAccount.Decrypt(result.Value.Password, result.Value.Email);
+                string outputVal = $"{result.Value.Name} {result.Value.Password} {result.Value.Email}";
+                return new CommandResult("The account has been retrieved successfully.", true, outputVal);
+            } else {
+                return new CommandResult(result.ErrorMessage, false);
+            }
         }
     }
 }

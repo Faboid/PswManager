@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using PswManagerDatabase.Models;
+using PswManagerHelperMethods;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PswManagerTests.TestsHelpers {
 
@@ -21,6 +24,13 @@ namespace PswManagerTests.TestsHelpers {
 
         public string GetValue(int position, TypeValue type) {
             return values[position].Split(' ')[(int)type];
+        }
+
+        public List<AccountModel> GetAll() {
+            return values
+                .Select(x => x.Split(' '))
+                .Select(x => new AccountModel(x[0], x[1], x[2]))
+                .ToList();
         }
 
         public enum TypeValue {

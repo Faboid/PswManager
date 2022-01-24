@@ -1,6 +1,8 @@
 ﻿using PswManagerCommands;
+using PswManagerDatabase;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Commands.NotImplementedYet;
+using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.Storage;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,14 +14,16 @@ namespace PswManagerLibrary.UIConnection {
         private IUserInput userInput;
         private CommandQuery query;
 
-        public CommandLoop(IUserInput userInput, IPasswordManager pswManager, IReadOnlyDictionary<string, ICommand> extraCommands = null) {
+        public CommandLoop(IUserInput userInput, ICryptoAccount cryptoAccount, IReadOnlyDictionary<string, ICommand> extraCommands = null) {
             extraCommands ??= new Dictionary<string, ICommand>();
 
             this.userInput = userInput;
-            SetUp(pswManager, extraCommands);
+            SetUp(cryptoAccount, extraCommands);
         }
 
-        private void SetUp(IPasswordManager pswManager, IReadOnlyDictionary<string, ICommand> extraCommands) {
+        private void SetUp(ICryptoAccount cryptoAccount, IReadOnlyDictionary<string, ICommand> extraCommands) {
+
+            IDataFactory dataFactory = new DataFactory(DatabaseType.TextFile);
 
             //set up command query
             Dictionary<string, ICommand> collection = new();
@@ -27,10 +31,10 @@ namespace PswManagerLibrary.UIConnection {
             collection.Add("help", new HelpCommand(collection));
             
             //basic crud commands
-            collection.Add("add", new AddCommand(pswManager));
-            collection.Add("get", new GetCommand(pswManager));
-            collection.Add("edit", new EditCommand(pswManager));
-            collection.Add("delete", new DeleteCommand(pswManager, userInput));
+            collection.Add("add", new AddCommand(dataFactory.GetDataCreator(), cryptoAccount));
+            collection.Add("get", new GetCommand(dataFactory.GetDataReader(), cryptoAccount));
+            collection.Add("edit", new EditCommand(dataFactory.GetDataEditor(), cryptoAccount));
+            collection.Add("delete", new DeleteCommand(dataFactory.GetDataDeleter(), userInput));
 
             //todo - implement these commands
             //collection.Add("get-all", new GetAllCommand());

@@ -1,4 +1,5 @@
 ﻿using PswManagerCommands.Validation;
+using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Storage;
 
 namespace PswManagerLibrary.Extensions {
@@ -11,9 +12,9 @@ namespace PswManagerLibrary.Extensions {
         /// Adds a condition to make sure the account exists.
         /// </summary>
         /// <param name="pswManager"></param>
-        public static void AddAccountShouldExistCondition(this IValidationCollection collection, ushort index, IPasswordManager pswManager) {
+        public static void AddAccountShouldExistCondition(this IValidationCollection collection, ushort index, IDataHelper dataHelper) {
             collection.Add(new IndexHelper(index, collection.NullIndexCondition, collection.NullOrEmptyArgsIndexCondition, collection.CorrectArgsNumberIndexCondition), 
-                (args) => pswManager.AccountExist(args[0]) == true, collection.InexistentAccountMessage());
+                (args) => dataHelper.AccountExist(args[0]) == true, collection.InexistentAccountMessage());
         }
 
     }
