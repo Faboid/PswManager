@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading;
 using PswManagerLibrary.UIConnection;
-using PswManagerLibrary.Storage;
-using PswManagerLibrary.Global;
 using PswManagerLibrary.Cryptography;
 
 namespace PswManagerConsole {

@@ -1,21 +1,17 @@
-﻿using PswManagerLibrary.Global;
+﻿using PswManagerDatabase.Config;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace PswManagerTests.Global {
-    public class PathsTests : IDisposable {
+namespace PswManagerTests.Database.Config {
+    public sealed class PathsTests : IDisposable {
 
         static readonly string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         static readonly string TempMainPath = Path.Combine(WorkingDirectory, "ewfsgeweqrqrqrttwqagrthhrjyjewrew"); //gibberish to make sure it's not an existing folder
         static readonly string ConfigFilePath = Path.Combine(WorkingDirectory, "Config.txt");
 
-        private record FourPaths (string MainPath) {
+        private record FourPaths(string MainPath) {
 
             public readonly string ExpectedPasswordsFilePath = Path.Combine(MainPath, "Passwords.txt");
             public readonly string ExpectedAccountsFilePath = Path.Combine(MainPath, "Accounts.txt");

@@ -1,9 +1,8 @@
-﻿using PswManagerLibrary.Global;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 
 namespace PswManagerTests.TestsHelpers {
-    public class TestsPaths : IPaths, PswManagerDatabase.Config.IPaths {
+    public class TestsPaths : PswManagerDatabase.Config.IPaths {
 
         public TestsPaths() { }
 

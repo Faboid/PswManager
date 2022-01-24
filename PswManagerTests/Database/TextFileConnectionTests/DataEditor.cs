@@ -1,6 +1,5 @@
 ﻿using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.DataAccess;
-using PswManagerLibrary.Exceptions;
 using PswManagerLibrary.Storage;
 using PswManagerTests.TestsHelpers;
 using System.Collections.Generic;

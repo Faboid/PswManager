@@ -13,7 +13,6 @@ namespace PswManagerTests.TestsHelpers {
         //todo - turn every static value into non-static.
 
         public static readonly TestsPaths Paths;
-        public static readonly PasswordManager PswManager;
         public static readonly AutoInput AutoInput;
         public static readonly Token Token;
         public static readonly CryptoAccount CryptoAccount;
@@ -39,8 +38,6 @@ namespace PswManagerTests.TestsHelpers {
             CryptoAccount = new CryptoAccount(pswPassword, emaPassword);
 
             Token = new Token(CryptoAccount, Paths, AutoInput);
-
-            PswManager = new PasswordManager(Paths, CryptoAccount);
 
             addCommand = new AddCommand(new DataFactory(Paths).GetDataCreator(), CryptoAccount);
 
@@ -72,7 +69,7 @@ namespace PswManagerTests.TestsHelpers {
 
             //delete the created folder and all its contents
             Directory.Delete(Paths.WorkingDirectory, true);
-
+            
         }
 
     }

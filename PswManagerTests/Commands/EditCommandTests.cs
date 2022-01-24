@@ -1,6 +1,7 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.Validation;
 using PswManagerDatabase;
+using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Extensions;
 using PswManagerLibrary.Storage;
@@ -17,8 +18,10 @@ namespace PswManagerTests.Commands {
         public EditCommandTests() {
             IDataFactory dataFactory = new DataFactory(TestsHelper.Paths);
             editCommand = new EditCommand(dataFactory.GetDataEditor(), TestsHelper.CryptoAccount);
+            getCommand = new GetCommand(dataFactory.GetDataReader(), TestsHelper.CryptoAccount);
         }
 
+        readonly GetCommand getCommand;
         readonly EditCommand editCommand;
 
         public static IEnumerable<object[]> EditSuccessfullyData() {
@@ -50,17 +53,15 @@ namespace PswManagerTests.Commands {
 
             //arrange
             TestsHelper.SetUpDefault();
-            string previous;
-            string actual;
 
             //act
-            previous = TestsHelper.PswManager.GetPassword(args[0]);
+            var previous = getCommand.Run(new string[] { args[0] });
             editCommand.Run(args);
-            actual = TestsHelper.PswManager.GetPassword(newName);
+            var actual = getCommand.Run(new string[] { newName });
 
             //assert
             Assert.NotEqual(previous, actual);
-            Assert.Equal(expected, actual);
+            Assert.Equal(expected, actual.QueryReturnValue);
 
         }
 

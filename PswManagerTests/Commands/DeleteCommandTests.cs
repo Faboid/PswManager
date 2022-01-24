@@ -1,6 +1,7 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.Validation;
 using PswManagerDatabase;
+using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Extensions;
 using PswManagerTests.TestsHelpers;
@@ -19,9 +20,10 @@ namespace PswManagerTests.Commands {
         public DeleteCommandTests() {
             IDataFactory dataFactory = new DataFactory(TestsHelper.Paths);
             delCommand = new DeleteCommand(dataFactory.GetDataDeleter(), TestsHelper.AutoInput);
-
+            dataHelper = dataFactory.GetDataHelper();
         }
 
+        readonly IDataHelper dataHelper;
         readonly DeleteCommand delCommand;
 
         [Fact]
@@ -32,12 +34,12 @@ namespace PswManagerTests.Commands {
             string name = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
 
             //act
-            bool exist = TestsHelper.PswManager.AccountExist(name);
+            bool exist = dataHelper.AccountExist(name);
             delCommand.Run(new string[] { name });
 
             //assert
             Assert.True(exist);
-            Assert.False(TestsHelper.PswManager.AccountExist(name));
+            Assert.False(dataHelper.AccountExist(name));
 
         }
 

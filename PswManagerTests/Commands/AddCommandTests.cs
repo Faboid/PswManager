@@ -1,6 +1,7 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.Validation;
 using PswManagerDatabase;
+using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Storage;
 using PswManagerTests.TestsHelpers;
@@ -14,13 +15,13 @@ namespace PswManagerTests.Commands {
     public class AddCommandTests {
 
         public AddCommandTests() {
-            pswManager = TestsHelper.PswManager;
             IDataFactory dataFactory = new DataFactory(TestsHelper.Paths);
             addCommand = new AddCommand(dataFactory.GetDataCreator(), TestsHelper.CryptoAccount);
+            dataHelper = dataFactory.GetDataHelper();
             TestsHelper.SetUpDefault();
         }
 
-        readonly IPasswordManager pswManager;
+        readonly IDataHelper dataHelper;
         readonly ICommand addCommand;
 
         [Theory]
@@ -35,13 +36,13 @@ namespace PswManagerTests.Commands {
             CommandResult result;
 
             //act
-            exists = pswManager.AccountExist(name);
+            exists = dataHelper.AccountExist(name);
             result = addCommand.Run(args);
 
             //assert
             Assert.False(exists);
             Assert.True(result.Success);
-            Assert.True(pswManager.AccountExist(name));
+            Assert.True(dataHelper.AccountExist(name));
 
         }
 
