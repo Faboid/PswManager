@@ -1,5 +1,6 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.Validation;
+using PswManagerDatabase;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Storage;
 using PswManagerTests.TestsHelpers;
@@ -14,7 +15,8 @@ namespace PswManagerTests.Commands {
 
         public AddCommandTests() {
             pswManager = TestsHelper.PswManager;
-            addCommand = new AddCommand(pswManager);
+            IDataFactory dataFactory = new DataFactory(TestsHelper.Paths);
+            addCommand = new AddCommand(dataFactory.GetDataCreator(), TestsHelper.CryptoAccount);
             TestsHelper.SetUpDefault();
         }
 

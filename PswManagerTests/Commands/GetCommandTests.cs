@@ -1,5 +1,6 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.Validation;
+using PswManagerDatabase;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Extensions;
 using PswManagerTests.TestsHelpers;
@@ -12,7 +13,12 @@ namespace PswManagerTests.Commands {
     [Collection("TestHelperCollection")]
     public class GetCommandTests {
 
-        readonly GetCommand getCommand = new(TestsHelper.PswManager);
+        public GetCommandTests() {
+            IDataFactory dataFactory = new DataFactory(TestsHelper.Paths);
+            getCommand = new GetCommand(dataFactory.GetDataReader(), TestsHelper.CryptoAccount);
+        }
+
+        readonly GetCommand getCommand;
 
         [Fact]
         public void CommandSuccess() {

@@ -1,5 +1,6 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.Validation;
+using PswManagerDatabase;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Extensions;
 using PswManagerLibrary.Storage;
@@ -13,7 +14,12 @@ namespace PswManagerTests.Commands {
     [Collection("TestHelperCollection")]
     public class EditCommandTests {
 
-        readonly EditCommand editCommand = new(TestsHelper.PswManager);
+        public EditCommandTests() {
+            IDataFactory dataFactory = new DataFactory(TestsHelper.Paths);
+            editCommand = new EditCommand(dataFactory.GetDataEditor(), TestsHelper.CryptoAccount);
+        }
+
+        readonly EditCommand editCommand;
 
         public static IEnumerable<object[]> EditSuccessfullyData() {
             var def = TestsHelper.DefaultValues;

@@ -12,6 +12,7 @@ namespace PswManagerLibrary.Storage {
     /// <summary>
     /// Organizes the storing of the encrypted passwords.
     /// </summary>
+    [Obsolete("Soon to be removed.")]
     public class PasswordManager : IPasswordManager {
 
         private readonly ICryptoAccount cryptoAccount;

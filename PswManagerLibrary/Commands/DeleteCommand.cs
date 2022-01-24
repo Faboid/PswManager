@@ -1,6 +1,7 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.AbstractCommands;
 using PswManagerCommands.Validation;
+using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Extensions;
 using PswManagerLibrary.Storage;
 using PswManagerLibrary.UIConnection;
@@ -8,11 +9,11 @@ using PswManagerLibrary.UIConnection;
 namespace PswManagerLibrary.Commands {
     public class DeleteCommand : BaseCommand {
 
-        private readonly IPasswordManager pswManager;
+        private readonly IDataDeleter dataDeleter;
         private readonly IUserInput userInput;
 
-        public DeleteCommand(IPasswordManager pswManager, IUserInput userInput) {
-            this.pswManager = pswManager;
+        public DeleteCommand(IDataDeleter pswManager, IUserInput userInput) {
+            this.dataDeleter = pswManager;
             this.userInput = userInput;
         }
 
@@ -26,7 +27,7 @@ namespace PswManagerLibrary.Commands {
 
         protected override IValidationCollection AddConditions(IValidationCollection collection) {
             collection.AddCommonConditions(1, 1);
-            collection.AddAccountShouldExistCondition(pswManager);
+            collection.AddAccountShouldExistCondition(dataDeleter);
 
             return collection;
         }
@@ -35,7 +36,7 @@ namespace PswManagerLibrary.Commands {
             var result = userInput.YesOrNo("Are you sure? This account will be deleted forever.");
             if(result == false) { return new CommandResult("The operation has been stopped.", false); }
 
-            pswManager.DeletePassword(arguments[0]);
+            dataDeleter.DeleteAccount(arguments[0]);
 
             return new CommandResult("Account deleted successfully.", true);
         }

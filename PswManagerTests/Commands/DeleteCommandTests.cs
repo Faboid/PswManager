@@ -1,5 +1,6 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.Validation;
+using PswManagerDatabase;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Extensions;
 using PswManagerTests.TestsHelpers;
@@ -15,7 +16,13 @@ namespace PswManagerTests.Commands {
     [Collection("TestHelperCollection")]
     public class DeleteCommandTests {
 
-        readonly DeleteCommand delCommand = new DeleteCommand(TestsHelper.PswManager, TestsHelper.AutoInput);
+        public DeleteCommandTests() {
+            IDataFactory dataFactory = new DataFactory(TestsHelper.Paths);
+            delCommand = new DeleteCommand(dataFactory.GetDataDeleter(), TestsHelper.AutoInput);
+
+        }
+
+        readonly DeleteCommand delCommand;
 
         [Fact]
         public void DeleteSuccessfully() {
