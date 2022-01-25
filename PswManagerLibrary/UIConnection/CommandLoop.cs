@@ -33,11 +33,11 @@ namespace PswManagerLibrary.UIConnection {
             //basic crud commands
             collection.Add("add", new AddCommand(dataFactory.GetDataCreator(), cryptoAccount));
             collection.Add("get", new GetCommand(dataFactory.GetDataReader(), cryptoAccount));
+            collection.Add("get-all", new GetAllCommand(dataFactory.GetDataReader()));
             collection.Add("edit", new EditCommand(dataFactory.GetDataEditor(), cryptoAccount));
             collection.Add("delete", new DeleteCommand(dataFactory.GetDataDeleter(), userInput));
 
             //todo - implement these commands
-            //collection.Add("get-all", new GetAllCommand());
             //collection.Add("movedb", new ChangeDatabaseLocationCommand());
 
             query = new CommandQuery(collection.Concat(extraCommands).ToDictionary(x => x.Key, x => x.Value));
