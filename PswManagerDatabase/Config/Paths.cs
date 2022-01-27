@@ -10,7 +10,7 @@ namespace PswManagerDatabase.Config {
     /// Stores global paths.
     /// </summary>
     public class Paths : IPaths {
-
+        
         public Paths() {
             if(!File.Exists(ConfigFilePath) || !Directory.Exists(GetMain())) {
                 SetDefaultMain();
@@ -34,10 +34,12 @@ namespace PswManagerDatabase.Config {
 
         public string TokenFilePath => Path.Combine(GetMain(), tokenFileName);
 
+        //todo - remove all exceptions and return a ConnectionResult in their stead.
+
         /// <summary>
-        /// Changes the path to the accounts WITHOUT dealing with the current saved data. Any folder and files at the previous path will remain.
+        /// <inheritdoc/>
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="path"><inheritdoc/></param>
         public void SetMain(string path) {
             if(Directory.Exists(path) == false) {
                 throw new ArgumentException("The given path doesn't point to an existing directory.", nameof(path));
@@ -46,6 +48,10 @@ namespace PswManagerDatabase.Config {
             File.WriteAllText(ConfigFilePath, path);
         }
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="path"><inheritdoc/></param>
         public void MoveMain(string path) {
             if(path == GetMain()) {
                 return;
