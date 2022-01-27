@@ -1,7 +1,11 @@
 ﻿namespace PswManagerDatabase.Models {
     public class ConnectionResult {
 
-        public ConnectionResult(bool success, string errorMessage = null) {
+        public ConnectionResult(bool success) {
+            Success = success;
+        }
+
+        public ConnectionResult(bool success, string errorMessage) {
             Success = success;
             ErrorMessage = errorMessage;
         }
@@ -11,18 +15,14 @@
 
     }
 
-    public class ConnectionResult<TValue> : ConnectionResult where TValue : class {
-        public ConnectionResult(bool success, string errorMessage = null) : base(success, errorMessage) {
-        }
+    public class ConnectionResult<TValue> : ConnectionResult {
 
-        public ConnectionResult(bool success, string errorMessage = null, TValue value = null) : base(success, errorMessage) {
+        public ConnectionResult(bool success) : base(success) { }
+
+        public ConnectionResult(bool success, string errorMessage) : base(success, errorMessage) { }
+        public ConnectionResult(bool success, TValue value) : base(success) {
             Value = value;
         }
-
-        public ConnectionResult(bool success, TValue value = null) : base(success) {
-            Value = value;
-        }
-
 
         public TValue Value { get; init; }
 
