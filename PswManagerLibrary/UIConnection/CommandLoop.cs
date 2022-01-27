@@ -1,7 +1,6 @@
 ﻿using PswManagerCommands;
 using PswManagerDatabase;
 using PswManagerLibrary.Commands;
-using PswManagerLibrary.Commands.NotImplementedYet;
 using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.Storage;
 using System.Collections.Generic;
@@ -23,7 +22,9 @@ namespace PswManagerLibrary.UIConnection {
 
         private void SetUp(ICryptoAccount cryptoAccount, IReadOnlyDictionary<string, ICommand> extraCommands) {
 
-            IDataFactory dataFactory = new DataFactory(DatabaseType.TextFile);
+            var dbType = DatabaseType.TextFile;
+
+            IDataFactory dataFactory = new DataFactory(dbType);
 
             //set up command query
             Dictionary<string, ICommand> collection = new();
@@ -37,8 +38,10 @@ namespace PswManagerLibrary.UIConnection {
             collection.Add("edit", new EditCommand(dataFactory.GetDataEditor(), cryptoAccount));
             collection.Add("delete", new DeleteCommand(dataFactory.GetDataDeleter(), userInput));
 
-            //todo - implement these commands
-            //collection.Add("movedb", new ChangeDatabaseLocationCommand());
+            //database commands
+            if(dbType == DatabaseType.TextFile) { 
+                collection.Add("movedb", new MoveDatabaseCommand(dataFactory.GetPathsEditor().GetPaths()));
+            }
 
             query = new CommandQuery(collection.Concat(extraCommands).ToDictionary(x => x.Key, x => x.Value));
         }
