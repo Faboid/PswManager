@@ -11,5 +11,9 @@ namespace PswManagerHelperMethods {
             return enumeration;
         }
 
+        public static string JoinStrings(this IEnumerable<string> enumeration, char separator) {
+            return string.Join(separator, enumeration);
+        }
+
     }
 }

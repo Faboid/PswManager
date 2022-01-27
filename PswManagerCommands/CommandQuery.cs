@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using PswManagerHelperMethods;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PswManagerCommands {
@@ -11,12 +12,11 @@ namespace PswManagerCommands {
         }
 
         public CommandResult Query(string command) {
-            //todo - implement a proper parser
-            var query = command.Split(' ');
-            string cmdType = query.First().ToLowerInvariant();
-            var args = query.Skip(1).ToArray();
+            string cmdType = command.Split(' ').First().ToLowerInvariant();
+            string argsCommand = command.Split(' ').Skip(1).JoinStrings(' ');
 
             if(_commands.TryGetValue(cmdType, out var cmd)) {
+                var args = cmd.ParseCommand(argsCommand);
 
                 return cmd.Run(args);
             } else {

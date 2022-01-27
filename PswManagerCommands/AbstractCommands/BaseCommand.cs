@@ -43,5 +43,9 @@ namespace PswManagerCommands.AbstractCommands {
         /// <returns></returns>
         public abstract string GetDescription();
 
+        //if the command works correctly with a default Split(' '), there's no need to override this
+        public virtual string[] ParseCommand(string command) {
+            return command.Split(' ');
+        }
     }
 }
