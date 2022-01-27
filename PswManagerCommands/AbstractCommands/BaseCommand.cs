@@ -7,6 +7,11 @@ namespace PswManagerCommands.AbstractCommands {
     public abstract class BaseCommand : ICommand {
         protected abstract IValidationCollection AddConditions(IValidationCollection collection);
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="arguments"></param>
+        /// <returns></returns>
         public CommandResult Run(string[] arguments) {
             var (success, errorMessages) = Validate(arguments);
             if(!success) {
@@ -16,6 +21,11 @@ namespace PswManagerCommands.AbstractCommands {
             return RunLogic(arguments);
         }
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="arguments"></param>
+        /// <returns></returns>
         public (bool success, IEnumerable<string> errorMessages) Validate(string[] arguments) {
             var conditions = AddConditions(new ValidationCollection(arguments)).GetResult();
             var errorMessages = conditions.Where(x => x.condition is false).Select(x => x.errorMessage);
@@ -32,19 +42,22 @@ namespace PswManagerCommands.AbstractCommands {
         protected abstract CommandResult RunLogic(string[] arguments);
 
         /// <summary>
-        /// Gets a string that shows the syntax used by the command.
+        /// <inheritdoc/>
         /// </summary>
-        /// <returns></returns>
         public abstract string GetSyntax();
 
         /// <summary>
-        /// Gets a string that describe the command in an user-friendly way.
+        /// <inheritdoc/>
         /// </summary>
-        /// <returns></returns>
         public abstract string GetDescription();
 
-        //if the command works correctly with a default Split(' '), there's no need to override this
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         public virtual string[] ParseCommand(string command) {
+            //if the command works correctly with a default string.Split(' '), there's no need to override this
             return command.Split(' ');
         }
     }
