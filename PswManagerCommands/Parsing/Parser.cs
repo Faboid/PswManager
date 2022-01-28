@@ -12,7 +12,7 @@ namespace PswManagerCommands.Parsing {
         
         public string Separator => " -/";
 
-        public bool TryParse<TParseable>(string input, out TParseable parseable) where TParseable : class, IParseable {
+        public bool TryParse<TParseable>(string input, out TParseable parseable) where TParseable : class, IParseable, new() {
             //setup
             parseable = Activator.CreateInstance(typeof(TParseable)) as TParseable;
             dictionary.Clear();

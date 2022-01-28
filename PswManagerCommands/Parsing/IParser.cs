@@ -9,7 +9,7 @@ namespace PswManagerCommands.Parsing {
 
         public string Separator { get; }
 
-        bool TryParse<TParseable>(string input, out TParseable parseable) where TParseable : class, IParseable;
+        bool TryParse<TParseable>(string input, out TParseable parseable) where TParseable : class, IParseable, new();
         void Register(string key, VariableReference<string> reference);
 
     }
