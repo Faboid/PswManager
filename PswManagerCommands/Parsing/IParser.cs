@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 namespace PswManagerCommands.Parsing {
     public interface IParser {
 
+        public string Separator { get; }
+
+        bool TryParse<TParseable>(string input, out TParseable parseable) where TParseable : class, IParseable;
         void Register(string key, VariableReference<string> reference);
 
     }
