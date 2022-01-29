@@ -26,22 +26,43 @@ namespace PswManagerCommands.Parsing {
 
         public ParsingResult Parse(string input) {
 
-            ValidationResult inputValidationResult;
-            if((inputValidationResult = ValidateInput(input)).Success == false)
-                return new ParsingResult(ParsingResult.Success.Failure, inputValidationResult.ErrorMessage);
+            if(!ValidationToParsingResult(ValidateInput(input), out ParsingResult inputValidationResult)) {
+                return inputValidationResult;
+            }
 
             //setup
             IParseable parseable = (IParseable)Activator.CreateInstance(parseableType);
             var dictionary = new Dictionary<string, Action<string>>();
             parseable.AddReferences(dictionary);
 
+            //divide input into arguments
             var args = input.Split(Separator).Where(x => !string.IsNullOrWhiteSpace(x));
+
+            if(!ValidationToParsingResult(ValidateArgs(args), out ParsingResult argsValidationResult)) {
+                return argsValidationResult;
+            }
+
             var keys = args.Select(x => x.Split(Equal).First()).ToArray();
+
+            if(!ValidationToParsingResult(ValidateKeys(keys, dictionary), out ParsingResult keysValidationResult)) {
+                return keysValidationResult;
+            }
+            
             var values = args.Select(x => x.Split(Equal).Skip(1).JoinStrings(Equal)).ToArray();
             
             Enumerable.Range(0, args.Count()).ForEach(x => dictionary[keys[x]].Invoke(values[x]));
 
             return new ParsingResult(ParsingResult.Success.Success, parseable);
+        }
+
+        private bool ValidationToParsingResult(ValidationResult result, out ParsingResult parsingResult) {
+
+            parsingResult = result.Success switch {
+                false => new ParsingResult(ParsingResult.Success.Failure, result.ErrorMessage),
+                true => new ParsingResult(ParsingResult.Success.Success, result.ErrorMessage)
+            };
+
+            return result.Success;
         }
 
         private ValidationResult ValidateInput(string input) {
@@ -60,8 +81,12 @@ namespace PswManagerCommands.Parsing {
         }
 
         private ValidationResult ValidateKeys(IEnumerable<string> keys, Dictionary<string, Action<string>> map) {
-            if(keys.Any(x => !map.ContainsKey(x))) return new ValidationResult(false, "");
-            if(keys.Distinct().Count() == keys.Count()) return new ValidationResult(false, "");
+            if(keys.Any(x => !map.ContainsKey(x)))
+                return new ValidationResult(false,
+                    $"Inexistent parameter has been given. List of possible parameters for this command:" +
+                    $"{Environment.NewLine}{map.Keys.JoinStrings(' ')}");
+            if(keys.Distinct().Count() != keys.Count())
+                return new ValidationResult(false, "Duplicate parameters aren't allowed.");
 
             return new ValidationResult(true, null);
         }
