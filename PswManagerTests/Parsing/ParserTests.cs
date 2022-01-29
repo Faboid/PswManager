@@ -11,21 +11,23 @@ namespace PswManagerTests.Parsing {
 
         [Fact]
         public void ParseSuccessfully() {
-
+            
             //arrange
-            IParser parser = new Parser();
+            IParser parser = Parser.CreateInstance();
 
             string separator = parser.Separator;
+            char equal = parser.Equal;
             string name = "yoyo";
-            string password = "_ghigh riehg/£$GG";
+            string password = $"_ghigh riehg :/£$GG";
             string email = "email@here.com";
-            string command = $"{separator}n:{name}{separator}pass:{password}{separator}ema:{email}";
+            string command = $"{separator}n{equal}{name}{separator}pass{equal}{password}{separator}ema{equal}{email}";
 
             //act
-            var success = parser.TryParse(command, out CustomObject obj);
+            var result = parser.Setup<CustomObject>().Parse(command);
+            var obj = result.Object as CustomObject;
 
             //assert
-            Assert.True(success);
+            Assert.Equal(ParsingResult.Success.Success, result.Result);
             Assert.Equal(name, obj.Name);
             Assert.Equal(password, obj.Password);
             Assert.Equal(email, obj.Email);
@@ -40,15 +42,12 @@ namespace PswManagerTests.Parsing {
         public string Password { get; private set; }
         public string Email { get; private set; }
 
-        public void RegisterAll(IParser parser) {
-            VariableReference<string> nameRef = new(() => Name, (value) => Name = value);
-            VariableReference<string> passwordRef = new(() => Password, (value) => Password = value);
-            VariableReference<string> emailRef = new(() => Email, (value) => Email = value);
-
-            parser.Register("n", nameRef);
-            parser.Register("pass", passwordRef);
-            parser.Register("ema", emailRef);
+        public void AddReferences(Dictionary<string, Action<string>> dictionary) {
+            dictionary.Add("n", (value) => Name = value);
+            dictionary.Add("pass", (value) => Password = value);
+            dictionary.Add("ema", (value) => Email = value);
         }
+
     }
 
 }

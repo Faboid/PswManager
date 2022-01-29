@@ -8,9 +8,15 @@ namespace PswManagerCommands.Parsing {
     public interface IParser {
 
         public string Separator { get; }
+        public char Equal { get; }
 
-        bool TryParse<TParseable>(string input, out TParseable parseable) where TParseable : class, IParseable, new();
-        void Register(string key, VariableReference<string> reference);
+        IParserReady Setup<TParseable>() where TParseable : IParseable, new();
+
+    }
+
+    public interface IParserReady {
+
+        ParsingResult Parse(string input);
 
     }
 }
