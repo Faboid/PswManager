@@ -1,4 +1,5 @@
 ﻿using PswManagerCommands.Parsing;
+using PswManagerCommands.Parsing.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace PswManagerTests.Parsing {
             string name = "yoyo";
             string password = $"_ghigh riehg :/£$GG";
             string email = "email@here.com";
-            string command = $"{separator}n{equal}{name}{separator}pass{equal}{password}{separator}ema{equal}{email}";
+            string command = $"{separator}name{equal}{name}{separator}pass{equal}{password}{separator}ema{equal}{email}";
 
             //act
             var result = parser.Setup<CustomObject>().Parse(command);
@@ -43,8 +44,8 @@ namespace PswManagerTests.Parsing {
             char equal = parser.Equal;
 
             yield return NewObj("tibhtuhwygirh");
-            yield return NewObj($"{separator}n{equal}nameValue{separator}fakeKey{equal}value{separator}ema{equal}yoyo");
-            yield return NewObj($"{separator}n{equal}nameValue{separator}ema{equal}value{separator}ema{equal}yoyo");
+            yield return NewObj($"{separator}name{equal}nameValue{separator}fakeKey{equal}value{separator}ema{equal}yoyo");
+            yield return NewObj($"{separator}name{equal}nameValue{separator}ema{equal}value{separator}ema{equal}yoyo");
 
         }
 
@@ -68,15 +69,14 @@ namespace PswManagerTests.Parsing {
 
     internal class CustomObject : IParseable {
 
+        [ParseableKey("name")]
         public string Name { get; private set; }
-        public string Password { get; private set; }
-        public string Email { get; private set; }
 
-        public void AddReferences(Dictionary<string, Action<string>> dictionary) {
-            dictionary.Add("n", (value) => Name = value);
-            dictionary.Add("pass", (value) => Password = value);
-            dictionary.Add("ema", (value) => Email = value);
-        }
+        [ParseableKey("pass")]
+        public string Password { get; private set; }
+
+        [ParseableKey("ema")]
+        public string Email { get; private set; }
 
     }
 

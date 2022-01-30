@@ -7,7 +7,5 @@ using System.Threading.Tasks;
 namespace PswManagerCommands.Parsing {
     public interface IParseable {
 
-        public void AddReferences(Dictionary<string, Action<string>> dictionary);
-
     }
 }
