@@ -1,4 +1,5 @@
-﻿using PswManagerHelperMethods;
+﻿using PswManagerCommands.Parsing.Helpers;
+using PswManagerHelperMethods;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace PswManagerCommands.Parsing {
 
         private Type parseableType;
 
-        record ValidationResult(bool Success, string ErrorMessage);
+        internal record ValidationResult(bool Success, string ErrorMessage);
 
         public IParserReady Setup<TParseable>() where TParseable : IParseable, new() {
             parseableType = typeof(TParseable);
@@ -26,7 +27,8 @@ namespace PswManagerCommands.Parsing {
 
         public ParsingResult Parse(string input) {
 
-            if(!ValidationToParsingResult(ValidateInput(input), out ParsingResult inputValidationResult)) {
+            //todo - fix this terrifying way of validating input
+            if(!input.ValidateInput(Separator, Equal).ToParsingResult(out ParsingResult inputValidationResult)) {
                 return inputValidationResult;
             }
 
@@ -35,60 +37,23 @@ namespace PswManagerCommands.Parsing {
             var dictionary = new Dictionary<string, Action<string>>();
             parseable.AddReferences(dictionary);
 
-            //divide input into arguments
-            var args = input.Split(Separator).Where(x => !string.IsNullOrWhiteSpace(x));
+            var args = input.GetArgs(Separator);
 
-            if(!ValidationToParsingResult(ValidateArgs(args), out ParsingResult argsValidationResult)) {
+            if(!args.ValidateArgs(Separator, Equal).ToParsingResult(out ParsingResult argsValidationResult)) {
                 return argsValidationResult;
             }
 
-            var keys = args.Select(x => x.Split(Equal).First()).ToArray();
+            var keys = args.GetKeys(Equal).ToArray();
 
-            if(!ValidationToParsingResult(ValidateKeys(keys, dictionary), out ParsingResult keysValidationResult)) {
+            if(!keys.ValidateKeys(dictionary).ToParsingResult(out ParsingResult keysValidationResult)) {
                 return keysValidationResult;
             }
             
-            var values = args.Select(x => x.Split(Equal).Skip(1).JoinStrings(Equal)).ToArray();
+            var values = args.GetValues(Equal).ToArray();
             
             Enumerable.Range(0, args.Count()).ForEach(x => dictionary[keys[x]].Invoke(values[x]));
 
             return new ParsingResult(ParsingResult.Success.Success, parseable);
-        }
-
-        private bool ValidationToParsingResult(ValidationResult result, out ParsingResult parsingResult) {
-
-            parsingResult = result.Success switch {
-                false => new ParsingResult(ParsingResult.Success.Failure, result.ErrorMessage),
-                true => new ParsingResult(ParsingResult.Success.Success, result.ErrorMessage)
-            };
-
-            return result.Success;
-        }
-
-        private ValidationResult ValidateInput(string input) {
-            var result = input.Contains(Separator);
-            string errorMessage = result ? null : 
-                $"Faulty format in the given command. Correct format:" +
-                $"{Environment.NewLine}{Separator}argumentKey{Equal}value";
-            return result? new ValidationResult(true, null) : new ValidationResult(false, errorMessage);
-        }
-
-        private ValidationResult ValidateArgs(IEnumerable<string> args) {
-            var result = args.All(x => x.Contains(Equal));
-            return result ? new ValidationResult(true, null) : new ValidationResult(false, 
-                $"Faulty format in the given command. Correct format:" +
-                $"{Environment.NewLine}{Separator}argumentKey{Equal}value");
-        }
-
-        private ValidationResult ValidateKeys(IEnumerable<string> keys, Dictionary<string, Action<string>> map) {
-            if(keys.Any(x => !map.ContainsKey(x)))
-                return new ValidationResult(false,
-                    $"Inexistent parameter has been given. List of possible parameters for this command:" +
-                    $"{Environment.NewLine}{map.Keys.JoinStrings(' ')}");
-            if(keys.Distinct().Count() != keys.Count())
-                return new ValidationResult(false, "Duplicate parameters aren't allowed.");
-
-            return new ValidationResult(true, null);
         }
 
     }
