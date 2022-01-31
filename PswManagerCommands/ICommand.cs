@@ -1,28 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using PswManagerCommands.Parsing;
+using System.Collections.Generic;
 
 namespace PswManagerCommands {
-    public interface ICommand {
+    public interface ICommand<TArgumentsObject> where TArgumentsObject : ICommandArgumentsObject {
 
         /// <summary>
         /// Runs the arguments through a validation check, and, if they pass it, runs the command.
         /// </summary>
         /// <param name="arguments"></param>
         /// <returns></returns>
-        CommandResult Run(string[] arguments);
+        CommandResult Run(TArgumentsObject arguments);
 
         /// <summary>
         /// Validates the given arguments. If there's any failure, it returns <see langword="false"/> and a list with all the failures that occurred.
         /// </summary>
         /// <param name="arguments"></param>
         /// <returns></returns>
-        (bool success, IEnumerable<string> errorMessages) Validate(string[] arguments);
+        (bool success, IEnumerable<string> errorMessages) Validate(TArgumentsObject arguments);
 
         /// <summary>
-        /// Parses a command string into a series of arguments. Do not pass in the command type.
+        /// Returns an <see cref="IParserReady"/> to parse the arguments from string to the <see cref="TArgumentsObject"/> required by the specific command.
         /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        string[] ParseCommand(string command);
+        IParserReady GetParser();
 
         /// <summary>
         /// Gets a string that shows the syntax used by the command.

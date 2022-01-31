@@ -1,10 +1,11 @@
-﻿using PswManagerCommands.Validation;
+﻿using PswManagerCommands.Parsing;
+using PswManagerCommands.Validation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace PswManagerCommands.AbstractCommands {
-    public abstract class BaseCommand : ICommand {
+    public abstract class BaseCommand<TArgumentsObject> : ICommand<TArgumentsObject> where TArgumentsObject : ICommandArgumentsObject, new() {
         protected abstract IValidationCollection AddConditions(IValidationCollection collection);
 
         /// <summary>
@@ -12,7 +13,7 @@ namespace PswManagerCommands.AbstractCommands {
         /// </summary>
         /// <param name="arguments"></param>
         /// <returns></returns>
-        public CommandResult Run(string[] arguments) {
+        public CommandResult Run(TArgumentsObject arguments) {
             var (success, errorMessages) = Validate(arguments);
             if(!success) {
                 return new CommandResult("The command has failed the validation process.", false, null, errorMessages.ToArray());
@@ -33,13 +34,17 @@ namespace PswManagerCommands.AbstractCommands {
             return (errorMessages.Any() == false, errorMessages);
         }
 
+        public (bool success, IEnumerable<string> errorMessages) Validate(TArgumentsObject obj) {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// In case there is the need to validate something that can't fit in <see cref="AddConditions"/>, this method can be overridden to add such checks.
         /// </summary>
         /// <param name="arguments"></param>
         protected virtual IReadOnlyList<string> ExtraValidation(string[] arguments) { return Array.Empty<string>(); }
 
-        protected abstract CommandResult RunLogic(string[] arguments);
+        protected abstract CommandResult RunLogic(TArgumentsObject obj);
 
         /// <summary>
         /// <inheritdoc/>
@@ -51,14 +56,9 @@ namespace PswManagerCommands.AbstractCommands {
         /// </summary>
         public abstract string GetDescription();
 
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        public virtual string[] ParseCommand(string command) {
-            //if the command works correctly with a default string.Split(' '), there's no need to override this
-            return command.Split(' ');
+        public IParserReady GetParser() {
+            return Parser.CreateInstance().Setup<TArgumentsObject>();
         }
+
     }
 }
