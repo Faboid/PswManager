@@ -5,13 +5,20 @@ using PswManagerCommands;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;
 using PswManagerLibrary.Cryptography;
+using PswManagerCommands.Parsing.Attributes;
 
 namespace PswManagerLibrary.Commands {
-    public class AddCommand : BaseCommand {
+    public class AddCommand : BaseCommand<AddCommand.CommandArguments> {
 
         private readonly IDataCreator dataCreator;
         private readonly ICryptoAccount cryptoAccount;
         public const string AccountExistsErrorMessage = "The account you're trying to create exists already.";
+
+        public class CommandArguments : ICommandArguments {
+            [ParseableKey("name")] public string Name { get; set; }
+            [ParseableKey("pass")] public string Password { get; set; }
+            [ParseableKey("ema")] public string Email{ get; set; }
+        }
 
         public AddCommand(IDataCreator dataCreator, ICryptoAccount cryptoAccount) {
             this.dataCreator = dataCreator;
@@ -36,10 +43,10 @@ namespace PswManagerLibrary.Commands {
             return "add [name] [password] [email]";
         }
 
-        protected override CommandResult RunLogic(string[] arguments) {
+        protected override CommandResult RunLogic(CommandArguments arguments) {
 
-            (arguments[1], arguments[2]) = cryptoAccount.Encrypt(arguments[1], arguments[2]);
-            var account = new AccountModel(arguments[0], arguments[1], arguments[2]);
+            (arguments.Password, arguments.Email) = cryptoAccount.Encrypt(arguments.Password, arguments.Email);
+            var account = new AccountModel(arguments.Name, arguments.Password, arguments.Email);
             dataCreator.CreateAccount(account);
 
             return new CommandResult("The account has been created successfully.", true);
