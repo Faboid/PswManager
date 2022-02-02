@@ -22,7 +22,7 @@ namespace PswManagerCommands.Parsing {
 
         internal record ValidationResult(bool Success, string ErrorMessage);
 
-        public IParserReady Setup<TParseable>() where TParseable : IParseable, new() {
+        public IParserReady Setup<TParseable>() where TParseable : ICommandArguments, new() {
             parseableType = typeof(TParseable);
             valueSetter = ValueSetter.CreateInstance<TParseable>();
             return this;
@@ -36,7 +36,7 @@ namespace PswManagerCommands.Parsing {
             }
 
             //setup
-            IParseable parseable = (IParseable)Activator.CreateInstance(parseableType);
+            ICommandArguments parseable = (ICommandArguments)Activator.CreateInstance(parseableType);
 
             var args = input.GetArgs(Separator);
 

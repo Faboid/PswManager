@@ -5,9 +5,9 @@ using System.Linq;
 namespace PswManagerCommands {
     public class CommandQuery {
 
-        readonly IReadOnlyDictionary<string, ICommand<ICommandArgumentsObject>> _commands;
+        readonly IReadOnlyDictionary<string, ICommand<ICommandArguments>> _commands;
 
-        public CommandQuery(IReadOnlyDictionary<string, ICommand<ICommandArgumentsObject>> commands) {
+        public CommandQuery(IReadOnlyDictionary<string, ICommand<ICommandArguments>> commands) {
             _commands = commands;
         }
 

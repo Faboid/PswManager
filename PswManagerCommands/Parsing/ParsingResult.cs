@@ -15,10 +15,10 @@ namespace PswManagerCommands.Parsing {
         }
 
         public Success Result { get; init; }
-        public IParseable Object { get; init; }
+        public ICommandArguments Object { get; init; }
         public string ErrorMessage { get; init; }
 
-        public ParsingResult(Success success, IParseable objectResult) {
+        public ParsingResult(Success success, ICommandArguments objectResult) {
             Result = success;
             Object = objectResult;
         }

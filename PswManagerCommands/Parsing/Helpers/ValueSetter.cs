@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace PswManagerCommands.Parsing.Helpers {
     internal class ValueSetter {
 
-        public static ValueSetter CreateInstance<TParseable>() where TParseable : IParseable, new() => new(typeof(TParseable));
+        public static ValueSetter CreateInstance<TParseable>() where TParseable : ICommandArguments, new() => new(typeof(TParseable));
 
         public readonly IReadOnlyDictionary<string, PropertyInfo> dictionary;
 
@@ -20,7 +20,7 @@ namespace PswManagerCommands.Parsing.Helpers {
                 .ToDictionary(x => GetKey(x), x => x);
         }
 
-        public bool TryAssignValue(IParseable parseable, string key, string value) {
+        public bool TryAssignValue(ICommandArguments parseable, string key, string value) {
             if(!dictionary.TryGetValue(key, out var propertyInfo)) {
                 return false;
             }

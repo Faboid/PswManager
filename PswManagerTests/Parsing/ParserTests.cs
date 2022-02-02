@@ -1,4 +1,5 @@
-﻿using PswManagerCommands.Parsing;
+﻿using PswManagerCommands;
+using PswManagerCommands.Parsing;
 using PswManagerCommands.Parsing.Attributes;
 using System;
 using System.Collections.Generic;
@@ -67,7 +68,7 @@ namespace PswManagerTests.Parsing {
 
     }
 
-    internal class CustomObject : IParseable {
+    internal class CustomObject : ICommandArguments {
 
         [ParseableKey("name")]
         public string Name { get; private set; }

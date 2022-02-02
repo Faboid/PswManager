@@ -5,7 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace PswManagerCommands.AbstractCommands {
-    public abstract class BaseCommand<TArgumentsObject> : ICommand<TArgumentsObject> where TArgumentsObject : ICommandArgumentsObject, new() {
+    public abstract class BaseCommand<TArgumentsObject> : ICommand<TArgumentsObject> where TArgumentsObject : ICommandArguments, new() {
+
+        private readonly IParserReady parser = Parser.CreateInstance().Setup<TArgumentsObject>();
+
+
         protected abstract IValidationCollection AddConditions(IValidationCollection collection);
 
         /// <summary>
@@ -57,7 +61,7 @@ namespace PswManagerCommands.AbstractCommands {
         public abstract string GetDescription();
 
         public IParserReady GetParser() {
-            return Parser.CreateInstance().Setup<TArgumentsObject>();
+            return parser;
         }
 
     }

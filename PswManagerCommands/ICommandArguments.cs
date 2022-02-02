@@ -6,6 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PswManagerCommands {
-    public interface ICommandArgumentsObject : IParseable { //will soon inherit a "IValidable" interface or something like that
+    public interface ICommandArguments {
     }
 }

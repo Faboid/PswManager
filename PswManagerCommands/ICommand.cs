@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace PswManagerCommands {
-    public interface ICommand<TArgumentsObject> where TArgumentsObject : ICommandArgumentsObject {
+    public interface ICommand<TArgumentsObject> where TArgumentsObject : ICommandArguments {
 
         /// <summary>
         /// Runs the arguments through a validation check, and, if they pass it, runs the command.
