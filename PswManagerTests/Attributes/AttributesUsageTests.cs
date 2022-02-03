@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 using Xunit;
 using PswManagerCommands.Parsing.Attributes;
 using Xunit.Abstractions;
+using PswManagerCommands.Validation.Attributes;
 
 namespace PswManagerTests.Attributes {
-    public class ParseableKeyTests {
+    public class AttributesUsageTests {
 
-        public ParseableKeyTests(ITestOutputHelper output) {
+        public AttributesUsageTests(ITestOutputHelper output) {
             this.output = output;
         }
 
@@ -21,11 +22,11 @@ namespace PswManagerTests.Attributes {
         public void UsedOnStringsOnly() {
             //this test is a refactored version of Sel's answer in https://stackoverflow.com/questions/8382536/allow-a-custom-attribute-only-on-specific-type/40871170
 
-            var propsWithFaultyUsage = ParseableKeyTestsHelper
+            var propsWithFaultyUsage = AttributesUsageTestsHelper
                 .GetAllClasses()
                 .GetAllProperties()
                 .WhereIsNotString()
-                .WhereHasAttribute<ParseableKeyAttribute>();
+                .WhereHasAttributes<ParseableKeyAttribute, RequiredAttribute>();
 
             var propsErrorLocations = propsWithFaultyUsage.Select(FormatMessage);
 
@@ -36,11 +37,12 @@ namespace PswManagerTests.Attributes {
             Assert.Empty(propsErrorLocations);
         }
 
-        private static string FormatMessage(PropertyInfo x) => $"Property '{x.DeclaringType}.{x.Name}' has invalid type: '{x.PropertyType}'. The only allowed type is 'string'.";
+        private static string FormatMessage(PropertyInfo x) 
+            => $"Property '{x.DeclaringType}.{x.Name}' has invalid type: '{x.PropertyType}'. The only allowed type when using this attribute is 'string'.";
 
     }
 
-    internal static class ParseableKeyTestsHelper {
+    internal static class AttributesUsageTestsHelper {
 
         public static IEnumerable<Type> GetAllClasses() 
             => AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes());
@@ -48,11 +50,19 @@ namespace PswManagerTests.Attributes {
         public static IEnumerable<PropertyInfo> GetAllProperties(this IEnumerable<Type> classes) 
             => classes.SelectMany(x => x.GetProperties());
 
-        public static IEnumerable<PropertyInfo> WhereHasAttribute<TAttribute>(this IEnumerable<PropertyInfo> properties) where TAttribute : Attribute
-            => properties.Where(x => x.GetCustomAttribute<TAttribute>() != null);
+        public static IEnumerable<Attribute> GetAttributes(this PropertyInfo properties)
+            => properties.GetCustomAttributes();
 
         public static IEnumerable<PropertyInfo> WhereIsNotString(this IEnumerable<PropertyInfo> properties) 
             => properties.Where(x => x.PropertyType != typeof(string));
+
+        public static IEnumerable<PropertyInfo> WhereHasAttributes<TAttribute1, TAttribute2>(this IEnumerable<PropertyInfo> properties) 
+            where TAttribute1 : Attribute where TAttribute2 : Attribute
+            => properties.Where(x => x.HasAttributes<TAttribute1, TAttribute2>());
+
+        public static bool HasAttributes<TAttribute1, TAttribute2>(this PropertyInfo properties) 
+            where TAttribute1 : Attribute where TAttribute2 : Attribute
+            => properties.GetCustomAttributes().Where(x => x is TAttribute1 or TAttribute2).Any();
 
     }
 }
