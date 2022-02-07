@@ -1,4 +1,5 @@
 ﻿using PswManagerCommands.Validation.Attributes;
+using PswManagerCommands.Validation.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,22 +11,41 @@ namespace PswManagerCommands.Validation {
     public class AutoValidation<T> {
 
         readonly List<string> errors = new();
+        readonly IReadOnlyList<PropertyInfo> properties;
         readonly IReadOnlyList<PropertyInfo> requiredProperties;
+        readonly List<(ValidationLogic<Attribute, object> validator, List<PropertyInfo> props)> customValidators;
 
         public AutoValidation() {
-            requiredProperties = typeof(T).GetProperties().Where(x => x.GetCustomAttribute<RequiredAttribute>() != null).ToList();
+            properties = typeof(T).GetProperties();
+            requiredProperties = properties.Where(x => x.GetCustomAttribute<RequiredAttribute>() != null).ToList();
+        }
+
+        public void AddValidationAttribute(ValidationLogic<Attribute, object> validationLogic) {
+            var props = properties.Where(x => x.GetCustomAttribute(validationLogic.GetAttributeType) != null).ToList();
+            customValidators.Add((validationLogic, props));
         }
 
         public IReadOnlyList<string> GetErrors() {
             return errors;
         }
 
-        public void Clear() {
-            errors.Clear();
-        }
-
         public void Validate(T obj) {
+            errors.Clear();
             RequiredPropertiesHaveValues(obj);
+
+            //continue only if the required values are all filled
+            if(errors.Any()) {
+                return;
+            }
+
+            foreach(var (validator, props) in customValidators) {
+                foreach(var prop in props) {
+                    bool valid = validator.Validate(prop.GetCustomAttribute(validator.GetAttributeType), obj, out string errMessage);
+                    if(!valid) {
+                        errors.Add(errMessage);
+                    }
+                }
+            }
         }
 
         private void RequiredPropertiesHaveValues(T obj) {
