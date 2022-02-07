@@ -20,6 +20,10 @@ namespace PswManagerCommands.Validation {
             return errors;
         }
 
+        public void Clear() {
+            errors.Clear();
+        }
+
         public void Validate(T obj) {
             RequiredPropertiesHaveValues(obj);
         }
