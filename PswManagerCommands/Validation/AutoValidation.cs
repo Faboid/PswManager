@@ -38,6 +38,7 @@ namespace PswManagerCommands.Validation {
                 return;
             }
 
+            //todo - refactor this
             foreach(var (validator, props) in customValidators) {
                 foreach(var prop in props) {
                     bool valid = validator.Validate(prop.GetCustomAttribute(validator.GetAttributeType), obj, out string errMessage);
