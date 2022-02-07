@@ -10,11 +10,10 @@ namespace PswManagerCommands.Validation {
     public class AutoValidation<T> {
 
         readonly List<string> errors = new();
-        readonly IReadOnlyList<PropertyInfo> properties = typeof(T).GetProperties();
         readonly IReadOnlyList<PropertyInfo> requiredProperties;
 
         public AutoValidation() {
-            requiredProperties = properties.Where(x => x.GetCustomAttribute<RequiredAttribute>() != null).ToList();
+            requiredProperties = typeof(T).GetProperties().Where(x => x.GetCustomAttribute<RequiredAttribute>() != null).ToList();
         }
 
         public IReadOnlyList<string> GetErrors() {
