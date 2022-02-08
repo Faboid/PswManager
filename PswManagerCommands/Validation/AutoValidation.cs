@@ -13,14 +13,14 @@ namespace PswManagerCommands.Validation {
         readonly List<string> errors = new();
         readonly IReadOnlyList<PropertyInfo> properties;
         readonly IReadOnlyList<PropertyInfo> requiredProperties;
-        readonly List<(ValidationLogic<Attribute, object> validator, List<PropertyInfo> props)> customValidators;
+        readonly List<(ValidationLogic validator, List<PropertyInfo> props)> customValidators = new();
 
         public AutoValidation() {
             properties = typeof(T).GetProperties();
             requiredProperties = properties.Where(x => x.GetCustomAttribute<RequiredAttribute>() != null).ToList();
         }
 
-        public void AddValidationAttribute(ValidationLogic<Attribute, object> validationLogic) {
+        public void AddValidationAttribute(ValidationLogic validationLogic) {
             var props = properties.Where(x => x.GetCustomAttribute(validationLogic.GetAttributeType) != null).ToList();
             customValidators.Add((validationLogic, props));
         }
@@ -41,9 +41,9 @@ namespace PswManagerCommands.Validation {
             //todo - refactor this
             foreach(var (validator, props) in customValidators) {
                 foreach(var prop in props) {
-                    bool valid = validator.Validate(prop.GetCustomAttribute(validator.GetAttributeType), obj, out string errMessage);
+                    bool valid = validator.Validate(prop.GetCustomAttribute(validator.GetAttributeType), prop.GetValue(obj));
                     if(!valid) {
-                        errors.Add(errMessage);
+                        errors.Add("Temporary error message: value not valid");
                     }
                 }
             }

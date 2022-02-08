@@ -8,26 +8,17 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PswManagerLibrary.Commands.Validation.ValidationLogic {
-    public class VerifyAccountExistenceLogic : ValidationLogic<VerifyAccountExistenceAttribute, string> {
+    public class VerifyAccountExistenceLogic : PswManagerCommands.Validation.Models.ValidationLogic {
 
         private readonly IDataHelper dataHelper;
 
-        public VerifyAccountExistenceLogic(IDataHelper dataHelper) {
+        public VerifyAccountExistenceLogic(IDataHelper dataHelper) : base(typeof(VerifyAccountExistenceAttribute), typeof(string)) {
             this.dataHelper = dataHelper;
         }
 
-        public override bool Validate(VerifyAccountExistenceAttribute attribute, string value, out string errorMessage) {
-            errorMessage = string.Empty;
-            bool valid = dataHelper.AccountExist(value) == attribute.ShouldExist;
+        protected override bool InnerLogic(Attribute attribute, object value) {
 
-            if(!valid) {
-                errorMessage = attribute.ShouldExist switch {
-                    true => "The given account doesn't exist.",
-                    false => "The account exists already."
-                };
-            }
-
-            return valid;
+            return dataHelper.AccountExist((string)value) == (attribute as VerifyAccountExistenceAttribute).ShouldExist;
         }
     }
 }
