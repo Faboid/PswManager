@@ -36,7 +36,7 @@ namespace PswManagerCommands.AbstractCommands {
             return (errorMessages.Any() == false, errorMessages);
         }
 
-        public (bool success, IEnumerable<string> errorMessages) Validate(ICommandArguments obj) {
+        public (bool success, IEnumerable<string> errorMessages) Validate(ICommandInput obj) {
             throw new NotImplementedException();
         }
 

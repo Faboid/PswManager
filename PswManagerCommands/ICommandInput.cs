@@ -6,6 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PswManagerCommands {
-    public interface ICommandArguments {
+    public interface ICommandInput {
     }
 }

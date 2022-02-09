@@ -68,7 +68,7 @@ namespace PswManagerTests.Parsing {
 
     }
 
-    internal class CustomObject : ICommandArguments {
+    internal class CustomObject : ICommandInput {
 
         [ParseableKey("name")]
         public string Name { get; private set; }

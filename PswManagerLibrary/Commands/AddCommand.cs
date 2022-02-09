@@ -14,7 +14,7 @@ namespace PswManagerLibrary.Commands {
         private readonly ICryptoAccount cryptoAccount;
         public const string AccountExistsErrorMessage = "The account you're trying to create exists already.";
 
-        public class CommandArguments : ICommandArguments {
+        public class CommandArguments : ICommandInput {
             [ParseableKey("name")] public string Name { get; set; }
             [ParseableKey("pass")] public string Password { get; set; }
             [ParseableKey("ema")] public string Email{ get; set; }
