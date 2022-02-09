@@ -8,7 +8,7 @@ using PswManagerLibrary.Cryptography;
 using PswManagerCommands.Parsing.Attributes;
 
 namespace PswManagerLibrary.Commands {
-    public class AddCommand : BaseCommand<AddCommand.CommandArguments> {
+    public class AddCommand : BaseCommand {
 
         private readonly IDataCreator dataCreator;
         private readonly ICryptoAccount cryptoAccount;
@@ -43,10 +43,10 @@ namespace PswManagerLibrary.Commands {
             return "add [name] [password] [email]";
         }
 
-        protected override CommandResult RunLogic(CommandArguments arguments) {
+        protected override CommandResult RunLogic(string[] arguments) {
 
-            (arguments.Password, arguments.Email) = cryptoAccount.Encrypt(arguments.Password, arguments.Email);
-            var account = new AccountModel(arguments.Name, arguments.Password, arguments.Email);
+            (arguments[1], arguments[2]) = cryptoAccount.Encrypt(arguments[1], arguments[2]);
+            var account = new AccountModel(arguments[0], arguments[1], arguments[2]);
             dataCreator.CreateAccount(account);
 
             return new CommandResult("The account has been created successfully.", true);

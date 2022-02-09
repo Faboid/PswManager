@@ -5,9 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace PswManagerCommands.AbstractCommands {
-    public abstract class BaseCommand<TArgumentsObject> : ICommand<TArgumentsObject> where TArgumentsObject : ICommandArguments, new() {
-
-        private readonly IParserReady parser = Parser.CreateInstance().Setup<TArgumentsObject>();
+    public abstract class BaseCommand : ICommand {
 
 
         protected abstract IValidationCollection AddConditions(IValidationCollection collection);
@@ -17,7 +15,7 @@ namespace PswManagerCommands.AbstractCommands {
         /// </summary>
         /// <param name="arguments"></param>
         /// <returns></returns>
-        public CommandResult Run(TArgumentsObject arguments) {
+        public CommandResult Run(string[] arguments) {
             var (success, errorMessages) = Validate(arguments);
             if(!success) {
                 return new CommandResult("The command has failed the validation process.", false, null, errorMessages.ToArray());
@@ -38,7 +36,7 @@ namespace PswManagerCommands.AbstractCommands {
             return (errorMessages.Any() == false, errorMessages);
         }
 
-        public (bool success, IEnumerable<string> errorMessages) Validate(TArgumentsObject obj) {
+        public (bool success, IEnumerable<string> errorMessages) Validate(ICommandArguments obj) {
             throw new NotImplementedException();
         }
 
@@ -48,7 +46,7 @@ namespace PswManagerCommands.AbstractCommands {
         /// <param name="arguments"></param>
         protected virtual IReadOnlyList<string> ExtraValidation(string[] arguments) { return Array.Empty<string>(); }
 
-        protected abstract CommandResult RunLogic(TArgumentsObject obj);
+        protected abstract CommandResult RunLogic(string[] obj);
 
         /// <summary>
         /// <inheritdoc/>
@@ -61,7 +59,7 @@ namespace PswManagerCommands.AbstractCommands {
         public abstract string GetDescription();
 
         public IParserReady GetParser() {
-            return parser;
+            throw new NotImplementedException();
         }
 
     }
