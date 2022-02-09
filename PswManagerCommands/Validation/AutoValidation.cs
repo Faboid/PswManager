@@ -11,18 +11,12 @@ namespace PswManagerCommands.Validation {
     public class AutoValidation<T> {
 
         readonly List<string> errors = new();
-        readonly IReadOnlyList<PropertyInfo> properties;
         readonly IReadOnlyList<PropertyInfo> requiredProperties;
         readonly List<(ValidationLogic validator, List<PropertyInfo> props)> customValidators = new();
 
-        public AutoValidation() {
-            properties = typeof(T).GetProperties();
-            requiredProperties = properties.Where(x => x.GetCustomAttribute<RequiredAttribute>() != null).ToList();
-        }
-
-        public void AddValidationAttribute(ValidationLogic validationLogic) {
-            var props = properties.Where(x => x.GetCustomAttribute(validationLogic.GetAttributeType) != null).ToList();
-            customValidators.Add((validationLogic, props));
+        internal AutoValidation(IReadOnlyList<PropertyInfo> required, List<(ValidationLogic validator, List<PropertyInfo> props)> custom) {
+            requiredProperties = required;
+            customValidators = custom;
         }
 
         public IReadOnlyList<string> GetErrors() {

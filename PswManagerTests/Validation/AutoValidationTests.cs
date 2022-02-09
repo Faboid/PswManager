@@ -16,12 +16,19 @@ namespace PswManagerTests.Validation {
 
     public class AutoValidationTests {
 
+        public AutoValidationTests() {
+            autoVal = new AutoValidationBuilder<ValidObject>()
+                .AddLogic(new VerifyRangeLogic())
+                .Build();
+        }
+
+        readonly AutoValidation<ValidObject> autoVal;
+
         [Fact]
         public void ValidationSuccess() {
 
             //arrange
-            AutoValidation<ValidObject> autoVal = new();
-            autoVal.AddValidationAttribute(new VerifyRangeLogic());
+            
             ValidObject obj = new();
             obj.Name = "Hello!";
             obj.Password = "igghrtuh";
@@ -41,8 +48,6 @@ namespace PswManagerTests.Validation {
         public void ValidationFailure_MissingRequired() {
 
             //arrange
-            AutoValidation<ValidObject> autoVal = new();
-            autoVal.AddValidationAttribute(new VerifyRangeLogic());
             ValidObject obj = new();
             obj.Name = "Hello!";
 
@@ -59,8 +64,6 @@ namespace PswManagerTests.Validation {
         public void ValidationFailure_MissingCustom() {
 
             //arrange
-            AutoValidation<ValidObject> autoVal = new();
-            autoVal.AddValidationAttribute(new VerifyRangeLogic());
             ValidObject obj = new ValidObject();
             obj.Name = "Hello!";
             obj.Password = "igghrtuh";
