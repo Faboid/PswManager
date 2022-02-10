@@ -28,7 +28,6 @@ namespace PswManagerTests.Validation {
         public void ValidationSuccess() {
 
             //arrange
-            
             ValidObject obj = new();
             obj.Name = "Hello!";
             obj.Password = "igghrtuh";
@@ -64,7 +63,7 @@ namespace PswManagerTests.Validation {
         public void ValidationFailure_MissingCustom() {
 
             //arrange
-            ValidObject obj = new ValidObject();
+            ValidObject obj = new();
             obj.Name = "Hello!";
             obj.Password = "igghrtuh";
             obj.Email = "yoyo@email.com";
