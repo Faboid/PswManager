@@ -5,9 +5,21 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace PswManagerCommands.AbstractCommands {
-    public abstract class BaseCommand : ICommand {
 
+    /// <summary>
+    /// [WIP]The children of <see cref="AutoCommand{TCommandInput}"/> create a custom object which will have automatic parsing and validating.
+    /// </summary>
+    /// <typeparam name="TCommandInput">The type of the custom object created by the children class.</typeparam>
+    public abstract class AutoCommand<TCommandInput> : ICommand where TCommandInput : new() {
 
+        public AutoCommand() {
+            inputValidator = BuildAutoValidator(new AutoValidationBuilder<TCommandInput>());
+            parserReady = Parser.CreateInstance().Setup<TCommandInput>();
+        }
+
+        private readonly IParserReady parserReady;
+        private readonly AutoValidation<TCommandInput> inputValidator;
+        protected abstract AutoValidation<TCommandInput> BuildAutoValidator(AutoValidationBuilder<TCommandInput> builder);
         protected abstract IValidationCollection AddConditions(IValidationCollection collection);
 
         /// <summary>
@@ -57,10 +69,6 @@ namespace PswManagerCommands.AbstractCommands {
         /// <inheritdoc/>
         /// </summary>
         public abstract string GetDescription();
-
-        public IParserReady GetParser() {
-            throw new NotImplementedException();
-        }
 
     }
 }
