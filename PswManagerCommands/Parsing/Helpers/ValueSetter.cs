@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace PswManagerCommands.Parsing.Helpers {
     internal class ValueSetter {
 
-        public static ValueSetter CreateInstance<TParseable>() where TParseable : ICommandInput, new() => new(typeof(TParseable));
+        public static ValueSetter CreateInstance<TParseable>() where TParseable : new() => new(typeof(TParseable));
 
         public readonly IReadOnlyDictionary<string, PropertyInfo> dictionary;
 

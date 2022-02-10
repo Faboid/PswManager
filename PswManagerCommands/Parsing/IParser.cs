@@ -10,7 +10,7 @@ namespace PswManagerCommands.Parsing {
         public string Separator { get; }
         public char Equal { get; }
 
-        IParserReady Setup<TParseable>() where TParseable : ICommandInput, new();
+        IParserReady Setup<TParseable>() where TParseable : new();
 
     }
 
