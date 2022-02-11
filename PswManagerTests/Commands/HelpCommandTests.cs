@@ -1,7 +1,7 @@
 ﻿using Moq;
 using PswManagerCommands;
 using PswManagerCommands.Validation;
-using PswManagerLibrary.Commands;
+using PswManagerLibrary.Commands.ManualCommands;
 using System;
 using System.Collections.Generic;
 using System.Linq;

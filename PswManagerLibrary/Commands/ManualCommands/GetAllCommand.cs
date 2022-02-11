@@ -8,8 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PswManagerLibrary.Commands {
-    public class GetAllCommand : BaseCommand {
+namespace PswManagerLibrary.Commands.ManualCommands {
+    public class GetAllCommand : ManualCommand {
 
         readonly IDataReader dataReader;
         readonly ICryptoAccount cryptoAccount;
@@ -41,7 +41,7 @@ namespace PswManagerLibrary.Commands {
         protected override CommandResult RunLogic(string[] arguments) {
             var result = dataReader.GetAllAccounts();
 
-            if(arguments.Length == 0) { 
+            if(arguments.Length == 0) {
                 return new CommandResult("The list has been retrieved.", true, string.Join(Environment.NewLine, result.Value.Select(Decrypt)));
             }
             bool getNames = arguments.Contains(validKeys[0]);
@@ -62,9 +62,12 @@ namespace PswManagerLibrary.Commands {
         }
 
         private static IEnumerable<string> Take(AccountModel account, bool takeName, bool takePassword, bool takeEmail) {
-            if(takeName) yield return account.Name;
-            if(takePassword) yield return account.Password;
-            if(takeEmail) yield return account.Email;
+            if(takeName)
+                yield return account.Name;
+            if(takePassword)
+                yield return account.Password;
+            if(takeEmail)
+                yield return account.Email;
         }
 
         private static string Merge(string[] values) => string.Join(' ', values);

@@ -1,19 +1,23 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.AbstractCommands;
+using PswManagerCommands.Parsing.Attributes;
 using PswManagerCommands.Validation;
+using PswManagerCommands.Validation.Attributes;
 using PswManagerDatabase.DataAccess.Interfaces;
+using PswManagerLibrary.Commands.Validation.Attributes;
+using PswManagerLibrary.Commands.Validation.ValidationLogic;
 using PswManagerLibrary.Extensions;
 using PswManagerLibrary.Storage;
 using PswManagerLibrary.UIConnection;
 
-namespace PswManagerLibrary.Commands {
-    public class DeleteCommand : BaseCommand {
+namespace PswManagerLibrary.Commands.ManualCommands {
+    public class DeleteCommand : ManualCommand {
 
         private readonly IDataDeleter dataDeleter;
         private readonly IUserInput userInput;
 
         public DeleteCommand(IDataDeleter pswManager, IUserInput userInput) {
-            this.dataDeleter = pswManager;
+            dataDeleter = pswManager;
             this.userInput = userInput;
         }
 
@@ -40,5 +44,6 @@ namespace PswManagerLibrary.Commands {
 
             return new CommandResult("Account deleted successfully.", true);
         }
+
     }
 }

@@ -4,8 +4,8 @@ using PswManagerCommands.Validation;
 using System;
 using System.Collections.Generic;
 
-namespace PswManagerLibrary.Commands {
-    public class HelpCommand : BaseCommand {
+namespace PswManagerLibrary.Commands.ManualCommands {
+    public class HelpCommand : ManualCommand {
 
         private readonly IReadOnlyDictionary<string, ICommand> commands;
         public const string CommandInexistentErrorMessage = "The requested command doesn't exist. For a list of commands, run [help].";
@@ -25,7 +25,7 @@ namespace PswManagerLibrary.Commands {
         protected override IValidationCollection AddConditions(IValidationCollection collection) {
             collection.AddCommonConditions(0, 1);
             if(collection.GetArguments()?.Length == 1) {
-                collection.Add(new IndexHelper(0, collection.NullIndexCondition, collection.NullOrEmptyArgsIndexCondition, collection.CorrectArgsNumberIndexCondition), 
+                collection.Add(new IndexHelper(0, collection.NullIndexCondition, collection.NullOrEmptyArgsIndexCondition, collection.CorrectArgsNumberIndexCondition),
                     (args) => commands.ContainsKey(args[0].ToLowerInvariant()), CommandInexistentErrorMessage);
             }
 
