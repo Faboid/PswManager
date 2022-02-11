@@ -19,11 +19,6 @@ namespace PswManagerCommands {
         (bool success, IEnumerable<string> errorMessages) Validate(string[] arguments);
 
         /// <summary>
-        /// Returns an <see cref="IParserReady"/> to parse the arguments from string to the <see cref="TArgumentsObject"/> required by the specific command.
-        /// </summary>
-        IParserReady GetParser();
-
-        /// <summary>
         /// Gets a string that shows the syntax used by the command.
         /// </summary>
         string GetSyntax();
