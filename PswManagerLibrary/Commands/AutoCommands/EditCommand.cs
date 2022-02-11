@@ -1,23 +1,18 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.AbstractCommands;
-using PswManagerCommands.Parsing.Attributes;
 using PswManagerCommands.Validation;
-using PswManagerCommands.Validation.Attributes;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;
-using PswManagerHelperMethods;
-using PswManagerLibrary.Commands.Validation.Attributes;
+using PswManagerLibrary.Commands.AutoCommands.ArgsModels;
 using PswManagerLibrary.Commands.Validation.ValidationLogic;
 using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.Extensions;
-using PswManagerLibrary.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace PswManagerLibrary.Commands.AutoCommands {
-    public sealed class EditCommand : AutoCommand<EditCommand.CommandArguments> {
+    public sealed class EditCommand : AutoCommand<EditAccountModel> {
 
         private readonly IDataEditor dataEditor;
         private readonly ICryptoAccount cryptoAccount;
@@ -144,27 +139,10 @@ namespace PswManagerLibrary.Commands.AutoCommands {
             return keys;
         }
 
-        protected override AutoValidation<CommandArguments> BuildAutoValidator(AutoValidationBuilder<CommandArguments> builder) {
+        protected override AutoValidation<EditAccountModel> BuildAutoValidator(AutoValidationBuilder<EditAccountModel> builder) {
             return builder
                 .AddLogic(new VerifyAccountExistenceLogic(dataEditor))
                 .Build();
-        }
-
-        public class CommandArguments : ICommandInput {
-
-            [ParseableKey("n")]
-            [Required]
-            [VerifyAccountExistence(true)]
-            public string Name { get; set; }
-
-            [ParseableKey("name")]
-            public string NewName { get; set; }
-
-            [ParseableKey("pass")]
-            public string NewPassword { get; set; }
-
-            [ParseableKey("ema")]
-            public string NewEmail { get; set; }
         }
 
     }

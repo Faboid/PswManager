@@ -1,17 +1,14 @@
-﻿using PswManagerLibrary.Storage;
-using PswManagerCommands.Validation;
+﻿using PswManagerCommands.Validation;
 using PswManagerCommands.AbstractCommands;
 using PswManagerCommands;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;
 using PswManagerLibrary.Cryptography;
-using PswManagerCommands.Parsing.Attributes;
 using PswManagerLibrary.Commands.Validation.ValidationLogic;
-using PswManagerCommands.Validation.Attributes;
-using PswManagerLibrary.Commands.Validation.Attributes;
+using PswManagerLibrary.Commands.AutoCommands.ArgsModels;
 
 namespace PswManagerLibrary.Commands.AutoCommands {
-    public class AddCommand : AutoCommand<AddCommand.CommandArguments> {
+    public class AddCommand : AutoCommand<AccountInfo> {
 
         private readonly IDataCreator dataCreator;
         private readonly ICryptoAccount cryptoAccount;
@@ -49,27 +46,10 @@ namespace PswManagerLibrary.Commands.AutoCommands {
             return new CommandResult("The account has been created successfully.", true);
         }
 
-        protected override AutoValidation<CommandArguments> BuildAutoValidator(AutoValidationBuilder<CommandArguments> builder)
+        protected override AutoValidation<AccountInfo> BuildAutoValidator(AutoValidationBuilder<AccountInfo> builder)
             => builder
                 .AddLogic(new VerifyAccountExistenceLogic(dataCreator))
                 .Build();
-
-
-        public class CommandArguments : ICommandInput {
-
-            [ParseableKey("name")]
-            [Required]
-            [VerifyAccountExistence(true)]
-            public string Name { get; set; }
-
-            [ParseableKey("pass")]
-            [Required]
-            public string Password { get; set; }
-
-            [ParseableKey("ema")]
-            [Required]
-            public string Email { get; set; }
-        }
 
     }
 }
