@@ -2,8 +2,7 @@
 using PswManagerCommands.Validation;
 using PswManagerDatabase;
 using PswManagerDatabase.DataAccess.Interfaces;
-using PswManagerLibrary.Commands.AutoCommands;
-using PswManagerLibrary.Commands.ManualCommands;
+using PswManagerLibrary.Commands;
 using PswManagerLibrary.Extensions;
 using PswManagerLibrary.Storage;
 using PswManagerTests.TestsHelpers;

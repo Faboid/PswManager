@@ -7,8 +7,8 @@ using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.Extensions;
 using System;
 
-namespace PswManagerLibrary.Commands.ManualCommands {
-    public class GetCommand : ManualCommand {
+namespace PswManagerLibrary.Commands {
+    public class GetCommand : BaseCommand {
 
         private readonly IDataReader dataReader;
         private readonly ICryptoAccount cryptoAccount;
@@ -41,8 +41,7 @@ namespace PswManagerLibrary.Commands.ManualCommands {
                 (result.Value.Password, result.Value.Email) = cryptoAccount.Decrypt(result.Value.Password, result.Value.Email);
                 string outputVal = $"{result.Value.Name} {result.Value.Password} {result.Value.Email}";
                 return new CommandResult("The account has been retrieved successfully.", true, outputVal);
-            }
-            else {
+            } else {
                 return new CommandResult(result.ErrorMessage, false);
             }
         }

@@ -5,8 +5,8 @@ using PswManagerDatabase.Config;
 using System;
 using System.IO;
 
-namespace PswManagerLibrary.Commands.ManualCommands {
-    public class MoveDatabaseCommand : ManualCommand {
+namespace PswManagerLibrary.Commands {
+    public class MoveDatabaseCommand : BaseCommand {
 
         readonly IPaths paths;
         public const string InexistentDirectoryErrorMessage = "The given path must lead to an existing folder.";

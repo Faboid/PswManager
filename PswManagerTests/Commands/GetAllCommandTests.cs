@@ -1,7 +1,7 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.Validation;
 using PswManagerDatabase;
-using PswManagerLibrary.Commands.ManualCommands;
+using PswManagerLibrary.Commands;
 using PswManagerTests.TestsHelpers;
 using System;
 using System.Collections.Generic;

@@ -3,16 +3,15 @@ using PswManagerCommands.AbstractCommands;
 using PswManagerCommands.Validation;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;
-using PswManagerLibrary.Commands.AutoCommands.ArgsModels;
-using PswManagerLibrary.Commands.Validation.ValidationLogic;
+using PswManagerHelperMethods;
 using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PswManagerLibrary.Commands.AutoCommands {
-    public sealed class EditCommand : AutoCommand<EditAccountModel> {
+namespace PswManagerLibrary.Commands {
+    public sealed class EditCommand : BaseCommand {
 
         private readonly IDataEditor dataEditor;
         private readonly ICryptoAccount cryptoAccount;
@@ -76,7 +75,7 @@ namespace PswManagerLibrary.Commands.AutoCommands {
                         newValues.Password = cryptoAccount.GetPassCryptoString().Encrypt(values[i]);
                         break;
                     case "email":
-                        newValues.Email = cryptoAccount.GetEmaCryptoString().Encrypt(values[i]);
+                            newValues.Email = cryptoAccount.GetEmaCryptoString().Encrypt(values[i]);
                         break;
                     default:
                         return new CommandResult($"Operation failed. The key [{keys[i]}] is invalid.", false);
@@ -105,8 +104,7 @@ namespace PswManagerLibrary.Commands.AutoCommands {
                 var givenKeyArguments = argsToTest.Select(x => x.Split(':').First());
 
                 CheckKeys(ref result, keys, givenKeyArguments);
-            }
-            catch(Exception) {
+            } catch(Exception) {
                 result.ValidSyntax = false;
             }
 
@@ -120,12 +118,11 @@ namespace PswManagerLibrary.Commands.AutoCommands {
                 if(keys.ContainsKey(s)) {
 
                     if(keys[s] == true) {
-                        result.NoDuplicateKeys = false;
+                        result.NoDuplicateKeys= false;
                     }
                     keys[s] = true;
 
-                }
-                else {
+                } else {
                     result.ValidKeys = false;
                 }
             }
@@ -138,12 +135,5 @@ namespace PswManagerLibrary.Commands.AutoCommands {
             keys.Add("email", false);
             return keys;
         }
-
-        protected override AutoValidation<EditAccountModel> BuildAutoValidator(AutoValidationBuilder<EditAccountModel> builder) {
-            return builder
-                .AddLogic(new VerifyAccountExistenceLogic(dataEditor))
-                .Build();
-        }
-
     }
 }

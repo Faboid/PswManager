@@ -1,5 +1,5 @@
 ﻿using PswManagerDatabase;
-using PswManagerLibrary.Commands.ManualCommands;
+using PswManagerLibrary.Commands;
 using System;
 using System.Collections.Generic;
 using Xunit;

@@ -3,8 +3,8 @@ using System.IO;
 using Xunit;
 using PswManagerLibrary.Storage;
 using PswManagerLibrary.Cryptography;
+using PswManagerLibrary.Commands;
 using PswManagerDatabase;
-using PswManagerLibrary.Commands.AutoCommands;
 
 namespace PswManagerTests.TestsHelpers {
 

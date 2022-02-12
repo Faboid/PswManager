@@ -4,15 +4,21 @@ using PswManagerCommands;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;
 using PswManagerLibrary.Cryptography;
-using PswManagerLibrary.Commands.Validation.ValidationLogic;
-using PswManagerLibrary.Commands.AutoCommands.ArgsModels;
+using PswManagerCommands.Parsing.Attributes;
+using PswManagerCommands.Validation.Attributes;
+namespace PswManagerLibrary.Commands {
+    public class AddCommand : BaseCommand {
 
-namespace PswManagerLibrary.Commands.AutoCommands {
-    public class AddCommand : AutoCommand<AccountInfo> {
 
         private readonly IDataCreator dataCreator;
         private readonly ICryptoAccount cryptoAccount;
         public const string AccountExistsErrorMessage = "The account you're trying to create exists already.";
+
+        public class CommandArguments : ICommandInput {
+            [ParseableKey("name")] public string Name { get; set; }
+            [ParseableKey("pass")] public string Password { get; set; }
+            [ParseableKey("ema")] public string Email{ get; set; }
+        }
 
         public AddCommand(IDataCreator dataCreator, ICryptoAccount cryptoAccount) {
             this.dataCreator = dataCreator;
@@ -23,9 +29,9 @@ namespace PswManagerLibrary.Commands.AutoCommands {
 
             collection.AddCommonConditions(3, 3);
             collection.Add(
-                new IndexHelper(0, collection.NullIndexCondition, collection.NullOrEmptyArgsIndexCondition, collection.CorrectArgsNumberIndexCondition),
+                new IndexHelper(0, collection.NullIndexCondition, collection.NullOrEmptyArgsIndexCondition, collection.CorrectArgsNumberIndexCondition), 
                 (args) => dataCreator.AccountExist(args[0]) == false, AccountExistsErrorMessage);
-
+          
             return collection;
         }
 
@@ -45,11 +51,6 @@ namespace PswManagerLibrary.Commands.AutoCommands {
 
             return new CommandResult("The account has been created successfully.", true);
         }
-
-        protected override AutoValidation<AccountInfo> BuildAutoValidator(AutoValidationBuilder<AccountInfo> builder)
-            => builder
-                .AddLogic(new VerifyAccountExistenceLogic(dataCreator))
-                .Build();
 
     }
 }

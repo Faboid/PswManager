@@ -2,7 +2,7 @@
 using PswManagerCommands;
 using PswManagerCommands.Validation;
 using PswManagerDatabase.Config;
-using PswManagerLibrary.Commands.ManualCommands;
+using PswManagerLibrary.Commands;
 using System;
 using System.Collections.Generic;
 using System.IO;
