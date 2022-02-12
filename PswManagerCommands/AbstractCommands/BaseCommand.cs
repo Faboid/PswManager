@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 namespace PswManagerCommands.AbstractCommands {
 
     /// <summary>
-    /// The children of <see cref="ManualCommand"/> deal with parsing and validating manually. 
+    /// The children of <see cref="BaseCommand"/> deal with parsing and validating manually. 
     /// </summary>
-    public abstract class ManualCommand : ICommand {
+    public abstract class BaseCommand : ICommand {
 
         protected abstract IValidationCollection AddConditions(IValidationCollection collection);
 
