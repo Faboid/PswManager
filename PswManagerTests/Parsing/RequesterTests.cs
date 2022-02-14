@@ -1,11 +1,8 @@
 ﻿using PswManagerLibrary.InputBuilder;
 using PswManagerLibrary.InputBuilder.Attributes;
 using PswManagerLibrary.UIConnection;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Parsing {
@@ -19,7 +16,7 @@ namespace PswManagerTests.Parsing {
             string invalidInputNull = null;
             string invalidInputEmpty = "  ";
             string password = "rugtyrh&&ieow";
-            List<string> answers = new() { name, invalidInputEmpty, invalidInputNull, invalidInputEmpty, password };
+            List<string> answers = new() { name, invalidInputEmpty, invalidInputNull, invalidInputEmpty, password, default };
             List<bool> yesOrNoAns = new() { false, true };
             FakeUserInput fakeUserInput = new(answers, yesOrNoAns);
             Requester requester = new(typeof(InputObject), fakeUserInput);
@@ -79,7 +76,6 @@ namespace PswManagerTests.Parsing {
 
         }
 
-
     }
 
     internal class InputObject {
@@ -105,13 +101,13 @@ namespace PswManagerTests.Parsing {
         private readonly List<bool> yesOrNoAnswers;
 
         public string RequestAnswer(string message) {
-            var ans = answers.FirstOrDefault();
+            var ans = answers.First();
             answers.Remove(ans);
             return ans;
         }
 
         public string RequestAnswer() {
-            var ans = answers.FirstOrDefault();
+            var ans = answers.First();
             answers.Remove(ans);
             return ans;
         }
