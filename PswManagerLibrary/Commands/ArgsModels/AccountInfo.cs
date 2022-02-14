@@ -20,7 +20,7 @@ namespace PswManagerLibrary.Commands.AutoCommands.ArgsModels {
 
         [ParseableKey("ema")]
         [Required]
-        [Optional("Insert any email:")]
+        [Request("Insert any email:", true)]
         public string Email { get; set; }
 
     }

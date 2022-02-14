@@ -20,17 +20,17 @@ namespace PswManagerLibrary.InputBuilder {
             this.userInput = userInput;
             this.type = type;
             
-            var props = type.GetProperties();
+            var props = type.GetProperties()
+                .Select(prop => (prop, prop.GetCustomAttribute<RequestAttribute>()))
+                .Where(x => x.Item2 != null);
 
             required = props
-                .Select(prop => (prop, prop.GetCustomAttribute<RequestAttribute>()))
-                .Where(x => x.Item2 != null)
+                .Where(x => x.Item2.Optional == false)
                 .Select(x => (x.prop, x.Item2.RequestMessage))
                 .ToList();
 
             optional = props
-                .Select(prop => (prop, prop.GetCustomAttribute<OptionalAttribute>()))
-                .Where(x => x.Item2 != null)
+                .Where(x => x.Item2.Optional == true)
                 .Select(x => (x.prop, x.Item2.RequestMessage))
                 .ToList();
         }
