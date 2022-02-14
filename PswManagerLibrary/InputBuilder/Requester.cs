@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 namespace PswManagerLibrary.InputBuilder {
     public class Requester {
 
-        private readonly IReadOnlyList<(PropertyInfo prop, string message)> required;
-        private readonly IReadOnlyList<(PropertyInfo prop, string message)> optional;
+        private readonly IReadOnlyCollection<(PropertyInfo prop, string message)> required;
+        private readonly IReadOnlyCollection<(PropertyInfo prop, string message)> optional;
         readonly private IUserInput userInput;
         readonly private Type type;
 
@@ -38,15 +38,23 @@ namespace PswManagerLibrary.InputBuilder {
         public bool Build(out object result) {
             var output = Activator.CreateInstance(type);
 
-            required
-                .Select(x => (x.prop, AskRequired(x.message)))
-                .ForEach(x => x.prop.SetValue(output, x.Item2));
+            //I dislike throwing an exception to exit the operation.
+            //I might change this to a foreach with a custom exit bool later to handle it without exceptions
+            try {
 
-            optional
-                .Select(x => (x.prop, Request(x.message, out string answer), answer))
-                .Where(x => x.Item2)
-                .ForEach(x => x.prop.SetValue(output, x.answer));
+                required
+                    .Select(x => (x.prop, AskRequired(x.message)))
+                    .ForEach(x => x.prop.SetValue(output, x.Item2));
 
+                optional
+                    .Select(x => (x.prop, Request(x.message, out string answer), answer))
+                    .Where(x => x.Item2)
+                    .ForEach(x => x.prop.SetValue(output, x.answer));
+
+            } catch (InputExitedException) {
+                result = default;
+                return false;
+            }
 
             if(required.Any(x => string.IsNullOrWhiteSpace((string)x.prop.GetValue(output)))) {
                 result = default;
@@ -65,6 +73,10 @@ namespace PswManagerLibrary.InputBuilder {
             userInput.SendMessage(message);
             answer = userInput.RequestAnswer();
 
+            if(string.Equals(answer, "exit")) {
+                HandleExitRequest();
+            }
+
             return !string.IsNullOrWhiteSpace(answer);
         }
 
@@ -72,11 +84,18 @@ namespace PswManagerLibrary.InputBuilder {
             string output;
 
             while(!Request(message, out output)) {
-                userInput.SendMessage("This value has to be assigned.");
+                userInput.SendMessage("This value has to be assigned. If you want to return to the start, input \"exit\".");
             }
 
             return output;
         }
 
+        private void HandleExitRequest() {
+            if(userInput.YesOrNo("Do you want to return to the start? Y/N (writing N will set \"exit\" as the value)")) {
+                throw new InputExitedException();
+            }
+        }
+
+        private class InputExitedException : Exception {}
     }
 }

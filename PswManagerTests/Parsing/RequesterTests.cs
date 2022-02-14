@@ -15,11 +15,12 @@ namespace PswManagerTests.Parsing {
         public void Success() {
 
             //arrange
-            string name = "Yehallo";
+            string name = "exit";
+            string invalidInputNull = null;
+            string invalidInputEmpty = "  ";
             string password = "rugtyrh&&ieow";
-            //string email = "email@here.com";
-            List<string> answers = new() { name, password };
-            List<bool> yesOrNoAns = new() { true };
+            List<string> answers = new() { name, invalidInputEmpty, invalidInputNull, invalidInputEmpty, password };
+            List<bool> yesOrNoAns = new() { false, true };
             FakeUserInput fakeUserInput = new(answers, yesOrNoAns);
             Requester requester = new(typeof(InputObject), fakeUserInput);
 
@@ -35,6 +36,49 @@ namespace PswManagerTests.Parsing {
             Assert.Equal(default, output.Email);
 
         }
+
+        [Fact]
+        public void Failure_UserClaimedWrongValues() {
+
+            //arrange
+            string name = "Yehallo";
+            string password = "rugtyrh&&ieow";
+            string email = "email@here.com";
+            List<string> answers = new() { name, password, email };
+            List<bool> yesOrNoAns = new() { false };
+            FakeUserInput fakeUserInput = new(answers, yesOrNoAns);
+            Requester requester = new(typeof(InputObject), fakeUserInput);
+
+            //act
+            var success = requester.Build(out var obj);
+
+            //assert
+            Assert.False(success);
+            Assert.True(obj is InputObject);
+
+        }
+
+        [Fact]
+        public void Failure_UserExitedEarly() {
+
+            //arrange
+            string name = "Yehallo";
+            string invalidInput = "";
+            string exit = "exit";
+            List<string> answers = new() { name, invalidInput, exit };
+            List<bool> yesOrNoAns = new() { true };
+            FakeUserInput fakeUserInput = new(answers, yesOrNoAns);
+            Requester requester = new(typeof(InputObject), fakeUserInput);
+
+            //act
+            var success = requester.Build(out var obj);
+
+            //assert
+            Assert.False(success);
+            Assert.True(obj is default(InputObject));
+
+        }
+
 
     }
 
