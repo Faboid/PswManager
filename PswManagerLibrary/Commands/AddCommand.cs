@@ -6,9 +6,13 @@ using PswManagerDatabase.Models;
 using PswManagerLibrary.Cryptography;
 using PswManagerCommands.Parsing.Attributes;
 using PswManagerCommands.Validation.Attributes;
+using System;
+using PswManagerLibrary.Commands.AutoCommands.ArgsModels;
+
 namespace PswManagerLibrary.Commands {
     public class AddCommand : BaseCommand {
 
+        public override Type GetCommandInputType => typeof(AccountInfo);
 
         private readonly IDataCreator dataCreator;
         private readonly ICryptoAccount cryptoAccount;

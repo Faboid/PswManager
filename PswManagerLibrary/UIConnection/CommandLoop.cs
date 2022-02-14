@@ -2,6 +2,7 @@
 using PswManagerDatabase;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Cryptography;
+using PswManagerLibrary.InputBuilder;
 using PswManagerLibrary.Storage;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace PswManagerLibrary.UIConnection {
     //todo - this class is doing too much. Split it into multiple classes and use proper DI
     public class CommandLoop {
 
-        private IUserInput userInput;
+        private readonly IUserInput userInput;
         private CommandQuery query;
 
         public CommandLoop(IUserInput userInput, ICryptoAccount cryptoAccount, IReadOnlyDictionary<string, ICommand> extraCommands = null) {
@@ -53,6 +54,14 @@ namespace PswManagerLibrary.UIConnection {
 
             string command;
             while((command = userInput.RequestAnswer()).ToLowerInvariant() != "exit") {
+
+                var type = query.GetCommandInputTemplate(command);
+                Requester requester = new(type, userInput);
+                var success = requester.Build(out object args); //change bool success to complex object
+                if(!success) {
+                    userInput.SendMessage("Something wrong wrong with the arguments building phase.");
+                    continue;
+                }
 
                 SingleQuery(command);
             }

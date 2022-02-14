@@ -1,8 +1,11 @@
 ﻿using PswManagerCommands.Parsing;
+using System;
 using System.Collections.Generic;
 
 namespace PswManagerCommands {
     public interface ICommand {
+
+        public Type GetCommandInputType { get; }
 
         /// <summary>
         /// Runs the arguments through a validation check, and, if they pass it, runs the command.

@@ -9,16 +9,18 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PswManagerLibrary.InputBuilder {
-    public class Requester<T> where T: new() {
+    public class Requester {
 
         private readonly IReadOnlyList<(PropertyInfo prop, string message)> required;
         private readonly IReadOnlyList<(PropertyInfo prop, string message)> optional;
         readonly private IUserInput userInput;
+        readonly private Type type;
 
-        public Requester(IUserInput userInput) {
+        public Requester(Type type, IUserInput userInput) {
             this.userInput = userInput;
+            this.type = type;
             
-            var props = typeof(T).GetProperties();
+            var props = type.GetProperties();
 
             required = props
                 .Select(prop => (prop, prop.GetCustomAttribute<RequestAttribute>()))
@@ -33,8 +35,8 @@ namespace PswManagerLibrary.InputBuilder {
                 .ToList();
         }
 
-        public bool Build(out T result) {
-            var output = new T();
+        public bool Build(out object result) {
+            var output = Activator.CreateInstance(type);
 
             required
                 .Select(x => (x.prop, AskRequired(x.message)))
@@ -52,7 +54,11 @@ namespace PswManagerLibrary.InputBuilder {
             }
 
             result = output;
-            return true;
+
+            required.Concat(optional)
+                .ForEach(x => userInput.SendMessage($"{x.prop.Name}: {x.prop.GetValue(output) ?? "N/A" }"));
+
+            return userInput.YesOrNo("Are these values correct?");
         }
 
         private bool Request(string message, out string answer) {

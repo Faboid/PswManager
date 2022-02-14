@@ -1,4 +1,5 @@
 ﻿using PswManagerHelperMethods;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,6 +10,10 @@ namespace PswManagerCommands {
 
         public CommandQuery(IReadOnlyDictionary<string, ICommand> commands) {
             _commands = commands;
+        }
+
+        public Type GetCommandInputTemplate(string commandType) {
+            return _commands[commandType].GetCommandInputType; //todo - handle wrong input
         }
 
         public CommandResult Query(string command) {

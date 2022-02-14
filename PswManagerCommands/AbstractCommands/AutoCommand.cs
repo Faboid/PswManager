@@ -19,6 +19,9 @@ namespace PswManagerCommands.AbstractCommands {
 
         private readonly IParserReady parserReady;
         private readonly AutoValidation<TCommandInput> inputValidator;
+
+        public Type GetCommandInputType => typeof(TCommandInput);
+
         protected abstract AutoValidation<TCommandInput> BuildAutoValidator(AutoValidationBuilder<TCommandInput> builder);
         protected abstract IValidationCollection AddConditions(IValidationCollection collection);
 

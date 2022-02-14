@@ -13,6 +13,9 @@ namespace PswManagerCommands.AbstractCommands {
     /// </summary>
     public abstract class BaseCommand : ICommand {
 
+        //todo - either turn this into abstract and implement it for all commands or somehow use generics to do the same
+        public virtual Type GetCommandInputType { get; } = null; 
+
         protected abstract IValidationCollection AddConditions(IValidationCollection collection);
 
 
