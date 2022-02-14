@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 namespace PswManagerLibrary.InputBuilder {
     public class Requester {
 
-        private readonly IReadOnlyCollection<(PropertyInfo prop, string message)> required;
-        private readonly IReadOnlyCollection<(PropertyInfo prop, string message)> optional;
+        private readonly IReadOnlyCollection<(PropertyInfo prop, RequestAttribute attr)> required;
+        private readonly IReadOnlyCollection<(PropertyInfo prop, RequestAttribute attr)> optional;
         readonly private IUserInput userInput;
         readonly private Type type;
 
@@ -26,12 +26,10 @@ namespace PswManagerLibrary.InputBuilder {
 
             required = props
                 .Where(x => x.Item2.Optional == false)
-                .Select(x => (x.prop, x.Item2.RequestMessage))
                 .ToList();
 
             optional = props
                 .Where(x => x.Item2.Optional == true)
-                .Select(x => (x.prop, x.Item2.RequestMessage))
                 .ToList();
         }
 
@@ -43,11 +41,11 @@ namespace PswManagerLibrary.InputBuilder {
             try {
 
                 required
-                    .Select(x => (x.prop, AskRequired(x.message)))
+                    .Select(x => (x.prop, AskRequired(x.attr)))
                     .ForEach(x => x.prop.SetValue(output, x.Item2));
 
                 optional
-                    .Select(x => (x.prop, Request(x.message, out string answer), answer))
+                    .Select(x => (x.prop, Request(x.attr, out string answer), answer))
                     .Where(x => x.Item2)
                     .ForEach(x => x.prop.SetValue(output, x.answer));
 
@@ -57,6 +55,7 @@ namespace PswManagerLibrary.InputBuilder {
             }
 
             if(required.Any(x => string.IsNullOrWhiteSpace((string)x.prop.GetValue(output)))) {
+                userInput.SendMessage("One or more required values got skipped.");
                 result = default;
                 return false;
             }
@@ -64,34 +63,34 @@ namespace PswManagerLibrary.InputBuilder {
             result = output;
 
             required.Concat(optional)
-                .ForEach(x => userInput.SendMessage($"{x.prop.Name}: {x.prop.GetValue(output) ?? "N/A" }"));
+                .ForEach(x => userInput.SendMessage($"{x.attr.DisplayName}: {x.prop.GetValue(output) ?? "N/A" }"));
 
             return userInput.YesOrNo("Are these values correct?");
         }
 
-        private bool Request(string message, out string answer) {
-            userInput.SendMessage(message);
+        private bool Request(RequestAttribute attr, out string answer) {
+            userInput.SendMessage(attr.RequestMessage);
             answer = userInput.RequestAnswer();
 
             if(string.Equals(answer, "exit")) {
-                HandleExitRequest();
+                HandleExitRequest(attr);
             }
 
             return !string.IsNullOrWhiteSpace(answer);
         }
 
-        private string AskRequired(string message) {
+        private string AskRequired(RequestAttribute attr) {
             string output;
 
-            while(!Request(message, out output)) {
-                userInput.SendMessage("This value has to be assigned. If you want to return to the start, input \"exit\".");
+            while(!Request(attr, out output)) {
+                userInput.SendMessage($"{attr.DisplayName} has to be assigned. If you want to quit to the start, write \"exit\".");
             }
 
             return output;
         }
 
-        private void HandleExitRequest() {
-            if(userInput.YesOrNo("Do you want to return to the start? Y/N (writing N will set \"exit\" as the value)")) {
+        private void HandleExitRequest(RequestAttribute attr) {
+            if(userInput.YesOrNo($"Do you want to return to the start? Y/N (refusing will set \"exit\" as the value of {attr.DisplayName})")) {
                 throw new InputExitedException();
             }
         }

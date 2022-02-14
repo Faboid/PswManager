@@ -10,17 +10,17 @@ namespace PswManagerLibrary.Commands.AutoCommands.ArgsModels {
         [ParseableKey("name")]
         [Required]
         [VerifyAccountExistence(true)]
-        [Request("Please insert the name of the account:")]
+        [Request("Name", "Please insert the name of the account:")]
         public string Name { get; set; }
 
         [ParseableKey("pass")]
         [Required]
-        [Request("Please insert a strong password:")]
+        [Request("Password", "Please insert a strong password:")]
         public string Password { get; set; }
 
         [ParseableKey("ema")]
         [Required]
-        [Request("Insert any email:", true)]
+        [Request("Email", "Insert any email:", true)]
         public string Email { get; set; }
 
     }

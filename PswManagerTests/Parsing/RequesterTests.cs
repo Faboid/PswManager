@@ -84,13 +84,13 @@ namespace PswManagerTests.Parsing {
 
     internal class InputObject {
 
-        [Request("Input the account's name.")]
+        [Request("Name", "Input the account's name.")]
         public string Name { get; set; }
 
-        [Request("Input the password.")]
+        [Request("Password", "Input the password.")]
         public string Password { get; set; }
 
-        [Request("Input the email.", true)]
+        [Request("Email", "Input the email.", true)]
         public string Email { get; set; }
     }
 
