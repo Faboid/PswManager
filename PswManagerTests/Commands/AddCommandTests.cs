@@ -3,6 +3,7 @@ using PswManagerCommands.Validation;
 using PswManagerDatabase;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands;
+using PswManagerLibrary.Commands.AutoCommands.ArgsModels;
 using PswManagerLibrary.Storage;
 using PswManagerTests.TestsHelpers;
 using System;
@@ -31,7 +32,11 @@ namespace PswManagerTests.Commands {
         public void AddSuccessfully(string name, string password, string email) {
 
             //arrange
-            var args = new string[] { name, password, email };
+            AccountInfo args = new() { 
+                Name = name, 
+                Password = password, 
+                Email = email 
+            };
             bool exists;
             CommandResult result;
 
@@ -48,26 +53,33 @@ namespace PswManagerTests.Commands {
 
         public static IEnumerable<object[]> ExpectedValidationFailuresData() {
             string existingName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
-            string validName = "someRandomNonexistentAccountName";
+            //string validName = "someRandomNonexistentAccountName";
 
-            yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
+            //yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
 
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null } };
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, null, "email@this.it" } };
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, "fiehgywightuy", "      " } };
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, "", "email@this.com" } };
+            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null } };
+            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, null, "email@this.it" } };
+            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, "fiehgywightuy", "      " } };
+            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, "", "email@this.com" } };
 
-            yield return new object[] { AddCommand.AccountExistsErrorMessage, new string[] { existingName, "somevalidPassword", "someValidEmail@email.com" } };
+            yield return new object[] { 
+                AddCommand.AccountExistsErrorMessage, 
+                new AccountInfo() { 
+                    Name = existingName, 
+                    Password = "somevalidPassword", 
+                    Email = "someValidEmail@email.com" 
+                } 
+            };
 
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName } };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "eiwghrywhgi" } };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "tirhtewygh", "email@somewhere.com", "oneTooMany" } };
+            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
+            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName } };
+            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "eiwghrywhgi" } };
+            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "tirhtewygh", "email@somewhere.com", "oneTooMany" } };
         }
 
         [Theory]
         [MemberData(nameof(ExpectedValidationFailuresData))]
-        public void ExpectedValidationFailures(string expectedErrorMessage, params string[] args) {
+        public void ExpectedValidationFailures(string expectedErrorMessage, AccountInfo args) {
 
             //arrange
             bool valid;

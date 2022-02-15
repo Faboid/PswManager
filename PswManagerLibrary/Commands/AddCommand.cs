@@ -1,5 +1,4 @@
 ﻿using PswManagerCommands.Validation;
-using PswManagerCommands.AbstractCommands;
 using PswManagerCommands;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;
@@ -8,11 +7,10 @@ using PswManagerCommands.Parsing.Attributes;
 using PswManagerCommands.Validation.Attributes;
 using System;
 using PswManagerLibrary.Commands.AutoCommands.ArgsModels;
+using PswManagerCommands.TempLocation;
 
 namespace PswManagerLibrary.Commands {
-    public class AddCommand : BaseCommand {
-
-        public override Type GetCommandInputType => typeof(AccountInfo);
+    public class AddCommand : BaseCommand<AccountInfo> {
 
         private readonly IDataCreator dataCreator;
         private readonly ICryptoAccount cryptoAccount;
@@ -29,12 +27,9 @@ namespace PswManagerLibrary.Commands {
             this.cryptoAccount = cryptoAccount;
         }
 
-        protected override IValidationCollection AddConditions(IValidationCollection collection) {
-
-            collection.AddCommonConditions(3, 3);
-            collection.Add(
-                new IndexHelper(0, collection.NullIndexCondition, collection.NullOrEmptyArgsIndexCondition, collection.CorrectArgsNumberIndexCondition), 
-                (args) => dataCreator.AccountExist(args[0]) == false, AccountExistsErrorMessage);
+        protected override IValidationCollection<AccountInfo> AddConditions(IValidationCollection<AccountInfo> collection) {
+            //todo - introduce conditions on whether the parameters are assigned
+            collection.Add(0, dataCreator.AccountExist(collection.GetObject().Name) == false, AccountExistsErrorMessage);
           
             return collection;
         }
@@ -47,10 +42,10 @@ namespace PswManagerLibrary.Commands {
             return "add [name] [password] [email]";
         }
 
-        protected override CommandResult RunLogic(string[] arguments) {
+        protected override CommandResult RunLogic(AccountInfo obj) {
 
-            (arguments[1], arguments[2]) = cryptoAccount.Encrypt(arguments[1], arguments[2]);
-            var account = new AccountModel(arguments[0], arguments[1], arguments[2]);
+            (obj.Password, obj.Email) = cryptoAccount.Encrypt(obj.Password, obj.Email);
+            var account = new AccountModel(obj.Name, obj.Password, obj.Email);
             dataCreator.CreateAccount(account);
 
             return new CommandResult("The account has been created successfully.", true);

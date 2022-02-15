@@ -1,4 +1,5 @@
 ﻿using PswManagerCommands;
+using PswManagerCommands.TempLocation;
 using PswManagerDatabase;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Cryptography;
@@ -30,18 +31,18 @@ namespace PswManagerLibrary.UIConnection {
             //set up command query
             Dictionary<string, ICommand> collection = new();
 
-            collection.Add("help", new HelpCommand(collection));
+            //collection.Add("help", new HelpCommand(collection));
             
             //basic crud commands
             collection.Add("add", new AddCommand(dataFactory.GetDataCreator(), cryptoAccount));
-            collection.Add("get", new GetCommand(dataFactory.GetDataReader(), cryptoAccount));
-            collection.Add("get-all", new GetAllCommand(dataFactory.GetDataReader(), cryptoAccount));
-            collection.Add("edit", new EditCommand(dataFactory.GetDataEditor(), cryptoAccount));
-            collection.Add("delete", new DeleteCommand(dataFactory.GetDataDeleter(), userInput));
+            //collection.Add("get", new GetCommand(dataFactory.GetDataReader(), cryptoAccount));
+            //collection.Add("get-all", new GetAllCommand(dataFactory.GetDataReader(), cryptoAccount));
+            //collection.Add("edit", new EditCommand(dataFactory.GetDataEditor(), cryptoAccount));
+            //collection.Add("delete", new DeleteCommand(dataFactory.GetDataDeleter(), userInput));
 
             //database commands
             if(dbType == DatabaseType.TextFile) { 
-                collection.Add("movedb", new MoveDatabaseCommand(dataFactory.GetPathsEditor().GetPaths()));
+                //collection.Add("movedb", new MoveDatabaseCommand(dataFactory.GetPathsEditor().GetPaths()));
             }
 
             query = new CommandQuery(collection.Concat(extraCommands).ToDictionary(x => x.Key, x => x.Value));
@@ -63,13 +64,13 @@ namespace PswManagerLibrary.UIConnection {
                     continue;
                 }
 
-                SingleQuery(command);
+                SingleQuery(command, (ICommandInput)args);
             }
 
         }
 
-        public void SingleQuery(string command) {
-            var result = query.Query(command);
+        public void SingleQuery(string cmdType, ICommandInput inputArgs) {
+            var result = query.Query(cmdType, inputArgs);
 
             userInput.SendMessage(result.BackMessage);
             if(result.QueryReturnValue != null) {
