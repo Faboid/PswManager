@@ -13,8 +13,8 @@ namespace PswManagerTests.Commands {
     public class HelpCommandTests {
 
         public HelpCommandTests() {
-            Mock<ICommand> _mockedCommand = new();
-            Mock<ICommand> _mockedTwoCommand = new();
+            Mock<ICommandOld> _mockedCommand = new();
+            Mock<ICommandOld> _mockedTwoCommand = new();
 
             string mockedCommandSyntax = "mocked [ismocked]";
             string mockedTwoCommandSyntax = "mockedtwo [ismocked]?";
@@ -26,7 +26,7 @@ namespace PswManagerTests.Commands {
             _mockedCommand.Setup(x => x.GetDescription()).Returns(mockedCommandDescription);
             _mockedTwoCommand.Setup(x => x.GetDescription()).Returns(mockedTwoCommandDescription);
 
-            Dictionary<string, ICommand> commands = new();
+            Dictionary<string, ICommandOld> commands = new();
             commands.Add("mocked", _mockedCommand.Object);
             commands.Add("mockedtwo", _mockedTwoCommand.Object);
 
@@ -36,9 +36,9 @@ namespace PswManagerTests.Commands {
             dicCommands = commands;
         }
 
-        readonly ICommand mockedCommand;
-        readonly ICommand mockedTwoCommand;
-        readonly IReadOnlyDictionary<string, ICommand> dicCommands;
+        readonly ICommandOld mockedCommand;
+        readonly ICommandOld mockedTwoCommand;
+        readonly IReadOnlyDictionary<string, ICommandOld> dicCommands;
         readonly HelpCommand helpCommand;
 
         [Fact]
@@ -95,7 +95,7 @@ namespace PswManagerTests.Commands {
         public void GetSyntaxButEmptyDictionary() {
 
             //arrange
-            Dictionary<string, ICommand> commands = new();
+            Dictionary<string, ICommandOld> commands = new();
             HelpCommand helpCommand = new(commands);
             string expected = "There has been an error: the command list is empty.";
 

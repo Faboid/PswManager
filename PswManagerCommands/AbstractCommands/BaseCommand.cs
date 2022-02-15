@@ -11,7 +11,7 @@ namespace PswManagerCommands.AbstractCommands {
     /// <summary>
     /// The children of <see cref="BaseCommand"/> deal with parsing and validating manually. 
     /// </summary>
-    public abstract class BaseCommand : ICommand {
+    public abstract class BaseCommand : ICommandOld {
 
         //todo - either turn this into abstract and implement it for all commands or somehow use generics to do the same
         public virtual Type GetCommandInputType { get; } = null; 

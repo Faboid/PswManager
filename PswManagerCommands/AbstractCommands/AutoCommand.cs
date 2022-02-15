@@ -10,7 +10,7 @@ namespace PswManagerCommands.AbstractCommands {
     /// [WIP]The children of <see cref="AutoCommand{TCommandInput}"/> create a custom object which will have automatic parsing and validating.
     /// </summary>
     /// <typeparam name="TCommandInput">The type of the custom object created by the children class.</typeparam>
-    public abstract class AutoCommand<TCommandInput> : ICommand where TCommandInput : new() {
+    public abstract class AutoCommand<TCommandInput> : ICommandOld where TCommandInput : new() {
 
         public AutoCommand() {
             inputValidator = BuildAutoValidator(new AutoValidationBuilder<TCommandInput>());

@@ -7,10 +7,10 @@ using System.Collections.Generic;
 namespace PswManagerLibrary.Commands {
     public class HelpCommand : BaseCommand {
 
-        private readonly IReadOnlyDictionary<string, ICommand> commands;
+        private readonly IReadOnlyDictionary<string, ICommandOld> commands;
         public const string CommandInexistentErrorMessage = "The requested command doesn't exist. For a list of commands, run [help].";
 
-        public HelpCommand(IReadOnlyDictionary<string, ICommand> commands) {
+        public HelpCommand(IReadOnlyDictionary<string, ICommandOld> commands) {
             this.commands = commands;
         }
 
