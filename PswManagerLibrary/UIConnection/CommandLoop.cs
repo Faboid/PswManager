@@ -53,18 +53,23 @@ namespace PswManagerLibrary.UIConnection {
         /// </summary>
         public void Start() {
 
-            string command;
-            while((command = userInput.RequestAnswer()).ToLowerInvariant() != "exit") {
+            string cmdType;
+            while((cmdType = userInput.RequestAnswer().ToLowerInvariant()) != "exit") {
 
-                var type = query.GetCommandInputTemplate(command);
-                Requester requester = new(type, userInput);
-                var success = requester.Build(out object args); //change bool success to complex object
-                if(!success) {
-                    userInput.SendMessage("Something wrong wrong with the arguments building phase.");
+                var (foundTemplate, inputType) = query.TryGetCommandInputTemplate(cmdType);
+                if(!foundTemplate) {
+                    userInput.SendMessage("The command you've given doesn't exist.");
                     continue;
                 }
 
-                SingleQuery(command, (ICommandInput)args);
+                Requester requester = new(inputType, userInput);
+                var (success, obj) = requester.Build();
+                if(!success) {
+                    userInput.SendMessage("Something wrong wrong with the arguments' building phase.");
+                    continue;
+                }
+
+                SingleQuery(cmdType, (ICommandInput)obj);
             }
 
         }

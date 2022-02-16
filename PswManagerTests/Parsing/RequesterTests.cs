@@ -22,7 +22,7 @@ namespace PswManagerTests.Parsing {
             Requester requester = new(typeof(InputObject), fakeUserInput);
 
             //act
-            var success = requester.Build(out var obj);
+            var (success, obj) = requester.Build();
 
             //assert
             Assert.True(success);
@@ -47,7 +47,7 @@ namespace PswManagerTests.Parsing {
             Requester requester = new(typeof(InputObject), fakeUserInput);
 
             //act
-            var success = requester.Build(out var obj);
+            var (success, obj) = requester.Build();
 
             //assert
             Assert.False(success);
@@ -68,7 +68,7 @@ namespace PswManagerTests.Parsing {
             Requester requester = new(typeof(InputObject), fakeUserInput);
 
             //act
-            var success = requester.Build(out var obj);
+            var (success, obj) = requester.Build();
 
             //assert
             Assert.False(success);

@@ -12,8 +12,12 @@ namespace PswManagerCommands {
             _commands = commands;
         }
 
-        public Type GetCommandInputTemplate(string commandType) {
-            return _commands[commandType].GetCommandInputType; //todo - handle wrong input
+        public (bool success, Type inputType) TryGetCommandInputTemplate(string commandType) {
+            if(_commands.TryGetValue(commandType, out var cmd)) {
+                return (true, cmd.GetCommandInputType);
+            }
+
+            return (false, null);
         }
 
         public CommandResult Query(string cmdType, ICommandInput arguments) {

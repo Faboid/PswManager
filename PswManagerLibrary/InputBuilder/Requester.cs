@@ -33,7 +33,7 @@ namespace PswManagerLibrary.InputBuilder {
                 .ToList();
         }
 
-        public bool Build(out object result) {
+        public (bool success, object obj) Build() {
             var output = Activator.CreateInstance(type);
 
             //I dislike throwing an exception to exit the operation.
@@ -50,22 +50,18 @@ namespace PswManagerLibrary.InputBuilder {
                     .ForEach(x => x.prop.SetValue(output, x.answer));
 
             } catch (InputExitedException) {
-                result = default;
-                return false;
+                return (false, default);
             }
 
             if(required.Any(x => string.IsNullOrWhiteSpace((string)x.prop.GetValue(output)))) {
                 userInput.SendMessage("One or more required values got skipped.");
-                result = default;
-                return false;
+                return (false, default);
             }
-
-            result = output;
 
             required.Concat(optional)
                 .ForEach(x => userInput.SendMessage($"{x.attr.DisplayName}: {x.prop.GetValue(output) ?? "N/A" }"));
 
-            return userInput.YesOrNo("Are these values correct?");
+            return (userInput.YesOrNo("Are these values correct?"), output);
         }
 
         private bool Request(RequestAttribute attr, out string answer) {
