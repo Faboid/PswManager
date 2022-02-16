@@ -38,10 +38,6 @@ namespace PswManagerLibrary.Commands {
             return "This command saves an account that can be later retrieved.";
         }
 
-        public override string GetSyntax() {
-            return "add [name] [password] [email]";
-        }
-
         protected override CommandResult RunLogic(AccountInfo obj) {
 
             (obj.Password, obj.Email) = cryptoAccount.Encrypt(obj.Password, obj.Email);

@@ -52,11 +52,6 @@ namespace PswManagerCommands {
         (bool success, IEnumerable<string> errorMessages) Validate(ICommandInput input);
 
         /// <summary>
-        /// Gets a string that shows the syntax used by the command.
-        /// </summary>
-        string GetSyntax();
-
-        /// <summary>
         /// Gets a string that describe the command in an user-friendly way.
         /// </summary>
         string GetDescription();

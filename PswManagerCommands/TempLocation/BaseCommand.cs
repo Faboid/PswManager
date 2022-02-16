@@ -57,11 +57,6 @@ namespace PswManagerCommands.TempLocation {
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
-        public abstract string GetSyntax();
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
         public abstract string GetDescription();
 
     }
