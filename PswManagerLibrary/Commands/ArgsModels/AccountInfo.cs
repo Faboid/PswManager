@@ -7,20 +7,13 @@ using PswManagerLibrary.InputBuilder.Attributes;
 namespace PswManagerLibrary.Commands.AutoCommands.ArgsModels {
     public class AccountInfo : ICommandInput {
 
-        [ParseableKey("name")]
-        [Required]
-        [VerifyAccountExistence(true)]
-        [Request("Name", "Please insert the name of the account:")]
+        [Request("Name", "Insert the name of the account.")]
         public string Name { get; set; }
 
-        [ParseableKey("pass")]
-        [Required]
-        [Request("Password", "Please insert a strong password:")]
+        [Request("Password", "Insert the password.")]
         public string Password { get; set; }
 
-        [ParseableKey("ema")]
-        [Required]
-        [Request("Email", "Insert any email:", true)]
+        [Request("Email", "Insert the email.")]
         public string Email { get; set; }
 
     }
