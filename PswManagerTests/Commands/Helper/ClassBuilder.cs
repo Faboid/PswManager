@@ -1,4 +1,5 @@
-﻿using PswManagerLibrary.UIConnection.Attributes;
+﻿using PswManagerCommands;
+using PswManagerLibrary.UIConnection.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,11 @@ using System.Threading.Tasks;
 namespace PswManagerTests.Commands.Helper {
     internal class ClassBuilder {
 
-        public static object Build(Type type, List<string> args) {
+        public static object Build(in ICommand command, List<string> args) {
+            return Build(command.GetCommandInputType, args);
+        }
+
+        private static object Build(Type type, List<string> args) {
 
             object output = Activator.CreateInstance(type);
 

@@ -30,8 +30,7 @@ namespace PswManagerTests.Commands {
         public void AddSuccessfully(string name, string password, string email) {
 
             //arrange
-            Type type = addCommand.GetCommandInputType;
-            var obj = ClassBuilder.Build(type, new List<string> { email, name, password });
+            var obj = ClassBuilder.Build(addCommand, new List<string> { email, name, password });
             bool exists;
             CommandResult result;
 
@@ -50,7 +49,7 @@ namespace PswManagerTests.Commands {
             static object[] NewObj(string errorMessage, string name, string password, string email) 
                 => new object[] { 
                     errorMessage, 
-                    ClassBuilder.Build(new AddCommand(null, null).GetCommandInputType, new List<string> { email, name, password }) 
+                    ClassBuilder.Build(new AddCommand(null, null), new List<string> { email, name, password }) 
                 };
 
             string existingName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
