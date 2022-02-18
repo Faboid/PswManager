@@ -3,6 +3,7 @@ using PswManagerCommands.Validation;
 using PswManagerDatabase;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands;
+using PswManagerLibrary.Commands.ArgsModels;
 using PswManagerLibrary.Extensions;
 using PswManagerTests.TestsHelpers;
 using System;
@@ -31,38 +32,41 @@ namespace PswManagerTests.Commands {
 
             //arrange
             TestsHelper.SetUpDefault();
-            string name = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            AccountName acc = new();
+            acc.Name = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
 
             //act
-            bool exist = dataHelper.AccountExist(name);
-            delCommand.Run(new string[] { name });
+            bool exist = dataHelper.AccountExist(acc.Name);
+            delCommand.Run(acc);
 
             //assert
             Assert.True(exist);
-            Assert.False(dataHelper.AccountExist(name));
+            Assert.False(dataHelper.AccountExist(acc.Name));
 
         }
 
         public static IEnumerable<object[]> ExpectedValidationFailuresData() {
-            string validName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            object[] NewObj(string expectedErrorMessage, string name) => new object[] { expectedErrorMessage, new AccountName() { Name = name } };
 
-            yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
+            //string validName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
 
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null } };
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "" } };
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "     " } };
+            //yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
 
-            yield return new object[] { new ValidationCollection(null).InexistentAccountMessage(), new string[] { "fakeAccountName" } };
+            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null } };
+            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "" } };
+            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "     " } };
 
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "eiwghrywhgi" } };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "tirhtewygh", "email@somewhere.com"} };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "tirhtewygh", "email@somewhere.com", "something"} };
+            yield return NewObj(new ValidationCollection(null).InexistentAccountMessage(), "fakeAccountName");
+
+            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
+            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "eiwghrywhgi" } };
+            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "tirhtewygh", "email@somewhere.com"} };
+            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "tirhtewygh", "email@somewhere.com", "something"} };
         }
 
         [Theory]
         [MemberData(nameof(ExpectedValidationFailuresData))]
-        public void ExpectedValidationFailures(string expectedErrorMessage, params string[] args) {
+        public void ExpectedValidationFailures(string expectedErrorMessage, AccountName args) {
 
             //arrange
             bool valid;
