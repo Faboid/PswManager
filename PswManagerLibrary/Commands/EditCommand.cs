@@ -13,12 +13,6 @@ namespace PswManagerLibrary.Commands {
         private readonly IDataEditor dataEditor;
         private readonly ICryptoAccount cryptoAccount;
 
-        private record SyntaxCheckResult {
-            public bool ValidSyntax { get; set; } = true;
-            public bool ValidKeys { get; set; } = true;
-            public bool NoDuplicateKeys { get; set; } = true;
-        }
-
         public EditCommand(IDataEditor dataEditor, ICryptoAccount cryptoAccount) {
             this.dataEditor = dataEditor;
             this.cryptoAccount = cryptoAccount;
