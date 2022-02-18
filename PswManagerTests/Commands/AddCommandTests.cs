@@ -36,7 +36,7 @@ namespace PswManagerTests.Commands {
 
             //act
             exists = dataHelper.AccountExist(name);
-            result = addCommand.Run((ICommandInput)obj);
+            result = addCommand.Run(obj);
 
             //assert
             Assert.False(exists);

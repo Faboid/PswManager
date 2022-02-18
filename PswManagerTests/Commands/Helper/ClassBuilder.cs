@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 namespace PswManagerTests.Commands.Helper {
     internal class ClassBuilder {
 
-        public static object Build(in ICommand command, List<string> args) {
+        public static ICommandInput Build(in ICommand command, List<string> args) {
             return Build(command.GetCommandInputType, args);
         }
 
-        private static object Build(Type type, List<string> args) {
+        private static ICommandInput Build(Type type, List<string> args) {
 
-            object output = Activator.CreateInstance(type);
+            ICommandInput output = (ICommandInput)Activator.CreateInstance(type);
 
             var props = type
                 .GetProperties()
