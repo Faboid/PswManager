@@ -5,6 +5,7 @@ using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Commands.ArgsModels;
 using PswManagerLibrary.Extensions;
+using PswManagerTests.Commands.Helper;
 using PswManagerTests.TestsHelpers;
 using System;
 using System.Collections.Generic;
@@ -32,21 +33,25 @@ namespace PswManagerTests.Commands {
 
             //arrange
             TestsHelper.SetUpDefault();
-            AccountName acc = new();
-            acc.Name = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            string name = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            var obj = ClassBuilder.Build(delCommand, new List<string> { name });
 
             //act
-            bool exist = dataHelper.AccountExist(acc.Name);
-            delCommand.Run(acc);
+            bool exist = dataHelper.AccountExist(name);
+            delCommand.Run(obj);
 
             //assert
             Assert.True(exist);
-            Assert.False(dataHelper.AccountExist(acc.Name));
+            Assert.False(dataHelper.AccountExist(name));
 
         }
 
         public static IEnumerable<object[]> ExpectedValidationFailuresData() {
-            object[] NewObj(string expectedErrorMessage, string name) => new object[] { expectedErrorMessage, new AccountName() { Name = name } };
+            static object[] NewObj(string errorMessage, string name)
+                => new object[] {
+                    errorMessage,
+                    ClassBuilder.Build(new DeleteCommand(null, null), new List<string> { name })
+                };
 
             //string validName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
 
@@ -66,7 +71,7 @@ namespace PswManagerTests.Commands {
 
         [Theory]
         [MemberData(nameof(ExpectedValidationFailuresData))]
-        public void ExpectedValidationFailures(string expectedErrorMessage, AccountName args) {
+        public void ExpectedValidationFailures(string expectedErrorMessage, ICommandInput args) {
 
             //arrange
             bool valid;
