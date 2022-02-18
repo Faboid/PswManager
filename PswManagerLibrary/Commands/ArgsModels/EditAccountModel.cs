@@ -1,8 +1,5 @@
 ﻿using PswManagerCommands;
-using PswManagerCommands.Parsing.Attributes;
-using PswManagerCommands.Validation.Attributes;
-using PswManagerLibrary.Commands.Validation.Attributes;
-using PswManagerLibrary.InputBuilder.Attributes;
+using PswManagerLibrary.UIConnection.Attributes;
 
 namespace PswManagerLibrary.Commands.AutoCommands.ArgsModels {
     public class EditAccountModel : ICommandInput {

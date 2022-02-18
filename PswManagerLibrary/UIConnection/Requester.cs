@@ -1,6 +1,5 @@
 ﻿using PswManagerHelperMethods;
-using PswManagerLibrary.InputBuilder.Attributes;
-using PswManagerLibrary.UIConnection;
+using PswManagerLibrary.UIConnection.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PswManagerLibrary.InputBuilder {
+namespace PswManagerLibrary.UIConnection {
     public class Requester {
 
         private readonly IReadOnlyCollection<(PropertyInfo prop, RequestAttribute attr)> required;
@@ -19,7 +18,7 @@ namespace PswManagerLibrary.InputBuilder {
         public Requester(Type type, IUserInput userInput) {
             this.userInput = userInput;
             this.type = type;
-            
+
             var props = type.GetProperties()
                 .Select(prop => (prop, prop.GetCustomAttribute<RequestAttribute>()))
                 .Where(x => x.Item2 != null);
@@ -49,7 +48,8 @@ namespace PswManagerLibrary.InputBuilder {
                     .Where(x => x.Item2)
                     .ForEach(x => x.prop.SetValue(output, x.answer));
 
-            } catch (InputExitedException) {
+            }
+            catch(InputExitedException) {
                 return (false, default);
             }
 
@@ -91,6 +91,6 @@ namespace PswManagerLibrary.InputBuilder {
             }
         }
 
-        private class InputExitedException : Exception {}
+        private class InputExitedException : Exception { }
     }
 }

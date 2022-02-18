@@ -1,9 +1,4 @@
-﻿using PswManagerLibrary.InputBuilder.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PswManagerLibrary.UIConnection.Attributes;
 
 namespace PswManagerLibrary.Commands.ArgsModels {
     public class AccountName {

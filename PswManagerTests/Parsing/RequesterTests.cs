@@ -1,6 +1,5 @@
-﻿using PswManagerLibrary.InputBuilder;
-using PswManagerLibrary.InputBuilder.Attributes;
-using PswManagerLibrary.UIConnection;
+﻿using PswManagerLibrary.UIConnection;
+using PswManagerLibrary.UIConnection.Attributes;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;

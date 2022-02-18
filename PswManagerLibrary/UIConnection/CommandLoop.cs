@@ -3,7 +3,6 @@ using PswManagerCommands.TempLocation;
 using PswManagerDatabase;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Cryptography;
-using PswManagerLibrary.InputBuilder;
 using PswManagerLibrary.Storage;
 using System.Collections.Generic;
 using System.Linq;
