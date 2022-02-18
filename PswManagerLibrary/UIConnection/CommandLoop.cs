@@ -37,7 +37,7 @@ namespace PswManagerLibrary.UIConnection {
             //collection.Add("get", new GetCommand(dataFactory.GetDataReader(), cryptoAccount));
             //collection.Add("get-all", new GetAllCommand(dataFactory.GetDataReader(), cryptoAccount));
             //collection.Add("edit", new EditCommand(dataFactory.GetDataEditor(), cryptoAccount));
-            //collection.Add("delete", new DeleteCommand(dataFactory.GetDataDeleter(), userInput));
+            collection.Add("delete", new DeleteCommand(dataFactory.GetDataDeleter(), userInput));
 
             //database commands
             if(dbType == DatabaseType.TextFile) { 
