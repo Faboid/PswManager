@@ -5,6 +5,7 @@ using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Extensions;
 using PswManagerLibrary.Storage;
+using PswManagerTests.Commands.Helper;
 using PswManagerTests.TestsHelpers;
 using System;
 using System.Collections.Generic;
@@ -25,39 +26,42 @@ namespace PswManagerTests.Commands {
         readonly EditCommand editCommand;
 
         public static IEnumerable<object[]> EditSuccessfullyData() {
+            static object[] NewObj(string name, string newName, string newPassword, string newEmail, string expected)
+                => new object[] {
+                    name,
+                    newName ?? name,
+                    ClassBuilder.Build(new EditCommand(null, null), new List<string> { newPassword, newName, newEmail, name }),
+                    expected
+                };
+
             var def = TestsHelper.DefaultValues;
 
-            //[0]args
-            //[1]newName
-            //[2]expected return string
-            yield return new object[] {
-                new[] { def.GetValue(1, DefaultValues.TypeValue.Name), "email:newEmail1", "password:newPassword1" },
-                def.GetValue(1, DefaultValues.TypeValue.Name),
-                $"{def.GetValue(1, DefaultValues.TypeValue.Name)} newPassword1 newEmail1"
-            };
-            yield return new object[] {
-                new[] { def.GetValue(2, DefaultValues.TypeValue.Name), "name:new:Name2", "email:newEmail2" },
-                "new:Name2",
+            yield return NewObj(def.GetValue(1, DefaultValues.TypeValue.Name), 
+                null, "newPassword1", "newEmail1", 
+                $"{def.GetValue(1, DefaultValues.TypeValue.Name)} newPassword1 newEmail1");
+
+            yield return NewObj(def.GetValue(2, DefaultValues.TypeValue.Name),
+                "new:Name2", null, "newEmail2",
                 $"new:Name2 {def.GetValue(2, DefaultValues.TypeValue.Password)} newEmail2"
-            };
-            yield return new object[] {
-                new[] { def.GetValue(3, DefaultValues.TypeValue.Name), "password:passfix", "name:fixedName", "email:fixed@email.com" },
-                "fixedName",
-                "fixedName passfix fixed@email.com"
-            };
+                );
+
+            yield return NewObj(def.GetValue(3, DefaultValues.TypeValue.Name),
+                "fixedName", "passfix", "fixed@email.com",
+                "fixedName passfix fixed@email.com");
+
         }
 
         [Theory]
         [MemberData(nameof(EditSuccessfullyData))]
-        public void EditSuccessfully(string[] args, string newName, string expected) {
+        public void EditSuccessfully(string name, string newName, ICommandInput args, string expected) {
 
             //arrange
             TestsHelper.SetUpDefault();
 
             //act
-            var previous = getCommand.Run(new string[] { args[0] });
+            var previous = getCommand.Run(new string[] { name });
             editCommand.Run(args);
-            var actual = getCommand.Run(new string[] { newName });
+            var actual = getCommand.Run(new string[] { newName ?? name });
 
             //assert
             Assert.NotEqual(previous, actual);
@@ -66,34 +70,39 @@ namespace PswManagerTests.Commands {
         }
 
         public static IEnumerable<object[]> ExpectedValidationFailuresData() {
-            string validName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            static object[] NewObj(string errorMessage, string name, string newName, string newPassword, string newEmail)
+                => new object[] {
+                    errorMessage,
+                    ClassBuilder.Build(new EditCommand(null, null), new List<string> { newPassword, newName, newEmail, name })
+                };
+            //string validName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
 
-            yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
+            //yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
 
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null } };
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "", "name:newvalue" } };
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "     ", "password:tiehwgfuh" } };
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, "password:tiehwgfuh", null } };
+            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null } };
+            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "", "name:newvalue" } };
+            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "     ", "password:tiehwgfuh" } };
+            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, "password:tiehwgfuh", null } };
 
-            yield return new object[] { new ValidationCollection(null).InexistentAccountMessage(), new string[] { "fakeAccountName", "password:newPasshere" } };
+            yield return NewObj(new ValidationCollection(null).InexistentAccountMessage(), "fakeAccountName", null, "newPasshere", null);
 
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName } };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "password:newPassword1", "email:email@somewhere.com", "name:newName", "password:newvalidPassword" } };
+            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
+            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName } };
+            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "password:newPassword1", "email:email@somewhere.com", "name:newName", "password:newvalidPassword" } };
 
-            yield return new object[] { EditCommand.InvalidSyntaxMessage, new string[] { validName, "newPassword" } };
-            yield return new object[] { EditCommand.InvalidSyntaxMessage, new string[] { validName, "pass@eqwwr" } };
+            //yield return new object[] { EditCommand.InvalidSyntaxMessage, new string[] { validName, "newPassword" } };
+            //yield return new object[] { EditCommand.InvalidSyntaxMessage, new string[] { validName, "pass@eqwwr" } };
 
-            yield return new object[] { EditCommand.InvalidKeyFound, new string[] { validName, "password:qrqrewqe", "nam:newname" } };
-            yield return new object[] { EditCommand.InvalidKeyFound, new string[] { validName, "name:newname", "password:qweqwed" , "ema:email@thisone.com"} };
+            //yield return new object[] { EditCommand.InvalidKeyFound, new string[] { validName, "password:qrqrewqe", "nam:newname" } };
+            //yield return new object[] { EditCommand.InvalidKeyFound, new string[] { validName, "name:newname", "password:qweqwed" , "ema:email@thisone.com"} };
 
-            yield return new object[] { EditCommand.DuplicateKeyFound, new string[] { validName, "email:email@somewhere.com", "email:someEma@here.com" } };
-            yield return new object[] { EditCommand.DuplicateKeyFound, new string[] { validName, "password:newPassword1", "email:email@somewhere.com", "password:newvalidPassword" } };
+            //yield return new object[] { EditCommand.DuplicateKeyFound, new string[] { validName, "email:email@somewhere.com", "email:someEma@here.com" } };
+            //yield return new object[] { EditCommand.DuplicateKeyFound, new string[] { validName, "password:newPassword1", "email:email@somewhere.com", "password:newvalidPassword" } };
         }
 
         [Theory]
         [MemberData(nameof(ExpectedValidationFailuresData))]
-        public void ExpectedValidationFailures(string expectedErrorMessage, params string[] args) {
+        public void ExpectedValidationFailures(string expectedErrorMessage, ICommandInput args) {
 
             //arrange
             bool valid;
