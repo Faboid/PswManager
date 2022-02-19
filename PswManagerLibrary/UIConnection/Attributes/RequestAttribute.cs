@@ -24,5 +24,11 @@ namespace PswManagerLibrary.UIConnection.Attributes {
             Optional = optional;
         }
 
+        public RequestAttribute(string displayName, bool optional, params string[] multiLinedRequestMessage) {
+            DisplayName = displayName;
+            Optional = optional;
+            RequestMessage = string.Join(Environment.NewLine, multiLinedRequestMessage);
+        }
+
     }
 }
