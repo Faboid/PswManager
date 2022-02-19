@@ -1,14 +1,16 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.AbstractCommands;
+using PswManagerCommands.TempLocation;
 using PswManagerCommands.Validation;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;
+using PswManagerLibrary.Commands.ArgsModels;
 using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.Extensions;
 using System;
 
 namespace PswManagerLibrary.Commands {
-    public class GetCommand : BaseCommand {
+    public class GetCommand : BaseCommand<AccountName> {
 
         private readonly IDataReader dataReader;
         private readonly ICryptoAccount cryptoAccount;
@@ -22,20 +24,15 @@ namespace PswManagerLibrary.Commands {
             return "Gets the requested command from the saved ones.";
         }
 
-        public override string GetSyntax() {
-            return "get [name]";
-        }
+        protected override IValidationCollection<AccountName> AddConditions(IValidationCollection<AccountName> collection) {
 
-        protected override IValidationCollection AddConditions(IValidationCollection collection) {
-
-            collection.AddCommonConditions(1, 1);
-            collection.AddAccountShouldExistCondition(0, dataReader);
+            collection.AddAccountShouldExistCondition(0, collection.GetObject().Name, dataReader);
 
             return collection;
         }
 
-        protected override CommandResult RunLogic(string[] arguments) {
-            ConnectionResult<AccountModel> result = dataReader.GetAccount(arguments[0]);
+        protected override CommandResult RunLogic(AccountName arguments) {
+            ConnectionResult<AccountModel> result = dataReader.GetAccount(arguments.Name);
 
             if(result.Success) {
                 (result.Value.Password, result.Value.Email) = cryptoAccount.Decrypt(result.Value.Password, result.Value.Email);

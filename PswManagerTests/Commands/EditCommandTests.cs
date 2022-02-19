@@ -59,9 +59,9 @@ namespace PswManagerTests.Commands {
             TestsHelper.SetUpDefault();
 
             //act
-            var previous = getCommand.Run(new string[] { name });
+            var previous = getCommand.Run(ClassBuilder.Build(getCommand, new List<string>() { name }));
             editCommand.Run(args);
-            var actual = getCommand.Run(new string[] { newName ?? name });
+            var actual = getCommand.Run(ClassBuilder.Build(getCommand, new List<string>() { newName ?? name }));
 
             //assert
             Assert.NotEqual(previous, actual);
