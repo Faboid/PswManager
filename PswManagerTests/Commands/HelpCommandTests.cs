@@ -2,6 +2,7 @@
 using PswManagerCommands;
 using PswManagerCommands.Validation;
 using PswManagerLibrary.Commands;
+using PswManagerTests.Commands.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,20 +14,16 @@ namespace PswManagerTests.Commands {
     public class HelpCommandTests {
 
         public HelpCommandTests() {
-            Mock<ICommandOld> _mockedCommand = new();
-            Mock<ICommandOld> _mockedTwoCommand = new();
+            Mock<ICommand> _mockedCommand = new();
+            Mock<ICommand> _mockedTwoCommand = new();
 
-            string mockedCommandSyntax = "mocked [ismocked]";
-            string mockedTwoCommandSyntax = "mockedtwo [ismocked]?";
             string mockedCommandDescription = "This command is being mocked and doesn't have any actual functionality.";
             string mockedTwoCommandDescription = "This command is also being mocked. The only difference with the first is that the argument it requests is optional.";
 
-            _mockedCommand.Setup(x => x.GetSyntax()).Returns(mockedCommandSyntax);
-            _mockedTwoCommand.Setup(x => x.GetSyntax()).Returns(mockedTwoCommandSyntax);
             _mockedCommand.Setup(x => x.GetDescription()).Returns(mockedCommandDescription);
             _mockedTwoCommand.Setup(x => x.GetDescription()).Returns(mockedTwoCommandDescription);
 
-            Dictionary<string, ICommandOld> commands = new();
+            Dictionary<string, ICommand> commands = new();
             commands.Add("mocked", _mockedCommand.Object);
             commands.Add("mockedtwo", _mockedTwoCommand.Object);
 
@@ -36,9 +33,9 @@ namespace PswManagerTests.Commands {
             dicCommands = commands;
         }
 
-        readonly ICommandOld mockedCommand;
-        readonly ICommandOld mockedTwoCommand;
-        readonly IReadOnlyDictionary<string, ICommandOld> dicCommands;
+        readonly ICommand mockedCommand;
+        readonly ICommand mockedTwoCommand;
+        readonly IReadOnlyDictionary<string, ICommand> dicCommands;
         readonly HelpCommand helpCommand;
 
         [Fact]
@@ -46,9 +43,10 @@ namespace PswManagerTests.Commands {
 
             //arrange
             string expectedToContain = string.Join("  ", dicCommands.Keys);
+            var obj = ClassBuilder.Build(helpCommand, new List<string>());
 
             //act
-            var result = helpCommand.Run(Array.Empty<string>());
+            var result = helpCommand.Run(obj);
 
             //assert
             Assert.True(result.Success);
@@ -57,37 +55,18 @@ namespace PswManagerTests.Commands {
         }
 
         [Fact]
-        public void GetSpecificCommandSyntax() {
+        public void GetSpecificCommandDescription() {
 
             //arrange
             string expectedDescription = mockedCommand.GetDescription();
-            string expectedSyntax = mockedCommand.GetSyntax();
+            var obj = ClassBuilder.Build(helpCommand, new List<string>() { "mOcKed" });
 
             //act
-            var result = helpCommand.Run(new string[] { "mOcKed" });
+            var result = helpCommand.Run(obj);
 
             //assert
             Assert.True(result.Success);
             Assert.Equal(expectedDescription, result.BackMessage);
-            Assert.Contains(expectedSyntax, result.QueryReturnValue);
-
-        }
-
-        [Fact]
-        public void GetSpecificCommandSyntaxWithOptionalArguments() {
-
-            //arrange
-            string expectedDescription = mockedTwoCommand.GetDescription();
-            string expectedSyntax = mockedTwoCommand.GetSyntax();
-
-            //act
-            var result = helpCommand.Run(new string[] { "mOcKedTwo" });
-
-            //assert
-            Assert.True(result.Success);
-            Assert.Equal(expectedDescription, result.BackMessage);
-            Assert.Contains(expectedSyntax, result.QueryReturnValue);
-            Assert.Contains("optional", result.QueryReturnValue);
 
         }
 
@@ -95,12 +74,13 @@ namespace PswManagerTests.Commands {
         public void GetSyntaxButEmptyDictionary() {
 
             //arrange
-            Dictionary<string, ICommandOld> commands = new();
+            Dictionary<string, ICommand> commands = new();
             HelpCommand helpCommand = new(commands);
             string expected = "There has been an error: the command list is empty.";
+            var obj = ClassBuilder.Build(helpCommand, new List<string>());
 
             //act
-            var result = helpCommand.Run(Array.Empty<string>());
+            var result = helpCommand.Run(obj);
 
             //assert
             Assert.False(result.Success);
@@ -110,19 +90,25 @@ namespace PswManagerTests.Commands {
 
 
         public static IEnumerable<object[]> ExpectedValidationFailuresData() {
-            yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
+            static object[] NewObj(string errorMessage, string commandName)
+                => new object[] {
+                    errorMessage,
+                    ClassBuilder.Build(new HelpCommand(null), new List<string> { commandName })
+                };
 
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null } };
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "" } };
+            //yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
 
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { "mocked", "extravalue" } };
+            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null } };
+            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "" } };
 
-            yield return new object[] { HelpCommand.CommandInexistentErrorMessage, new string[] { "nonexistentcommand" } };
+            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { "mocked", "extravalue" } };
+
+            yield return NewObj(HelpCommand.CommandInexistentErrorMessage, "nonexistentcommand");
         }
 
         [Theory]
         [MemberData(nameof(ExpectedValidationFailuresData))]
-        public void ExpectedValidationFailures(string expectedErrorMessage, params string[] args) {
+        public void ExpectedValidationFailures(string expectedErrorMessage, ICommandInput args) {
 
             //arrange
             bool valid;
