@@ -1,5 +1,5 @@
 ﻿using PswManagerCommands;
-using PswManagerCommands.TempLocation;
+using PswManagerCommands.AbstractCommands;
 using PswManagerCommands.Validation;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;

@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PswManagerCommands.TempLocation {
+namespace PswManagerCommands.AbstractCommands {
 
     /// <summary>
     /// Represents a command that uses complex objects as input values.
     /// </summary>
     /// <typeparam name="TInput"></typeparam>
-    public abstract class BaseCommand<TInput> : ICommand where TInput : ICommandInput, new()  {
+    public abstract class BaseCommand<TInput> : ICommand where TInput : ICommandInput, new() {
 
         /// <summary>
         /// <inheritdoc/>

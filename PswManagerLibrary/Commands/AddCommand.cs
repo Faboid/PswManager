@@ -7,7 +7,7 @@ using PswManagerCommands.Parsing.Attributes;
 using PswManagerCommands.Validation.Attributes;
 using System;
 using PswManagerLibrary.Commands.AutoCommands.ArgsModels;
-using PswManagerCommands.TempLocation;
+using PswManagerCommands.AbstractCommands;
 
 namespace PswManagerLibrary.Commands {
     public class AddCommand : BaseCommand<AccountInfo> {
