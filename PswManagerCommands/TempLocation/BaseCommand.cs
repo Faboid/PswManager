@@ -8,11 +8,14 @@ using System.Threading.Tasks;
 namespace PswManagerCommands.TempLocation {
 
     /// <summary>
-    /// The children of <see cref="BaseCommand"/> deal with parsing and validating manually. 
+    /// Represents a command that uses complex objects as input values.
     /// </summary>
+    /// <typeparam name="TInput"></typeparam>
     public abstract class BaseCommand<TInput> : ICommand where TInput : ICommandInput, new()  {
 
-        //todo - either turn this into abstract and implement it for all commands or somehow use generics to do the same
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
         public Type GetCommandInputType => typeof(TInput);
 
         protected abstract IValidationCollection<TInput> AddConditions(IValidationCollection<TInput> collection);
@@ -20,6 +23,7 @@ namespace PswManagerCommands.TempLocation {
 
         /// <summary>
         /// <inheritdoc/>
+        /// <br/>Note: The given input will be cast to <see cref="TInput"/>. You can get <see cref="TInput"/>'s type by calling <see cref="GetCommandInputType"/>.
         /// </summary>
         /// <param name="arguments"></param>
         /// <returns></returns>
@@ -35,6 +39,7 @@ namespace PswManagerCommands.TempLocation {
 
         /// <summary>
         /// <inheritdoc/>
+        /// <br/>Note: The given input will be cast to <see cref="TInput"/>. You can get <see cref="TInput"/>'s type by calling <see cref="GetCommandInputType"/>.
         /// </summary>
         /// <param name="arguments"></param>
         /// <returns></returns>

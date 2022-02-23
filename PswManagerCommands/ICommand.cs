@@ -33,8 +33,14 @@ namespace PswManagerCommands {
 
     }
 
+    /// <summary>
+    /// Represents a command.
+    /// </summary>
     public interface ICommand {
 
+        /// <summary>
+        /// Gets the type of input object the command requires as input.
+        /// </summary>
         public Type GetCommandInputType { get; }
 
         /// <summary>
