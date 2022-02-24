@@ -81,15 +81,18 @@ namespace PswManagerDatabase.Config {
 
             } catch(IOException) {
 
-                //todo - find a way to test this
                 //if the operations fail, rollback to the previous version
                 SetMain(currentMain);
 
                 pathNames.ForEach(x => {
-                    if(File.Exists(GetNewPath(x)))
-                        File.Move(GetNewPath(x), GetOldPath(x));
+                    try {
+                        if(File.Exists(GetNewPath(x)))
+                            File.Move(GetNewPath(x), GetOldPath(x));
+                    }
+                    catch { };
                 });
 
+                //todo - turn the MoveMain() operation's return method into a ConnectionResult, so that it can be solved without exceptions
                 throw;
             }
 

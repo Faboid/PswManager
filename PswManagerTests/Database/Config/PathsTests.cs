@@ -95,6 +95,35 @@ namespace PswManagerTests.Database.Config {
 
         }
 
+        [Fact]
+        public void MoveMain_HandleError_RollBack() {
+
+            //arrange
+            Paths paths = new();
+            FourPaths oldPaths = new(WorkingDirectory);
+            FourPaths newPaths = new(TempMainPath);
+            Exception ex = null;
+
+            Directory.CreateDirectory(TempMainPath);
+            oldPaths.Create();
+
+            //act
+
+            //to make sure the moving operation fails, I'm opening a stream to one of the files that will have to be read
+            using(var stream = new StreamReader(oldPaths.ExpectedAccountsFilePath)) {
+
+                ex = Record.Exception(() => paths.MoveMain(TempMainPath));
+            }
+
+            //assert
+            Assert.NotNull(ex);
+            oldPaths.ForEach(x => Assert.True(File.Exists(x)));
+            newPaths.ForEach(x => Assert.False(File.Exists(x)));
+            oldPaths.Delete();
+            Directory.Delete(TempMainPath, true);
+
+        }
+
         private static void AssertEqualPaths(FourPaths expectedPaths, IPaths paths) {
             Assert.Equal(expectedPaths.ExpectedPasswordsFilePath, paths.PasswordsFilePath);
             Assert.Equal(expectedPaths.ExpectedAccountsFilePath, paths.AccountsFilePath);
