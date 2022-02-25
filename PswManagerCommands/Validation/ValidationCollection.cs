@@ -97,7 +97,7 @@ namespace PswManagerCommands.Validation {
     }
 
 
-    internal class ValidationCollection<T> : IValidationCollection<T> {
+    public class ValidationCollection<T> : IValidationCollection<T> {
 
         private readonly Dictionary<int, (bool, string)> validatorsDictionary = new();
         private readonly T obj;

@@ -61,7 +61,7 @@ namespace PswManagerTests.Commands {
             //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "" } };
             //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "     " } };
 
-            yield return NewObj(new ValidationCollection(null).InexistentAccountMessage(), "fakeAccountName");
+            yield return NewObj(new ValidationCollection<object>(null).InexistentAccountMessage(), "fakeAccountName");
 
             //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
             //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "eiwghrywhgi" } };

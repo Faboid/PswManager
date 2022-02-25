@@ -84,7 +84,7 @@ namespace PswManagerTests.Commands {
             //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "     ", "password:tiehwgfuh" } };
             //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, "password:tiehwgfuh", null } };
 
-            yield return NewObj(new ValidationCollection(null).InexistentAccountMessage(), "fakeAccountName", null, "newPasshere", null);
+            yield return NewObj(new ValidationCollection<object>(null).InexistentAccountMessage(), "fakeAccountName", null, "newPasshere", null);
 
             //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
             //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName } };
