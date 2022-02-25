@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PswManagerCommands.Parsing {
+namespace PswManagerCommands.Unused.Parsing {
 
     public class ParsingResult {
 

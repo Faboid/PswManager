@@ -1,6 +1,6 @@
 ﻿using PswManagerCommands;
-using PswManagerCommands.Parsing;
-using PswManagerCommands.Parsing.Attributes;
+using PswManagerCommands.Unused.Parsing;
+using PswManagerCommands.Unused.Parsing.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;

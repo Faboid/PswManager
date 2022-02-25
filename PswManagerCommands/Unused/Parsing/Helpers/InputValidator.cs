@@ -1,12 +1,13 @@
-﻿using PswManagerHelperMethods;
+﻿using PswManagerCommands.Unused.Parsing;
+using PswManagerHelperMethods;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static PswManagerCommands.Parsing.Parser;
+using static PswManagerCommands.Unused.Parsing.Parser;
 
-namespace PswManagerCommands.Parsing.Helpers {
+namespace PswManagerCommands.Unused.Parsing.Helpers {
     internal static class InputValidator {
 
         public static bool ToParsingResult(this ValidationResult result, out ParsingResult parsingResult) {

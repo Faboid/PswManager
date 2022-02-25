@@ -1,4 +1,4 @@
-﻿using PswManagerCommands.Parsing.Helpers;
+﻿using PswManagerCommands.Unused.Parsing.Helpers;
 using PswManagerHelperMethods;
 using System;
 using System.Collections.Generic;
@@ -6,12 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PswManagerCommands.Parsing {
+namespace PswManagerCommands.Unused.Parsing {
     public class Parser : IParser, IParserReady {
 
         public static IParser CreateInstance() { return new Parser(); }
 
-        private Parser() {}
+        private Parser() { }
 
         public string Separator => " -/";
         public char Equal => '=';
@@ -50,7 +50,7 @@ namespace PswManagerCommands.Parsing {
 
             var valid = Enumerable.Range(0, args.Count()).Select(x => valueSetter.TryAssignValue(parseable, keys[x], values[x]));
             if(!valid.All(x => x == true)) {
-                return new ParsingResult(ParsingResult.Success.Failure, 
+                return new ParsingResult(ParsingResult.Success.Failure,
                     $"Inexistent parameter has been given. List of possible parameters for this command:" +
                     $"{Environment.NewLine}{valueSetter.dictionary.Keys.JoinStrings(' ')}");
             }

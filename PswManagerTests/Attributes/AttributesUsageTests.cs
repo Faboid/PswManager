@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using PswManagerCommands.Parsing.Attributes;
 using Xunit.Abstractions;
 using PswManagerCommands.Validation.Attributes;
+using PswManagerCommands.Unused.Parsing.Attributes;
 
 namespace PswManagerTests.Attributes {
     public class AttributesUsageTests {
