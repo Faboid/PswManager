@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace PswManagerCommands.Validation.Models {
 
-    public abstract class ValidationLogic {
+    public abstract class ValidationRule {
 
         public Type GetAttributeType;
         public Type GetDataType;
 
-        protected ValidationLogic(Type attributeType, Type dataType) {
+        protected ValidationRule(Type attributeType, Type dataType) {
             GetAttributeType = attributeType;
             GetDataType = dataType;
         }

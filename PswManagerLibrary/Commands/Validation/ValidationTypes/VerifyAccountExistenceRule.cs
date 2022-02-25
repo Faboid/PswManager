@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PswManagerLibrary.Commands.Validation.ValidationLogic {
-    public class VerifyAccountExistenceLogic : PswManagerCommands.Validation.Models.ValidationLogic {
+    public class VerifyAccountExistenceRule : PswManagerCommands.Validation.Models.ValidationRule {
 
         private readonly IDataHelper dataHelper;
 
-        public VerifyAccountExistenceLogic(IDataHelper dataHelper) : base(typeof(VerifyAccountExistenceAttribute), typeof(string)) {
+        public VerifyAccountExistenceRule(IDataHelper dataHelper) : base(typeof(VerifyAccountExistenceAttribute), typeof(string)) {
             this.dataHelper = dataHelper;
         }
 

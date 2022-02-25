@@ -10,47 +10,45 @@ using System.Threading.Tasks;
 namespace PswManagerCommands.Validation {
     public class AutoValidation<T> {
 
-        readonly List<string> errors = new();
         readonly IReadOnlyList<PropertyInfo> requiredProperties;
-        readonly List<(ValidationLogic validator, List<PropertyInfo> props)> customValidators = new();
+        readonly List<(ValidationRule validator, List<PropertyInfo> props)> customRules = new();
 
-        internal AutoValidation(IReadOnlyList<PropertyInfo> required, List<(ValidationLogic validator, List<PropertyInfo> props)> custom) {
+        internal AutoValidation(IReadOnlyList<PropertyInfo> required, List<(ValidationRule validator, List<PropertyInfo> props)> custom) {
             requiredProperties = required;
-            customValidators = custom;
+            customRules = custom;
         }
 
-        public IReadOnlyList<string> GetErrors() {
-            return errors;
-        }
+        public IEnumerable<string> Validate(T obj) {
+            var errors = RequiredPropertiesHaveValues(obj);
+            foreach(var e in errors) {
+                yield return e;
+            }
 
-        public void Validate(T obj) {
-            errors.Clear();
-            RequiredPropertiesHaveValues(obj);
-
-            //continue only if the required values are all filled
+            //if any required property is missing, return early.
+            //This is to avoid redundant error messages
             if(errors.Any()) {
-                return;
+                yield break;
             }
 
             //todo - refactor this
-            foreach(var (validator, props) in customValidators) {
+            foreach(var (validator, props) in customRules) {
                 foreach(var prop in props) {
                     bool valid = validator.Validate(prop.GetCustomAttribute(validator.GetAttributeType), prop.GetValue(obj));
                     if(!valid) {
-                        errors.Add("Temporary error message: value not valid");
+                        yield return "Temporary error message: value not valid";
                     }
                 }
             }
         }
 
-        private void RequiredPropertiesHaveValues(T obj) {
+        private IEnumerable<string> RequiredPropertiesHaveValues(T obj) {
 
             //check they're not empty
             var emptyProps = requiredProperties.Where(x => string.IsNullOrEmpty((string)x.GetValue(obj)));
 
             //add error to list
             foreach(var s in emptyProps) {
-                errors.Add($"You must provide a value for {s.Name}.");
+                yield return $"You must provide a value for {s.Name}.";
             }
         }
 

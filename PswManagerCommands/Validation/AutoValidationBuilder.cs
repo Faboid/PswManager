@@ -13,14 +13,14 @@ namespace PswManagerCommands.Validation {
 
         private readonly IReadOnlyList<PropertyInfo> properties;
         readonly IReadOnlyList<PropertyInfo> requiredProperties;
-        readonly List<(ValidationLogic validator, List<PropertyInfo> props)> customValidators = new();
+        readonly List<(ValidationRule validator, List<PropertyInfo> props)> customValidators = new();
 
         public AutoValidationBuilder() {
             properties = typeof(TObj).GetProperties().ToList();
             requiredProperties = properties.Where(x => x.GetCustomAttribute<RequiredAttribute>() != null).ToList();
         }
 
-        public AutoValidationBuilder<TObj> AddLogic(ValidationLogic validationLogic) {
+        public AutoValidationBuilder<TObj> AddRule(ValidationRule validationLogic) {
             var props = properties.Where(x => x.GetCustomAttribute(validationLogic.GetAttributeType) != null).ToList();
             customValidators.Add((validationLogic, props));
             return this;

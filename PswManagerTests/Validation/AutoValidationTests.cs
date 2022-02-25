@@ -18,7 +18,7 @@ namespace PswManagerTests.Validation {
 
         public AutoValidationTests() {
             autoVal = new AutoValidationBuilder<ValidObject>()
-                .AddLogic(new VerifyRangeLogic())
+                .AddRule(new VerifyRangeLogic())
                 .Build();
         }
 
@@ -35,8 +35,7 @@ namespace PswManagerTests.Validation {
             obj.Number = 5;
 
             //act
-            autoVal.Validate(obj);
-            var result = autoVal.GetErrors();
+            var result = autoVal.Validate(obj);
 
             //assert
             Assert.Empty(result);
@@ -51,8 +50,7 @@ namespace PswManagerTests.Validation {
             obj.Name = "Hello!";
 
             //act
-            autoVal.Validate(obj);
-            var result = autoVal.GetErrors();
+            var result = autoVal.Validate(obj);
 
             //assert
             Assert.NotEmpty(result);
@@ -70,8 +68,7 @@ namespace PswManagerTests.Validation {
             obj.Number = -15;
 
             //act
-            autoVal.Validate(obj);
-            var result = autoVal.GetErrors();
+            var result = autoVal.Validate(obj);
 
             //assert
             Assert.NotEmpty(result);
@@ -96,7 +93,7 @@ namespace PswManagerTests.Validation {
 
     }
 
-    internal class VerifyRangeLogic : ValidationLogic {
+    internal class VerifyRangeLogic : ValidationRule {
         public VerifyRangeLogic() : base(typeof(RangeAttribute), typeof(int)) { }
 
         protected override bool InnerLogic(Attribute att, object value) {
