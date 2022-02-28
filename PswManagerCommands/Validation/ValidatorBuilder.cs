@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace PswManagerCommands.Validation {
     public class ValidatorBuilder<T> {
 
-        readonly List<Condition<T>> conditions = new();
+        readonly List<ICondition<T>> conditions = new();
         AutoValidation<T> autoValidator;
 
         public ValidatorBuilder<T> AddCondition(IndexHelper index, Func<T, bool> conditionFunction, string errorMessage) {
@@ -15,7 +15,7 @@ namespace PswManagerCommands.Validation {
             return this;
         }
 
-        public ValidatorBuilder<T> AddCondition(Condition<T> condition) {
+        public ValidatorBuilder<T> AddCondition(ICondition<T> condition) {
             conditions.Add(condition);
             return this;
         }
@@ -25,13 +25,20 @@ namespace PswManagerCommands.Validation {
             return this;
         }
 
-        public Validator<T> Build() {
+        public IValidator<T> Build() {
             return new Validator<T>(conditions, autoValidator);
         }
 
     }
 
-    public class Condition<T> {
+    public interface ICondition<T> {
+
+        string GetErrorMessage();
+        bool IsValid(T obj);
+        bool IsValid(T obj, IList<int> failedConditions);
+    }
+
+    public class Condition<T> : ICondition<T> {
 
         public Condition(IndexHelper index, Func<T, bool> logic, string errorMessage) {
             Index = index;
@@ -39,9 +46,11 @@ namespace PswManagerCommands.Validation {
             ErrorMessage = errorMessage;
         }
 
+        private readonly string ErrorMessage;
         public IndexHelper Index { get; init; }
         public Func<T, bool> Logic { get; init; }
-        public string ErrorMessage { get; init; }
+
+        public string GetErrorMessage() => ErrorMessage;
 
         public bool IsValid(T obj) => IsValid(obj, new List<int>());
         public bool IsValid(T obj, IList<int> failedConditions) {
@@ -68,14 +77,20 @@ namespace PswManagerCommands.Validation {
 
     }
 
-    public class Validator<T> {
+    public interface IValidator<T> {
 
-        internal Validator(IReadOnlyCollection<Condition<T>> conditions, AutoValidation<T> autoValidator) {
+        IEnumerable<string> Validate(T obj);
+
+    }
+
+    public class Validator<T> : IValidator<T> {
+
+        internal Validator(IReadOnlyCollection<ICondition<T>> conditions, AutoValidation<T> autoValidator) {
             this.conditions = conditions;
             this.autoValidator = autoValidator;
         }
 
-        readonly IReadOnlyCollection<Condition<T>> conditions;
+        readonly IReadOnlyCollection<ICondition<T>> conditions;
         readonly AutoValidation<T> autoValidator;
 
         /// <summary>
@@ -96,7 +111,7 @@ namespace PswManagerCommands.Validation {
 
             foreach(var cond in conditions) {
                 if(!cond.IsValid(obj, failedConditions)) {
-                    yield return cond.ErrorMessage;
+                    yield return cond.GetErrorMessage();
                 }
             }
 

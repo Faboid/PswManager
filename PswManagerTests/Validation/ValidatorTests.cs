@@ -15,7 +15,8 @@ namespace PswManagerTests.Validation {
                 .AddRule(new ValidateNotEmpty())
                 .Build();
 
-            Condition<TestObject> ageCondition = new(new IndexHelper(2), (obj) => obj.Age > 13, minimumAgeMessage);
+            ICondition<TestObject> ageCondition = new AgeCondition(2);
+            minimumAgeMessage = ageCondition.GetErrorMessage();
 
             validator = new ValidatorBuilder<TestObject>()
                 .AddAutoValidator(autoValidator)
@@ -27,10 +28,10 @@ namespace PswManagerTests.Validation {
 
         readonly string missingNameMessage = "Missing name.";
         readonly string minimumNameLengthMessage = "The name must be bigger than two characters.";
-        readonly string minimumAgeMessage = "The minimum required age is 13.";
+        readonly string minimumAgeMessage;
 
         readonly AutoValidation<TestObject> autoValidator;
-        readonly Validator<TestObject> validator;
+        readonly IValidator<TestObject> validator;
 
         [Fact]
         public void Success() {
@@ -91,6 +92,37 @@ namespace PswManagerTests.Validation {
         public string Name { get; set; }
         public int Age { get; set; }
 
+    }
+
+    public class AgeCondition : ICondition<TestObject> {
+
+        public AgeCondition(int index) {
+            this.index = index;
+        }
+
+        private readonly int index;
+
+        public string GetErrorMessage() => "The minimum required age is 13.";
+
+        public bool IsValid(TestObject obj) => IsValid(obj, new List<int>());
+
+        public bool IsValid(TestObject obj, IList<int> failedConditions) {
+
+            try {
+
+                //if the validation passes, return true
+                if(obj.Age > 13) {
+                    return true;
+                }
+            }
+            catch {
+
+                return false;
+            }
+
+            failedConditions.Add(index);
+            return false;
+        }
     }
 
     public class ValidateNotEmpty : ValidationRule {
