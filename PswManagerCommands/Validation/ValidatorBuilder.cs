@@ -38,7 +38,28 @@ namespace PswManagerCommands.Validation {
         public Func<T, bool> Logic { get; init; }
         public string ErrorMessage { get; init; }
 
-        //todo - consider adding a Validate() method
+        public bool IsValid(T obj) => IsValid(obj, new List<int>());
+        public bool IsValid(T obj, IList<int> failedConditions) {
+
+            //if a required condition has failed, return true
+            //reason being that it's unecessary to pile the user with unnecessary error messages
+            if(Index.RequiredSuccesses.Any(x => failedConditions.Contains(x))) {
+                return true;
+            }
+
+            try {
+
+                //if the validation passes, return true
+                if(Logic.Invoke(obj)) {
+                    return true;
+                }
+            } catch {
+                return false;
+            }
+
+            failedConditions.Add(Index.Index);
+            return false;
+        }
 
     }
 
@@ -69,28 +90,11 @@ namespace PswManagerCommands.Validation {
             }
 
             foreach(var cond in conditions) {
-                if(!ValidateCondition(obj, cond, failedConditions)) {
+                if(!cond.IsValid(obj, failedConditions)) {
                     yield return cond.ErrorMessage;
                 }
             }
 
-        }
-
-        private static bool ValidateCondition(T obj, Condition<T> cond, List<int> failedConditions) {
-
-            //if a required condition has failed, return true
-            //reason being that it's unecessary to pile the user with unnecessary error messages
-            if(cond.Index.RequiredSuccesses.Any(x => failedConditions.Contains(x))) {
-                return true;
-            }
-
-            //if the validation passes, return true
-            if(cond.Logic(obj)) {
-                return true;
-            }
-
-            failedConditions.Add(cond.Index.Index);
-            return false;
         }
 
     }
