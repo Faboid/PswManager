@@ -33,25 +33,46 @@ namespace PswManagerTests.Validation {
         readonly Validator<TestObject> validator;
 
         [Fact]
-        public void ValidateSuccessfully() {
+        public void Success() {
 
             //arrange
-            TestObject obj1 = new("rightuy", "Name here", 15);
-            TestObject obj2 = new("rigrrree", "y", 3);
-            TestObject obj3 = new("", "validName", 77);
+            TestObject obj = new("rightuy", "Name here", 15);
 
             //act
-            var err_1 = validator.Validate(obj1);
-            var err_2 = validator.Validate(obj2);
-            var err_3 = validator.Validate(obj3);
+            var errors = validator.Validate(obj);
 
             //assert
-            Assert.Empty(err_1);
-            Assert.NotEmpty(err_2);
-            Assert.Contains(minimumNameLengthMessage, err_2);
-            Assert.Contains(minimumAgeMessage, err_2);
-            Assert.NotEmpty(err_3);
-            Assert.Contains("Temporary error message: value not valid", err_3);
+            Assert.Empty(errors);
+        }
+
+        [Fact]
+        public void Failure_From_CustomConditions() {
+
+            //arrange
+            TestObject obj = new("rigrrree", "y", 3);
+
+            //act
+            var errors = validator.Validate(obj);
+
+            //assert
+            Assert.NotEmpty(errors);
+            Assert.Contains(minimumNameLengthMessage, errors);
+            Assert.Contains(minimumAgeMessage, errors);
+
+        }
+
+        [Fact]
+        public void Failure_From_AutoValidation() {
+
+            //arrange
+            TestObject obj = new("", "validName", 77);
+
+            //act
+            var errors = validator.Validate(obj);
+
+            //assert
+            Assert.NotEmpty(errors);
+            Assert.Contains("Temporary error message: value not valid", errors);
 
         }
 
