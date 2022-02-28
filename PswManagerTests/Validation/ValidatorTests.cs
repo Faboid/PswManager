@@ -16,12 +16,13 @@ namespace PswManagerTests.Validation {
             string missingNameMessage = "Missing name.";
             string minimumNameLengthMessage = "The name must be bigger than two characters.";
             string minimumAgeMessage = "The minimum required age is 13.";
+            Condition<TestObject> ageCondition = new(new IndexHelper(2), (obj) => obj.Age > 13, minimumAgeMessage);
 
             ValidatorBuilder<TestObject> builder = new();
             Validator<TestObject> validator = builder
                 .AddCondition(new IndexHelper(0), (obj) => !string.IsNullOrWhiteSpace(obj.Name), missingNameMessage)
                 .AddCondition(new IndexHelper(1, 0), (obj) => obj.Name.Length > 2, minimumNameLengthMessage)
-                .AddCondition(new IndexHelper(2), (obj) => obj.Age > 13, minimumAgeMessage)
+                .AddCondition(ageCondition)
                 .Build();
 
             TestObject obj1 = new("rightuy", "Name here", 15);

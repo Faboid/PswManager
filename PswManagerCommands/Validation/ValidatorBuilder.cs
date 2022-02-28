@@ -15,6 +15,11 @@ namespace PswManagerCommands.Validation {
             return this;
         }
 
+        public ValidatorBuilder<T> AddCondition(Condition<T> condition) {
+            conditions.Add(condition);
+            return this;
+        }
+
         public ValidatorBuilder<T> AddAutoValidator(AutoValidation<T> autoValidator) {
             this.autoValidator = autoValidator;
             return this;
