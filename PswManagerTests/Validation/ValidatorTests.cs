@@ -10,29 +10,32 @@ using Xunit;
 namespace PswManagerTests.Validation {
     public class ValidatorTests {
 
-        [Fact]
-        public void ValidateSuccessfully() {
-
-            //arrange
-            string missingNameMessage = "Missing name.";
-            string minimumNameLengthMessage = "The name must be bigger than two characters.";
-            string minimumAgeMessage = "The minimum required age is 13.";
-            Condition<TestObject> ageCondition = new(new IndexHelper(2), (obj) => obj.Age > 13, minimumAgeMessage);
-
-
-            AutoValidationBuilder<TestObject> autoValBuilder = new();
-            AutoValidation<TestObject> autoValidator = autoValBuilder
+        public ValidatorTests() {
+            autoValidator = new AutoValidationBuilder<TestObject>()
                 .AddRule(new ValidateNotEmpty())
                 .Build();
 
-            ValidatorBuilder<TestObject> builder = new();
-            Validator<TestObject> validator = builder
+            Condition<TestObject> ageCondition = new(new IndexHelper(2), (obj) => obj.Age > 13, minimumAgeMessage);
+
+            validator = new ValidatorBuilder<TestObject>()
                 .AddAutoValidator(autoValidator)
                 .AddCondition(new IndexHelper(0), (obj) => !string.IsNullOrWhiteSpace(obj.Name), missingNameMessage)
                 .AddCondition(new IndexHelper(1, 0), (obj) => obj.Name.Length > 2, minimumNameLengthMessage)
                 .AddCondition(ageCondition)
                 .Build();
+        }
 
+        readonly string missingNameMessage = "Missing name.";
+        readonly string minimumNameLengthMessage = "The name must be bigger than two characters.";
+        readonly string minimumAgeMessage = "The minimum required age is 13.";
+
+        readonly AutoValidation<TestObject> autoValidator;
+        readonly Validator<TestObject> validator;
+
+        [Fact]
+        public void ValidateSuccessfully() {
+
+            //arrange
             TestObject obj1 = new("rightuy", "Name here", 15);
             TestObject obj2 = new("rigrrree", "y", 3);
             TestObject obj3 = new("", "validName", 77);
@@ -52,14 +55,9 @@ namespace PswManagerTests.Validation {
 
         }
 
-
     }
 
     public class TestObject {
-
-        public TestObject() {
-             
-        }
 
         public TestObject(string id, string name, int age) {
             Id = id;
