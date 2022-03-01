@@ -11,15 +11,20 @@ namespace PswManagerTests.Validation {
     public class ValidatorTests {
 
         public ValidatorTests() {
-            autoValidator = new AutoValidatorBuilder<TestObject>()
+            autoValidatorNotEmpty = new AutoValidatorBuilder<TestObject>()
                 .AddRule(new ValidateNotEmpty())
+                .Build();
+
+            autoValidatorLessThanOneHundred = new AutoValidatorBuilder<TestObject>()
+                .AddRule(new ValidateLessThanOneHundred())
                 .Build();
 
             ICondition<TestObject> ageCondition = new AgeCondition(2);
             minimumAgeMessage = ageCondition.GetErrorMessage();
 
             validator = new ValidatorBuilder<TestObject>()
-                .AddAutoValidator(autoValidator)
+                .AddAutoValidator(autoValidatorNotEmpty)
+                .AddAutoValidator(autoValidatorLessThanOneHundred)
                 .AddCondition(new IndexHelper(0), (obj) => !string.IsNullOrWhiteSpace(obj.Name), missingNameMessage)
                 .AddCondition(new IndexHelper(1, 0), (obj) => obj.Name.Length > 2, minimumNameLengthMessage)
                 .AddCondition(ageCondition)
@@ -30,7 +35,8 @@ namespace PswManagerTests.Validation {
         readonly string minimumNameLengthMessage = "The name must be bigger than two characters.";
         readonly string minimumAgeMessage;
 
-        readonly AutoValidator<TestObject> autoValidator;
+        readonly AutoValidator<TestObject> autoValidatorNotEmpty;
+        readonly AutoValidator<TestObject> autoValidatorLessThanOneHundred;
         readonly IValidator<TestObject> validator;
 
         [Fact]
@@ -77,6 +83,21 @@ namespace PswManagerTests.Validation {
 
         }
 
+        [Fact]
+        public void Failure_From_SecondAutoValidation() {
+
+            //arrange
+            TestObject obj = new("righteight", "Yereth", 177);
+
+            //act
+            var errors = validator.Validate(obj);
+
+            //assert
+            Assert.NotEmpty(errors);
+            Assert.Contains("Temporary error message: value not valid", errors);
+
+        }
+
     }
 
     public class TestObject {
@@ -87,10 +108,9 @@ namespace PswManagerTests.Validation {
             Age = age;
         }
 
-        [NotEmpty]
-        public string Id { get; set; }
+        [NotEmpty] public string Id { get; set; }
         public string Name { get; set; }
-        public int Age { get; set; }
+        [LessThanOneHundred] public int Age { get; set; }
 
     }
 
@@ -133,7 +153,19 @@ namespace PswManagerTests.Validation {
         }
     }
 
+    public class ValidateLessThanOneHundred : ValidationRule {
+
+        public ValidateLessThanOneHundred() : base(typeof(LessThanOneHundredAttribute), typeof(int)) { }
+
+        protected override bool InnerLogic(Attribute attribute, object value) {
+            return (int)value < 100;
+        }
+    }
+
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class NotEmptyAttribute : Attribute { }
+
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+    public class LessThanOneHundredAttribute : Attribute { }
 
 }

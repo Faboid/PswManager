@@ -8,7 +8,7 @@ namespace PswManagerCommands.Validation {
     public class ValidatorBuilder<T> {
 
         readonly List<ICondition<T>> conditions = new();
-        AutoValidator<T> autoValidator;
+        readonly List<AutoValidator<T>> autoValidators = new();
 
         public ValidatorBuilder<T> AddCondition(IndexHelper index, Func<T, bool> conditionFunction, string errorMessage) {
             conditions.Add(new Condition<T>(index, conditionFunction, errorMessage));
@@ -21,12 +21,12 @@ namespace PswManagerCommands.Validation {
         }
 
         public ValidatorBuilder<T> AddAutoValidator(AutoValidator<T> autoValidator) {
-            this.autoValidator = autoValidator;
+            autoValidators.Add(autoValidator);
             return this;
         }
 
         public IValidator<T> Build() {
-            return new Validator<T>(conditions, autoValidator);
+            return new Validator<T>(conditions, autoValidators);
         }
 
     }
@@ -85,13 +85,13 @@ namespace PswManagerCommands.Validation {
 
     public class Validator<T> : IValidator<T> {
 
-        internal Validator(IReadOnlyCollection<ICondition<T>> conditions, AutoValidator<T> autoValidator) {
+        internal Validator(IReadOnlyCollection<ICondition<T>> conditions, List<AutoValidator<T>> autoValidator) {
             this.conditions = conditions;
             this.autoValidator = autoValidator;
         }
 
         readonly IReadOnlyCollection<ICondition<T>> conditions;
-        readonly AutoValidator<T> autoValidator;
+        readonly List<AutoValidator<T>> autoValidator;
 
         /// <summary>
         /// Runs the given object through a list of prebuild conditions.
@@ -99,7 +99,7 @@ namespace PswManagerCommands.Validation {
         /// <param name="obj"></param>
         /// <returns>The errors in string format. If there's none, the validation was successful.</returns>
         public IEnumerable<string> Validate(T obj) {
-            var errors = autoValidator?.Validate(obj) ?? Enumerable.Empty<string>();
+            var errors = autoValidator.Select(x => x.Validate(obj)).SelectMany(x => x).ToList();
             foreach(var err in errors) {
                 yield return err;
             }
