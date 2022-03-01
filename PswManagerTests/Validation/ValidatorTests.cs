@@ -11,7 +11,7 @@ namespace PswManagerTests.Validation {
     public class ValidatorTests {
 
         public ValidatorTests() {
-            autoValidator = new AutoValidationBuilder<TestObject>()
+            autoValidator = new AutoValidatorBuilder<TestObject>()
                 .AddRule(new ValidateNotEmpty())
                 .Build();
 
@@ -30,7 +30,7 @@ namespace PswManagerTests.Validation {
         readonly string minimumNameLengthMessage = "The name must be bigger than two characters.";
         readonly string minimumAgeMessage;
 
-        readonly AutoValidation<TestObject> autoValidator;
+        readonly AutoValidator<TestObject> autoValidator;
         readonly IValidator<TestObject> validator;
 
         [Fact]

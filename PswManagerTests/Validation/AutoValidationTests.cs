@@ -17,12 +17,12 @@ namespace PswManagerTests.Validation {
     public class AutoValidationTests {
 
         public AutoValidationTests() {
-            autoVal = new AutoValidationBuilder<ValidObject>()
+            autoVal = new AutoValidatorBuilder<ValidObject>()
                 .AddRule(new VerifyRangeLogic())
                 .Build();
         }
 
-        readonly AutoValidation<ValidObject> autoVal;
+        readonly AutoValidator<ValidObject> autoVal;
 
         [Fact]
         public void ValidationSuccess() {

@@ -9,25 +9,25 @@ using System.Threading.Tasks;
 
 namespace PswManagerCommands.Validation {
 
-    public class AutoValidationBuilder<TObj> {
+    public class AutoValidatorBuilder<TObj> {
 
         private readonly IReadOnlyList<PropertyInfo> properties;
         readonly IReadOnlyList<PropertyInfo> requiredProperties;
         readonly List<(ValidationRule validator, List<PropertyInfo> props)> customValidators = new();
 
-        public AutoValidationBuilder() {
+        public AutoValidatorBuilder() {
             properties = typeof(TObj).GetProperties().ToList();
             requiredProperties = properties.Where(x => x.GetCustomAttribute<RequiredAttribute>() != null).ToList();
         }
 
-        public AutoValidationBuilder<TObj> AddRule(ValidationRule validationLogic) {
+        public AutoValidatorBuilder<TObj> AddRule(ValidationRule validationLogic) {
             var props = properties.Where(x => x.GetCustomAttribute(validationLogic.GetAttributeType) != null).ToList();
             customValidators.Add((validationLogic, props));
             return this;
         }
 
-        public AutoValidation<TObj> Build() {
-            return new AutoValidation<TObj>(requiredProperties, customValidators);
+        public AutoValidator<TObj> Build() {
+            return new AutoValidator<TObj>(requiredProperties, customValidators);
         }
 
     }
