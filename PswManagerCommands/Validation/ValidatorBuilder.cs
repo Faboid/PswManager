@@ -8,7 +8,7 @@ namespace PswManagerCommands.Validation {
     public class ValidatorBuilder<T> {
 
         readonly List<ICondition<T>> conditions = new();
-        readonly List<AutoValidator<T>> autoValidators = new();
+        readonly List<IAutoValidator<T>> autoValidators = new();
 
         public ValidatorBuilder<T> AddCondition(IndexHelper index, Func<T, bool> conditionFunction, string errorMessage) {
             conditions.Add(new Condition<T>(index, conditionFunction, errorMessage));
@@ -20,7 +20,7 @@ namespace PswManagerCommands.Validation {
             return this;
         }
 
-        public ValidatorBuilder<T> AddAutoValidator(AutoValidator<T> autoValidator) {
+        public ValidatorBuilder<T> AddAutoValidator(IAutoValidator<T> autoValidator) {
             autoValidators.Add(autoValidator);
             return this;
         }
@@ -85,13 +85,13 @@ namespace PswManagerCommands.Validation {
 
     public class Validator<T> : IValidator<T> {
 
-        internal Validator(IReadOnlyCollection<ICondition<T>> conditions, List<AutoValidator<T>> autoValidator) {
+        internal Validator(IReadOnlyCollection<ICondition<T>> conditions, List<IAutoValidator<T>> autoValidator) {
             this.conditions = conditions;
             this.autoValidator = autoValidator;
         }
 
         readonly IReadOnlyCollection<ICondition<T>> conditions;
-        readonly List<AutoValidator<T>> autoValidator;
+        readonly List<IAutoValidator<T>> autoValidator;
 
         /// <summary>
         /// Runs the given object through a list of prebuild conditions.

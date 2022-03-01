@@ -8,7 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace PswManagerCommands.Validation {
-    public class AutoValidator<T> {
+
+    public interface IAutoValidator<T> {
+        IEnumerable<string> Validate(T obj);
+    }
+
+    public class AutoValidator<T> : IAutoValidator<T> {
 
         readonly IReadOnlyList<PropertyInfo> requiredProperties;
         readonly List<(ValidationRule validator, List<PropertyInfo> props)> customRules = new();

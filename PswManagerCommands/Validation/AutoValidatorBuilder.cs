@@ -26,7 +26,7 @@ namespace PswManagerCommands.Validation {
             return this;
         }
 
-        public AutoValidator<TObj> Build() {
+        public IAutoValidator<TObj> Build() {
             return new AutoValidator<TObj>(requiredProperties, customValidators);
         }
 

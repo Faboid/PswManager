@@ -35,8 +35,8 @@ namespace PswManagerTests.Validation {
         readonly string minimumNameLengthMessage = "The name must be bigger than two characters.";
         readonly string minimumAgeMessage;
 
-        readonly AutoValidator<TestObject> autoValidatorNotEmpty;
-        readonly AutoValidator<TestObject> autoValidatorLessThanOneHundred;
+        readonly IAutoValidator<TestObject> autoValidatorNotEmpty;
+        readonly IAutoValidator<TestObject> autoValidatorLessThanOneHundred;
         readonly IValidator<TestObject> validator;
 
         [Fact]

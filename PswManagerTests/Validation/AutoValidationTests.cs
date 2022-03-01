@@ -22,7 +22,7 @@ namespace PswManagerTests.Validation {
                 .Build();
         }
 
-        readonly AutoValidator<ValidObject> autoVal;
+        readonly IAutoValidator<ValidObject> autoVal;
 
         [Fact]
         public void ValidationSuccess() {
