@@ -38,9 +38,10 @@ namespace PswManagerCommands.Validation {
             //todo - refactor this
             foreach(var (validator, props) in customRules) {
                 foreach(var prop in props) {
-                    bool valid = validator.Validate(prop.GetCustomAttribute(validator.GetAttributeType), prop.GetValue(obj));
+                    RuleAttribute attribute = (RuleAttribute)prop.GetCustomAttribute(validator.GetAttributeType);
+                    bool valid = validator.Validate(attribute, prop.GetValue(obj));
                     if(!valid) {
-                        yield return "Temporary error message: value not valid";
+                        yield return attribute.ErrorMessage;
                     }
                 }
             }

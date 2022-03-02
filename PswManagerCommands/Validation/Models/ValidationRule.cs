@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PswManagerCommands.Validation.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,11 +13,15 @@ namespace PswManagerCommands.Validation.Models {
         public Type GetDataType;
 
         protected ValidationRule(Type attributeType, Type dataType) {
+            if(!attributeType.IsSubclassOf(typeof(RuleAttribute))) {
+                throw new InvalidCastException(nameof(attributeType));
+            }
+
             GetAttributeType = attributeType;
             GetDataType = dataType;
         }
 
-        public bool Validate(Attribute attribute, object value) {
+        public bool Validate(RuleAttribute attribute, object value) {
             if(GetAttributeType != attribute.GetType()) {
                 throw new ArgumentException("The given attribute is not the same as the one given to the constructor.", nameof(attribute));
             }
@@ -27,7 +32,7 @@ namespace PswManagerCommands.Validation.Models {
             return InnerLogic(attribute, value);
         }
 
-        protected abstract bool InnerLogic(Attribute attribute, object value);
+        protected abstract bool InnerLogic(RuleAttribute attribute, object value);
 
     }
 

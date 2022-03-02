@@ -1,14 +1,10 @@
-﻿using PswManagerCommands.Validation.Models;
+﻿using PswManagerCommands.Validation.Attributes;
+using PswManagerCommands.Validation.Models;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands.Validation.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PswManagerLibrary.Commands.Validation.ValidationLogic {
-    public class VerifyAccountExistenceRule : PswManagerCommands.Validation.Models.ValidationRule {
+    public class VerifyAccountExistenceRule : ValidationRule {
 
         private readonly IDataHelper dataHelper;
 
@@ -16,7 +12,7 @@ namespace PswManagerLibrary.Commands.Validation.ValidationLogic {
             this.dataHelper = dataHelper;
         }
 
-        protected override bool InnerLogic(Attribute attribute, object value) {
+        protected override bool InnerLogic(RuleAttribute attribute, object value) {
 
             return dataHelper.AccountExist((string)value) == (attribute as VerifyAccountExistenceAttribute).ShouldExist;
         }

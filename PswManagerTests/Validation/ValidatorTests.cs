@@ -1,4 +1,5 @@
 ﻿using PswManagerCommands.Validation;
+using PswManagerCommands.Validation.Attributes;
 using PswManagerCommands.Validation.Models;
 using System;
 using System.Collections.Generic;
@@ -79,7 +80,7 @@ namespace PswManagerTests.Validation {
 
             //assert
             Assert.NotEmpty(errors);
-            Assert.Contains("Temporary error message: value not valid", errors);
+            Assert.Contains("Id cannot be empty.", errors);
 
         }
 
@@ -94,7 +95,7 @@ namespace PswManagerTests.Validation {
 
             //assert
             Assert.NotEmpty(errors);
-            Assert.Contains("Temporary error message: value not valid", errors);
+            Assert.Contains("Age cannot be less than one hundred.", errors);
 
         }
 
@@ -108,9 +109,9 @@ namespace PswManagerTests.Validation {
             Age = age;
         }
 
-        [NotEmpty] public string Id { get; set; }
+        [NotEmpty("Id")] public string Id { get; set; }
         public string Name { get; set; }
-        [LessThanOneHundred] public int Age { get; set; }
+        [LessThanOneHundred("Age")] public int Age { get; set; }
 
     }
 
@@ -148,7 +149,7 @@ namespace PswManagerTests.Validation {
     public class ValidateNotEmpty : ValidationRule {
         public ValidateNotEmpty() : base(typeof(NotEmptyAttribute), typeof(string)) { }
 
-        protected override bool InnerLogic(Attribute attribute, object value) {
+        protected override bool InnerLogic(RuleAttribute attribute, object value) {
             return !string.IsNullOrEmpty((string)value);
         }
     }
@@ -157,15 +158,23 @@ namespace PswManagerTests.Validation {
 
         public ValidateLessThanOneHundred() : base(typeof(LessThanOneHundredAttribute), typeof(int)) { }
 
-        protected override bool InnerLogic(Attribute attribute, object value) {
+        protected override bool InnerLogic(RuleAttribute attribute, object value) {
             return (int)value < 100;
         }
     }
 
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-    public class NotEmptyAttribute : Attribute { }
+    public class NotEmptyAttribute : RuleAttribute {
+        public NotEmptyAttribute(string name) : base($"{name} cannot be empty.") {
+
+        }
+    }
 
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-    public class LessThanOneHundredAttribute : Attribute { }
+    public class LessThanOneHundredAttribute : RuleAttribute {
+        public LessThanOneHundredAttribute(string name) : base($"{name} cannot be less than one hundred.") {
+
+        }
+    }
 
 }

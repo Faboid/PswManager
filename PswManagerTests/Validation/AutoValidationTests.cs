@@ -88,7 +88,7 @@ namespace PswManagerTests.Validation {
         [Required]
         public string Email { get; set; }
 
-        [Range(0, 50)]
+        [Range(0, 50, "Number should be between 0 and 50.")]
         public int Number { get; set; }
 
     }
@@ -96,7 +96,7 @@ namespace PswManagerTests.Validation {
     internal class VerifyRangeLogic : ValidationRule {
         public VerifyRangeLogic() : base(typeof(RangeAttribute), typeof(int)) { }
 
-        protected override bool InnerLogic(Attribute att, object value) {
+        protected override bool InnerLogic(RuleAttribute att, object value) {
             var attribute = (RangeAttribute)att;
             var val = (int)value;
             return val >= attribute.Min && val <= attribute.Max;
@@ -105,12 +105,12 @@ namespace PswManagerTests.Validation {
     }
 
     [AttributeUsage(AttributeTargets.Property)]
-    internal class RangeAttribute : Attribute {
+    internal class RangeAttribute : RuleAttribute {
 
         public int Min;
         public int Max;
 
-        public RangeAttribute(int min, int max) {
+        public RangeAttribute(int min, int max, string errorMessage) : base(errorMessage) {
             Max = max;
             Min = min;
         }
