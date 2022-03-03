@@ -17,9 +17,7 @@ namespace PswManagerCommands.AbstractCommands {
         /// <inheritdoc/>
         /// </summary>
         public Type GetCommandInputType => typeof(TInput);
-
-        protected abstract IValidationCollection<TInput> AddConditions(IValidationCollection<TInput> collection);
-
+        private IValidator<TInput> validator;
 
         /// <summary>
         /// <inheritdoc/>
@@ -37,6 +35,13 @@ namespace PswManagerCommands.AbstractCommands {
             return RunLogic(input);
         }
 
+        protected abstract CommandResult RunLogic(TInput obj);
+
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        public abstract string GetDescription();
+
         /// <summary>
         /// <inheritdoc/>
         /// <br/>Note: The given input will be cast to <see cref="TInput"/>. You can get <see cref="TInput"/>'s type by calling <see cref="GetCommandInputType"/>.
@@ -46,7 +51,9 @@ namespace PswManagerCommands.AbstractCommands {
         public (bool success, IEnumerable<string> errorMessages) Validate(ICommandInput arguments) {
             TInput input = (TInput)arguments;
             var conditions = AddConditions(new ValidationCollection<TInput>(input)).GetResult();
-            var errorMessages = conditions.Where(x => x.condition is false).Select(x => x.errorMessage);
+            var errors = conditions.Where(x => x.condition is false).Select(x => x.errorMessage);
+            var errorMessages = GetValidator().Validate(input);
+            errorMessages = errorMessages.Concat(errors);
             errorMessages = errorMessages.Concat(ExtraValidation(input) ?? Enumerable.Empty<string>());
             return (errorMessages.Any() == false, errorMessages);
         }
@@ -57,12 +64,21 @@ namespace PswManagerCommands.AbstractCommands {
         /// <param name="arguments"></param>
         protected virtual IReadOnlyList<string> ExtraValidation(TInput obj) { return Array.Empty<string>(); }
 
-        protected abstract CommandResult RunLogic(TInput obj);
+        protected virtual IValidationCollection<TInput> AddConditions(IValidationCollection<TInput> collection) => collection;
+        protected virtual ValidatorBuilder<TInput> AddConditions(ValidatorBuilder<TInput> builder) => builder;
+        protected virtual AutoValidatorBuilder<TInput> AddRules(AutoValidatorBuilder<TInput> builder) => builder;
 
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        public abstract string GetDescription();
+        private IValidator<TInput> GetValidator() {
+            if(validator == null) {
+                var autoValidator = AddRules(new AutoValidatorBuilder<TInput>()).Build();
+
+                validator = AddConditions(new ValidatorBuilder<TInput>())
+                    .AddAutoValidator(autoValidator)
+                    .Build();
+            }
+
+            return validator;
+        }
 
     }
 }
