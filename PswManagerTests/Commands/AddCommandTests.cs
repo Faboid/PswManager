@@ -30,7 +30,7 @@ namespace PswManagerTests.Commands {
         public void AddSuccessfully(string name, string password, string email) {
 
             //arrange
-            var obj = ClassBuilder.Build(addCommand, new List<string> { email, name, password });
+            var obj = ClassBuilder.Build(addCommand, new List<string> { password, name, email});
             bool exists;
             CommandResult result;
 
@@ -49,25 +49,21 @@ namespace PswManagerTests.Commands {
             static object[] NewObj(string errorMessage, string name, string password, string email) 
                 => new object[] { 
                     errorMessage, 
-                    ClassBuilder.Build(new AddCommand(null, null), new List<string> { email, name, password }) 
+                    ClassBuilder.Build(new AddCommand(null, null), new List<string> { password, name, email}) 
                 };
 
+            //this baseError is used by AutoValidator<> for required values.
+            const string baseError = "You must provide a value for";
+
             string existingName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
-            //string validName = "someRandomNonexistentAccountName";
+            string validName = "someRandomNonexistentAccountName";
 
-            //yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
-
-            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null } };
-            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, null, "email@this.it" } };
-            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, "fiehgywightuy", "      " } };
-            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, "", "email@this.com" } };
+            //check for empty/null values
+            yield return NewObj($"{baseError} Name.", "", null, "email@here.com");
+            yield return NewObj($"{baseError} Password.", validName, null, "email@here.com");
+            yield return NewObj($"{baseError} Email.", validName, "rightuewih", "");
 
             yield return NewObj(AddCommand.AccountExistsErrorMessage, existingName, "somevalidPassword", "someValidEmail@email.com");
-
-            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
-            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName } };
-            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "eiwghrywhgi" } };
-            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "tirhtewygh", "email@somewhere.com", "oneTooMany" } };
         }
 
         [Theory]
