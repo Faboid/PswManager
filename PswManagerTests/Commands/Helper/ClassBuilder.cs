@@ -10,6 +10,20 @@ using System.Threading.Tasks;
 namespace PswManagerTests.Commands.Helper {
     internal class ClassBuilder {
 
+        //note: this will crash if given a TCommand whose parent doesn't implement a generic.
+        //It's meant to be used with children that inherit from BaseCommand
+        public static ICommandInput Build<TCommand>(List<string> args) where TCommand : ICommand {
+            try {
+
+                return Build(typeof(TCommand).BaseType.GetGenericArguments()[0], args);
+            } catch (IndexOutOfRangeException) {
+
+                throw new InvalidCastException($"The given type is not usable by this builder. " +
+                    $"Please use the non-generic version of ClassBuilder.Build(). " +
+                    $"{Environment.NewLine}Given Type: {typeof(TCommand).FullName}");
+            }
+        }
+
         public static ICommandInput Build(in ICommand command, List<string> args) {
             return Build(command.GetCommandInputType, args);
         }
