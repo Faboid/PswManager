@@ -2,6 +2,7 @@
 using PswManagerDatabase;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands;
+using PswManagerLibrary.Commands.Validation.Attributes;
 using PswManagerTests.Commands.Helper;
 using PswManagerTests.TestsHelpers;
 using System;
@@ -52,18 +53,15 @@ namespace PswManagerTests.Commands {
                     ClassBuilder.Build(new AddCommand(null, null), new List<string> { password, name, email}) 
                 };
 
-            //this baseError is used by AutoValidator<> for required values.
-            string baseError = "You must provide a value for the";
-
             string existingName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
             string validName = "someRandomNonexistentAccountName";
 
             //check for empty/null values
-            yield return NewObj($"{baseError} name.", "", null, "email@here.com");
-            yield return NewObj($"{baseError} password.", validName, null, "email@here.com");
-            yield return NewObj($"{baseError} email.", validName, "rightuewih", "");
+            yield return NewObj(ErrorReader.GetRequiredError<AddCommand>("Name"), "", null, "email@here.com");
+            yield return NewObj(ErrorReader.GetRequiredError<AddCommand>("Password"), validName, null, "email@here.com");
+            yield return NewObj(ErrorReader.GetRequiredError<AddCommand>("Email"), validName, "rightuewih", "");
 
-            yield return NewObj(AddCommand.AccountExistsErrorMessage, existingName, "somevalidPassword", "someValidEmail@email.com");
+            yield return NewObj(ErrorReader.GetError<AddCommand, VerifyAccountExistenceAttribute>("Name"), existingName, "somevalidPassword", "someValidEmail@email.com");
         }
 
         [Theory]
