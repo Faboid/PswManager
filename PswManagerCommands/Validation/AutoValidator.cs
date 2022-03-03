@@ -53,8 +53,8 @@ namespace PswManagerCommands.Validation {
             var emptyProps = requiredProperties.Where(x => string.IsNullOrEmpty((string)x.GetValue(obj)));
 
             //add error to list
-            foreach(var s in emptyProps) {
-                yield return $"You must provide a value for {s.Name}.";
+            foreach(var prop in emptyProps) {
+                yield return prop.GetCustomAttribute<RequiredAttribute>().GetErrorMessage(prop);
             }
         }
 

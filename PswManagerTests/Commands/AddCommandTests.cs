@@ -53,15 +53,15 @@ namespace PswManagerTests.Commands {
                 };
 
             //this baseError is used by AutoValidator<> for required values.
-            const string baseError = "You must provide a value for";
+            string baseError = "You must provide a value for the";
 
             string existingName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
             string validName = "someRandomNonexistentAccountName";
 
             //check for empty/null values
-            yield return NewObj($"{baseError} Name.", "", null, "email@here.com");
-            yield return NewObj($"{baseError} Password.", validName, null, "email@here.com");
-            yield return NewObj($"{baseError} Email.", validName, "rightuewih", "");
+            yield return NewObj($"{baseError} name.", "", null, "email@here.com");
+            yield return NewObj($"{baseError} password.", validName, null, "email@here.com");
+            yield return NewObj($"{baseError} email.", validName, "rightuewih", "");
 
             yield return NewObj(AddCommand.AccountExistsErrorMessage, existingName, "somevalidPassword", "someValidEmail@email.com");
         }

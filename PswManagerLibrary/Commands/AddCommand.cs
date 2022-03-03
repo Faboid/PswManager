@@ -42,15 +42,15 @@ namespace PswManagerLibrary.Commands {
         public class Args : ICommandInput {
 
             [VerifyAccountExistence(false, AccountExistsErrorMessage)]
-            [Required]
+            [Required("name")]
             [Request("Name", "Insert the name of the account.")]
             public string Name { get; set; }
 
-            [Required]
+            [Required("password")]
             [Request("Password", "Insert password.")]
             public string Password { get; set; }
 
-            [Required]
+            [Required("email")]
             [Request("Email", "Insert email.")]
             public string Email { get; set; }
 
