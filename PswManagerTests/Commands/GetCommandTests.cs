@@ -2,6 +2,7 @@
 using PswManagerCommands.Validation;
 using PswManagerDatabase;
 using PswManagerLibrary.Commands;
+using PswManagerLibrary.Commands.Validation.Attributes;
 using PswManagerLibrary.Extensions;
 using PswManagerTests.Commands.Helper;
 using PswManagerTests.TestsHelpers;
@@ -43,20 +44,13 @@ namespace PswManagerTests.Commands {
                     ClassBuilder.Build<GetCommand>(new List<string> { name })
                 };
 
-            string validName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            string missingNameMessage = ErrorReader.GetRequiredError<GetCommand>("Name");
 
-            //yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
+            yield return NewObj(missingNameMessage, "");
+            yield return NewObj(missingNameMessage, null);
 
-            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null } };
-            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "" } };
-            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "     " } };
+            yield return NewObj(ErrorReader.GetError<GetCommand, VerifyAccountExistenceAttribute>("Name"), "fakeAccountName");
 
-            yield return NewObj(new ValidationCollection<object>(null).InexistentAccountMessage(), "fakeAccountName");
-
-            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
-            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "eiwghrywhgi" } };
-            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "tirhtewygh", "email@somewhere.com" } };
-            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "tirhtewygh", "email@somewhere.com", "something" } };
         }
 
         [Theory]

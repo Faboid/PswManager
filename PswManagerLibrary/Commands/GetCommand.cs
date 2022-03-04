@@ -4,12 +4,13 @@ using PswManagerCommands.Validation;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;
 using PswManagerLibrary.Commands.ArgsModels;
+using PswManagerLibrary.Commands.Validation.ValidationLogic;
 using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.Extensions;
 using System;
 
 namespace PswManagerLibrary.Commands {
-    public class GetCommand : BaseCommand<AccountName> {
+    public class GetCommand : BaseCommand<GetCommandArgs> {
 
         private readonly IDataReader dataReader;
         private readonly ICryptoAccount cryptoAccount;
@@ -19,18 +20,7 @@ namespace PswManagerLibrary.Commands {
             this.cryptoAccount = cryptoAccount;
         }
 
-        public override string GetDescription() {
-            return "Gets the requested command from the saved ones.";
-        }
-
-        protected override IValidationCollection<AccountName> AddConditions(IValidationCollection<AccountName> collection) {
-
-            collection.AddAccountShouldExistCondition(0, collection.GetObject().Name, dataReader);
-
-            return collection;
-        }
-
-        protected override CommandResult RunLogic(AccountName arguments) {
+        protected override CommandResult RunLogic(GetCommandArgs arguments) {
             ConnectionResult<AccountModel> result = dataReader.GetAccount(arguments.Name);
 
             if(result.Success) {
@@ -41,5 +31,13 @@ namespace PswManagerLibrary.Commands {
                 return new CommandResult(result.ErrorMessage, false);
             }
         }
+
+        public override string GetDescription() {
+            return "Gets the requested command from the saved ones.";
+        }
+
+        protected override AutoValidatorBuilder<GetCommandArgs> AddRules(AutoValidatorBuilder<GetCommandArgs> builder) => builder
+            .AddRule(new VerifyAccountExistenceRule(dataReader));
+
     }
 }
