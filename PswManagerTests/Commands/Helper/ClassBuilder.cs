@@ -18,9 +18,7 @@ namespace PswManagerTests.Commands.Helper {
                 return Build(typeof(TCommand).BaseType.GetGenericArguments()[0], args);
             } catch (IndexOutOfRangeException) {
 
-                throw new InvalidCastException($"The given type is not usable by this builder. " +
-                    $"Please use the non-generic version of ClassBuilder.Build(). " +
-                    $"{Environment.NewLine}Given Type: {typeof(TCommand).FullName}");
+                throw ExceptionsFactory.CreateInvCastException<TCommand>("this builder", "ClassBuilder.Build()");
             }
         }
 
