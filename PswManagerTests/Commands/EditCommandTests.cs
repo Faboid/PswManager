@@ -30,7 +30,7 @@ namespace PswManagerTests.Commands {
                 => new object[] {
                     name,
                     newName ?? name,
-                    ClassBuilder.Build(new EditCommand(null, null), new List<string> { newPassword, newName, newEmail, name }),
+                    ClassBuilder.Build<EditCommand>(new List<string> { newPassword, newName, newEmail, name }),
                     expected
                 };
 
@@ -73,7 +73,7 @@ namespace PswManagerTests.Commands {
             static object[] NewObj(string errorMessage, string name, string newName, string newPassword, string newEmail)
                 => new object[] {
                     errorMessage,
-                    ClassBuilder.Build(new EditCommand(null, null), new List<string> { newPassword, newName, newEmail, name })
+                    ClassBuilder.Build<EditCommand>(new List < string > { newPassword, newName, newEmail, name })
                 };
             //string validName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
 

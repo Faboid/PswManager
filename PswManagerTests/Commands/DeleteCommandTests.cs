@@ -34,7 +34,7 @@ namespace PswManagerTests.Commands {
             //arrange
             TestsHelper.SetUpDefault();
             string name = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
-            var obj = ClassBuilder.Build(delCommand, new List<string> { name });
+            var obj = ClassBuilder.Build<DeleteCommand>(new List<string> { name });
 
             //act
             bool exist = dataHelper.AccountExist(name);
@@ -50,7 +50,7 @@ namespace PswManagerTests.Commands {
             static object[] NewObj(string errorMessage, string name)
                 => new object[] {
                     errorMessage,
-                    ClassBuilder.Build(new DeleteCommand(null, null), new List<string> { name })
+                    ClassBuilder.Build<DeleteCommand>(new List<string> { name })
                 };
 
             //string validName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);

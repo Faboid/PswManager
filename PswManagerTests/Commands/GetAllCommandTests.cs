@@ -54,7 +54,7 @@ namespace PswManagerTests.Commands {
             //arrange
             TestsHelper.SetUpDefault();
             CommandResult result;
-            var obj = ClassBuilder.Build(getAllCommand, new List<string>() { string.Join(' ', input) });
+            var obj = ClassBuilder.Build<GetAllCommand>(new List<string>() { string.Join(' ', input) });
 
             //act
             result = getAllCommand.Run(obj);
@@ -80,7 +80,7 @@ namespace PswManagerTests.Commands {
             //arrange
             bool valid;
             CommandResult result;
-            var obj = ClassBuilder.Build(getAllCommand, new List<string>() { string.Join(' ', args) });
+            var obj = ClassBuilder.Build<GetAllCommand>(new List<string>() { string.Join(' ', args) });
 
             //act
             valid = getAllCommand.Validate(obj).success;

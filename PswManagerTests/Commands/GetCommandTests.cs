@@ -26,7 +26,7 @@ namespace PswManagerTests.Commands {
 
             //arrange
             CommandResult result;
-            var obj = ClassBuilder.Build(getCommand, new List<string>() { TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name) });
+            var obj = ClassBuilder.Build<GetCommand>(new List<string>() { TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name) });
 
             //act
             result = getCommand.Run(obj);
@@ -40,7 +40,7 @@ namespace PswManagerTests.Commands {
             static object[] NewObj(string errorMessage, string name)
                 => new object[] {
                     errorMessage,
-                    ClassBuilder.Build(new DeleteCommand(null, null), new List<string> { name })
+                    ClassBuilder.Build<GetCommand>(new List<string> { name })
                 };
 
             string validName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);

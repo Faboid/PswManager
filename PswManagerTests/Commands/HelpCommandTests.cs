@@ -43,7 +43,7 @@ namespace PswManagerTests.Commands {
 
             //arrange
             string expectedToContain = string.Join("  ", dicCommands.Keys);
-            var obj = ClassBuilder.Build(helpCommand, new List<string>());
+            var obj = ClassBuilder.Build<HelpCommand>(new List<string>());
 
             //act
             var result = helpCommand.Run(obj);
@@ -59,7 +59,7 @@ namespace PswManagerTests.Commands {
 
             //arrange
             string expectedDescription = mockedCommand.GetDescription();
-            var obj = ClassBuilder.Build(helpCommand, new List<string>() { "mOcKed" });
+            var obj = ClassBuilder.Build<HelpCommand>(new List<string>() { "mOcKed" });
 
             //act
             var result = helpCommand.Run(obj);
@@ -77,7 +77,7 @@ namespace PswManagerTests.Commands {
             Dictionary<string, ICommand> commands = new();
             HelpCommand helpCommand = new(commands);
             string expected = "There has been an error: the command list is empty.";
-            var obj = ClassBuilder.Build(helpCommand, new List<string>());
+            var obj = ClassBuilder.Build<HelpCommand>(new List<string>());
 
             //act
             var result = helpCommand.Run(obj);
@@ -93,7 +93,7 @@ namespace PswManagerTests.Commands {
             static object[] NewObj(string errorMessage, string commandName)
                 => new object[] {
                     errorMessage,
-                    ClassBuilder.Build(new HelpCommand(null), new List<string> { commandName })
+                    ClassBuilder.Build<HelpCommand>(new List<string> { commandName })
                 };
 
             //yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };

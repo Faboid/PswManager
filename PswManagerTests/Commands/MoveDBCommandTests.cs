@@ -43,7 +43,7 @@ namespace PswManagerTests.Commands {
             static object[] NewObj(string errorMessage, string path)
                 => new object[] {
                     errorMessage,
-                    ClassBuilder.Build(new MoveDatabaseCommand(null), new List<string> { path })
+                    ClassBuilder.Build<MoveDatabaseCommand>(new List<string> { path })
                 };
 
             //string validPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "FillerFolder");
