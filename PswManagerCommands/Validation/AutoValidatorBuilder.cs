@@ -21,6 +21,7 @@ namespace PswManagerCommands.Validation {
         }
 
         public AutoValidatorBuilder<TObj> AddRule(ValidationRule validationLogic) {
+            //todo - add a check to make sure ValidationRule.GetDataType's type is the same as the properties found below.
             var props = properties.Where(x => x.GetCustomAttribute(validationLogic.GetAttributeType) != null).ToList();
             customValidators.Add((validationLogic, props));
             return this;
