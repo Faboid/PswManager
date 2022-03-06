@@ -18,32 +18,34 @@ namespace PswManagerTests.Commands {
             Mock<ICommand> _mockedTwoCommand = new();
 
             string mockedCommandDescription = "This command is being mocked and doesn't have any actual functionality.";
-            string mockedTwoCommandDescription = "This command is also being mocked. The only difference with the first is that the argument it requests is optional.";
 
             _mockedCommand.Setup(x => x.GetDescription()).Returns(mockedCommandDescription);
-            _mockedTwoCommand.Setup(x => x.GetDescription()).Returns(mockedTwoCommandDescription);
 
             Dictionary<string, ICommand> commands = new();
             commands.Add("mocked", _mockedCommand.Object);
-            commands.Add("mockedtwo", _mockedTwoCommand.Object);
 
             helpCommand = new HelpCommand(commands);
             mockedCommand = _mockedCommand.Object;
-            mockedTwoCommand = _mockedTwoCommand.Object;
             dicCommands = commands;
         }
 
         readonly ICommand mockedCommand;
-        readonly ICommand mockedTwoCommand;
         readonly IReadOnlyDictionary<string, ICommand> dicCommands;
         readonly HelpCommand helpCommand;
 
-        [Fact]
-        public void GetGenericHelpCorrectly() {
+        public static IEnumerable<object[]> GetGenericHelpCorrectlyData() {
+            yield return new object[] { new List<string>() { } };
+            yield return new object[] { new List<string>() { "" } };
+            yield return new object[] { new List<string>() { "   " } };
+        }
+
+        [Theory]
+        [MemberData(nameof(GetGenericHelpCorrectlyData))]
+        public void GetGenericHelpCorrectly(List<string> list) {
 
             //arrange
             string expectedToContain = string.Join("  ", dicCommands.Keys);
-            var obj = ClassBuilder.Build<HelpCommand>(new List<string>());
+            var obj = ClassBuilder.Build<HelpCommand>(list.ToList());
 
             //act
             var result = helpCommand.Run(obj);
@@ -88,29 +90,12 @@ namespace PswManagerTests.Commands {
 
         }
 
-
-        public static IEnumerable<object[]> ExpectedValidationFailuresData() {
-            static object[] NewObj(string errorMessage, string commandName)
-                => new object[] {
-                    errorMessage,
-                    ClassBuilder.Build<HelpCommand>(new List<string> { commandName })
-                };
-
-            //yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
-
-            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null } };
-            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "" } };
-
-            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { "mocked", "extravalue" } };
-
-            yield return NewObj(HelpCommand.CommandInexistentErrorMessage, "nonexistentcommand");
-        }
-
-        [Theory]
-        [MemberData(nameof(ExpectedValidationFailuresData))]
-        public void ExpectedValidationFailures(string expectedErrorMessage, ICommandInput args) {
+        [Fact]
+        public void Failure_GivenCommandDoesNotExist() {
 
             //arrange
+            var args = ClassBuilder.Build<HelpCommand>(new List<string>() { "nonexistentcommand" });
+            string expectedErrorMessage = HelpCommand.CommandInexistentErrorMessage;
             bool valid;
             CommandResult result;
 
