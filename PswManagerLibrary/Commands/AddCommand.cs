@@ -3,16 +3,13 @@ using PswManagerCommands;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;
 using PswManagerLibrary.Cryptography;
-using PswManagerLibrary.Commands.AutoCommands.ArgsModels;
 using PswManagerCommands.AbstractCommands;
-using PswManagerLibrary.UIConnection.Attributes;
-using PswManagerCommands.Validation.Attributes;
-using PswManagerLibrary.Commands.Validation.Attributes;
 using PswManagerLibrary.Commands.Validation.ValidationLogic;
+using PswManagerLibrary.Commands.ArgsModels;
 
 namespace PswManagerLibrary.Commands {
 
-    public class AddCommand : BaseCommand<AddCommand.Args> {
+    public class AddCommand : BaseCommand<AddCommandArgs> {
 
         private readonly IDataCreator dataCreator;
         private readonly ICryptoAccount cryptoAccount;
@@ -23,7 +20,7 @@ namespace PswManagerLibrary.Commands {
             this.cryptoAccount = cryptoAccount;
         }
 
-        protected override CommandResult RunLogic(Args obj) {
+        protected override CommandResult RunLogic(AddCommandArgs obj) {
 
             (obj.Password, obj.Email) = cryptoAccount.Encrypt(obj.Password, obj.Email);
             var account = new AccountModel(obj.Name, obj.Password, obj.Email);
@@ -36,25 +33,8 @@ namespace PswManagerLibrary.Commands {
             return "This command saves an account that can be later retrieved.";
         }
 
-        protected override AutoValidatorBuilder<Args> AddRules(AutoValidatorBuilder<Args> builder) => builder
+        protected override AutoValidatorBuilder<AddCommandArgs> AddRules(AutoValidatorBuilder<AddCommandArgs> builder) => builder
             .AddRule(new VerifyAccountExistenceRule(dataCreator));
-
-        public class Args : ICommandInput {
-
-            [VerifyAccountExistence(false, AccountExistsErrorMessage)]
-            [Required("name")]
-            [Request("Name", "Insert the name of the account.")]
-            public string Name { get; set; }
-
-            [Required("password")]
-            [Request("Password", "Insert password.")]
-            public string Password { get; set; }
-
-            [Required("email")]
-            [Request("Email", "Insert email.")]
-            public string Email { get; set; }
-
-        }
 
     }
 }
