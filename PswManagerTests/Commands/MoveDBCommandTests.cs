@@ -46,19 +46,11 @@ namespace PswManagerTests.Commands {
                     ClassBuilder.Build<MoveDatabaseCommand>(new List<string> { path })
                 };
 
-            //string validPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "FillerFolder");
-
-            //yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
-
-            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "" } };
-
             yield return NewObj(MoveDatabaseCommand.InexistentDirectoryErrorMessage, "NotAValidPath");
-            yield return NewObj(MoveDatabaseCommand.InexistentDirectoryErrorMessage, "");
 
-            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
-            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validPath, "eiwghrywhgi" } };
-            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validPath, "tirhtewygh", "email@somewhere.com" } };
-            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validPath, "tirhtewygh", "email@somewhere.com", "somevalue" } };
+            yield return NewObj(ErrorReader.GetRequiredError<MoveDatabaseCommand>("Path"), null);
+            yield return NewObj(ErrorReader.GetRequiredError<MoveDatabaseCommand>("Path"), "");
+
         }
 
         [Theory]
