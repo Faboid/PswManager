@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 
 namespace PswManagerLibrary.Commands {
-    public class HelpCommand : BaseCommand<HelpCommand.CommandName> {
+    public class HelpCommand : BaseCommand<HelpCommand.Args> {
 
         private readonly IReadOnlyDictionary<string, ICommand> commands;
         public const string CommandInexistentErrorMessage = "The requested command doesn't exist. For a list of commands, run [help].";
@@ -15,7 +15,7 @@ namespace PswManagerLibrary.Commands {
             this.commands = commands;
         }
 
-        protected override CommandResult RunLogic(CommandName arguments) {
+        protected override CommandResult RunLogic(Args arguments) {
             if(string.IsNullOrWhiteSpace(arguments.CmdName)) {
                 if(commands.Count == 0) {
                     return new CommandResult("There has been an error: the command list is empty.", false);
@@ -37,12 +37,12 @@ namespace PswManagerLibrary.Commands {
             return "If it's used without arguments, provides a list of commands. If it gives a command name as an argument, it displays the description and syntax of that command.";
         }
 
-        protected override ValidatorBuilder<CommandName> AddConditions(ValidatorBuilder<CommandName> builder) => builder
+        protected override ValidatorBuilder<Args> AddConditions(ValidatorBuilder<Args> builder) => builder
             .AddCondition(new IndexHelper(0),
                 x => string.IsNullOrWhiteSpace(x.CmdName) || commands.ContainsKey(x.CmdName.ToLowerInvariant()),
                 CommandInexistentErrorMessage);
 
-        public class CommandName : ICommandInput {
+        public class Args : ICommandInput {
 
             [Request("Command Name", "Leave empty to get a list of commands. Insert a command name to get help for a specific command.", true)]
             public string CmdName { get; set; }
