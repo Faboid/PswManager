@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
+//todo - split this file into multiple with each one class/interface
+[assembly:InternalsVisibleTo("PswManagerTests")]
 namespace PswManagerCommands.Validation {
     public class ValidatorBuilder<T> {
 
         readonly List<ICondition<T>> conditions = new();
         readonly List<IAutoValidator<T>> autoValidators = new();
+
+        internal ValidatorBuilder() { }
 
         public ValidatorBuilder<T> AddCondition(IndexHelper index, Func<T, bool> conditionFunction, string errorMessage) {
             conditions.Add(new Condition<T>(index, conditionFunction, errorMessage));
@@ -83,7 +86,7 @@ namespace PswManagerCommands.Validation {
 
     }
 
-    public class Validator<T> : IValidator<T> {
+    internal class Validator<T> : IValidator<T> {
 
         internal Validator(IReadOnlyCollection<ICondition<T>> conditions, List<IAutoValidator<T>> autoValidator) {
             this.conditions = conditions;

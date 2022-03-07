@@ -13,7 +13,7 @@ namespace PswManagerCommands.Validation {
         IEnumerable<string> Validate(T obj);
     }
 
-    public class AutoValidator<T> : IAutoValidator<T> {
+    internal class AutoValidator<T> : IAutoValidator<T> {
 
         readonly IReadOnlyList<PropertyInfo> requiredProperties;
         readonly List<(ValidationRule validator, List<PropertyInfo> props)> customRules = new();
