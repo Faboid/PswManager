@@ -1,5 +1,6 @@
 ﻿using PswManagerCommands.Validation.Attributes;
 using PswManagerCommands.Validation.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -20,14 +21,29 @@ namespace PswManagerCommands.Validation {
         }
 
         public AutoValidatorBuilder<TObj> AddRule(ValidationRule validationLogic) {
-            //todo - add a check to make sure ValidationRule.GetDataType's type is the same as the properties found below.
             var props = properties.Where(x => x.GetCustomAttribute(validationLogic.GetAttributeType) != null).ToList();
+            props.ForEach(x => ValidateProperty(x, validationLogic));
             customValidators.Add((validationLogic, props));
             return this;
         }
 
         public IAutoValidator<TObj> Build() {
             return new AutoValidator<TObj>(requiredProperties, customValidators);
+        }
+
+        /// <summary>
+        /// This method makes sure the attributes are placed in the correct data types and will throw if they're not.
+        /// </summary>
+        private void ValidateProperty(PropertyInfo property, ValidationRule validationLogic) {
+
+            if(property.PropertyType == validationLogic.GetDataType) {
+                return;
+            }
+
+            throw new InvalidCastException(
+                $"The object {nameof(TObj)} uses the attribute {validationLogic.GetAttributeType} for property {property.Name} of type {property.PropertyType}, " +
+                $"but the ValidationRule given only supports the type {validationLogic.GetDataType}."
+                );
         }
 
     }
