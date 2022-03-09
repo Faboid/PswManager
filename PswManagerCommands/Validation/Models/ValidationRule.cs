@@ -1,9 +1,5 @@
 ﻿using PswManagerCommands.Validation.Attributes;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PswManagerCommands.Validation.Models {
 
@@ -25,7 +21,7 @@ namespace PswManagerCommands.Validation.Models {
             if(GetAttributeType != attribute.GetType()) {
                 throw new ArgumentException($"The given attribute is of the type {attribute.GetType()}, but this ValidationRule supports only {GetAttributeType}.", nameof(attribute));
             }
-            if(GetDataType != value.GetType()) {
+            if(value is not null && GetDataType != value.GetType()) {
                 throw new ArgumentException($"The given value is of the type {value.GetType()}, but this ValidationRule supports only {GetDataType}.", nameof(value));
             }
 
