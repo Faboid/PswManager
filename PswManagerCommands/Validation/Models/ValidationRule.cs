@@ -23,10 +23,10 @@ namespace PswManagerCommands.Validation.Models {
 
         public bool Validate(RuleAttribute attribute, object value) {
             if(GetAttributeType != attribute.GetType()) {
-                throw new ArgumentException("The given attribute is not the same as the one given to the constructor.", nameof(attribute));
+                throw new ArgumentException($"The given attribute is of the type {attribute.GetType()}, but this ValidationRule supports only {GetAttributeType}.", nameof(attribute));
             }
             if(GetDataType != value.GetType()) {
-                throw new ArgumentException("The given value is not the same as the one given to the constructor.", nameof(value));
+                throw new ArgumentException($"The given value is of the type {value.GetType()}, but this ValidationRule supports only {GetDataType}.", nameof(value));
             }
 
             return InnerLogic(attribute, value);
