@@ -3,6 +3,7 @@ using PswManagerCommands.Validation;
 using PswManagerDatabase;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands;
+using PswManagerLibrary.Commands.Validation.Attributes;
 using PswManagerLibrary.Extensions;
 using PswManagerLibrary.Storage;
 using PswManagerTests.Commands.Helper;
@@ -75,29 +76,14 @@ namespace PswManagerTests.Commands {
                     errorMessage,
                     ClassBuilder.Build<EditCommand>(new List < string > { newPassword, newName, newEmail, name })
                 };
-            //string validName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
 
-            //yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
+            string validName = TestsHelper.DefaultValues.GetValue(3, DefaultValues.TypeValue.Name);
+            string validName2 = TestsHelper.DefaultValues.GetValue(4, DefaultValues.TypeValue.Name);
 
-            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null } };
-            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "", "name:newvalue" } };
-            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "     ", "password:tiehwgfuh" } };
-            //yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, "password:tiehwgfuh", null } };
-
+            yield return NewObj(ErrorReader.GetRequiredError<EditCommand>("Name"), null, "someValue", "hrhr", "");
             yield return NewObj(new ValidationCollection<object>(null).InexistentAccountMessage(), "fakeAccountName", null, "newPasshere", null);
-
-            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
-            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName } };
-            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "password:newPassword1", "email:email@somewhere.com", "name:newName", "password:newvalidPassword" } };
-
-            //yield return new object[] { EditCommand.InvalidSyntaxMessage, new string[] { validName, "newPassword" } };
-            //yield return new object[] { EditCommand.InvalidSyntaxMessage, new string[] { validName, "pass@eqwwr" } };
-
-            //yield return new object[] { EditCommand.InvalidKeyFound, new string[] { validName, "password:qrqrewqe", "nam:newname" } };
-            //yield return new object[] { EditCommand.InvalidKeyFound, new string[] { validName, "name:newname", "password:qweqwed" , "ema:email@thisone.com"} };
-
-            //yield return new object[] { EditCommand.DuplicateKeyFound, new string[] { validName, "email:email@somewhere.com", "email:someEma@here.com" } };
-            //yield return new object[] { EditCommand.DuplicateKeyFound, new string[] { validName, "password:newPassword1", "email:email@somewhere.com", "password:newvalidPassword" } };
+            yield return NewObj(ErrorReader.GetError<EditCommand, VerifyAccountExistenceAttribute>("NewName"), validName, validName2, null, null);
+            
         }
 
         [Theory]

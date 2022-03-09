@@ -4,11 +4,12 @@ using PswManagerCommands.Validation;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;
 using PswManagerLibrary.Commands.AutoCommands.ArgsModels;
+using PswManagerLibrary.Commands.Validation.ValidationLogic;
 using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.Extensions;
 
 namespace PswManagerLibrary.Commands {
-    public sealed class EditCommand : BaseCommand<EditAccountModel> {
+    public sealed class EditCommand : BaseCommand<EditCommandArgs> {
 
         private readonly IDataEditor dataEditor;
         private readonly ICryptoAccount cryptoAccount;
@@ -18,19 +19,7 @@ namespace PswManagerLibrary.Commands {
             this.cryptoAccount = cryptoAccount;
         }
 
-        public override string GetDescription() {
-            return "Edits an existing account with the provided arguments.";
-        }
-
-        protected override IValidationCollection<EditAccountModel> AddConditions(IValidationCollection<EditAccountModel> collection) {
-
-            //todo - check if at least one of the "new" properties have a value
-            collection.AddAccountShouldExistCondition(0, collection.GetObject().Name, dataEditor);
-
-            return collection;
-        }
-
-        protected override CommandResult RunLogic(EditAccountModel arguments) {
+        protected override CommandResult RunLogic(EditCommandArgs arguments) {
 
             AccountModel newValues = new();
             newValues.Name = arguments.NewName;
@@ -45,6 +34,13 @@ namespace PswManagerLibrary.Commands {
 
             return new CommandResult("The account has been edited successfully.", true);
         }
+
+        public override string GetDescription() {
+            return "Edits an existing account with the provided arguments.";
+        }
+
+        protected override AutoValidatorBuilder<EditCommandArgs> AddRules(AutoValidatorBuilder<EditCommandArgs> builder) => builder
+            .AddRule(new VerifyAccountExistenceRule(dataEditor));
 
     }
 }
