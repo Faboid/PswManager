@@ -18,16 +18,16 @@ namespace PswManagerDatabase.DataAccess.TextFileConnHelper {
 
             using(var reader = new StreamReader(paths.AccountsFilePath)) {
                 string current;
-                while((current = reader.ReadLine()) != name) {
-                    position++;
-
-                    if(current is null) {
-                        return null;
+                while((current = reader.ReadLine()) != null) {
+                    if(current == name) {
+                        return position;
                     }
+                    position++;
                 }
             }
 
-            return position;
+            //didn't find any match
+            return null;
         }
 
         internal bool AccountExist(string name) => File.Exists(paths.AccountsFilePath) && SearchByName(name) != null;
