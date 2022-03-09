@@ -34,7 +34,7 @@ namespace PswManagerLibrary.Commands {
         }
 
         protected override AutoValidatorBuilder<AddCommandArgs> AddRules(AutoValidatorBuilder<AddCommandArgs> builder) => builder
-            .AddRule(new VerifyAccountExistenceRule(dataCreator));
-
+            .AddRule<VerifyAccountExistenceRule>(dataCreator);
+        
     }
 }
