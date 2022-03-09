@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using PswManagerHelperMethods;
 
 [assembly:InternalsVisibleTo("PswManagerTests")]
 namespace PswManagerCommands.Validation {
@@ -29,6 +30,30 @@ namespace PswManagerCommands.Validation {
 
         public AutoValidatorBuilder<TObj> AddRule<TValidationRule>() where TValidationRule : ValidationRule, new() {
             var validationLogic = new TValidationRule();
+            return AddRule(validationLogic);
+        }
+
+        /// <summary>
+        /// Note: this overload is significantly slower than the others and has less type safety. 
+        /// <br/>It's been implemented for learning purposes—if you require type-safety and performance, 
+        /// use the other AddRule() overloads.
+        /// </summary>
+        /// <typeparam name="TValidationRule">The type of ValidationRule.</typeparam>
+        /// <param name="args">The arguments of ANY constructor of the given <typeparamref name="TValidationRule"/> type. 
+        /// Will throw an <see cref="ArgumentException"/> if there isn't an appropriate constructor.</param>
+        /// <returns>This instance of AutoValidatorBuilder.</returns>
+        /// <exception cref="ArgumentException">Thrown if the given <paramref name="args"/> do not respect any constructor of <typeparamref name="TValidationRule"/></exception>
+        public AutoValidatorBuilder<TObj> AddRule<TValidationRule>(params object[] args) where TValidationRule : ValidationRule {
+            var argTypes = args.Select(x => x.GetType()).ToArray();
+            var constructor = typeof(TValidationRule).GetConstructor(argTypes);
+
+            if(constructor == null) {
+                throw new ArgumentException(
+                    $"The arguments given ({argTypes.Select(x => x.Name).JoinStrings(", ")}) to AddRule<TValidationRule>(params object[] args)" +
+                    $"do not respect any constructor of the given TValidationRule type({typeof(TValidationRule)}).", nameof(args));
+            }
+
+            var validationLogic = (ValidationRule)Activator.CreateInstance(typeof(TValidationRule), args);
             return AddRule(validationLogic);
         }
 
