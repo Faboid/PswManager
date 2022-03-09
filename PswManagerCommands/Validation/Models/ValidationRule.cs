@@ -29,7 +29,14 @@ namespace PswManagerCommands.Validation.Models {
                 throw new ArgumentException($"The given value is of the type {value.GetType()}, but this ValidationRule supports only {GetDataType}.", nameof(value));
             }
 
-            return InnerLogic(attribute, value);
+            //As this is only for validation, the exceptions thrown from here shouldn't be fatal.
+            //InnerLogic should NOT have any logic outside of validation.
+            try {
+                return InnerLogic(attribute, value);
+            }
+            catch {
+                return false;
+            }
         }
 
         protected abstract bool InnerLogic(RuleAttribute attribute, object value);
