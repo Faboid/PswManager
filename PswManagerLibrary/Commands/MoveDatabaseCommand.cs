@@ -17,19 +17,13 @@ namespace PswManagerLibrary.Commands {
             this.paths = paths;
         }
 
-        public override string GetDescription() {
-            return "Changes the location where the accounts are stored. The given path must lead to an existing folder.";
-        }
-
-        //protected override IValidationCollection<Args> AddConditions(IValidationCollection<Args> collection) {
-        //    collection.Add(0, Directory.Exists(collection.GetObject().Path), InexistentDirectoryErrorMessage);
-
-        //    return collection;
-        //}
-
         protected override CommandResult RunLogic(Args arguments) {
             paths.MoveMain(arguments.Path);
             return new CommandResult("The database has been moved successfully.", true);
+        }
+
+        public override string GetDescription() {
+            return "Changes the location where the accounts are stored. The given path must lead to an existing folder.";
         }
 
         protected override ValidatorBuilder<Args> AddConditions(ValidatorBuilder<Args> builder) => builder
