@@ -48,9 +48,8 @@ namespace PswManagerLibrary.Commands {
         }
 
         protected override AutoValidatorBuilder<GetAllCommandArgs> AddRules(AutoValidatorBuilder<GetAllCommandArgs> builder) => builder
-            .AddRule(new ValidValuesRule())
-            .AddRule(new NoDuplicateValuesRule());
-
+            .AddRule<ValidValuesRule>()
+            .AddRule<NoDuplicateValuesRule>();
 
         private AccountModel Decrypt(AccountModel account) {
             (account.Password, account.Email) = cryptoAccount.Decrypt(account.Password, account.Email);

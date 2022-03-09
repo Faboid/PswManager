@@ -27,6 +27,11 @@ namespace PswManagerCommands.Validation {
             return this;
         }
 
+        public AutoValidatorBuilder<TObj> AddRule<TValidationRule>() where TValidationRule : ValidationRule, new() {
+            var validationLogic = new TValidationRule();
+            return AddRule(validationLogic);
+        }
+
         public IAutoValidator<TObj> Build() {
             return new AutoValidator<TObj>(requiredProperties, customValidators);
         }
