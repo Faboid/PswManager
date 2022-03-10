@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace PswManagerCommands.Validation {
+namespace PswManagerCommands.Validation.Validators {
 
     internal class AutoValidator<T> : IAutoValidator<T> {
 

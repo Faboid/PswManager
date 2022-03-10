@@ -1,11 +1,9 @@
-﻿using PswManagerCommands.Validation;
-using PswManagerCommands.Validation.Attributes;
+﻿using PswManagerCommands.Validation.Attributes;
+using PswManagerCommands.Validation.Builders;
 using PswManagerCommands.Validation.Models;
+using PswManagerCommands.Validation.Validators;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Validation {

@@ -1,9 +1,11 @@
-﻿using System;
+﻿using PswManagerCommands.Validation.Models;
+using PswManagerCommands.Validation.Validators;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-[assembly:InternalsVisibleTo("PswManagerTests")]
-namespace PswManagerCommands.Validation {
+[assembly: InternalsVisibleTo("PswManagerTests")]
+namespace PswManagerCommands.Validation.Builders {
     public class ValidatorBuilder<T> {
 
         readonly List<ICondition<T>> conditions = new();

@@ -6,9 +6,10 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using PswManagerHelperMethods;
+using PswManagerCommands.Validation.Validators;
 
-[assembly:InternalsVisibleTo("PswManagerTests")]
-namespace PswManagerCommands.Validation {
+[assembly: InternalsVisibleTo("PswManagerTests")]
+namespace PswManagerCommands.Validation.Builders {
 
     public class AutoValidatorBuilder<TObj> {
 

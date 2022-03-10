@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PswManagerCommands.Validation {
+namespace PswManagerCommands.Validation.Models {
     public class Condition<T> : ICondition<T> {
 
         public Condition(IndexHelper index, Func<T, bool> logic, string errorMessage) {
