@@ -2,6 +2,7 @@
 using PswManagerCommands.Validation;
 using PswManagerDatabase;
 using PswManagerLibrary.Commands;
+using PswManagerTests.Commands.Helper;
 using PswManagerTests.TestsHelpers;
 using System;
 using System.Collections.Generic;
@@ -53,9 +54,10 @@ namespace PswManagerTests.Commands {
             //arrange
             TestsHelper.SetUpDefault();
             CommandResult result;
+            var obj = ClassBuilder.Build<GetAllCommand>(new List<string>() { string.Join(' ', input) });
 
             //act
-            result = getAllCommand.Run(input);
+            result = getAllCommand.Run(obj);
 
             //assert
             Assert.Equal(string.Join(Environment.NewLine, expectedValues), result.QueryReturnValue);
@@ -64,8 +66,8 @@ namespace PswManagerTests.Commands {
 
         public static IEnumerable<object[]> ExpectedValidationFailuresData() {
 
-            yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { "defaultName1", "tirhtewygh", "email@somewhere.com", "something" } };
+            //yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
+            //yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { "defaultName1", "tirhtewygh", "email@somewhere.com", "something" } };
 
             yield return new object[] { GetAllCommand.InexistentKeyErrorMessage, new string[] { "fakeKey", "names" } };
             yield return new object[] { GetAllCommand.DuplicateKeyErrorMessage, new string[] { "names", "names", "passwords" } };
@@ -78,10 +80,11 @@ namespace PswManagerTests.Commands {
             //arrange
             bool valid;
             CommandResult result;
+            var obj = ClassBuilder.Build<GetAllCommand>(new List<string>() { string.Join(' ', args) });
 
             //act
-            valid = getAllCommand.Validate(args).success;
-            result = getAllCommand.Run(args);
+            valid = getAllCommand.Validate(obj).success;
+            result = getAllCommand.Run(obj);
 
             //assert
             Assert.False(valid);

@@ -5,6 +5,8 @@ using PswManagerLibrary.Storage;
 using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.Commands;
 using PswManagerDatabase;
+using System.Collections.Generic;
+using PswManagerTests.Commands.Helper;
 
 namespace PswManagerTests.TestsHelpers {
 
@@ -54,12 +56,12 @@ namespace PswManagerTests.TestsHelpers {
             //creates three default entries
             int entries = DefaultValues.values.Count;
             for(int i = 0; i < entries; i++) {
-                addCommand.Run( new string[] {
+                var name = DefaultValues.GetValue(i, DefaultValues.TypeValue.Name);
+                var password = DefaultValues.GetValue(i, DefaultValues.TypeValue.Password);
+                var email = DefaultValues.GetValue(i, DefaultValues.TypeValue.Email);
 
-                    DefaultValues.GetValue(i, DefaultValues.TypeValue.Name),
-                    DefaultValues.GetValue(i, DefaultValues.TypeValue.Password),
-                    DefaultValues.GetValue(i, DefaultValues.TypeValue.Email)
-                });
+                var input = ClassBuilder.Build(addCommand, new List<string> { password, name, email });
+                addCommand.Run(input);
             }
 
             AutoInput.SetDefault();

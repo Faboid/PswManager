@@ -14,7 +14,7 @@ namespace PswManagerDatabase.DataAccess.TextFileConnHelper {
         }
 
         internal static void Edit(string path, int position, string value) {
-            if(value is not null) {
+            if(!string.IsNullOrWhiteSpace(value)) {
                 var list = File.ReadAllLines(path);
                 list[position] = value;
                 File.WriteAllLines(path, list);

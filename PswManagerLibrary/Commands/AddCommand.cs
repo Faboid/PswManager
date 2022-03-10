@@ -1,13 +1,15 @@
-﻿using PswManagerLibrary.Storage;
-using PswManagerCommands.Validation;
-using PswManagerCommands.AbstractCommands;
-using PswManagerCommands;
+﻿using PswManagerCommands;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;
 using PswManagerLibrary.Cryptography;
+using PswManagerCommands.AbstractCommands;
+using PswManagerLibrary.Commands.Validation.ValidationLogic;
+using PswManagerLibrary.Commands.ArgsModels;
+using PswManagerCommands.Validation.Builders;
 
 namespace PswManagerLibrary.Commands {
-    public class AddCommand : BaseCommand {
+
+    public class AddCommand : BaseCommand<AddCommandArgs> {
 
         private readonly IDataCreator dataCreator;
         private readonly ICryptoAccount cryptoAccount;
@@ -18,32 +20,21 @@ namespace PswManagerLibrary.Commands {
             this.cryptoAccount = cryptoAccount;
         }
 
-        protected override IValidationCollection AddConditions(IValidationCollection collection) {
+        protected override CommandResult RunLogic(AddCommandArgs obj) {
 
-            collection.AddCommonConditions(3, 3);
-            collection.Add(
-                new IndexHelper(0, collection.NullIndexCondition, collection.NullOrEmptyArgsIndexCondition, collection.CorrectArgsNumberIndexCondition), 
-                (args) => dataCreator.AccountExist(args[0]) == false, AccountExistsErrorMessage);
-          
-            return collection;
+            (obj.Password, obj.Email) = cryptoAccount.Encrypt(obj.Password, obj.Email);
+            var account = new AccountModel(obj.Name, obj.Password, obj.Email);
+            dataCreator.CreateAccount(account);
+
+            return new CommandResult("The account has been created successfully.", true);
         }
 
         public override string GetDescription() {
             return "This command saves an account that can be later retrieved.";
         }
 
-        public override string GetSyntax() {
-            return "add [name] [password] [email]";
-        }
-
-        protected override CommandResult RunLogic(string[] arguments) {
-
-            (arguments[1], arguments[2]) = cryptoAccount.Encrypt(arguments[1], arguments[2]);
-            var account = new AccountModel(arguments[0], arguments[1], arguments[2]);
-            dataCreator.CreateAccount(account);
-
-            return new CommandResult("The account has been created successfully.", true);
-        }
-
+        protected override AutoValidatorBuilder<AddCommandArgs> AddRules(AutoValidatorBuilder<AddCommandArgs> builder) => builder
+            .AddRule<VerifyAccountExistenceRule>(dataCreator);
+        
     }
 }

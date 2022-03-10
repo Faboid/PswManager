@@ -1,13 +1,10 @@
-﻿using System;
+﻿using PswManagerCommands.Validation.Models;
+using System;
 using System.Collections.Generic;
 
-namespace PswManagerCommands.Validation {
-    //todo - improve (and fix) documentation of both IValidationCollection and ValidationCollection.
-    public interface IValidationCollection {
+namespace PswManagerCommands.Unused.Validation {
 
-        public int NullIndexCondition { get; }
-        public int CorrectArgsNumberIndexCondition { get; }
-        public int NullOrEmptyArgsIndexCondition { get; }
+    public interface IValidationCollection<T> {
 
         /// <summary>
         /// Returns a <see cref="IReadOnlyList{(bool, string)}"/> that represents whether the conditions were respected, and their respective error messages.
@@ -19,7 +16,7 @@ namespace PswManagerCommands.Validation {
         /// Returns the stored arguments.
         /// </summary>
         /// <returns></returns>
-        public string[] GetArguments();
+        public T GetObject();
 
         /// <summary>
         /// Adds the values to the list.<br/>
@@ -40,19 +37,7 @@ namespace PswManagerCommands.Validation {
         /// <see cref="IndexHelper.RequiredSuccesses"/> to see whether this condition requires an already-assigned condition.
         /// <br/>If one of the required conditions is false or missing, the operation is voided and the condition won't be added.
         /// </param>
-        void Add(IndexHelper index, Func<string[], bool> conditionFunction, string errorMessage);
-
-        /// <summary>
-        /// Adds conditions to check whether the arguments are null, empty, or the wrong number.
-        /// <br/>The used indexes are: 
-        /// <br/>- <see cref="NullIndexCondition"/>
-        /// <br/>- <see cref="CorrectArgsNumberIndexCondition"/>
-        /// <br/>- <see cref="NullOrEmptyArgsIndexCondition"/>
-        /// <br/><br/>The latter two conditions are only applied if the first is valid.
-        /// </summary>
-        /// <param name="minLength">The minimum number of arguments there should be.</param>
-        /// <param name="maxLength">The maximum number of arguments there should be.</param>
-        void AddCommonConditions(int minLength, int maxLength);
+        void Add(IndexHelper index, Func<T, bool> conditionFunction, string errorMessage);
 
         /// <summary>
         /// Returns <see langword="True"/> if the given indexes exist and are valid. Otherwise; <see langword="False"/>.

@@ -1,13 +1,14 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.AbstractCommands;
-using PswManagerCommands.Validation;
+using PswManagerCommands.Validation.Builders;
 using PswManagerDatabase.DataAccess.Interfaces;
-using PswManagerLibrary.Extensions;
-using PswManagerLibrary.Storage;
+using PswManagerLibrary.Commands.ArgsModels;
+using PswManagerLibrary.Commands.Validation.ValidationLogic;
 using PswManagerLibrary.UIConnection;
+using PswManagerLibrary.UIConnection.Attributes;
 
 namespace PswManagerLibrary.Commands {
-    public class DeleteCommand : BaseCommand {
+    public class DeleteCommand : BaseCommand<DeleteCommandArgs> {
 
         private readonly IDataDeleter dataDeleter;
         private readonly IUserInput userInput;
@@ -17,28 +18,21 @@ namespace PswManagerLibrary.Commands {
             this.userInput = userInput;
         }
 
+        protected override CommandResult RunLogic(DeleteCommandArgs args) {
+            var result = userInput.YesOrNo("Are you sure? This account will be deleted forever.");
+            if(result == false) { return new CommandResult("The operation has been stopped.", false); }
+
+            dataDeleter.DeleteAccount(args.Name);
+
+            return new CommandResult("Account deleted successfully.", true);
+        }
+
         public override string GetDescription() {
             return "This command deletes an account. Note that the deletion is final: it won't be possible to go back.";
         }
 
-        public override string GetSyntax() {
-            return "delete [name]";
-        }
+        protected override AutoValidatorBuilder<DeleteCommandArgs> AddRules(AutoValidatorBuilder<DeleteCommandArgs> builder) => builder
+            .AddRule(new VerifyAccountExistenceRule(dataDeleter));
 
-        protected override IValidationCollection AddConditions(IValidationCollection collection) {
-            collection.AddCommonConditions(1, 1);
-            collection.AddAccountShouldExistCondition(0, dataDeleter);
-
-            return collection;
-        }
-
-        protected override CommandResult RunLogic(string[] arguments) {
-            var result = userInput.YesOrNo("Are you sure? This account will be deleted forever.");
-            if(result == false) { return new CommandResult("The operation has been stopped.", false); }
-
-            dataDeleter.DeleteAccount(arguments[0]);
-
-            return new CommandResult("Account deleted successfully.", true);
-        }
     }
 }

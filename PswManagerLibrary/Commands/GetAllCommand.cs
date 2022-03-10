@@ -1,15 +1,18 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.AbstractCommands;
-using PswManagerCommands.Validation;
+using PswManagerCommands.Validation.Builders;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;
+using PswManagerLibrary.Commands.ArgsModels;
+using PswManagerLibrary.Commands.Validation.ValidationTypes;
 using PswManagerLibrary.Cryptography;
+using PswManagerLibrary.UIConnection.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace PswManagerLibrary.Commands {
-    public class GetAllCommand : BaseCommand {
+    public class GetAllCommand : BaseCommand<GetAllCommandArgs> {
 
         readonly IDataReader dataReader;
         readonly ICryptoAccount cryptoAccount;
@@ -22,31 +25,15 @@ namespace PswManagerLibrary.Commands {
             this.cryptoAccount = cryptoAccount;
         }
 
-        public override string GetDescription() {
-            return "Gets a list of the requested parameters of all accounts.";
-        }
-
-        public override string GetSyntax() {
-            return $"get-all { string.Join(' ', validKeys.Select(x => $"[{x}]?")) }";
-        }
-
-        protected override IValidationCollection AddConditions(IValidationCollection collection) {
-            collection.AddCommonConditions(0, validKeys.Length);
-            collection.Add(new IndexHelper(0, collection.NullOrEmptyArgsIndexCondition), (args) => args.All(x => validKeys.Contains(x)), InexistentKeyErrorMessage);
-            collection.Add(new IndexHelper(1, 0), (args) => args.Distinct().Count() == args.Length, DuplicateKeyErrorMessage);
-
-            return collection;
-        }
-
-        protected override CommandResult RunLogic(string[] arguments) {
+        protected override CommandResult RunLogic(GetAllCommandArgs arguments) {
             var result = dataReader.GetAllAccounts();
 
-            if(arguments.Length == 0) { 
+            if(string.IsNullOrWhiteSpace(arguments.Keys)) { 
                 return new CommandResult("The list has been retrieved.", true, string.Join(Environment.NewLine, result.Value.Select(Decrypt)));
             }
-            bool getNames = arguments.Contains(validKeys[0]);
-            bool getPasswords = arguments.Contains(validKeys[1]);
-            bool getEmails = arguments.Contains(validKeys[2]);
+            bool getNames = arguments.SplitKeys().Contains(validKeys[0]);
+            bool getPasswords = arguments.SplitKeys().Contains(validKeys[1]);
+            bool getEmails = arguments.SplitKeys().Contains(validKeys[2]);
 
             var accounts = result.Value
                 .Select(Decrypt)
@@ -55,6 +42,14 @@ namespace PswManagerLibrary.Commands {
 
             return new CommandResult("The list has been retrieved.", true, string.Join(Environment.NewLine, accounts));
         }
+
+        public override string GetDescription() {
+            return "Gets a list of the requested parameters of all accounts.";
+        }
+
+        protected override AutoValidatorBuilder<GetAllCommandArgs> AddRules(AutoValidatorBuilder<GetAllCommandArgs> builder) => builder
+            .AddRule<ValidValuesRule>()
+            .AddRule<NoDuplicateValuesRule>();
 
         private AccountModel Decrypt(AccountModel account) {
             (account.Password, account.Email) = cryptoAccount.Decrypt(account.Password, account.Email);

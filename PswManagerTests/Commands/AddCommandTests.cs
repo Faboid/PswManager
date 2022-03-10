@@ -1,9 +1,9 @@
 ﻿using PswManagerCommands;
-using PswManagerCommands.Validation;
 using PswManagerDatabase;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands;
-using PswManagerLibrary.Storage;
+using PswManagerLibrary.Commands.Validation.Attributes;
+using PswManagerTests.Commands.Helper;
 using PswManagerTests.TestsHelpers;
 using System;
 using System.Collections.Generic;
@@ -31,13 +31,13 @@ namespace PswManagerTests.Commands {
         public void AddSuccessfully(string name, string password, string email) {
 
             //arrange
-            var args = new string[] { name, password, email };
+            var obj = ClassBuilder.Build<AddCommand>(new List<string> { password, name, email});
             bool exists;
             CommandResult result;
 
             //act
             exists = dataHelper.AccountExist(name);
-            result = addCommand.Run(args);
+            result = addCommand.Run(obj);
 
             //assert
             Assert.False(exists);
@@ -47,27 +47,26 @@ namespace PswManagerTests.Commands {
         }
 
         public static IEnumerable<object[]> ExpectedValidationFailuresData() {
+            static object[] NewObj(string errorMessage, string name, string password, string email) 
+                => new object[] { 
+                    errorMessage, 
+                    ClassBuilder.Build<AddCommand>(new List<string> { password, name, email}) 
+                };
+
             string existingName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
             string validName = "someRandomNonexistentAccountName";
 
-            yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
+            //check for empty/null values
+            yield return NewObj(ErrorReader.GetRequiredError<AddCommand>("Name"), "", null, "email@here.com");
+            yield return NewObj(ErrorReader.GetRequiredError<AddCommand>("Password"), validName, null, "email@here.com");
+            yield return NewObj(ErrorReader.GetRequiredError<AddCommand>("Email"), validName, "rightuewih", "");
 
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null } };
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, null, "email@this.it" } };
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, "fiehgywightuy", "      " } };
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { validName, "", "email@this.com" } };
-
-            yield return new object[] { AddCommand.AccountExistsErrorMessage, new string[] { existingName, "somevalidPassword", "someValidEmail@email.com" } };
-
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName } };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "eiwghrywhgi" } };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "tirhtewygh", "email@somewhere.com", "oneTooMany" } };
+            yield return NewObj(ErrorReader.GetError<AddCommand, VerifyAccountExistenceAttribute>("Name"), existingName, "somevalidPassword", "someValidEmail@email.com");
         }
 
         [Theory]
         [MemberData(nameof(ExpectedValidationFailuresData))]
-        public void ExpectedValidationFailures(string expectedErrorMessage, params string[] args) {
+        public void ExpectedValidationFailures(string expectedErrorMessage, ICommandInput args) {
 
             //arrange
             bool valid;

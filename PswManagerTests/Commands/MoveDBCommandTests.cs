@@ -3,6 +3,7 @@ using PswManagerCommands;
 using PswManagerCommands.Validation;
 using PswManagerDatabase.Config;
 using PswManagerLibrary.Commands;
+using PswManagerTests.Commands.Helper;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,23 +40,22 @@ namespace PswManagerTests.Commands {
         }
 
         public static IEnumerable<object[]> ExpectedValidationFailuresData() {
-            string validPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "FillerFolder");
+            static object[] NewObj(string errorMessage, string path)
+                => new object[] {
+                    errorMessage,
+                    ClassBuilder.Build<MoveDatabaseCommand>(new List<string> { path })
+                };
 
-            yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
+            yield return NewObj(MoveDatabaseCommand.InexistentDirectoryErrorMessage, "NotAValidPath");
 
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "" } };
+            yield return NewObj(ErrorReader.GetRequiredError<MoveDatabaseCommand>("Path"), null);
+            yield return NewObj(ErrorReader.GetRequiredError<MoveDatabaseCommand>("Path"), "");
 
-            yield return new object[] { MoveDatabaseCommand.InexistentDirectoryErrorMessage, new string[] { "NotAValidPath" } };
-
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validPath, "eiwghrywhgi" } };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validPath, "tirhtewygh", "email@somewhere.com" } };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validPath, "tirhtewygh", "email@somewhere.com", "somevalue" } };
         }
 
         [Theory]
         [MemberData(nameof(ExpectedValidationFailuresData))]
-        public void ExpectedValidationFailures(string expectedErrorMessage, params string[] args) {
+        public void ExpectedValidationFailures(string expectedErrorMessage, ICommandInput args) {
 
             //arrange
             bool valid;

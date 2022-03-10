@@ -3,7 +3,9 @@ using PswManagerCommands.Validation;
 using PswManagerDatabase;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands;
-using PswManagerLibrary.Extensions;
+using PswManagerLibrary.Commands.ArgsModels;
+using PswManagerLibrary.Commands.Validation.Attributes;
+using PswManagerTests.Commands.Helper;
 using PswManagerTests.TestsHelpers;
 using System;
 using System.Collections.Generic;
@@ -32,10 +34,11 @@ namespace PswManagerTests.Commands {
             //arrange
             TestsHelper.SetUpDefault();
             string name = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            var obj = ClassBuilder.Build<DeleteCommand>(new List<string> { name });
 
             //act
             bool exist = dataHelper.AccountExist(name);
-            delCommand.Run(new string[] { name });
+            delCommand.Run(obj);
 
             //assert
             Assert.True(exist);
@@ -44,25 +47,24 @@ namespace PswManagerTests.Commands {
         }
 
         public static IEnumerable<object[]> ExpectedValidationFailuresData() {
-            string validName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            static object[] NewObj(string errorMessage, string name)
+                => new object[] {
+                    errorMessage,
+                    ClassBuilder.Build<DeleteCommand>(new List<string> { name })
+                };
 
-            yield return new object[] { ValidationCollection.ArgumentsNullMessage, null };
+            string missingNameMessage = ErrorReader.GetRequiredError<DeleteCommand>("Name");
 
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { null } };
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "" } };
-            yield return new object[] { ValidationCollection.ArgumentsNullOrEmptyMessage, new string[] { "     " } };
+            yield return NewObj(missingNameMessage, null);
+            yield return NewObj(missingNameMessage, "");
 
-            yield return new object[] { new ValidationCollection(null).InexistentAccountMessage(), new string[] { "fakeAccountName" } };
+            yield return NewObj(ErrorReader.GetError<DeleteCommand, VerifyAccountExistenceAttribute>("Name"), "fakeAccountName");
 
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, Array.Empty<string>() };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "eiwghrywhgi" } };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "tirhtewygh", "email@somewhere.com"} };
-            yield return new object[] { ValidationCollection.WrongArgumentsNumberMessage, new string[] { validName, "tirhtewygh", "email@somewhere.com", "something"} };
         }
 
         [Theory]
         [MemberData(nameof(ExpectedValidationFailuresData))]
-        public void ExpectedValidationFailures(string expectedErrorMessage, params string[] args) {
+        public void ExpectedValidationFailures(string expectedErrorMessage, ICommandInput args) {
 
             //arrange
             bool valid;

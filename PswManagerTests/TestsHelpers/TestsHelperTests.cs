@@ -1,5 +1,6 @@
 ﻿using PswManagerDatabase;
 using PswManagerLibrary.Commands;
+using PswManagerTests.Commands.Helper;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -21,12 +22,12 @@ namespace PswManagerTests.TestsHelpers {
         public void SetUpDefaultCorrectly(string name, string password, string email) {
 
             //arrange
-            GetCommand getCommand = new GetCommand(new DataFactory(TestsHelper.Paths).GetDataReader(), TestsHelper.CryptoAccount);
+            GetCommand getCommand = new(new DataFactory(TestsHelper.Paths).GetDataReader(), TestsHelper.CryptoAccount);
             var list = new[] { name, password, email };
 
             //act
             TestsHelper.SetUpDefault();
-            var res = getCommand.Run( new string[] { list[0] });
+            var res = getCommand.Run(ClassBuilder.Build(getCommand, new List<string>() { list[0] }));
 
             //assert
             Assert.Equal(String.Join(' ', list), res.QueryReturnValue);

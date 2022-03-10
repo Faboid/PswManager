@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using PswManagerHelperMethods;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PswManagerCommands {
@@ -10,15 +12,19 @@ namespace PswManagerCommands {
             _commands = commands;
         }
 
-        public CommandResult Query(string command) {
-            //todo - implement a proper parser
-            var query = command.Split(' ');
-            string cmdType = query.First().ToLowerInvariant();
-            var args = query.Skip(1).ToArray();
+        public (bool success, Type inputType) TryGetCommandInputTemplate(string commandType) {
+            if(_commands.TryGetValue(commandType, out var cmd)) {
+                return (true, cmd.GetCommandInputType);
+            }
+
+            return (false, null);
+        }
+
+        public CommandResult Query(string cmdType, ICommandInput arguments) {
 
             if(_commands.TryGetValue(cmdType, out var cmd)) {
 
-                return cmd.Run(args);
+                return cmd.Run(arguments);
             } else {
 
                 return new CommandResult("The given command doesn't exist. For a list of commands, write \"help\".", false);

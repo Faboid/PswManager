@@ -10,7 +10,7 @@ namespace PswManagerLibrary.UIConnection {
     //todo - this class is doing too much. Split it into multiple classes and use proper DI
     public class CommandLoop {
 
-        private IUserInput userInput;
+        private readonly IUserInput userInput;
         private CommandQuery query;
 
         public CommandLoop(IUserInput userInput, ICryptoAccount cryptoAccount, IReadOnlyDictionary<string, ICommand> extraCommands = null) {
@@ -40,7 +40,7 @@ namespace PswManagerLibrary.UIConnection {
 
             //database commands
             if(dbType == DatabaseType.TextFile) { 
-                collection.Add("movedb", new MoveDatabaseCommand(dataFactory.GetPathsEditor().GetPaths()));
+                //collection.Add("movedb", new MoveDatabaseCommand(dataFactory.GetPathsEditor().GetPaths()));
             }
 
             query = new CommandQuery(collection.Concat(extraCommands).ToDictionary(x => x.Key, x => x.Value));
@@ -51,16 +51,29 @@ namespace PswManagerLibrary.UIConnection {
         /// </summary>
         public void Start() {
 
-            string command;
-            while((command = userInput.RequestAnswer()).ToLowerInvariant() != "exit") {
+            string cmdType;
+            while((cmdType = userInput.RequestAnswer().ToLowerInvariant()) != "exit") {
 
-                SingleQuery(command);
+                var (foundTemplate, inputType) = query.TryGetCommandInputTemplate(cmdType);
+                if(!foundTemplate) {
+                    userInput.SendMessage("The command you've given doesn't exist.");
+                    continue;
+                }
+
+                Requester requester = new(inputType, userInput);
+                var (success, obj) = requester.Build();
+                if(!success) {
+                    userInput.SendMessage("Something wrong wrong with the arguments' building phase.");
+                    continue;
+                }
+
+                SingleQuery(cmdType, (ICommandInput)obj);
             }
 
         }
 
-        public void SingleQuery(string command) {
-            var result = query.Query(command);
+        public void SingleQuery(string cmdType, ICommandInput inputArgs) {
+            var result = query.Query(cmdType, inputArgs);
 
             userInput.SendMessage(result.BackMessage);
             if(result.QueryReturnValue != null) {
