@@ -1,17 +1,10 @@
 ﻿using PswManagerCommands.Validation.Attributes;
 using PswManagerCommands.Validation.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PswManagerCommands.Validation {
-
-    public interface IAutoValidator<T> {
-        IEnumerable<string> Validate(T obj);
-    }
 
     internal class AutoValidator<T> : IAutoValidator<T> {
 
