@@ -24,7 +24,7 @@ namespace PswManagerTests.Validation {
             validator = new ValidatorBuilder<TestObject>()
                 .AddAutoValidator(autoValidatorNotEmpty)
                 .AddAutoValidator(autoValidatorLessThanOneHundred)
-                .AddCondition(new IndexHelper(0), (obj) => !string.IsNullOrWhiteSpace(obj.Name), missingNameMessage)
+                .AddCondition(0, (obj) => !string.IsNullOrWhiteSpace(obj.Name), missingNameMessage)
                 .AddCondition(new IndexHelper(1, 0), (obj) => obj.Name.Length > 2, minimumNameLengthMessage)
                 .AddCondition(ageCondition)
                 .Build();

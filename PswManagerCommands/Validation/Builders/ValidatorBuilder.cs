@@ -13,6 +13,10 @@ namespace PswManagerCommands.Validation.Builders {
 
         internal ValidatorBuilder() { }
 
+        public ValidatorBuilder<T> AddCondition(short index, Func<T, bool> conditionFunction, string errorMessage) {
+            return AddCondition(new IndexHelper(index), conditionFunction, errorMessage);
+        }
+
         public ValidatorBuilder<T> AddCondition(IndexHelper index, Func<T, bool> conditionFunction, string errorMessage) {
             conditions.Add(new Condition<T>(index, conditionFunction, errorMessage));
             return this;

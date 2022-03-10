@@ -39,7 +39,7 @@ namespace PswManagerLibrary.Commands {
         }
 
         protected override ValidatorBuilder<Args> AddConditions(ValidatorBuilder<Args> builder) => builder
-            .AddCondition(new IndexHelper(0),
+            .AddCondition(0,
                 x => string.IsNullOrWhiteSpace(x.CmdName) || commands.ContainsKey(x.CmdName.ToLowerInvariant()),
                 CommandInexistentErrorMessage);
 
