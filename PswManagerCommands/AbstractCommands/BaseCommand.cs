@@ -50,10 +50,7 @@ namespace PswManagerCommands.AbstractCommands {
         /// <returns></returns>
         public (bool success, IEnumerable<string> errorMessages) Validate(ICommandInput arguments) {
             TInput input = (TInput)arguments;
-            var conditions = AddConditions(new ValidationCollection<TInput>(input)).GetResult();
-            var errors = conditions.Where(x => x.condition is false).Select(x => x.errorMessage);
             var errorMessages = GetValidator().Validate(input);
-            errorMessages = errorMessages.Concat(errors);
             errorMessages = errorMessages.Concat(ExtraValidation(input) ?? Enumerable.Empty<string>());
             return (errorMessages.Any() == false, errorMessages);
         }
@@ -63,8 +60,6 @@ namespace PswManagerCommands.AbstractCommands {
         /// </summary>
         /// <param name="arguments"></param>
         protected virtual IReadOnlyList<string> ExtraValidation(TInput obj) { return Array.Empty<string>(); }
-
-        protected virtual IValidationCollection<TInput> AddConditions(IValidationCollection<TInput> collection) => collection;
         protected virtual ValidatorBuilder<TInput> AddConditions(ValidatorBuilder<TInput> builder) => builder;
         protected virtual AutoValidatorBuilder<TInput> AddRules(AutoValidatorBuilder<TInput> builder) => builder;
 

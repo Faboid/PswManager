@@ -1,14 +1,14 @@
-﻿using System;
+﻿using PswManagerCommands.Validation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PswManagerCommands.Validation {
+namespace PswManagerCommands.Unused.Validation {
 
     public class ValidationCollection<T> : IValidationCollection<T> {
 
         private readonly Dictionary<int, (bool, string)> validatorsDictionary = new();
         private readonly T obj;
-        //todo implement use of auto-validation's class
 
         public ValidationCollection(T input) {
             obj = input;

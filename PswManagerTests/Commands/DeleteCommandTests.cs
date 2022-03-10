@@ -5,7 +5,6 @@ using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Commands.ArgsModels;
 using PswManagerLibrary.Commands.Validation.Attributes;
-using PswManagerLibrary.Extensions;
 using PswManagerTests.Commands.Helper;
 using PswManagerTests.TestsHelpers;
 using System;

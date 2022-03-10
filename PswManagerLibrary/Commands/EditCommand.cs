@@ -6,7 +6,6 @@ using PswManagerDatabase.Models;
 using PswManagerLibrary.Commands.AutoCommands.ArgsModels;
 using PswManagerLibrary.Commands.Validation.ValidationLogic;
 using PswManagerLibrary.Cryptography;
-using PswManagerLibrary.Extensions;
 
 namespace PswManagerLibrary.Commands {
     public sealed class EditCommand : BaseCommand<EditCommandArgs> {

@@ -3,7 +3,6 @@ using PswManagerCommands.Validation;
 using PswManagerDatabase;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Commands.Validation.Attributes;
-using PswManagerLibrary.Extensions;
 using PswManagerTests.Commands.Helper;
 using PswManagerTests.TestsHelpers;
 using System;

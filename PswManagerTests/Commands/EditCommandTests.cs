@@ -4,7 +4,6 @@ using PswManagerDatabase;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Commands.Validation.Attributes;
-using PswManagerLibrary.Extensions;
 using PswManagerLibrary.Storage;
 using PswManagerTests.Commands.Helper;
 using PswManagerTests.TestsHelpers;
@@ -81,7 +80,7 @@ namespace PswManagerTests.Commands {
             string validName2 = TestsHelper.DefaultValues.GetValue(4, DefaultValues.TypeValue.Name);
 
             yield return NewObj(ErrorReader.GetRequiredError<EditCommand>("Name"), null, "someValue", "hrhr", "");
-            yield return NewObj(new ValidationCollection<object>(null).InexistentAccountMessage(), "fakeAccountName", null, "newPasshere", null);
+            yield return NewObj(ErrorReader.GetError<EditCommand, VerifyAccountExistenceAttribute>("Name"), "fakeAccountName", null, "newPasshere", null);
             yield return NewObj(ErrorReader.GetError<EditCommand, VerifyAccountExistenceAttribute>("NewName"), validName, validName2, null, null);
             
         }
@@ -93,7 +92,7 @@ namespace PswManagerTests.Commands {
             //arrange
             bool valid;
             CommandResult result;
-
+            
             //act
             valid = editCommand.Validate(args).success;
             result = editCommand.Run(args);

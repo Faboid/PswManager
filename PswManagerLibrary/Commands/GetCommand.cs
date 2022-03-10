@@ -6,7 +6,6 @@ using PswManagerDatabase.Models;
 using PswManagerLibrary.Commands.ArgsModels;
 using PswManagerLibrary.Commands.Validation.ValidationLogic;
 using PswManagerLibrary.Cryptography;
-using PswManagerLibrary.Extensions;
 using System;
 
 namespace PswManagerLibrary.Commands {

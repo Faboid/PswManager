@@ -1,7 +1,8 @@
-﻿using System;
+﻿using PswManagerCommands.Validation;
+using System;
 using System.Collections.Generic;
 
-namespace PswManagerCommands.Validation {
+namespace PswManagerCommands.Unused.Validation {
 
     public interface IValidationCollection<T> {
 

@@ -4,7 +4,6 @@ using PswManagerCommands.Validation;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands.ArgsModels;
 using PswManagerLibrary.Commands.Validation.ValidationLogic;
-using PswManagerLibrary.Extensions;
 using PswManagerLibrary.UIConnection;
 using PswManagerLibrary.UIConnection.Attributes;
 
