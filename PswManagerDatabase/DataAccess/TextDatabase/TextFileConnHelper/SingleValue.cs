@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 
-namespace PswManagerDatabase.DataAccess.TextFileConnHelper {
+namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
     internal class SingleValue {
 
         internal static void Create(string path, string value) {

@@ -1,7 +1,7 @@
 ﻿using PswManagerDatabase.Config;
 using System.IO;
 
-namespace PswManagerDatabase.DataAccess.TextFileConnHelper {
+namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
     internal class AccountSearcher {
 
         readonly IPaths paths;

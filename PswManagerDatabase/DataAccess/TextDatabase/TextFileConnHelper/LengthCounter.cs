@@ -3,7 +3,7 @@ using PswManagerHelperMethods;
 using System;
 using System.IO;
 
-namespace PswManagerDatabase.DataAccess.TextFileConnHelper {
+namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
     internal class LengthCounter {
 
         readonly IPaths paths;

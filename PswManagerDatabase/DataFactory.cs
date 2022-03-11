@@ -1,6 +1,7 @@
 ﻿using PswManagerDatabase.Config;
 using PswManagerDatabase.DataAccess;
 using PswManagerDatabase.DataAccess.Interfaces;
+using PswManagerDatabase.DataAccess.TextDatabase;
 using System;
 
 namespace PswManagerDatabase {

@@ -1,9 +1,9 @@
 ﻿using PswManagerDatabase.Config;
-using PswManagerDatabase.DataAccess.TextFileConnHelper;
+using PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper;
 using PswManagerDatabase.Models;
 using System.Collections.Generic;
 
-namespace PswManagerDatabase.DataAccess {
+namespace PswManagerDatabase.DataAccess.TextDatabase {
 
     public class TextFileConnection : IDataConnection {
 

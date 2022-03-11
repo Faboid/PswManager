@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace PswManagerDatabase.DataAccess.TextFileConnHelper {
+namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
     internal class AccountBuilder {
 
         private readonly IPaths paths;
