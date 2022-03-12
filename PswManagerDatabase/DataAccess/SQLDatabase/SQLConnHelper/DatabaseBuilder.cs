@@ -71,7 +71,7 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper {
             //https://docs.microsoft.com/en-us/troubleshoot/developer/visualstudio/csharp/language-compilers/create-sql-server-database-programmatically
 
             using SqlConnection cnn = new(masterConnection);
-            string fileName = $"{ WorkingDirectory }\\PswManagerDB";
+            string fileName = $"{ WorkingDirectory }\\{db_Name}";
 
             string query = $"CREATE DATABASE {db_Name} ON PRIMARY" +
                 $"(NAME = {db_Name}_Data," +
