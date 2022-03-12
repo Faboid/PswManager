@@ -11,13 +11,14 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper {
         }
 
         private static readonly string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        private const string masterConnection = "server=localhost; Integrated security=SSPI; database=master";
+        private const string masterConnection = $"server={serverName}; Integrated security=SSPI; database=master";
+        private const string serverName = "localhost";
         private readonly string db_Name;
 
         private string GetConnectionString() {
 
             //todo - if server=localhost doesn't work, try .\SQLEXPRESS or (local)
-            SqlConnectionStringBuilder builder = new(string.Format("server=localhost; Integrated security=SSPI; database={0}", db_Name));
+            SqlConnectionStringBuilder builder = new(string.Format("server={0}; Integrated security=SSPI; database={1}", serverName, db_Name));
             builder.ApplicationName = "PswManager";
             builder.ApplicationIntent = ApplicationIntent.ReadWrite;
 
