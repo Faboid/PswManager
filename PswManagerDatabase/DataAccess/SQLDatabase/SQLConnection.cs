@@ -9,11 +9,25 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
     internal class SQLConnection : IDataConnection {
 
         public bool AccountExist(string name) {
-            throw new NotImplementedException();
+            using var cnn = DatabaseBuilder.GetConnection();
+            using var cmd = QueriesBuilder.GetAccountQuery(name);
+            return cnn.Open(() => {
+                return cmd.ExecuteNonQuery() > 0;
+            });
         }
 
         public ConnectionResult CreateAccount(AccountModel model) {
-            throw new NotImplementedException();
+            if(AccountExist(model.Name)) {
+                return new ConnectionResult(false, "The given account name is already occupied.");
+            }
+
+            using var cnn = DatabaseBuilder.GetConnection();
+            using var cmd = QueriesBuilder.CreateAccountQuery(model);
+
+            return cnn.Open(() => {
+                var result = cmd.ExecuteNonQuery() == 1;
+                return new ConnectionResult(result);
+            });
         }
 
         public ConnectionResult DeleteAccount(string name) {
