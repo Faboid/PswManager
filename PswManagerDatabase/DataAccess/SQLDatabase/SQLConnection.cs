@@ -8,8 +8,14 @@ using System.Linq;
 namespace PswManagerDatabase.DataAccess.SQLDatabase {
     internal class SQLConnection : IDataConnection {
 
+        readonly DatabaseBuilder database;
+
+        public SQLConnection(string databaseName) {
+            database = new DatabaseBuilder(databaseName);
+        }
+
         public bool AccountExist(string name) {
-            using var cnn = DatabaseBuilder.GetConnection();
+            using var cnn = database.GetConnection();
             using var cmd = QueriesBuilder.GetAccountQuery(name);
             return cnn.Open(() => {
                 return cmd.ExecuteNonQuery() > 0;
@@ -21,7 +27,7 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
                 return new ConnectionResult(false, "The given account name is already occupied.");
             }
 
-            using var cnn = DatabaseBuilder.GetConnection();
+            using var cnn = database.GetConnection();
             using var cmd = QueriesBuilder.CreateAccountQuery(model);
 
             return cnn.Open(() => {
