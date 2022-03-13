@@ -6,30 +6,31 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper {
     internal class DatabaseBuilder {
 
         public DatabaseBuilder(string db_name) {
-            db_Name = db_name;
+            dataDirectoryPath = Path.Combine(WorkingDirectory, "Data");
+            dbPath = Path.Combine(dataDirectoryPath, $"{db_name}.db");
             SetUpDatabase();
         }
 
         private static readonly string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        private static readonly string DataDirectoryPath = Path.Combine(WorkingDirectory, "Data");
-        private readonly string db_Name;
+        private readonly string dataDirectoryPath;
+        private readonly string dbPath;
 
         public SQLiteConnection GetConnection() {
-            return new($"Data Source={DataDirectoryPath}\\{db_Name}.db; Version=3;");
+            return new($"Data Source={dbPath}; Version=3;");
         }
 
         private void SetUpDatabase() {
-            if(!Directory.Exists(DataDirectoryPath)) { 
-                Directory.CreateDirectory(DataDirectoryPath);
+            if(!Directory.Exists(dataDirectoryPath)) { 
+                Directory.CreateDirectory(dataDirectoryPath);
             }
 
             using var cnn = GetConnection();
             cnn.Open();
-            CreateLiteAccountsTable(cnn);
+            CreateAccountsTable(cnn);
             cnn.Close();
         }
 
-        private static void CreateLiteAccountsTable(SQLiteConnection cnn) {
+        private static void CreateAccountsTable(SQLiteConnection cnn) {
 
             string query = $"create table if not exists Accounts" +
                 $"(" +
