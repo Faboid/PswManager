@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.SQLite;
 
 namespace PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper {
     internal static class ConnectionHandler {
 
-        public static T Open<T>(this SqlConnection cnn, Func<T> predicate) {
+        public static T Open<T>(this SQLiteConnection cnn, Func<T> predicate) {
             try {
                 cnn.Open();
 

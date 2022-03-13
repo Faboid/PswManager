@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,23 +10,28 @@ using System.Threading.Tasks;
 namespace PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper {
     internal class QueriesBuilder {
 
+        public QueriesBuilder(SQLiteConnection connection) {
+            this.connection = connection;
+        }
+
+        private readonly SQLiteConnection connection;
         private const string accountsTable = "Accounts";
 
-        public static SqlCommand CreateAccountQuery(AccountModel model) {
-            string query = $"insert into {accountsTable}" +
+        public SQLiteCommand CreateAccountQuery(AccountModel model) {
+            string query = $"insert into {accountsTable} " +
                 $"values(@Name, @Password, @Email)";
-            var cmd = new SqlCommand(query);
-            cmd.Parameters.Add(new SqlParameter("@Name", model.Name));
-            cmd.Parameters.Add(new SqlParameter("@Password", model.Password));
-            cmd.Parameters.Add(new SqlParameter("@Email", model.Email));
+            var cmd = new SQLiteCommand(query, connection);
+            cmd.Parameters.Add(new SQLiteParameter("@Name", model.Name));
+            cmd.Parameters.Add(new SQLiteParameter("@Password", model.Password));
+            cmd.Parameters.Add(new SQLiteParameter("@Email", model.Email));
 
             return cmd;
         }
 
-        public static SqlCommand GetAccountQuery(string name) {
+        public SQLiteCommand GetAccountQuery(string name) {
             string query = $"select * from {accountsTable} where Name = @Name";
-            var cmd = new SqlCommand(query);
-            cmd.Parameters.Add(new SqlParameter("@Name", name));
+            var cmd = new SQLiteCommand(query, connection);
+            cmd.Parameters.Add(new SQLiteParameter("@Name", name));
 
             return cmd;
         }
