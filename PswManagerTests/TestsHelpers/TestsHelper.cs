@@ -71,6 +71,7 @@ namespace PswManagerTests.TestsHelpers {
 
             //delete the created folder and all its contents
             Directory.Delete(Paths.WorkingDirectory, true);
+            GC.SuppressFinalize(this);
             
         }
 
