@@ -45,7 +45,24 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
         }
 
         public ConnectionResult<AccountModel> GetAccount(string name) {
-            throw new NotImplementedException();
+
+            using var cmd = queriesBuilder.GetAccountQuery(name);
+            return cmd.Connection.Open(() => {
+                using var reader = cmd.ExecuteReader();
+                
+                if(!reader.HasRows) {
+                    return new ConnectionResult<AccountModel>(false, "The given account doesn't exist.");
+                }
+
+                reader.Read();
+                var model = new AccountModel {
+                    Name = reader.GetString(0),
+                    Password = reader.GetString(1),
+                    Email = reader.GetString(2)
+                };
+
+                return new ConnectionResult<AccountModel>(true, model);
+            });
         }
 
         public ConnectionResult<List<AccountModel>> GetAllAccounts() {
