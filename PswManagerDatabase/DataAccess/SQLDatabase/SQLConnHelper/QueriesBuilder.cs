@@ -1,11 +1,5 @@
 ﻿using PswManagerDatabase.Models;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Data.SQLite;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper {
     internal class QueriesBuilder {
@@ -39,6 +33,14 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper {
         public SQLiteCommand GetAllAccountsQuery() {
             string query = $"select * from {accountsTable}";
             var cmd = new SQLiteCommand(query, connection);
+
+            return cmd;
+        }
+
+        public SQLiteCommand DeleteAccountQuery(string name) {
+            string query = $"delete from {accountsTable} where Name = @Name";
+            var cmd = new SQLiteCommand(query, connection);
+            cmd.Parameters.Add(new SQLiteParameter("@Name", name));
 
             return cmd;
         }

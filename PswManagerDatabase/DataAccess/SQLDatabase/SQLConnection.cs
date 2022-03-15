@@ -40,7 +40,15 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
         }
 
         public ConnectionResult DeleteAccount(string name) {
-            throw new NotImplementedException();
+            if(!AccountExist(name)) {
+                return new ConnectionResult(false, "The given account doesn't exist.");
+            }
+
+            using var cmd = queriesBuilder.DeleteAccountQuery(name);
+            return cmd.Connection.Open(() => {
+                var result = cmd.ExecuteNonQuery() == 1;
+                return new ConnectionResult(result);
+            });
         }
 
         public ConnectionResult<AccountModel> GetAccount(string name) {
