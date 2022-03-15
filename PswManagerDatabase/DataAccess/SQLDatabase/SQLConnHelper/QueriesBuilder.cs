@@ -36,5 +36,12 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper {
             return cmd;
         }
 
+        public SQLiteCommand GetAllAccountsQuery() {
+            string query = $"select * from {accountsTable}";
+            var cmd = new SQLiteCommand(query, connection);
+
+            return cmd;
+        }
+
     }
 }

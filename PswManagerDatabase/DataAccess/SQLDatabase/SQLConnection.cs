@@ -3,7 +3,6 @@ using PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper;
 using PswManagerDatabase.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace PswManagerDatabase.DataAccess.SQLDatabase {
     internal class SQLConnection : IDataConnection {
@@ -66,7 +65,23 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
         }
 
         public ConnectionResult<List<AccountModel>> GetAllAccounts() {
-            throw new NotImplementedException();
+
+            using var cmd = queriesBuilder.GetAllAccountsQuery();
+            return cmd.Connection.Open(() => {
+                using var reader = cmd.ExecuteReader();
+
+                List<AccountModel> accounts = new();
+
+                while(reader.Read()) {
+                    accounts.Add(new AccountModel {
+                        Name = reader.GetString(0),
+                        Password = reader.GetString(1),
+                        Email = reader.GetString(2)
+                    });
+                }
+
+                return new ConnectionResult<List<AccountModel>>(true, accounts);
+            });
         }
 
         public IPaths GetPaths() {
