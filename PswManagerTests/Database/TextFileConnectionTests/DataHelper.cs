@@ -22,6 +22,7 @@ namespace PswManagerTests.Database.TextFileConnectionTests {
             yield return NewObj(TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name), true);
             yield return NewObj("rtoehognrkljnwigurehvbonolbneughwonko", false);
             yield return NewObj("", false);
+            yield return NewObj("   ", false);
             yield return NewObj(null, false);
 
         }
