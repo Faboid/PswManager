@@ -97,7 +97,16 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
         }
 
         public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {
-            throw new NotImplementedException();
+            if(!AccountExist(name)) {
+                return new ConnectionResult<AccountModel>(false, "The given account doesn't exist.");
+            }
+
+            using var cmd = queriesBuilder.UpdateAccountQuery(name, newModel);
+            cmd.Connection.Open(() => {
+                cmd.ExecuteNonQuery();
+            });
+
+            return GetAccount(string.IsNullOrWhiteSpace(newModel.Name)? name : newModel.Name);
         }
     }
 }

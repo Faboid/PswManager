@@ -17,5 +17,17 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper {
             }
         }
 
+        public static void Open(this SQLiteConnection cnn, Action predicate) {
+            try {
+                cnn.Open();
+                predicate.Invoke();
+            }
+            finally {
+                if(cnn.State == System.Data.ConnectionState.Open) {
+                    cnn.Close();
+                }
+            }
+        }
+
     }
 }

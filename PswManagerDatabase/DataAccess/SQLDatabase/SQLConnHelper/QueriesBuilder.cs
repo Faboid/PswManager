@@ -45,5 +45,25 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper {
             return cmd;
         }
 
+        public SQLiteCommand UpdateAccountQuery(string name, AccountModel newModel) {
+            string query = $"update {accountsTable} set " +
+                $"Name = case when @NewName is not null then @NewName else Name end, " +
+                $"Password = case when @NewPassword is not null then @NewPassword else Password end, " +
+                $"Email = case when @NewEmail is not null then @NewEmail else Email end " +
+                $"where Name = @Name";
+
+            var cmd = new SQLiteCommand(query, connection);
+            cmd.Parameters.Add(new SQLiteParameter("@Name", name));
+            cmd.Parameters.Add(new SQLiteParameter("@NewName", NullIfEmpty(newModel.Name)));
+            cmd.Parameters.Add(new SQLiteParameter("@NewPassword", NullIfEmpty(newModel.Password)));
+            cmd.Parameters.Add(new SQLiteParameter("@NewEmail", NullIfEmpty(newModel.Email)));
+
+            return cmd;
+        }
+
+        private static string NullIfEmpty(string value) {
+            return string.IsNullOrWhiteSpace(value) ? null : value;
+        }
+
     }
 }
