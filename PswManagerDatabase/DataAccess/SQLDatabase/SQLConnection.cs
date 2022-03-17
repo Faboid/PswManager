@@ -1,7 +1,5 @@
-﻿using PswManagerDatabase.Config;
-using PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper;
+﻿using PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper;
 using PswManagerDatabase.Models;
-using System;
 using System.Collections.Generic;
 
 namespace PswManagerDatabase.DataAccess.SQLDatabase {
