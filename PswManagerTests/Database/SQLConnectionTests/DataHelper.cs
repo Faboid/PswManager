@@ -12,7 +12,6 @@ namespace PswManagerTests.Database.SQLConnectionTests {
             dbHandler = new TestDatabaseHandler(db_Name);
             IDataFactory dataFactory = new DataFactory(dbHandler.DatabaseName);
             dataHelper = dataFactory.GetDataHelper();
-            TestsHelper.SetUpDefault();
         }
 
         const string db_Name = "DataHelperTestsDB";
