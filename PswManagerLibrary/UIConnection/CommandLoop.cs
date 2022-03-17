@@ -38,11 +38,6 @@ namespace PswManagerLibrary.UIConnection {
             collection.Add("edit", new EditCommand(dataFactory.GetDataEditor(), cryptoAccount));
             collection.Add("delete", new DeleteCommand(dataFactory.GetDataDeleter(), userInput));
 
-            //database commands
-            if(dbType == DatabaseType.TextFile) { 
-                //collection.Add("movedb", new MoveDatabaseCommand(dataFactory.GetPathsEditor().GetPaths()));
-            }
-
             query = new CommandQuery(collection.Concat(extraCommands).ToDictionary(x => x.Key, x => x.Value));
         }
 

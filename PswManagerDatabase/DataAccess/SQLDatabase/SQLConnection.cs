@@ -92,10 +92,6 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
             });
         }
 
-        public IPaths GetPaths() {
-            throw new NotImplementedException();
-        }
-
         public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {
             if(!AccountExist(name)) {
                 return new ConnectionResult<AccountModel>(false, "The given account doesn't exist.");

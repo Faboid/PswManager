@@ -35,8 +35,6 @@ namespace PswManagerDatabase {
 
         public IDataConnection GetDataConnection() => dataConnection;
 
-        public IPathsEditor GetPathsEditor() => dataConnection;
-
         public IDataCreator GetDataCreator() => dataConnection;
 
         public IDataDeleter GetDataDeleter() => dataConnection;
