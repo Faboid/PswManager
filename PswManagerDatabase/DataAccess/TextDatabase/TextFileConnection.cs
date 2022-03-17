@@ -19,10 +19,6 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
             accountSearcher = new AccountSearcher(this.paths);
         }
 
-        public IPaths GetPaths() {
-            return paths;
-        }
-
         public ConnectionResult CreateAccount(AccountModel model) {
             if(accountSearcher.AccountExist(model.Name)) {
                 return new ConnectionResult(false, "The given account name is already occupied.");

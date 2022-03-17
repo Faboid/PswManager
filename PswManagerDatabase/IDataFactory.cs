@@ -5,7 +5,6 @@ namespace PswManagerDatabase {
     public interface IDataFactory {
 
         IDataConnection GetDataConnection();
-        IPathsEditor GetPathsEditor();
         IDataCreator GetDataCreator();
         IDataReader GetDataReader();
         IDataEditor GetDataEditor();

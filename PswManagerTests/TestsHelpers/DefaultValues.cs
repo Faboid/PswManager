@@ -10,6 +10,11 @@ namespace PswManagerTests.TestsHelpers {
     /// </summary>
     public class DefaultValues {
 
+        public static string StaticGetValue(int position, TypeValue type) {
+            var values = new DefaultValues(position + 1);
+            return values.GetValue(position, type);
+        }
+
         public DefaultValues(int generateAmount) {
             var values = new List<string>();
 
