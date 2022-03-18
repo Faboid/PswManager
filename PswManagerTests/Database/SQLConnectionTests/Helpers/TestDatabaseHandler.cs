@@ -4,7 +4,6 @@ using PswManagerDatabase.Models;
 using PswManagerTests.TestsHelpers;
 using System;
 using System.IO;
-using System.Reflection;
 
 namespace PswManagerTests.Database.SQLConnectionTests.Helpers {
     internal class TestDatabaseHandler : IDisposable {
@@ -15,7 +14,7 @@ namespace PswManagerTests.Database.SQLConnectionTests.Helpers {
             defaultValues = new DefaultValues(5);
         }
 
-        private static readonly string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private static readonly string WorkingDirectory = PswManagerHelperMethods.PathsBuilder.GetWorkingDirectory;
         private readonly string dbPath;
         public IDataCreator dataCreator;
         public DefaultValues defaultValues;

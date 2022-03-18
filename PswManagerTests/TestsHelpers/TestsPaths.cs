@@ -19,7 +19,7 @@ namespace PswManagerTests.TestsHelpers {
         public static string GetNonExistentFolderPath() {
             string output;
 
-            string basepath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string basepath = PswManagerHelperMethods.PathsBuilder.GetWorkingDirectory;
             int curr = 0;
             do {
                 curr++;

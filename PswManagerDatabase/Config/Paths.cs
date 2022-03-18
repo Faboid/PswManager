@@ -17,8 +17,7 @@ namespace PswManagerDatabase.Config {
             }
         }
 
-
-        public readonly static string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public readonly static string WorkingDirectory = PathsBuilder.GetWorkingDirectory;
         private readonly static string ConfigFilePath = Path.Combine(WorkingDirectory, "Config.txt");
 
         private const string passwordsFileName = "Passwords.txt";
