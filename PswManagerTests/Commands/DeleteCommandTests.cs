@@ -1,28 +1,21 @@
 ﻿using PswManagerCommands;
-using PswManagerCommands.Validation;
-using PswManagerDatabase;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands;
-using PswManagerLibrary.Commands.ArgsModels;
 using PswManagerLibrary.Commands.Validation.Attributes;
 using PswManagerTests.Commands.Helper;
+using PswManagerTests.Database.MemoryConnectionTests.Helpers;
 using PswManagerTests.TestsHelpers;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Commands {
 
-    [Collection("TestHelperCollection")]
     public class DeleteCommandTests {
 
         public DeleteCommandTests() {
-            IDataFactory dataFactory = new DataFactory(TestsHelper.Paths);
-            delCommand = new DeleteCommand(dataFactory.GetDataDeleter(), TestsHelper.AutoInput);
-            dataHelper = dataFactory.GetDataHelper();
+            var dbFactory = new MemoryDBHandler(1).SetUpDefaultValues().GetDBFactory();
+            delCommand = new DeleteCommand(dbFactory.GetDataDeleter(), MockedObjects.GetDefaultAutoInput());
+            dataHelper = dbFactory.GetDataHelper();
         }
 
         readonly IDataHelper dataHelper;
@@ -32,8 +25,7 @@ namespace PswManagerTests.Commands {
         public void DeleteSuccessfully() {
 
             //arrange
-            TestsHelper.SetUpDefault();
-            string name = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            string name = DefaultValues.StaticGetValue(0, DefaultValues.TypeValue.Name);
             var obj = ClassBuilder.Build<DeleteCommand>(new List<string> { name });
 
             //act
