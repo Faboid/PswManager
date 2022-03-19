@@ -6,11 +6,16 @@
             EmaCryptoString = new CryptoString(emaPassword);
         }
 
-        public CryptoString PassCryptoString { get; }
-        public CryptoString EmaCryptoString { get; }
+        public CryptoAccount(ICryptoString passCryptoString, ICryptoString emaCryptoString) {
+            PassCryptoString = passCryptoString;
+            EmaCryptoString = emaCryptoString;
+        }
 
-        public CryptoString GetPassCryptoString() => PassCryptoString;
-        public CryptoString GetEmaCryptoString() => EmaCryptoString;
+        public ICryptoString PassCryptoString { get; }
+        public ICryptoString EmaCryptoString { get; }
+
+        public ICryptoString GetPassCryptoString() => PassCryptoString;
+        public ICryptoString GetEmaCryptoString() => EmaCryptoString;
 
 
         public (string encryptedPassword, string encryptedEmail) Encrypt(string password, string email) {
