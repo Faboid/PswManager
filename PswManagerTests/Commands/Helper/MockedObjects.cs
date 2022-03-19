@@ -5,6 +5,10 @@ using PswManagerLibrary.UIConnection;
 namespace PswManagerTests.Commands.Helper {
     internal static class MockedObjects {
 
+        /// <summary>
+        /// Gets an ICryptoString that doesn't encrypt—it will return the same values that are given to it.
+        /// </summary>
+        /// <returns></returns>
         public static ICryptoString GetEmptyCryptoString() {
             var cryptoString = new Mock<ICryptoString>();
             cryptoString.Setup(x => x.Encrypt(It.IsAny<string>())).Returns<string>(x => x);
@@ -31,6 +35,11 @@ namespace PswManagerTests.Commands.Helper {
             return cryptoAccount.Object;
         }
 
+        /// <summary>
+        /// Gets an IUserInput that will mimic an user input. 
+        /// <br/>It will always return "yes" to YesOrNo() and "DefaultComputerAnswer" to any query that asks for a response.
+        /// </summary>
+        /// <returns></returns>
         public static IUserInput GetDefaultAutoInput() {
             const string genericAnswer = "DefaultComputerAnswer";
             var userInput = new Mock<IUserInput>();
