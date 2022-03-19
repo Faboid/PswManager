@@ -57,6 +57,28 @@ namespace PswManagerTests.Database.TextFileConnectionTests {
         }
 
         [Fact]
+        public void UpdateAccountFailure_TriedRenamingToExistingAccountName() {
+
+            //arrange
+            TestsHelper.SetUpDefault();
+
+            string currentName = DefaultValues.StaticGetValue(0, DefaultValues.TypeValue.Name);
+            string newExistingName = DefaultValues.StaticGetValue(1, DefaultValues.TypeValue.Name);
+            var newModel = new AccountModel(newExistingName, null, "yoyo@com");
+
+            //act
+            var currExists = dataEditor.AccountExist(currentName);
+            var newExists = dataEditor.AccountExist(newExistingName);
+            var actual = dataEditor.UpdateAccount(currentName, newModel);
+
+            //assert
+            Assert.True(currExists);
+            Assert.True(newExists);
+            Assert.False(actual.Success);
+
+        }
+
+        [Fact]
         public void UpdateAccountFailure_InexistentAccount() {
 
             //arrange

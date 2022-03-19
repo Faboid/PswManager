@@ -92,7 +92,10 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
 
         public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {
             if(!AccountExist(name)) {
-                return new ConnectionResult<AccountModel>(false, "The given account doesn't exist.");
+                return new(false, "The given account doesn't exist.");
+            }
+            if(name != newModel.Name && AccountExist(newModel.Name)) {
+                return new(false, "There is already an account with that name.");
             }
 
             using var cmd = queriesBuilder.UpdateAccountQuery(name, newModel);
