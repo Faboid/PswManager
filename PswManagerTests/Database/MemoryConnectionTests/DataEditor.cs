@@ -71,6 +71,33 @@ namespace PswManagerTests.Database.MemoryConnectionTests {
 
         }
 
+        [Fact]
+        public void UpdateAccountFailure_TriedRenamingToExistingAccountName() {
+
+            //arrange
+            var dbHandler = new MemoryDBHandler()
+                .SetUpDefaultValues();
+
+            var dataEditor = dbHandler
+                .GetDBFactory()
+                .GetDataEditor();
+
+            string currentName = dbHandler.defaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            string newExistingName = dbHandler.defaultValues.GetValue(1, DefaultValues.TypeValue.Name);
+            var newModel = new AccountModel(newExistingName, null, "yoyo@com");
+
+            //act
+            var currExists = dataEditor.AccountExist(currentName);
+            var newExists = dataEditor.AccountExist(newExistingName);
+            var actual = dataEditor.UpdateAccount(currentName, newModel);
+
+            //assert
+            Assert.True(currExists);
+            Assert.True(newExists);
+            Assert.False(actual.Success);
+
+        }
+
         private static void AssertAccountEqual(AccountModel expected, AccountModel actual) {
             Assert.Equal(expected.Name, actual.Name);
             Assert.Equal(expected.Password, actual.Password);
