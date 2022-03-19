@@ -14,11 +14,12 @@ namespace PswManagerTests.TestsHelpers {
 
         //todo - turn every static value into non-static.
 
-        public static readonly TestsPaths Paths;
-        public static readonly AutoInput AutoInput;
-        public static readonly Token Token;
-        public static readonly CryptoAccount CryptoAccount;
-        public static readonly DefaultValues DefaultValues;
+        public static TestsPaths Paths { get; }
+        public static AutoInput AutoInput { get; }
+        public static Token Token { get; }
+        public static CryptoAccount CryptoAccount { get; }
+        public static DefaultValues DefaultValues { get; }
+
         public const string pswPassword = "pswpassword";
         public const string emaPassword = "emapassword";
 
@@ -27,6 +28,7 @@ namespace PswManagerTests.TestsHelpers {
         static TestsHelper() {
             //get non-existing path to create a folder
             Paths = new TestsPaths();
+
             Directory.CreateDirectory(Paths.WorkingDirectory);
             File.Create(Paths.AccountsFilePath).Close();
             File.Create(Paths.PasswordsFilePath).Close();
