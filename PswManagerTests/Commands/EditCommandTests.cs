@@ -1,29 +1,25 @@
 ﻿using PswManagerCommands;
-using PswManagerCommands.Validation;
-using PswManagerDatabase;
-using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Commands.Validation.Attributes;
-using PswManagerLibrary.Storage;
 using PswManagerTests.Commands.Helper;
+using PswManagerTests.Database.MemoryConnectionTests.Helpers;
 using PswManagerTests.TestsHelpers;
-using System;
 using System.Collections.Generic;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace PswManagerTests.Commands {
-    [Collection("TestHelperCollection")]
     public class EditCommandTests {
 
         public EditCommandTests() {
-            IDataFactory dataFactory = new DataFactory(TestsHelper.Paths);
-            editCommand = new EditCommand(dataFactory.GetDataEditor(), TestsHelper.CryptoAccount);
-            getCommand = new GetCommand(dataFactory.GetDataReader(), TestsHelper.CryptoAccount);
+            dbHandler = new MemoryDBHandler().SetUpDefaultValues();
+            var dbFactory = dbHandler.GetDBFactory();
+            editCommand = new EditCommand(dbFactory.GetDataEditor(), MockedObjects.GetEmptyCryptoAccount());
+            getCommand = new GetCommand(dbFactory.GetDataReader(), MockedObjects.GetEmptyCryptoAccount());
         }
 
         readonly GetCommand getCommand;
         readonly EditCommand editCommand;
+        readonly MemoryDBHandler dbHandler;
 
         public static IEnumerable<object[]> EditSuccessfullyData() {
             static object[] NewObj(string name, string newName, string newPassword, string newEmail, string expected)
@@ -34,7 +30,7 @@ namespace PswManagerTests.Commands {
                     expected
                 };
 
-            var def = TestsHelper.DefaultValues;
+            var def = new DefaultValues(4);
 
             yield return NewObj(def.GetValue(1, DefaultValues.TypeValue.Name), 
                 null, "newPassword1", "newEmail1", 
@@ -56,12 +52,12 @@ namespace PswManagerTests.Commands {
         public void EditSuccessfully(string name, string newName, ICommandInput args, string expected) {
 
             //arrange
-            TestsHelper.SetUpDefault();
+            dbHandler.SetUpDefaultValues();
 
             //act
-            var previous = getCommand.Run(ClassBuilder.Build(getCommand, new List<string>() { name }));
+            var previous = getCommand.Run(ClassBuilder.Build<GetCommand>(new List<string>() { name }));
             editCommand.Run(args);
-            var actual = getCommand.Run(ClassBuilder.Build(getCommand, new List<string>() { newName ?? name }));
+            var actual = getCommand.Run(ClassBuilder.Build<GetCommand>(new List<string>() { newName ?? name }));
 
             //assert
             Assert.NotEqual(previous, actual);
@@ -76,8 +72,9 @@ namespace PswManagerTests.Commands {
                     ClassBuilder.Build<EditCommand>(new List < string > { newPassword, newName, newEmail, name })
                 };
 
-            string validName = TestsHelper.DefaultValues.GetValue(3, DefaultValues.TypeValue.Name);
-            string validName2 = TestsHelper.DefaultValues.GetValue(4, DefaultValues.TypeValue.Name);
+            var defValues = new DefaultValues(5);
+            string validName = defValues.GetValue(3, DefaultValues.TypeValue.Name);
+            string validName2 = defValues.GetValue(4, DefaultValues.TypeValue.Name);
 
             yield return NewObj(ErrorReader.GetRequiredError<EditCommand>("Name"), null, "someValue", "hrhr", "");
             yield return NewObj(ErrorReader.GetError<EditCommand, VerifyAccountExistenceAttribute>("Name"), "fakeAccountName", null, "newPasshere", null);
