@@ -3,12 +3,13 @@ using PswManagerDatabase.Models;
 using PswManagerHelperMethods;
 using PswManagerTests.Database.TextFileConnectionTests.Helpers;
 using PswManagerTests.TestsHelpers;
+using System;
 using System.Linq;
 using Xunit;
 
 namespace PswManagerTests.Database.TextFileConnectionTests {
 
-    public class DataReader {
+    public class DataReader : IDisposable {
 
         public DataReader() {
             dbHandler = new TextDatabaseHandler(dbName, numValues).SetUpDefaultValues();
@@ -65,5 +66,9 @@ namespace PswManagerTests.Database.TextFileConnectionTests {
             Assert.Equal(expected.Email, actual.Email);
         }
 
+        public void Dispose() {
+            dbHandler.Dispose();
+            GC.SuppressFinalize(this);
+        }
     }
 }
