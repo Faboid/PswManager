@@ -1,10 +1,7 @@
 ﻿using PswManagerCommands.Unused.Parsing.Helpers;
 using PswManagerHelperMethods;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PswManagerCommands.Unused.Parsing {
     public class Parser : IParser, IParserReady {
@@ -30,7 +27,7 @@ namespace PswManagerCommands.Unused.Parsing {
 
         public ParsingResult Parse(string input) {
 
-            //todo - fix this terrifying way of validating input
+            //fix this terrifying way of validating input
             if(!input.ValidateInput(Separator, Equal).ToParsingResult(out ParsingResult inputValidationResult)) {
                 return inputValidationResult;
             }

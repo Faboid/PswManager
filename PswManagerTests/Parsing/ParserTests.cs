@@ -1,11 +1,7 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.Unused.Parsing;
 using PswManagerCommands.Unused.Parsing.Attributes;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Parsing {
@@ -19,7 +15,7 @@ namespace PswManagerTests.Parsing {
 
             string separator = parser.Separator;
             char equal = parser.Equal;
-            //todo - as soon as the functionality gets added, put a separator within one of the values
+            //as soon as the functionality gets added, put a separator within one of the values
             string name = "yoyo";
             string password = $"_ghigh riehg :/£$GG";
             string email = "email@here.com";

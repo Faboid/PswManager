@@ -18,7 +18,7 @@ namespace PswManagerCommands.Unused.Validation {
             return validatorsDictionary.Select(x => x.Value).ToList();
         }
 
-        //todo - consider adding an inplicit conversion to simplify operations that require the object
+        //consider adding an inplicit conversion to simplify operations that require the object
         public T GetObject() {
             return obj;
         }
