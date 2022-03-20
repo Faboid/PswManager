@@ -5,10 +5,11 @@ using Xunit;
 using PswManagerDatabase.Models;
 using PswManagerDatabase;
 using PswManagerTests.Database.SQLConnectionTests.Helpers;
+using System;
 
 namespace PswManagerTests.Database.SQLConnectionTests {
 
-    public class DataEditor {
+    public class DataEditor : IDisposable {
 
         public DataEditor() {
             dbHandler = new TestDatabaseHandler(db_Name, numValues);
@@ -84,8 +85,8 @@ namespace PswManagerTests.Database.SQLConnectionTests {
             //arrange
             dbHandler.SetUpDefaultValues();
 
-            string currentName = dbHandler.defaultValues.GetValue(0, DefaultValues.TypeValue.Name);
-            string newExistingName = dbHandler.defaultValues.GetValue(1, DefaultValues.TypeValue.Name);
+            string currentName = dbHandler.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            string newExistingName = dbHandler.DefaultValues.GetValue(1, DefaultValues.TypeValue.Name);
             var newModel = new AccountModel(newExistingName, null, "yoyo@com");
 
             //act
@@ -106,5 +107,9 @@ namespace PswManagerTests.Database.SQLConnectionTests {
             Assert.Equal(expected.Email, actual.Email);
         }
 
+        public void Dispose() {
+            dbHandler.Dispose();
+            GC.SuppressFinalize(this);
+        }
     }
 }

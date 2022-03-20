@@ -6,12 +6,13 @@ using PswManagerHelperMethods;
 using PswManagerLibrary.Storage;
 using PswManagerTests.Database.SQLConnectionTests.Helpers;
 using PswManagerTests.TestsHelpers;
+using System;
 using System.Linq;
 using Xunit;
 
 namespace PswManagerTests.Database.SQLConnectionTests {
 
-    public class DataReader {
+    public class DataReader : IDisposable {
 
         public DataReader() {
             dbHandler = new TestDatabaseHandler(db_Name);
@@ -29,9 +30,9 @@ namespace PswManagerTests.Database.SQLConnectionTests {
             //arrange
             dbHandler.SetUpDefaultValues();
             AccountModel expected = new(
-                dbHandler.defaultValues.GetValue(1, DefaultValues.TypeValue.Name),
-                dbHandler.defaultValues.GetValue(1, DefaultValues.TypeValue.Password),
-                dbHandler.defaultValues.GetValue(1, DefaultValues.TypeValue.Email)
+                dbHandler.DefaultValues.GetValue(1, DefaultValues.TypeValue.Name),
+                dbHandler.DefaultValues.GetValue(1, DefaultValues.TypeValue.Password),
+                dbHandler.DefaultValues.GetValue(1, DefaultValues.TypeValue.Email)
                 );
 
             //act
@@ -47,7 +48,7 @@ namespace PswManagerTests.Database.SQLConnectionTests {
 
             //arrange
             dbHandler.SetUpDefaultValues();
-            var expectedAccounts = dbHandler.defaultValues.GetAll();
+            var expectedAccounts = dbHandler.DefaultValues.GetAll();
 
             //act
             var actual = reader.GetAllAccounts().Value;
@@ -56,7 +57,7 @@ namespace PswManagerTests.Database.SQLConnectionTests {
             Assert.Equal(expectedAccounts.Count, actual.Count);
 
             Enumerable
-                .Range(0, dbHandler.defaultValues.values.Count - 1)
+                .Range(0, dbHandler.DefaultValues.values.Count - 1)
                 .ForEach(i => {
                     AccountEqual(expectedAccounts[i], actual[i]);
                 });
@@ -68,5 +69,9 @@ namespace PswManagerTests.Database.SQLConnectionTests {
             Assert.Equal(expected.Email, actual.Email);
         }
 
+        public void Dispose() {
+            dbHandler.Dispose();
+            GC.SuppressFinalize(this);
+        }
     }
 }

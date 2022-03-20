@@ -12,21 +12,22 @@ namespace PswManagerTests.Database.SQLConnectionTests.Helpers {
         public TestDatabaseHandler(string dbName, int numValues) {
             DatabaseName = $"TestDB_{dbName}";
             dbPath = Path.Combine(WorkingDirectory, "Data", $"{DatabaseName}.db");
-            defaultValues = new DefaultValues(numValues);
+            DefaultValues = new DefaultValues(numValues);
         }
+
+        public DefaultValues DefaultValues { get; init; }
 
         private static readonly string WorkingDirectory = PswManagerHelperMethods.PathsBuilder.GetWorkingDirectory;
         private readonly string dbPath;
-        public IDataCreator dataCreator;
-        public DefaultValues defaultValues;
-        public string DatabaseName;
+        private IDataCreator dataCreator;
+        public readonly string DatabaseName;
 
         public void SetUpDefaultValues() {
             //reset database
             File.Delete(dbPath);
             dataCreator = new DataFactory(DatabaseName).GetDataCreator();
             
-            foreach(var value in defaultValues.values) {
+            foreach(var value in DefaultValues.values) {
                 var account = DefaultValues.ToAccount(value);
                 dataCreator.CreateAccount(account);
             }
