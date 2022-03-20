@@ -1,6 +1,5 @@
 ﻿using PswManagerDatabase;
 using PswManagerDatabase.DataAccess.Interfaces;
-using PswManagerDatabase.Models;
 using PswManagerTests.TestsHelpers;
 using System;
 using System.IO;
@@ -8,10 +7,12 @@ using System.IO;
 namespace PswManagerTests.Database.SQLConnectionTests.Helpers {
     internal class TestDatabaseHandler : IDisposable {
 
-        public TestDatabaseHandler(string dbName) {
+        public TestDatabaseHandler(string dbName) : this(dbName, 5) { }
+
+        public TestDatabaseHandler(string dbName, int numValues) {
             DatabaseName = $"TestDB_{dbName}";
             dbPath = Path.Combine(WorkingDirectory, "Data", $"{DatabaseName}.db");
-            defaultValues = new DefaultValues(5);
+            defaultValues = new DefaultValues(numValues);
         }
 
         private static readonly string WorkingDirectory = PswManagerHelperMethods.PathsBuilder.GetWorkingDirectory;
@@ -24,14 +25,10 @@ namespace PswManagerTests.Database.SQLConnectionTests.Helpers {
             //reset database
             File.Delete(dbPath);
             dataCreator = new DataFactory(DatabaseName).GetDataCreator();
-
-            for(int i = 0; i < defaultValues.values.Count; i++) {
-                var name = defaultValues.GetValue(i, DefaultValues.TypeValue.Name);
-                var password = defaultValues.GetValue(i, DefaultValues.TypeValue.Password);
-                var email = defaultValues.GetValue(i, DefaultValues.TypeValue.Email);
-
-                var model = new AccountModel(name, password, email);
-                dataCreator.CreateAccount(model);
+            
+            foreach(var value in defaultValues.values) {
+                var account = DefaultValues.ToAccount(value);
+                dataCreator.CreateAccount(account);
             }
         }
 
