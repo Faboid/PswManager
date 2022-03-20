@@ -1,36 +1,30 @@
-﻿using PswManagerDatabase;
-using PswManagerDatabase.DataAccess;
-using PswManagerDatabase.DataAccess.Interfaces;
+﻿using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;
+using PswManagerTests.Database.TextFileConnectionTests.Helpers;
 using PswManagerTests.TestsHelpers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Database.TextFileConnectionTests {
 
-    [Collection("TestHelperCollection")]
-    public class DataCreator {
+    public class DataCreator : IDisposable {
 
         public DataCreator() {
-            IDataFactory dataFactory = new DataFactory(TestsHelper.Paths);
-            dataCreator = dataFactory.GetDataCreator();
+            dbHandler = new TextDatabaseHandler(dbName, 1).SetUpDefaultValues();
+            dataCreator = dbHandler.GetDBFactory().GetDataCreator();
         }
 
+        readonly TextDatabaseHandler dbHandler;
         readonly IDataCreator dataCreator;
+        const string dbName = "DataCreatorTestsDB";
 
         [Fact]
         public void CreateAccountCorrectly() {
 
             //arrange
-            AccountModel account = new AccountModel("newLovelyAccount", "girhwugrrigjth", "eco@email.yo");
+            var account = new AccountModel("newLovelyAccount", "girhwugrrigjth", "eco@email.yo");
 
             //act
-            EncryptAccountValues(account);
-
             bool exist = dataCreator.AccountExist(account.Name);
             var result = dataCreator.CreateAccount(account);
             
@@ -45,10 +39,9 @@ namespace PswManagerTests.Database.TextFileConnectionTests {
         public void CreateAccountFailure_AlreadyExists() {
 
             //arrange
-            AccountModel account = new AccountModel(TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name), "password", "email");
+            var account = new AccountModel(DefaultValues.StaticGetValue(0, DefaultValues.TypeValue.Name), "password", "email");
 
             //act
-            EncryptAccountValues(account);
             bool exist = dataCreator.AccountExist(account.Name);
             var result = dataCreator.CreateAccount(account);
 
@@ -58,9 +51,9 @@ namespace PswManagerTests.Database.TextFileConnectionTests {
 
         }
 
-        private static void EncryptAccountValues(AccountModel account) {
-            (account.Password, account.Email) = TestsHelper.CryptoAccount.Encrypt(account.Password, account.Email);
+        public void Dispose() {
+            dbHandler.Dispose();
+            GC.SuppressFinalize(this);
         }
-
     }
 }
