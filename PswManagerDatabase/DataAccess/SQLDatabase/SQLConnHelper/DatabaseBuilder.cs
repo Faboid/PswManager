@@ -1,6 +1,6 @@
-﻿using System.Data.SQLite;
+﻿using PswManagerHelperMethods;
+using System.Data.SQLite;
 using System.IO;
-using System.Reflection;
 
 namespace PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper {
     internal class DatabaseBuilder {
@@ -11,7 +11,7 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper {
             SetUpDatabase();
         }
 
-        private static readonly string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private static readonly string WorkingDirectory = PathsBuilder.GetWorkingDirectory;
         private readonly string dataDirectoryPath;
         private readonly string dbPath;
 

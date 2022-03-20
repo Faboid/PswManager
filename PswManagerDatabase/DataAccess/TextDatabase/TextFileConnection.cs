@@ -52,6 +52,9 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
             if(!accountSearcher.AccountExist(name, out int position)) {
                 return new ConnectionResult<AccountModel>(false, "The given account doesn't exist.");
             }
+            if(name != newModel.Name && AccountExist(newModel.Name)) {
+                return new(false, "There is already an account with that name.");
+            }
 
             lengthCounter.ValidateLength(position);
 

@@ -1,24 +1,21 @@
 ﻿using PswManagerCommands;
-using PswManagerDatabase;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Commands.Validation.Attributes;
 using PswManagerTests.Commands.Helper;
+using PswManagerTests.Database.MemoryConnectionTests.Helpers;
 using PswManagerTests.TestsHelpers;
-using System;
 using System.Collections.Generic;
 using Xunit;
 
 namespace PswManagerTests.Commands {
 
-    [Collection("TestHelperCollection")]
     public class AddCommandTests {
 
         public AddCommandTests() {
-            IDataFactory dataFactory = new DataFactory(TestsHelper.Paths);
-            addCommand = new AddCommand(dataFactory.GetDataCreator(), TestsHelper.CryptoAccount);
-            dataHelper = dataFactory.GetDataHelper();
-            TestsHelper.SetUpDefault();
+            var dbFactory = new MemoryDBHandler(1).SetUpDefaultValues().GetDBFactory();
+            addCommand = new AddCommand(dbFactory.GetDataCreator(), MockedObjects.GetEmptyCryptoAccount());
+            dataHelper = dbFactory.GetDataHelper();
         }
 
         readonly IDataHelper dataHelper;
@@ -53,7 +50,7 @@ namespace PswManagerTests.Commands {
                     ClassBuilder.Build<AddCommand>(new List<string> { password, name, email}) 
                 };
 
-            string existingName = TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            string existingName = DefaultValues.StaticGetValue(0, DefaultValues.TypeValue.Name);
             string validName = "someRandomNonexistentAccountName";
 
             //check for empty/null values

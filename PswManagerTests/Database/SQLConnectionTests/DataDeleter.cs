@@ -3,10 +3,11 @@ using PswManagerDatabase;
 using PswManagerTests.TestsHelpers;
 using Xunit;
 using PswManagerTests.Database.SQLConnectionTests.Helpers;
+using System;
 
 namespace PswManagerTests.Database.SQLConnectionTests {
 
-    public class DataDeleter {
+    public class DataDeleter : IDisposable {
 
         public DataDeleter() : base() {
             dbHandler = new TestDatabaseHandler(db_Name);
@@ -23,7 +24,7 @@ namespace PswManagerTests.Database.SQLConnectionTests {
 
             //arrange
             dbHandler.SetUpDefaultValues();
-            string name = dbHandler.defaultValues.GetValue(1, DefaultValues.TypeValue.Name);
+            string name = dbHandler.DefaultValues.GetValue(1, DefaultValues.TypeValue.Name);
             bool exists;
 
             //act
@@ -52,6 +53,11 @@ namespace PswManagerTests.Database.SQLConnectionTests {
             Assert.False(exists);
             Assert.False(result.Success);
 
+        }
+
+        public void Dispose() {
+            dbHandler.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -1,26 +1,26 @@
 ﻿using PswManagerDatabase.DataAccess.Interfaces;
-using PswManagerDatabase.DataAccess;
-using PswManagerLibrary.Storage;
 using PswManagerTests.TestsHelpers;
 using System.Collections.Generic;
 using Xunit;
 using PswManagerDatabase.Models;
-using PswManagerDatabase;
+using PswManagerTests.Database.TextFileConnectionTests.Helpers;
+using System;
 
 namespace PswManagerTests.Database.TextFileConnectionTests {
 
-    [Collection("TestHelperCollection")]
-    public class DataEditor {
+    public class DataEditor : IDisposable {
 
         public DataEditor() {
-            IDataFactory dataFactory = new DataFactory(TestsHelper.Paths);
-            dataEditor = dataFactory.GetDataEditor();
+            dbHandler = new TextDatabaseHandler(dbName, 3).SetUpDefaultValues();
+            dataEditor = dbHandler.GetDBFactory().GetDataEditor();
         }
 
         readonly IDataEditor dataEditor;
+        readonly TextDatabaseHandler dbHandler;
+        const string dbName = "DataEditorTestsDB";
 
         public static IEnumerable<object[]> UpdateAccountCorrectlyData() {
-            var def = TestsHelper.DefaultValues;
+            var def = new DefaultValues(3);
 
             yield return new object[] {
                 def.GetValue(1, DefaultValues.TypeValue.Name), 
@@ -44,15 +44,35 @@ namespace PswManagerTests.Database.TextFileConnectionTests {
         public void UpdateAccountCorrectly(string name, AccountModel newAccount, AccountModel expected) {
 
             //arrange
-            TestsHelper.SetUpDefault();
-            EncryptAccountValues(newAccount);
+            dbHandler.SetUpDefaultValues();
 
             //act
             var actual = dataEditor.UpdateAccount(name, newAccount).Value;
-            DecryptAccountValues(actual);
 
             //assert
             AccountEqual(expected, actual);
+
+        }
+
+        [Fact]
+        public void UpdateAccountFailure_TriedRenamingToExistingAccountName() {
+
+            //arrange
+            dbHandler.SetUpDefaultValues();
+
+            string currentName = DefaultValues.StaticGetValue(0, DefaultValues.TypeValue.Name);
+            string newExistingName = DefaultValues.StaticGetValue(1, DefaultValues.TypeValue.Name);
+            var newModel = new AccountModel(newExistingName, null, "yoyo@com");
+
+            //act
+            var currExists = dataEditor.AccountExist(currentName);
+            var newExists = dataEditor.AccountExist(newExistingName);
+            var actual = dataEditor.UpdateAccount(currentName, newModel);
+
+            //assert
+            Assert.True(currExists);
+            Assert.True(newExists);
+            Assert.False(actual.Success);
 
         }
 
@@ -72,21 +92,15 @@ namespace PswManagerTests.Database.TextFileConnectionTests {
 
         }
 
-        private static void EncryptAccountValues(AccountModel account) {
-            var cryptoAccount = TestsHelper.CryptoAccount;
-            account.Password = (account.Password != null)? cryptoAccount.PassCryptoString.Encrypt(account.Password) : null;
-            account.Email = (account.Email != null)? cryptoAccount.EmaCryptoString.Encrypt(account.Email) : null;
-        }
-
-        private static void DecryptAccountValues(AccountModel account) {
-            (account.Password, account.Email) = TestsHelper.CryptoAccount.Decrypt(account.Password, account.Email);
-        }
-
         private static void AccountEqual(AccountModel expected, AccountModel actual) {
             Assert.Equal(expected.Name, actual.Name);
             Assert.Equal(expected.Password, actual.Password);
             Assert.Equal(expected.Email, actual.Email);
         }
 
+        public void Dispose() {
+            dbHandler.Dispose();
+            GC.SuppressFinalize(this);
+        }
     }
 }

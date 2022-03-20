@@ -1,29 +1,15 @@
-﻿using PswManagerDatabase.DataAccess.Interfaces;
-using PswManagerTests.TestsHelpers;
+﻿using PswManagerTests.TestsHelpers;
 using System.Collections.Generic;
 using Xunit;
 using PswManagerDatabase.Models;
-using PswManagerDatabase;
-using PswManagerTests.Database.SQLConnectionTests.Helpers;
-using System;
+using PswManagerTests.Database.MemoryConnectionTests.Helpers;
 
-namespace PswManagerTests.Database.SQLConnectionTests {
+namespace PswManagerTests.Database.MemoryConnectionTests {
 
-    public class DataEditor : IDisposable {
-
-        public DataEditor() {
-            dbHandler = new TestDatabaseHandler(db_Name, numValues);
-            IDataFactory dataFactory = new DataFactory(dbHandler.DatabaseName);
-            dataEditor = dataFactory.GetDataEditor();
-        }
-
-        const string db_Name = "DataEditorTestsDB";
-        readonly IDataEditor dataEditor;
-        readonly TestDatabaseHandler dbHandler;
-        const int numValues = 5;
+    public class DataEditor {
 
         public static IEnumerable<object[]> UpdateAccountCorrectlyData() {
-            var def = new DefaultValues(numValues);
+            var def = new DefaultValues(5);
 
             yield return new object[] {
                 def.GetValue(1, DefaultValues.TypeValue.Name),
@@ -52,7 +38,10 @@ namespace PswManagerTests.Database.SQLConnectionTests {
         public void UpdateAccountCorrectly(string name, AccountModel newAccount, AccountModel expected) {
 
             //arrange
-            dbHandler.SetUpDefaultValues();
+            var dataEditor = new MemoryDBHandler()
+                .SetUpDefaultValues()
+                .GetDBFactory()
+                .GetDataEditor();
 
             //act
             var actual = dataEditor.UpdateAccount(name, newAccount).Value;
@@ -66,7 +55,10 @@ namespace PswManagerTests.Database.SQLConnectionTests {
         public void UpdateAccountFailure_InexistentAccount() {
 
             //arrange
-            dbHandler.SetUpDefaultValues();
+            var dataEditor = new MemoryDBHandler()
+                .SetUpDefaultValues()
+                .GetDBFactory()
+                .GetDataEditor();
             string inexistantName = "girhguegjpwkhdu";
 
             //act
@@ -83,10 +75,15 @@ namespace PswManagerTests.Database.SQLConnectionTests {
         public void UpdateAccountFailure_TriedRenamingToExistingAccountName() {
 
             //arrange
-            dbHandler.SetUpDefaultValues();
+            var dbHandler = new MemoryDBHandler()
+                .SetUpDefaultValues();
 
-            string currentName = dbHandler.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name);
-            string newExistingName = dbHandler.DefaultValues.GetValue(1, DefaultValues.TypeValue.Name);
+            var dataEditor = dbHandler
+                .GetDBFactory()
+                .GetDataEditor();
+
+            string currentName = dbHandler.defaultValues.GetValue(0, DefaultValues.TypeValue.Name);
+            string newExistingName = dbHandler.defaultValues.GetValue(1, DefaultValues.TypeValue.Name);
             var newModel = new AccountModel(newExistingName, null, "yoyo@com");
 
             //act
@@ -107,9 +104,5 @@ namespace PswManagerTests.Database.SQLConnectionTests {
             Assert.Equal(expected.Email, actual.Email);
         }
 
-        public void Dispose() {
-            dbHandler.Dispose();
-            GC.SuppressFinalize(this);
-        }
     }
 }

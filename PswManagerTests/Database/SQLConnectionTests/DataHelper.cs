@@ -2,11 +2,12 @@
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerTests.Database.SQLConnectionTests.Helpers;
 using PswManagerTests.TestsHelpers;
+using System;
 using System.Collections.Generic;
 using Xunit;
 
 namespace PswManagerTests.Database.SQLConnectionTests {
-    public class DataHelper {
+    public class DataHelper : IDisposable {
 
         public DataHelper() {
             dbHandler = new TestDatabaseHandler(db_Name);
@@ -39,5 +40,8 @@ namespace PswManagerTests.Database.SQLConnectionTests {
 
         }
 
+        public void Dispose() {
+            dbHandler.Dispose();
+        }
     }
 }

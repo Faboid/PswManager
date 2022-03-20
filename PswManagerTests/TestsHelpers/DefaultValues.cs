@@ -15,6 +15,21 @@ namespace PswManagerTests.TestsHelpers {
             return values.GetValue(position, type);
         }
 
+        public static string[] SplitValues(string values) {
+            return values.Split(' ');
+        }
+
+        public static AccountModel ToAccount(string values) {
+            var splitValues = SplitValues(values);
+            var account = new AccountModel() {
+                Name = splitValues[0],
+                Password = splitValues[1],
+                Email = splitValues[2]
+            };
+
+            return account;
+        }
+
         public DefaultValues(int generateAmount) {
             var values = new List<string>();
 

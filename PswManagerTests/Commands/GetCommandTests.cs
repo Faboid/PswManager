@@ -1,22 +1,19 @@
 ﻿using PswManagerCommands;
-using PswManagerCommands.Validation;
-using PswManagerDatabase;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Commands.Validation.Attributes;
 using PswManagerTests.Commands.Helper;
+using PswManagerTests.Database.MemoryConnectionTests.Helpers;
 using PswManagerTests.TestsHelpers;
-using System;
 using System.Collections.Generic;
 using Xunit;
 
 namespace PswManagerTests.Commands {
 
-    [Collection("TestHelperCollection")]
     public class GetCommandTests {
 
         public GetCommandTests() {
-            IDataFactory dataFactory = new DataFactory(TestsHelper.Paths);
-            getCommand = new GetCommand(dataFactory.GetDataReader(), TestsHelper.CryptoAccount);
+            var dbFactory = new MemoryDBHandler(1).SetUpDefaultValues().GetDBFactory();
+            getCommand = new GetCommand(dbFactory.GetDataReader(), MockedObjects.GetEmptyCryptoAccount());
         }
 
         readonly GetCommand getCommand;
@@ -26,13 +23,13 @@ namespace PswManagerTests.Commands {
 
             //arrange
             CommandResult result;
-            var obj = ClassBuilder.Build<GetCommand>(new List<string>() { TestsHelper.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name) });
+            var obj = ClassBuilder.Build<GetCommand>(new List<string>() { DefaultValues.StaticGetValue(0, DefaultValues.TypeValue.Name) });
 
             //act
             result = getCommand.Run(obj);
 
             //assert
-            Assert.Equal(TestsHelper.DefaultValues.values[0], result.QueryReturnValue);
+            Assert.Equal(new DefaultValues(1).values[0], result.QueryReturnValue);
 
         }
 

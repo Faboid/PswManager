@@ -1,13 +1,12 @@
 ﻿using PswManagerDatabase.Config;
 using System;
 using System.IO;
-using System.Reflection;
 using Xunit;
 
 namespace PswManagerTests.Database.Config {
     public sealed class PathsTests : IDisposable {
 
-        static readonly string WorkingDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        static readonly string WorkingDirectory = PswManagerHelperMethods.PathsBuilder.GetWorkingDirectory;
         static readonly string TempMainPath = Path.Combine(WorkingDirectory, "ewfsgeweqrqrqrttwqagrthhrjyjewrew"); //gibberish to make sure it's not an existing folder
         static readonly string ConfigFilePath = Path.Combine(WorkingDirectory, "Config.txt");
 

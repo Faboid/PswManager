@@ -43,7 +43,7 @@ namespace PswManagerTests.Database.SQLConnectionTests {
 
             //arrange
             dbHandler.SetUpDefaultValues();
-            AccountModel account = new(dbHandler.defaultValues.GetValue(0, DefaultValues.TypeValue.Name), "password", "email");
+            AccountModel account = new(dbHandler.DefaultValues.GetValue(0, DefaultValues.TypeValue.Name), "password", "email");
 
             //act
             bool exist = dataCreator.AccountExist(account.Name);

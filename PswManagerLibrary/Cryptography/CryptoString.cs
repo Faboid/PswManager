@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace PswManagerLibrary.Cryptography {
-    public class CryptoString {
+    public class CryptoString : ICryptoString {
         //This class is a refactored version of "A Gazhal"'s answer on https://stackoverflow.com/questions/10168240/encrypting-decrypting-a-string-in-c-sharp
 
         //todo - change the salt from constant to randomized

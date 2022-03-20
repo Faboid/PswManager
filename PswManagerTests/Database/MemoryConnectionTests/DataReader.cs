@@ -1,39 +1,39 @@
 ﻿using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;
 using PswManagerHelperMethods;
-using PswManagerTests.Database.TextFileConnectionTests.Helpers;
+using PswManagerTests.Database.MemoryConnectionTests.Helpers;
 using PswManagerTests.TestsHelpers;
 using System.Linq;
 using Xunit;
 
-namespace PswManagerTests.Database.TextFileConnectionTests {
+namespace PswManagerTests.Database.MemoryConnectionTests {
 
     public class DataReader {
 
         public DataReader() {
-            dbHandler = new TextDatabaseHandler(dbName, numValues).SetUpDefaultValues();
-            reader = dbHandler.GetDBFactory().GetDataReader();
+            dbHandler = new MemoryDBHandler();
+            reader = dbHandler
+                .SetUpDefaultValues()
+                .GetDBFactory()
+                .GetDataReader();
         }
 
         readonly IDataReader reader;
-        readonly TextDatabaseHandler dbHandler;
-        const string dbName = "DataReaderTestsDB";
-        readonly int numValues = 3;
+        readonly MemoryDBHandler dbHandler;
 
         [Fact]
         public void GetOneShouldReturn() {
 
             //arrange
+            dbHandler.SetUpDefaultValues();
             AccountModel expected = new(
-                dbHandler.DefaultValues.GetValue(1, DefaultValues.TypeValue.Name),
-                dbHandler.DefaultValues.GetValue(1, DefaultValues.TypeValue.Password),
-                dbHandler.DefaultValues.GetValue(1, DefaultValues.TypeValue.Email)
+                dbHandler.defaultValues.GetValue(1, DefaultValues.TypeValue.Name),
+                dbHandler.defaultValues.GetValue(1, DefaultValues.TypeValue.Password),
+                dbHandler.defaultValues.GetValue(1, DefaultValues.TypeValue.Email)
                 );
 
-            string name = dbHandler.DefaultValues.GetValue(1, DefaultValues.TypeValue.Name);
-
             //act
-            var actual = reader.GetAccount(name);
+            var actual = reader.GetAccount(expected.Name);
 
             //assert
             AccountEqual(expected, actual.Value);
@@ -44,7 +44,7 @@ namespace PswManagerTests.Database.TextFileConnectionTests {
         public void GetAllShouldGetAll() {
 
             //arrange
-            var expectedAccounts = new DefaultValues(numValues).GetAll();
+            var expectedAccounts = dbHandler.defaultValues.GetAll();
 
             //act
             var actual = reader.GetAllAccounts().Value;
@@ -53,7 +53,7 @@ namespace PswManagerTests.Database.TextFileConnectionTests {
             Assert.Equal(expectedAccounts.Count, actual.Count);
 
             Enumerable
-                .Range(0, numValues)
+                .Range(0, dbHandler.defaultValues.values.Count - 1)
                 .ForEach(i => {
                     AccountEqual(expectedAccounts[i], actual[i]);
                 });
