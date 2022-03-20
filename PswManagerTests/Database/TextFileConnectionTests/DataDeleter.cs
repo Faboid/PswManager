@@ -40,7 +40,6 @@ namespace PswManagerTests.Database.TextFileConnectionTests {
         public void DeleteFailure_NonExistentName() {
 
             //arrange
-            TestsHelper.SetUpDefault();
             string name = "randomInexistentName";
             bool exists;
 
