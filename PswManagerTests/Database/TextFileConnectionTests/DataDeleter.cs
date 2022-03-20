@@ -1,32 +1,29 @@
 ﻿using PswManagerDatabase.DataAccess.Interfaces;
-using PswManagerDatabase.Config;
-using PswManagerDatabase;
 using PswManagerTests.TestsHelpers;
 using Xunit;
-using System.IO;
 using System;
-using PswManagerDatabase.DataAccess;
+using PswManagerTests.Database.TextFileConnectionTests.Helpers;
 
 namespace PswManagerTests.Database.TextFileConnectionTests {
 
-    [Collection("TestHelperCollection")]
-    public class DataDeleter {
+    public class DataDeleter : IDisposable {
 
         public DataDeleter() : base() {
-            IDataFactory dataFactory = new DataFactory(TestsHelper.Paths);
-            dataDeleter = dataFactory.GetDataDeleter();
-            dataHelper = dataFactory.GetDataHelper();
+            dbHandler = new TextDatabaseHandler(dbName, 2).SetUpDefaultValues();
+            dataDeleter = dbHandler.GetDBFactory().GetDataDeleter();
+            dataHelper = dbHandler.GetDBFactory().GetDataHelper();
         }
 
         readonly IDataDeleter dataDeleter;
         readonly IDataHelper dataHelper;
+        readonly TextDatabaseHandler dbHandler;
+        const string dbName = "DataDeleterTestsDB";
 
         [Fact]
         public void DeleteAccountCorrectly() {
 
             //arrange
-            TestsHelper.SetUpDefault();
-            string name = TestsHelper.DefaultValues.GetValue(1, DefaultValues.TypeValue.Name);
+            string name = DefaultValues.StaticGetValue(1, DefaultValues.TypeValue.Name);
             bool exists;
 
             //act
@@ -55,6 +52,11 @@ namespace PswManagerTests.Database.TextFileConnectionTests {
             Assert.False(exists);
             Assert.False(result.Success);
 
+        }
+
+        public void Dispose() {
+            dbHandler.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }
