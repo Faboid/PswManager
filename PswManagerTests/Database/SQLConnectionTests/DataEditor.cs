@@ -11,7 +11,7 @@ namespace PswManagerTests.Database.SQLConnectionTests {
     public class DataEditor {
 
         public DataEditor() {
-            dbHandler = new TestDatabaseHandler(db_Name);
+            dbHandler = new TestDatabaseHandler(db_Name, numValues);
             IDataFactory dataFactory = new DataFactory(dbHandler.DatabaseName);
             dataEditor = dataFactory.GetDataEditor();
         }
@@ -19,9 +19,10 @@ namespace PswManagerTests.Database.SQLConnectionTests {
         const string db_Name = "DataEditorTestsDB";
         readonly IDataEditor dataEditor;
         readonly TestDatabaseHandler dbHandler;
+        const int numValues = 5;
 
         public static IEnumerable<object[]> UpdateAccountCorrectlyData() {
-            var def = TestsHelper.DefaultValues;
+            var def = new DefaultValues(numValues);
 
             yield return new object[] {
                 def.GetValue(1, DefaultValues.TypeValue.Name),
