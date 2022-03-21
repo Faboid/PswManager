@@ -37,7 +37,7 @@ namespace PswManagerTests.Encryption {
             string password = "rithwydif£ghg\"ytirhs%";
             using var crypto = new CryptoService(password.ToCharArray());
             string valueToTest = "test/ng this r@ndom value!";
-
+            
             //act
             var encryptedValue = crypto.Encrypt(valueToTest);
 
@@ -51,7 +51,7 @@ namespace PswManagerTests.Encryption {
         }
 
         [Fact]
-        public void EncryptToCorrectValue() {
+        public void EncryptToCipherText() {
 
             //arrange
             string password = "rithwy*£^^ghg\"ytirhs%";
@@ -66,19 +66,28 @@ namespace PswManagerTests.Encryption {
 
         }
 
-        [Fact]
-        public void DecryptToCorrectValue() { //if this test breaks, it means there's no backward compatibility
+        [Theory]
+        [InlineData("KAB0AGUAcwB0AC4AMQApACTeLzp0S8GwoO7A37od0KKcU" +
+            "iMW80XmZlNHr7+t9eARkjqrC2KW7lDOdwqy2lQh1nolUgKwbw+nQ6" +
+            "1oR0iNGydP8s1kAHYwFY+96SneAnc+iOpvJKUBiufFUiRS5ptUaCP" +
+            "EnKyl0fsqPexWFOvDt/1Bv9skkb/FxD4qwpanih5v/mp9g3ZpSPLJ" +
+            "ZNx2qZCJFe4AlOJnjGeL328K2Dks6jiSWQR+3JddNqFnGzte+P2Bg" +
+            "v2iUngFzeCU7z8RiMpTFkN9cNxY7ZGMVWWUGfqiZyNkO8vfR8vQUH" +
+            "YRfAZyEIRAgtm8I4HUdPUABP2weY3k6g9FYf0ZMIsiGs3imbspdrq" +
+            "bTK66AJRy8a24dcw=")] //tests "test.1" version
+        [InlineData("KAB0AGUAcwB0AC4AMgApAEVyNd93PloFD4cdm3CnwdG7u" +
+            "UASWgRU177lIox04GOvXVtMlYHi2eXm3Z7BFs6pvPZRpmUE779mas" +
+            "LQNCZctaznPrNGDHAwe0esaS0RRccAu90te0QOrn8MDvTfnusYPBw" +
+            "RLYEqbLsLSJPJmyRExXdEs2bz9v8OW+sgn9ohM9rYT0KSJtZZDsLT" +
+            "mWJo824r03ihdZQKE2+sC6gcWnwGMaZkvpEN6YctgCzysbU1VoUBd" +
+            "hfCrrRA1IuJ0hA8iHKb0OragE7MkujspTk0xsrlYSEEWusT8YtCP0" +
+            "OBLuCUdigB8WFd7N/I+xs/KuYDc771+FMW5FsK4/epOsMl9tQo5Si" +
+            "cr8BV2u2MwyHWgd4=")] //tests "test.2" version
+        public void DecryptToCorrectValue(string valueToTest) { //if this test breaks, it means there's no backward compatibility
 
             //arrange
             string password = "rithwy*£^^ghg\"ytirhs%";
             using var crypto = new CryptoService(password.ToCharArray());
-            string valueToTest = "3n7NRlaJpI7TNB3DwaNxg/XXvbJmghh/OFhge2xl" +
-                "8oUMA2G/auk2yfJLITEtjPyAc401DUsfky6kldjzy2wRXnvv1ATZK6Bcx" +
-                "6erHeoxoK/c5D8N13ERdUAiGzEGirQrdAOK921GQh/R2CcBzU5hqzwhdq" +
-                "f/Ecd8YO0rGvysOkYy9PAF4LeX+ngXEf6hLcDTiAGHyA4ydyq9ujVHUC9" +
-                "fmhJQpJXuJHp9pxhqSI8XQoslOUT5wYEYMHUeZwE5wT9zpo6XCiLTfhQh" +
-                "5j1xRF/4gnK/N2xqqhicx/VqYyw35Iu96sDbnfPhFHwpiLqmGgbI4YYOg" +
-                "Cuu+SlZcgYHJyjKK7ocSCuL2u3FLMLuPw==";
 
             string expectedResult = "test/ng this r@ndom valu?!";
 
