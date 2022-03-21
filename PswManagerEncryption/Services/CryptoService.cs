@@ -1,7 +1,9 @@
 ﻿using PswManagerEncryption.Cryptography;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 
+[assembly: InternalsVisibleTo("PswManagerTests")]
 namespace PswManagerEncryption.Services {
     public class CryptoService : ICryptoService, IDisposable {
         //This class is built upon a derived verions of "A Gazhal"'s answer https://stackoverflow.com/a/27484425/16018958
@@ -10,11 +12,13 @@ namespace PswManagerEncryption.Services {
         private readonly SaltGenerator saltGenerator;
         private readonly Key key;
 
-        public CryptoService(char[] password) {
+        internal CryptoService(char[] password, string version) {
             saltGenerator = new SaltGenerator(password);
             key = new Key(password);
-            versioning = new Versioning("test.2");
+            versioning = new Versioning(version);
         }
+
+        public CryptoService(char[] password) : this(password, "1.00") { }
 
         public string Encrypt(string plainText) {
 

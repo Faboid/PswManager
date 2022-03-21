@@ -35,7 +35,7 @@ namespace PswManagerTests.Encryption {
 
             //arrange
             string password = "rithwydif£ghg\"ytirhs%";
-            using var crypto = new CryptoService(password.ToCharArray());
+            using var crypto = new CryptoService(password.ToCharArray(), "test.1");
             string valueToTest = "test/ng this r@ndom value!";
             
             //act
@@ -55,7 +55,7 @@ namespace PswManagerTests.Encryption {
 
             //arrange
             string password = "rithwy*£^^ghg\"ytirhs%";
-            using var crypto = new CryptoService(password.ToCharArray());
+            using var crypto = new CryptoService(password.ToCharArray(), "test.1");
             string valueToTest = "test/ng this r@ndom valu?!";
 
             //act
