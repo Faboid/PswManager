@@ -8,7 +8,7 @@ namespace PswManagerLibrary.Commands.ArgsModels {
 
         [VerifyAccountExistence(true, "The given account doesn't exist.")]
         [Required]
-        [Request("Name", "Insert the name of the account you wish to delete.")]
+        [Request("Name", "Insert the name of the account you wish to get.")]
         public string Name { get; set; }
 
     }
