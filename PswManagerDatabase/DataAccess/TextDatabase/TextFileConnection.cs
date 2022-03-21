@@ -14,6 +14,7 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
 
         internal TextFileConnection(IPaths paths) {
             this.paths = paths;
+            DatabaseHandler.SetUpMissingFiles(this.paths);
             lengthCounter = new LengthCounter(this.paths);
             accountBuilder = new AccountBuilder(this.paths);
             accountSearcher = new AccountSearcher(this.paths);

@@ -6,7 +6,7 @@ using Xunit;
 namespace PswManagerTests.Database.Config {
     public sealed class PathsTests : IDisposable {
 
-        static readonly string WorkingDirectory = PswManagerHelperMethods.PathsBuilder.GetWorkingDirectory;
+        static readonly string WorkingDirectory = Paths.DataDirectory;
         static readonly string TempMainPath = Path.Combine(WorkingDirectory, "ewfsgeweqrqrqrttwqagrthhrjyjewrew"); //gibberish to make sure it's not an existing folder
         static readonly string ConfigFilePath = Path.Combine(WorkingDirectory, "Config.txt");
 
@@ -43,12 +43,12 @@ namespace PswManagerTests.Database.Config {
 
             //act
             configFileExisted = File.Exists(ConfigFilePath);
-            Paths paths = new Paths();
+            var paths = new Paths();
             configFileExist = File.Exists(ConfigFilePath);
 
             //assert
             Assert.False(configFileExisted);
-            Assert.Equal(WorkingDirectory, Paths.WorkingDirectory);
+            Assert.Equal(WorkingDirectory, Paths.DataDirectory);
             Assert.True(configFileExist);
 
             AssertEqualPaths(expectedPaths, paths);

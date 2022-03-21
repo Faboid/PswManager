@@ -13,12 +13,14 @@ namespace PswManagerDatabase.Config {
         
         public Paths() {
             if(!File.Exists(ConfigFilePath) || !Directory.Exists(GetMain())) {
+                if(!Directory.Exists(DataDirectory)) Directory.CreateDirectory(DataDirectory);
+
                 SetDefaultMain();
             }
         }
 
-        public readonly static string WorkingDirectory = PathsBuilder.GetWorkingDirectory;
-        private readonly static string ConfigFilePath = Path.Combine(WorkingDirectory, "Config.txt");
+        public static string DataDirectory { get; } = Path.Combine(PathsBuilder.GetWorkingDirectory, "Data");
+        private static string ConfigFilePath { get; } = Path.Combine(DataDirectory, "Config.txt");
 
         private const string passwordsFileName = "Passwords.txt";
         private const string accountsFileName = "Accounts.txt";
@@ -102,7 +104,7 @@ namespace PswManagerDatabase.Config {
         }
 
         private void SetDefaultMain() {
-            SetMain(WorkingDirectory);
+            SetMain(DataDirectory);
         }
 
     }
