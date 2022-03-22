@@ -67,22 +67,14 @@ namespace PswManagerTests.Encryption {
         }
 
         [Theory]
-        [InlineData("KAB0AGUAcwB0AC4AMQApACTeLzp0S8GwoO7A37od0KKcU" +
-            "iMW80XmZlNHr7+t9eARkjqrC2KW7lDOdwqy2lQh1nolUgKwbw+nQ6" +
-            "1oR0iNGydP8s1kAHYwFY+96SneAnc+iOpvJKUBiufFUiRS5ptUaCP" +
-            "EnKyl0fsqPexWFOvDt/1Bv9skkb/FxD4qwpanih5v/mp9g3ZpSPLJ" +
-            "ZNx2qZCJFe4AlOJnjGeL328K2Dks6jiSWQR+3JddNqFnGzte+P2Bg" +
-            "v2iUngFzeCU7z8RiMpTFkN9cNxY7ZGMVWWUGfqiZyNkO8vfR8vQUH" +
-            "YRfAZyEIRAgtm8I4HUdPUABP2weY3k6g9FYf0ZMIsiGs3imbspdrq" +
-            "bTK66AJRy8a24dcw=")] //tests "test.1" version
-        [InlineData("KAB0AGUAcwB0AC4AMgApAEVyNd93PloFD4cdm3CnwdG7u" +
-            "UASWgRU177lIox04GOvXVtMlYHi2eXm3Z7BFs6pvPZRpmUE779mas" +
-            "LQNCZctaznPrNGDHAwe0esaS0RRccAu90te0QOrn8MDvTfnusYPBw" +
-            "RLYEqbLsLSJPJmyRExXdEs2bz9v8OW+sgn9ohM9rYT0KSJtZZDsLT" +
-            "mWJo824r03ihdZQKE2+sC6gcWnwGMaZkvpEN6YctgCzysbU1VoUBd" +
-            "hfCrrRA1IuJ0hA8iHKb0OragE7MkujspTk0xsrlYSEEWusT8YtCP0" +
-            "OBLuCUdigB8WFd7N/I+xs/KuYDc771+FMW5FsK4/epOsMl9tQo5Si" +
-            "cr8BV2u2MwyHWgd4=")] //tests "test.2" version
+        [InlineData("KAB0AGUAcwB0AC4AMQApAMHiVZLLhhsr21IRWXhBMA1dl" +
+            "7NGjX8eyeco1IPAaNdecReMVFyX5cyzRlgzbu5JRhHD+cveMVfGdC" +
+            "//pcLQbLdohmAcabrfIa4zbFSDP1yo3j4AijyErbBPska2zCF6lxG" +
+            "4//78jI85og==")] //tests "test.1" version
+        [InlineData("KAB0AGUAcwB0AC4AMgApAFvPFlTN5Fy9xhrE0iASWLTX5" +
+            "4PacfJGucsz4H+A77wHvdYkCciaReI+73c/d5LUGE6o5GMZIW0Q3A" +
+            "/8MS+Yw8k+fymbA1vkYCtm/Z5fGN/rpvpOVG4z0S7AByQNwvBIr9R" +
+            "ZzeVb1az6wA==")] //tests "test.2" version
         public void DecryptToCorrectValue(string valueToTest) { //if this test breaks, it means there's no backward compatibility
 
             //arrange
