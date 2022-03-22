@@ -1,12 +1,19 @@
-﻿using PswManagerLibrary.Cryptography;
+﻿using PswManagerEncryption.Services;
+using PswManagerLibrary.Cryptography;
 using Xunit;
 
 namespace PswManagerTests.Cryptography {
     public class CryptoAccountTests {
 
-        const string passPassword = "ehfgirghriew";
-        const string emaPassword = "euh%£@#[YY**§";
-        readonly CryptoAccount cryptoAccount = new CryptoAccount(passPassword, emaPassword);
+        public CryptoAccountTests() {
+            var passCryptoService = new CryptoService(passPassword, "test.1");
+            var emaCryptoService = new CryptoService(emaPassword, "test.2");
+            cryptoAccount = new CryptoAccount(passCryptoService, emaCryptoService);
+        }
+
+        readonly char[] passPassword = "ehfgirghriew".ToCharArray();
+        readonly char[] emaPassword = "euh%£@#[YY**§".ToCharArray();
+        readonly CryptoAccount cryptoAccount;
 
         [Fact]
         public void EncryptAndDecryptCorrectly() {
@@ -25,20 +32,17 @@ namespace PswManagerTests.Cryptography {
         }
 
         [Fact]
-        public void EncryptToCorrectValue() {
+        public void EncryptToCipherText() {
 
             //arrange
-            (string passValue, string emaValue) values = ("somerandomvalue", "some@colmplex!!value");
-            (string expectedPassValue, string expectedEmaValue) expected = (
-                "EtQsQcCTtJmvYk2MBPCmOnZyhbv6EFtLgVMBfGVtlvg=", 
-                "5VlDYV/r4pUzhwzmBp3i05Jms1zopvqyVQg+ugaa5I9XIH5KUhhych6f6zokWXRa"
-                );
+            (string passValue, string emaValue) = ("somerandomvalue", "some@colmplex!!value");
 
             //act
-            var encryptedValues = cryptoAccount.Encrypt(values);
+            var (encryptedPassword, encryptedEmail) = cryptoAccount.Encrypt((passValue, emaValue));
 
             //assert
-            Assert.Equal(expected, encryptedValues);
+            Assert.NotEqual(passValue, encryptedPassword);
+            Assert.NotEqual(emaValue, encryptedEmail);
 
         }
 
@@ -47,8 +51,8 @@ namespace PswManagerTests.Cryptography {
 
             //arrange
             (string encryptedPassValue, string encryptedEmaValue) encryptedValues = (
-                "EtQsQcCTtJmvYk2MBPCmOnZyhbv6EFtLgVMBfGVtlvg=",
-                "5VlDYV/r4pUzhwzmBp3i05Jms1zopvqyVQg+ugaa5I9XIH5KUhhych6f6zokWXRa"
+                "KAB0AGUAcwB0AC4AMQApAKwj9b+YJLx8V2R4EtQDsBfI78d9cOTksBYKJTBvBd1UQ5/0nCA5CpW4R4T4/+N159zpba/tPH/qNdBP0Wh7lJ3jFPB2XwWSSZ/D4WA=",
+                "KAB0AGUAcwB0AC4AMgApAJ9sQm+IrJzIt5dPktkKIHbxvW+d0WfhTx8eaqk8nqcsUgSdeQKHBcLTO6ltOQrNVzpF2TzoijztOsiOmNf7Uvmf0paUBDPUK9QsZVKQ3gFMotr9KFpIj/G4gtDunBLyhPy5xI1pTv08+ZJf"
                 );
             (string expectedPassValue, string expectedEmaValue) expectedValues = ("somerandomvalue", "some@colmplex!!value");
 

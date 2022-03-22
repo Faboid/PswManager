@@ -1,21 +1,23 @@
-﻿namespace PswManagerLibrary.Cryptography {
+﻿using PswManagerEncryption.Services;
+
+namespace PswManagerLibrary.Cryptography {
     public class CryptoAccount : ICryptoAccount {
 
-        public CryptoAccount(string passPassword, string emaPassword) {
-            PassCryptoString = new CryptoString(passPassword);
-            EmaCryptoString = new CryptoString(emaPassword);
+        public CryptoAccount(char[] passPassword, char[] emaPassword) {
+            PassCryptoString = new CryptoService(passPassword);
+            EmaCryptoString = new CryptoService(emaPassword);
         }
 
-        public CryptoAccount(ICryptoString passCryptoString, ICryptoString emaCryptoString) {
+        public CryptoAccount(ICryptoService passCryptoString, ICryptoService emaCryptoString) {
             PassCryptoString = passCryptoString;
             EmaCryptoString = emaCryptoString;
         }
 
-        public ICryptoString PassCryptoString { get; }
-        public ICryptoString EmaCryptoString { get; }
+        public ICryptoService PassCryptoString { get; }
+        public ICryptoService EmaCryptoString { get; }
 
-        public ICryptoString GetPassCryptoString() => PassCryptoString;
-        public ICryptoString GetEmaCryptoString() => EmaCryptoString;
+        public ICryptoService GetPassCryptoService() => PassCryptoString;
+        public ICryptoService GetEmaCryptoService() => EmaCryptoString;
 
 
         public (string encryptedPassword, string encryptedEmail) Encrypt(string password, string email) {

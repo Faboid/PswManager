@@ -1,8 +1,10 @@
-﻿namespace PswManagerLibrary.Cryptography {
+﻿using PswManagerEncryption.Services;
+
+namespace PswManagerLibrary.Cryptography {
     public interface ICryptoAccount {
 
-        public ICryptoString GetPassCryptoString();
-        public ICryptoString GetEmaCryptoString();
+        public ICryptoService GetPassCryptoService();
+        public ICryptoService GetEmaCryptoService();
 
         public (string encryptedPassword, string encryptedEmail) Encrypt(string password, string email);
 
