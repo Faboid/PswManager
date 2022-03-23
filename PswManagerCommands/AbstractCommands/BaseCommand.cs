@@ -3,8 +3,6 @@ using PswManagerCommands.Validation.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PswManagerCommands.AbstractCommands {
 
@@ -25,6 +23,7 @@ namespace PswManagerCommands.AbstractCommands {
         /// <br/>Note: The given input will be cast to <see cref="TInput"/>. You can get <see cref="TInput"/>'s type by calling <see cref="GetCommandInputType"/>.
         /// </summary>
         /// <param name="arguments"></param>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="arguments"/> is null.</exception>
         /// <returns></returns>
         public CommandResult Run(ICommandInput arguments) {
             TInput input = (TInput)arguments;
@@ -48,8 +47,13 @@ namespace PswManagerCommands.AbstractCommands {
         /// <br/>Note: The given input will be cast to <see cref="TInput"/>. You can get <see cref="TInput"/>'s type by calling <see cref="GetCommandInputType"/>.
         /// </summary>
         /// <param name="arguments"></param>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="arguments"/> is null.</exception>
         /// <returns></returns>
         public (bool success, IEnumerable<string> errorMessages) Validate(ICommandInput arguments) {
+            if(arguments is null) {
+                throw new ArgumentNullException(nameof(arguments), "The given object is null.");
+            }
+
             TInput input = (TInput)arguments;
             var errorMessages = GetValidator().Validate(input);
             errorMessages = errorMessages.Concat(ExtraValidation(input) ?? Enumerable.Empty<string>());
