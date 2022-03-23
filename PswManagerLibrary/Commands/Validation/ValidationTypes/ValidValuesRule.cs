@@ -2,10 +2,7 @@
 using PswManagerCommands.Validation.Models;
 using PswManagerLibrary.Commands.Validation.Attributes;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PswManagerLibrary.Commands.Validation.ValidationTypes {
     internal class ValidValuesRule : ValidationRule {
@@ -15,6 +12,10 @@ namespace PswManagerLibrary.Commands.Validation.ValidationTypes {
         }
 
         protected override bool InnerLogic(RuleAttribute attribute, object value) {
+            if(value == null) {
+                return false;
+            }
+
             var validKeys = (attribute as ValidValuesAttribute).ValidValues;
 
             return (value as string)
