@@ -20,7 +20,7 @@ namespace PswManagerTests.Commands {
         readonly GetAllCommand getAllCommand;
 
         public static IEnumerable<object[]> CommandSuccessData() {
-            static object[] NewObject(IEnumerable<string> expectedValues, params string[] input) => new object[] { input, expectedValues.ToArray() };
+            static object[] NewObject(IEnumerable<string> expectedValues, params string[] input) => new object[] { string.Join(' ', input), expectedValues.ToArray() };
             var dict = new Dictionary<int, DefaultValues.TypeValue> {
                 { 0, DefaultValues.TypeValue.Name },
                 { 1, DefaultValues.TypeValue.Password },
@@ -43,15 +43,16 @@ namespace PswManagerTests.Commands {
             //tests getting all
             yield return NewObject(accountsPositions.Select(x => defValues.values[x]));
             yield return NewObject(accountsPositions.Select(x => defValues.values[x]), "names", "passwords", "emails");
+            yield return new object[] { null, accountsPositions.Select(x => defValues.values[x]) };
         }
 
         [Theory]
         [MemberData(nameof(CommandSuccessData))]
-        public void CommandSuccess(string[] input, string[] expectedValues) {
+        public void CommandSuccess(string input, string[] expectedValues) {
 
             //arrange
             CommandResult result;
-            var obj = ClassBuilder.Build<GetAllCommand>(new List<string>() { string.Join(' ', input) });
+            var obj = ClassBuilder.Build<GetAllCommand>(new List<string>() { input });
 
             //act
             result = getAllCommand.Run(obj);
@@ -62,19 +63,21 @@ namespace PswManagerTests.Commands {
         }
 
         public static IEnumerable<object[]> ExpectedValidationFailuresData() {
+            static object[] NewObj(string errorMessage, params string[] keys) => new object[] { errorMessage, string.Join(' ', keys) };
 
-            yield return new object[] { GetAllCommand.InexistentKeyErrorMessage, new string[] { "fakeKey", "names" } };
-            yield return new object[] { GetAllCommand.DuplicateKeyErrorMessage, new string[] { "names", "names", "passwords" } };
+            yield return NewObj(GetAllCommand.InexistentKeyErrorMessage, "fakeKey", "names");
+            yield return NewObj(GetAllCommand.DuplicateKeyErrorMessage, "names", "names", "passwords");
+
         }
 
         [Theory]
         [MemberData(nameof(ExpectedValidationFailuresData))]
-        public void ExpectedValidationFailures(string expectedErrorMessage, params string[] args) {
+        public void ExpectedValidationFailures(string expectedErrorMessage, string keys) {
 
             //arrange
             bool valid;
             CommandResult result;
-            var obj = ClassBuilder.Build<GetAllCommand>(new List<string>() { string.Join(' ', args) });
+            var obj = ClassBuilder.Build<GetAllCommand>(new List<string>() { keys });
 
             //act
             valid = getAllCommand.Validate(obj).success;

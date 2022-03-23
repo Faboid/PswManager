@@ -12,8 +12,11 @@ namespace PswManagerLibrary.Commands.Validation.ValidationTypes {
         }
 
         protected override bool InnerLogic(RuleAttribute attribute, object value) {
+
+            //as this only cares on whether the values within are valid,
+            //null is a-okay, as it expresses the "lack" of values
             if(value == null) {
-                return false;
+                return true;
             }
 
             var validKeys = (attribute as ValidValuesAttribute).ValidValues;
