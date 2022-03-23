@@ -1,4 +1,5 @@
 ﻿using Moq;
+using PswManagerEncryption.Services;
 using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.UIConnection;
 
@@ -9,8 +10,8 @@ namespace PswManagerTests.Commands.Helper {
         /// Gets an ICryptoString that doesn't encrypt—it will return the same values that are given to it.
         /// </summary>
         /// <returns></returns>
-        public static ICryptoString GetEmptyCryptoString() {
-            var cryptoString = new Mock<ICryptoString>();
+        public static ICryptoService GetEmptyCryptoString() {
+            var cryptoString = new Mock<ICryptoService>();
             cryptoString.Setup(x => x.Encrypt(It.IsAny<string>())).Returns<string>(x => x);
             cryptoString.Setup(x => x.Decrypt(It.IsAny<string>())).Returns<string>(x => x);
 
@@ -25,8 +26,8 @@ namespace PswManagerTests.Commands.Helper {
             var cryptoString = GetEmptyCryptoString();
 
             var cryptoAccount = new Mock<ICryptoAccount>();
-            cryptoAccount.Setup(x => x.GetPassCryptoString()).Returns(cryptoString);
-            cryptoAccount.Setup(x => x.GetEmaCryptoString()).Returns(cryptoString);
+            cryptoAccount.Setup(x => x.GetPassCryptoService()).Returns(cryptoString);
+            cryptoAccount.Setup(x => x.GetEmaCryptoService()).Returns(cryptoString);
             cryptoAccount.Setup(x => x.Encrypt(It.IsAny<(string, string)>())).Returns<(string, string)>(x => x);
             cryptoAccount.Setup(x => x.Decrypt(It.IsAny<(string, string)>())).Returns<(string, string)>(x => x);
             cryptoAccount.Setup(x => x.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns<string, string>((pass, ema) => (pass, ema));

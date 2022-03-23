@@ -9,7 +9,7 @@ namespace PswManagerConsole {
 
             UserInput userInput = new UserInput();
             //a temporary password for testing. Will be removed once the initial setup is fully complete.
-            CryptoAccount cryptoAccount = new CryptoAccount("gheerwiahgkth", "ewrgrthrer");
+            CryptoAccount cryptoAccount = new CryptoAccount("gheerwiahgkth".ToCharArray(), "ewrgrthrer".ToCharArray());
 
             Console.WriteLine("Welcome to PswManager! Please insert a command.");
 

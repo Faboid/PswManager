@@ -23,10 +23,10 @@ namespace PswManagerLibrary.Commands {
             AccountModel newValues = new();
             newValues.Name = arguments.NewName;
             if(!string.IsNullOrWhiteSpace(arguments.NewPassword)) {
-                newValues.Password = cryptoAccount.GetPassCryptoString().Encrypt(arguments.NewPassword);
+                newValues.Password = cryptoAccount.GetPassCryptoService().Encrypt(arguments.NewPassword);
             }
             if(!string.IsNullOrWhiteSpace(arguments.NewEmail)) {
-                newValues.Email = cryptoAccount.GetEmaCryptoString().Encrypt(arguments.NewEmail);
+                newValues.Email = cryptoAccount.GetEmaCryptoService().Encrypt(arguments.NewEmail);
             }
 
             dataEditor.UpdateAccount(arguments.Name, newValues);
