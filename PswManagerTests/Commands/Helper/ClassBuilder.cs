@@ -12,7 +12,7 @@ namespace PswManagerTests.Commands.Helper {
 
         //note: this will crash if given a TCommand whose parent doesn't implement a generic.
         //It's meant to be used with children that inherit from BaseCommand
-        public static ICommandInput Build<TCommand>(List<string> args) where TCommand : ICommand {
+        public static ICommandInput Build<TCommand>(IEnumerable<string> args) where TCommand : ICommand {
             try {
 
                 return Build(typeof(TCommand).BaseType.GetGenericArguments()[0], args);
@@ -22,11 +22,11 @@ namespace PswManagerTests.Commands.Helper {
             }
         }
 
-        public static ICommandInput Build(in ICommand command, List<string> args) {
+        public static ICommandInput Build(in ICommand command, IEnumerable<string> args) {
             return Build(command.GetCommandInputType, args);
         }
 
-        private static ICommandInput Build(Type type, List<string> args) {
+        private static ICommandInput Build(Type type, IEnumerable<string> args) {
 
             ICommandInput output = (ICommandInput)Activator.CreateInstance(type);
 
