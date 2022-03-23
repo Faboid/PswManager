@@ -19,6 +19,11 @@ namespace PswManagerCommands.Validation.Validators {
         /// <param name="obj"></param>
         /// <returns>The errors in string format. If there's none, the validation was successful.</returns>
         public IEnumerable<string> Validate(T obj) {
+            if(obj is null) {
+                yield return "The given object is null.";
+                yield break;
+            }
+
             var errors = autoValidator.Select(x => x.Validate(obj)).SelectMany(x => x).ToList();
             foreach(var err in errors) {
                 yield return err;

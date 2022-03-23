@@ -17,6 +17,11 @@ namespace PswManagerCommands.Validation.Validators {
         }
 
         public IEnumerable<string> Validate(T obj) {
+            if(obj is null) {
+                yield return "The given object is null.";
+                yield break;
+            }
+
             var errors = RequiredPropertiesHaveValues(obj);
             foreach(var e in errors) {
                 yield return e;
