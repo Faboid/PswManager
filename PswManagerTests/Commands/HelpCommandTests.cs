@@ -30,18 +30,21 @@ namespace PswManagerTests.Commands {
         readonly HelpCommand helpCommand;
 
         public static IEnumerable<object[]> GetGenericHelpCorrectlyData() {
-            yield return new object[] { new List<string>() { } };
-            yield return new object[] { new List<string>() { "" } };
-            yield return new object[] { new List<string>() { "   " } };
+            static object[] NewObj(string val) => new object[] { val };
+
+            yield return NewObj(null);
+            yield return NewObj("");
+            yield return NewObj("  ");
+            yield return NewObj("    ");
         }
 
         [Theory]
         [MemberData(nameof(GetGenericHelpCorrectlyData))]
-        public void GetGenericHelpCorrectly(List<string> list) {
+        public void GetGenericHelpCorrectly(string emptyValue) {
 
             //arrange
             string expectedToContain = string.Join("  ", dicCommands.Keys);
-            var obj = ClassBuilder.Build<HelpCommand>(list.ToList());
+            var obj = ClassBuilder.Build<HelpCommand>(new List<string>() { emptyValue });
 
             //act
             var result = helpCommand.Run(obj);
