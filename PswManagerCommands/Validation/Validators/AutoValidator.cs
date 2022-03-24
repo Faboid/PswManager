@@ -33,15 +33,8 @@ namespace PswManagerCommands.Validation.Validators {
                 yield break;
             }
 
-            //todo - refactor this
-            foreach(var (validator, props) in customRules) {
-                foreach(var prop in props) {
-                    RuleAttribute attribute = (RuleAttribute)prop.GetCustomAttribute(validator.GetAttributeType);
-                    bool valid = validator.Validate(attribute, prop.GetValue(obj));
-                    if(!valid) {
-                        yield return attribute.ErrorMessage;
-                    }
-                }
+            foreach(var error in VerifyAllRules(obj)) {
+                yield return error;
             }
         }
 
@@ -53,6 +46,22 @@ namespace PswManagerCommands.Validation.Validators {
             //add error to list
             foreach(var prop in emptyProps) {
                 yield return prop.GetCustomAttribute<RequiredAttribute>().GetErrorMessage(prop);
+            }
+        }
+
+        private IEnumerable<string> VerifyAllRules(T obj) {
+            return customRules
+                .Select(x => VerifyRule(obj, x.validator, x.props))
+                .SelectMany(x => x);
+        }
+
+        private static IEnumerable<string> VerifyRule(T obj, ValidationRule validator, List<PropertyInfo> props) {
+            foreach(var prop in props) {
+                RuleAttribute attribute = (RuleAttribute)prop.GetCustomAttribute(validator.GetAttributeType);
+                bool valid = validator.Validate(attribute, prop.GetValue(obj));
+                if(!valid) {
+                    yield return attribute.ErrorMessage;
+                }
             }
         }
 
