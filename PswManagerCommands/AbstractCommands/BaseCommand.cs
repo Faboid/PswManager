@@ -26,13 +26,12 @@ namespace PswManagerCommands.AbstractCommands {
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="arguments"/> is null.</exception>
         /// <returns></returns>
         public CommandResult Run(ICommandInput arguments) {
-            TInput input = (TInput)arguments;
-            var (success, errorMessages) = Validate(input);
+            var (success, errorMessages) = Validate(arguments);
             if(!success) {
                 return new CommandResult("The command has failed the validation process.", false, null, errorMessages.ToArray());
             }
 
-            return RunLogic(input);
+            return RunLogic((TInput)arguments);
         }
 
         protected abstract CommandResult RunLogic(TInput obj);
@@ -52,6 +51,9 @@ namespace PswManagerCommands.AbstractCommands {
         public (bool success, IEnumerable<string> errorMessages) Validate(ICommandInput arguments) {
             if(arguments is null) {
                 throw new ArgumentNullException(nameof(arguments), "The given object is null.");
+            }
+            if(arguments is not TInput) {
+                throw new InvalidCastException($"The given arguments of type ({arguments.GetType()}) aren't of the expected type ({typeof(TInput)}).");
             }
 
             TInput input = (TInput)arguments;
