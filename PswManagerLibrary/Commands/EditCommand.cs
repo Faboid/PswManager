@@ -29,9 +29,12 @@ namespace PswManagerLibrary.Commands {
                 newValues.Email = cryptoAccount.GetEmaCryptoService().Encrypt(arguments.NewEmail);
             }
 
-            dataEditor.UpdateAccount(arguments.Name, newValues);
+            var result = dataEditor.UpdateAccount(arguments.Name, newValues);
 
-            return new CommandResult("The account has been edited successfully.", true);
+            return result.Success switch {
+                true => new CommandResult("The account has been edited successfully.", true),
+                false => new CommandResult($"There has been an error: {result.ErrorMessage}", false)
+            };
         }
 
         public override string GetDescription() {

@@ -22,9 +22,12 @@ namespace PswManagerLibrary.Commands {
             var result = userInput.YesOrNo("Are you sure? This account will be deleted forever.");
             if(result == false) { return new CommandResult("The operation has been stopped.", false); }
 
-            dataDeleter.DeleteAccount(args.Name);
+            var cnnResult = dataDeleter.DeleteAccount(args.Name);
 
-            return new CommandResult("Account deleted successfully.", true);
+            return cnnResult.Success switch {
+                true => new CommandResult("Account deleted successfully.", true),
+                false => new CommandResult($"There has been an error: {cnnResult.ErrorMessage}", false)
+            };
         }
 
         public override string GetDescription() {

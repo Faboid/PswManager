@@ -24,9 +24,12 @@ namespace PswManagerLibrary.Commands {
 
             (obj.Password, obj.Email) = cryptoAccount.Encrypt(obj.Password, obj.Email);
             var account = new AccountModel(obj.Name, obj.Password, obj.Email);
-            dataCreator.CreateAccount(account);
+            var result = dataCreator.CreateAccount(account);
 
-            return new CommandResult("The account has been created successfully.", true);
+            return result.Success switch {
+                true => new CommandResult("The account has been created successfully.", true),
+                false => new CommandResult($"There has been an error: {result.ErrorMessage}", false)
+            };
         }
 
         public override string GetDescription() {

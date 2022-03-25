@@ -28,6 +28,10 @@ namespace PswManagerLibrary.Commands {
         protected override CommandResult RunLogic(GetAllCommandArgs arguments) {
             var result = dataReader.GetAllAccounts();
 
+            if(!result.Success) {
+                return new CommandResult($"There has been an error: {result.ErrorMessage}", false);
+            }
+
             if(string.IsNullOrWhiteSpace(arguments.Keys)) { 
                 return new CommandResult("The list has been retrieved.", true, string.Join(Environment.NewLine, result.Value.Select(Decrypt)));
             }
