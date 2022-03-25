@@ -26,11 +26,23 @@ namespace PswManagerCommands {
         /// </summary>
         public string[] ErrorMessages { get; }
 
-        public CommandResult(string backMessage, bool success, string? queryReturnValue = null, string[]? errorMessages = null) {
-            BackMessage = backMessage;
+        public CommandResult(string backMessage, bool success, string queryReturnValue, params string[] errorMessages) : this(backMessage, success) {
             QueryReturnValue = queryReturnValue;
-            Success = success;
             ErrorMessages = errorMessages ?? Array.Empty<string>();
+        }
+
+        public CommandResult(string backMessage, bool success, string[] errorMessages) : this(backMessage, success) {
+            ErrorMessages = errorMessages;
+        }
+
+        public CommandResult(string backMessage, bool success, string queryReturnValue) : this(backMessage, success) {
+            QueryReturnValue = queryReturnValue;
+        }
+
+        public CommandResult(string backMessage, bool success) {
+            BackMessage = backMessage;
+            Success = success;
+            ErrorMessages ??= Array.Empty<string>();
         }
 
         /// <summary>
@@ -38,6 +50,10 @@ namespace PswManagerCommands {
         /// </summary>
         /// <returns></returns>
         public string GetAllErrorsAsSingleString() {
+            if(ErrorMessages.Length == 0) {
+                return "No error messages have been found.";
+            }
+
             StringBuilder sb = new();
             foreach(string s in ErrorMessages) {
                 sb.AppendLine(s);
