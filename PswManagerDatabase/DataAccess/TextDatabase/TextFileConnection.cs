@@ -1,5 +1,4 @@
-﻿using PswManagerDatabase.Config;
-using PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper;
+﻿using PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper;
 using PswManagerDatabase.Models;
 using System.Collections.Generic;
 
@@ -12,6 +11,15 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
         private readonly AccountBuilder accountBuilder;
         private readonly AccountSearcher accountSearcher;
 
+        /// <summary>
+        /// Instantiates <see cref="TextFileConnection"/> with the default path provided by <see cref="Paths"/>.
+        /// </summary>
+        internal TextFileConnection() : this(new Paths()) { }
+
+        /// <summary>
+        /// Instantiates <see cref="TextFileConnection"/> with custom paths.
+        /// </summary>
+        /// <param name="paths">The custom paths where to save the database.</param>
         internal TextFileConnection(IPaths paths) {
             this.paths = paths;
             DatabaseHandler.SetUpMissingFiles(this.paths);

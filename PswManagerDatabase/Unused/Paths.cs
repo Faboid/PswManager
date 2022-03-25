@@ -1,19 +1,20 @@
-﻿using PswManagerHelperMethods;
+﻿using PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper;
+using PswManagerHelperMethods;
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 
-namespace PswManagerDatabase.Config {
+namespace PswManagerDatabase.Unused {
 
     /// <summary>
     /// Stores global paths.
     /// </summary>
     public class Paths : IPaths {
-        
+
         public Paths() {
             if(!File.Exists(ConfigFilePath) || !Directory.Exists(GetMain())) {
-                if(!Directory.Exists(DataDirectory)) Directory.CreateDirectory(DataDirectory);
+                if(!Directory.Exists(DataDirectory))
+                    Directory.CreateDirectory(DataDirectory);
 
                 SetDefaultMain();
             }
@@ -38,9 +39,9 @@ namespace PswManagerDatabase.Config {
         //todo - remove all exceptions and return a ConnectionResult in their stead.
 
         /// <summary>
-        /// <inheritdoc/>
+        /// Changes the path to the accounts WITHOUT dealing with the current saved data. Any folder and files at the previous path will remain. The new directory must be existent.
         /// </summary>
-        /// <param name="path"><inheritdoc/></param>
+        /// <param name="path">The path pointing to the new directory.</param>
         public void SetMain(string path) {
             if(Directory.Exists(path) == false) {
                 throw new ArgumentException("The given path doesn't point to an existing directory.", nameof(path));
@@ -50,9 +51,9 @@ namespace PswManagerDatabase.Config {
         }
 
         /// <summary>
-        /// <inheritdoc/>
+        /// Moves the saved data to the new directory and sets it as the current database path. The new directory must be existent.
         /// </summary>
-        /// <param name="path"><inheritdoc/></param>
+        /// <param name="path">The path pointing to the new directory.</param>
         public void MoveMain(string path) {
             if(path == GetMain()) {
                 return;
@@ -80,7 +81,8 @@ namespace PswManagerDatabase.Config {
                 //sets main to point to the new directory
                 SetMain(path);
 
-            } catch(IOException) {
+            }
+            catch(IOException) {
 
                 //if the operations fail, rollback to the previous version
                 SetMain(currentMain);

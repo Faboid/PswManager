@@ -1,5 +1,4 @@
-﻿using PswManagerDatabase.Config;
-using PswManagerDatabase.Models;
+﻿using PswManagerDatabase.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

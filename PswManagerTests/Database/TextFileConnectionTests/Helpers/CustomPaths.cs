@@ -1,4 +1,4 @@
-﻿using PswManagerDatabase.Config;
+﻿using PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper;
 using System.IO;
 
 namespace PswManagerTests.Database.TextFileConnectionTests.Helpers {

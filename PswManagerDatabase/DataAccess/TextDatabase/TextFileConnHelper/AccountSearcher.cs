@@ -1,5 +1,4 @@
-﻿using PswManagerDatabase.Config;
-using System.IO;
+﻿using System.IO;
 
 namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
     internal class AccountSearcher {

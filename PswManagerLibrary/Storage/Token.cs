@@ -1,4 +1,4 @@
-﻿using PswManagerDatabase.Config;
+﻿using PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper;
 using PswManagerLibrary.Cryptography;
 using PswManagerLibrary.UIConnection;
 using System;

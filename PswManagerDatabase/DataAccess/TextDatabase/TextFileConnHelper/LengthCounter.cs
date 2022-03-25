@@ -1,5 +1,4 @@
-﻿using PswManagerDatabase.Config;
-using PswManagerHelperMethods;
+﻿using PswManagerHelperMethods;
 using System;
 using System.IO;
 

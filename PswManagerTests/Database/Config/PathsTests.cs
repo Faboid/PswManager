@@ -1,4 +1,5 @@
-﻿using PswManagerDatabase.Config;
+﻿using PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper;
+using PswManagerDatabase.Unused;
 using System;
 using System.IO;
 using Xunit;
