@@ -4,8 +4,6 @@
         readonly int seed;
         IntRange current;
 
-        public SaltRandom() : this(Environment.TickCount) { }
-
         public SaltRandom(int seed) : this(34, 64, seed) { }
 
         public SaltRandom(int min, int max, int seed) {
