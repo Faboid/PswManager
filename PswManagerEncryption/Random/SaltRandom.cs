@@ -2,7 +2,7 @@
     internal class SaltRandom {
 
         readonly int seed;
-        Range current;
+        IntRange current;
 
         public SaltRandom() : this(Environment.TickCount) { }
 
@@ -10,7 +10,7 @@
 
         public SaltRandom(int min, int max, int seed) {
             this.seed = seed;
-            current = new Range(min, max, seed);
+            current = new IntRange(min, max, seed);
         }
 
         public int Next() {
