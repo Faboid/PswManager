@@ -47,12 +47,12 @@ namespace PswManagerTests.Cryptography {
         }
 
         [Fact]
-        public void DecryptToCorrectValue() {
+        public void DecryptToCorrectValue() { //if this test fails, it means there's been a non backward-compatible change
 
             //arrange
             (string encryptedPassValue, string encryptedEmaValue) encryptedValues = (
-                "KAB0AGUAcwB0AC4AMQApAKwj9b+YJLx8V2R4EtQDsBfI78d9cOTksBYKJTBvBd1UQ5/0nCA5CpW4R4T4/+N159zpba/tPH/qNdBP0Wh7lJ3jFPB2XwWSSZ/D4WA=",
-                "KAB0AGUAcwB0AC4AMgApAJ9sQm+IrJzIt5dPktkKIHbxvW+d0WfhTx8eaqk8nqcsUgSdeQKHBcLTO6ltOQrNVzpF2TzoijztOsiOmNf7Uvmf0paUBDPUK9QsZVKQ3gFMotr9KFpIj/G4gtDunBLyhPy5xI1pTv08+ZJf"
+                "KAB0AGUAcwB0AC4AMQApAAQe25IjOEU2+O9GhAcrHHqKBebY6K2dsWBONDmEupm0OWw55W7fi7ezoyMYNyDMFZ75lXO28s4QDfHTUk/g8YjcI9hxXRvaaOQZMo7bMELZ2ospkgdRcDvEnAX5a5Ccxg==",
+                "KAB0AGUAcwB0AC4AMgApANG9Qc9Ss6t4X0nr3/DY51g4ZWNZI9gxOLr6BYN3wAi+jr2KwY8fEMFr2/GP2uQJ/c8t6o9Q2bgIeTkyi+vxYz5tuHKdbKPLxPrJmqHvMl+MY9WnuUJn5iK/4BIypWkzMg=="
                 );
             (string expectedPassValue, string expectedEmaValue) expectedValues = ("somerandomvalue", "some@colmplex!!value");
 

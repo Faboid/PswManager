@@ -67,15 +67,15 @@ namespace PswManagerTests.Encryption {
         }
 
         [Theory]
-        [InlineData("KAB0AGUAcwB0AC4AMQApAMHiVZLLhhsr21IRWXhBMA1dl" +
-            "7NGjX8eyeco1IPAaNdecReMVFyX5cyzRlgzbu5JRhHD+cveMVfGdC" +
-            "//pcLQbLdohmAcabrfIa4zbFSDP1yo3j4AijyErbBPska2zCF6lxG" +
-            "4//78jI85og==")] //tests "test.1" version
-        [InlineData("KAB0AGUAcwB0AC4AMgApAFvPFlTN5Fy9xhrE0iASWLTX5" +
-            "4PacfJGucsz4H+A77wHvdYkCciaReI+73c/d5LUGE6o5GMZIW0Q3A" +
-            "/8MS+Yw8k+fymbA1vkYCtm/Z5fGN/rpvpOVG4z0S7AByQNwvBIr9R" +
-            "ZzeVb1az6wA==")] //tests "test.2" version
-        public void DecryptToCorrectValue(string valueToTest) { //if this test breaks, it means there's no backward compatibility
+        [InlineData("KAB0AGUAcwB0AC4AMQApAFZJM8Q9gfiOIvSXkkDmB5Miq" +
+            "Ef0Br2vhv+p3MfgBA0qlA9j9oXQCkt3zaomurjW+LSOOidtLUQweW" +
+            "GP4+fSly3W9H6YUGtfOFnsCygXWVnISwRXow2B5otX8EVNSBIJ/Ge" +
+            "W/blYu+mUaDy65Hv8h3Qm/g3UK1omjw==")] //tests "test.1" version
+        [InlineData("KAB0AGUAcwB0AC4AMgApAB2x7kjH6a9srledPT7yw4yNv" +
+            "j2q5BhFsdgFbEj8FzL7Ddeww8OM01XkJuj66KYqnn8rdJ+j6uXpXh" +
+            "TCjjJEN1v1OM/gN/nA39kfrW7Tdr2rtCefE8azpF/zTZCAmcC6GCm" +
+            "T5Z41OYXaIDOgDYqR668qdVZuoJDaTg==")] //tests "test.2" version
+        public void DecryptToCorrectValue(string valueToTest) { //if this test fails, it means there's no backward compatibility
 
             //arrange
             string password = "rithwy*£^^ghg\"ytirhs%";

@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using PswManagerEncryption.Random;
+using System.Security.Cryptography;
 
 namespace PswManagerEncryption.Cryptography {
     internal class SaltGenerator {
@@ -9,7 +10,7 @@ namespace PswManagerEncryption.Cryptography {
 
         public SaltGenerator(char[] password) {
             int passValue = password.Sum(x => x / (password.Length / 2));
-            length = new Random(passValue).Next(minLength, maxLength);
+            length = new SaltRandom(minLength, maxLength, passValue).Next();
         }
 
         public byte[] CreateSalt() => RandomNumberGenerator.GetBytes(length);
