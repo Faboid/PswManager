@@ -2,11 +2,12 @@
 using PswManagerDatabase.DataAccess;
 using PswManagerDatabase.Models;
 using PswManagerHelperMethods;
+using PswManagerTests.Database.Generic;
 using PswManagerTests.TestsHelpers;
 using System.Linq;
 
 namespace PswManagerTests.Database.MemoryConnectionTests.Helpers {
-    internal class MemoryDBHandler {
+    internal class MemoryDBHandler : ITestDBHandler {
 
         //constructs the class with a default value of five
         public MemoryDBHandler() : this(5) { }
@@ -24,7 +25,7 @@ namespace PswManagerTests.Database.MemoryConnectionTests.Helpers {
         readonly DataFactory factory;
         readonly IDataConnection dbConnection;
 
-        public MemoryDBHandler SetUpDefaultValues() {
+        public ITestDBHandler SetUpDefaultValues() {
             //reset database
             var accounts = dbConnection.GetAllAccounts().Value;
             accounts.ForEach(x => dbConnection.DeleteAccount(x.Name));
@@ -41,9 +42,14 @@ namespace PswManagerTests.Database.MemoryConnectionTests.Helpers {
             return this;
         }
 
-        public DataFactory GetDBFactory() {
+        public IDataFactory GetDBFactory() {
             return factory;
         }
+        public DefaultValues GetDefaultValues() {
+            return defaultValues;
+        }
+
+        public void Dispose() { }
 
     }
 }

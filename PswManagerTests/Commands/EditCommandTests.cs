@@ -11,7 +11,8 @@ namespace PswManagerTests.Commands {
     public class EditCommandTests {
 
         public EditCommandTests() {
-            dbHandler = new MemoryDBHandler().SetUpDefaultValues();
+            dbHandler = new MemoryDBHandler();
+            dbHandler.SetUpDefaultValues();
             var dbFactory = dbHandler.GetDBFactory();
             editCommand = new EditCommand(dbFactory.GetDataEditor(), MockedObjects.GetEmptyCryptoAccount());
             getCommand = new GetCommand(dbFactory.GetDataReader(), MockedObjects.GetEmptyCryptoAccount());

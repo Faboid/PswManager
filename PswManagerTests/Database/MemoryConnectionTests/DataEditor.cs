@@ -82,8 +82,8 @@ namespace PswManagerTests.Database.MemoryConnectionTests {
                 .GetDBFactory()
                 .GetDataEditor();
 
-            string currentName = dbHandler.defaultValues.GetValue(0, DefaultValues.TypeValue.Name);
-            string newExistingName = dbHandler.defaultValues.GetValue(1, DefaultValues.TypeValue.Name);
+            string currentName = dbHandler.GetDefaultValues().GetValue(0, DefaultValues.TypeValue.Name);
+            string newExistingName = dbHandler.GetDefaultValues().GetValue(1, DefaultValues.TypeValue.Name);
             var newModel = new AccountModel(newExistingName, null, "yoyo@com");
 
             //act
