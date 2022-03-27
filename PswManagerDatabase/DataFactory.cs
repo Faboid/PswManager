@@ -1,9 +1,9 @@
 ﻿using PswManagerDatabase.DataAccess;
 using PswManagerDatabase.DataAccess.Interfaces;
+using PswManagerDatabase.DataAccess.JsonDatabase;
 using PswManagerDatabase.DataAccess.MemoryDatabase;
 using PswManagerDatabase.DataAccess.SQLDatabase;
 using PswManagerDatabase.DataAccess.TextDatabase;
-using PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper;
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -15,6 +15,7 @@ namespace PswManagerDatabase {
         TextFile,
         Sql,
         InMemory,
+        Json
     }
 
     public class DataFactory : IDataFactory {
@@ -27,6 +28,7 @@ namespace PswManagerDatabase {
                 DatabaseType.TextFile => new TextFileConnection(),
                 DatabaseType.Sql => new SQLConnection(),
                 DatabaseType.InMemory => new MemoryConnection(),
+                DatabaseType.Json => new JsonConnection(),
                 _ => throw new ArgumentException("The given DatabaseType enum isn't supported.", nameof(dbType))
             };
         }
@@ -42,6 +44,7 @@ namespace PswManagerDatabase {
                 DatabaseType.TextFile => typeof(TextFileConnection),
                 DatabaseType.Sql => typeof(SQLConnection),
                 DatabaseType.InMemory => typeof(MemoryConnection),
+                DatabaseType.Json => typeof(JsonConnection),
                 _ => throw new ArgumentException("The given DatabaseType enum isn't supported.", nameof(dbType))
             };
 
