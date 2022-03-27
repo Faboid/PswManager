@@ -7,7 +7,7 @@ using Xunit;
 namespace PswManagerTests.Database.Config {
     public sealed class PathsTests : IDisposable {
 
-        static readonly string WorkingDirectory = Paths.DataDirectory;
+        static readonly string WorkingDirectory = PswManagerDatabase.Unused.Paths.DataDirectory;
         static readonly string TempMainPath = Path.Combine(WorkingDirectory, "ewfsgeweqrqrqrttwqagrthhrjyjewrew"); //gibberish to make sure it's not an existing folder
         static readonly string ConfigFilePath = Path.Combine(WorkingDirectory, "Config.txt");
 
@@ -44,12 +44,12 @@ namespace PswManagerTests.Database.Config {
 
             //act
             configFileExisted = File.Exists(ConfigFilePath);
-            var paths = new Paths();
+            var paths = new PswManagerDatabase.Unused.Paths();
             configFileExist = File.Exists(ConfigFilePath);
 
             //assert
             Assert.False(configFileExisted);
-            Assert.Equal(WorkingDirectory, Paths.DataDirectory);
+            Assert.Equal(WorkingDirectory, PswManagerDatabase.Unused.Paths.DataDirectory);
             Assert.True(configFileExist);
 
             AssertEqualPaths(expectedPaths, paths);
@@ -60,7 +60,7 @@ namespace PswManagerTests.Database.Config {
         public void SetMain_ShouldChangeMain() {
 
             //arrange
-            Paths paths = new Paths();
+            var paths = new PswManagerDatabase.Unused.Paths();
             FourPaths expectedPaths = new(TempMainPath);
 
             //act
@@ -77,7 +77,7 @@ namespace PswManagerTests.Database.Config {
         public void MoveMain_ShouldMove() {
 
             //arrange
-            Paths paths = new Paths();
+            var paths = new PswManagerDatabase.Unused.Paths();
             FourPaths previousPaths = new(WorkingDirectory);
             FourPaths expectedPaths = new(TempMainPath);
 
@@ -99,7 +99,7 @@ namespace PswManagerTests.Database.Config {
         public void MoveMain_HandleError_RollBack() {
 
             //arrange
-            Paths paths = new();
+            PswManagerDatabase.Unused.Paths paths = new();
             FourPaths oldPaths = new(WorkingDirectory);
             FourPaths newPaths = new(TempMainPath);
             Exception ex = null;
