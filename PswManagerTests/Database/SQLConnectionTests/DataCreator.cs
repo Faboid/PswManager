@@ -12,7 +12,7 @@ namespace PswManagerTests.Database.SQLConnectionTests {
 
         public DataCreator() {
             dbHandler = new(db_Name);
-            IDataFactory dataFactory = new DataFactory(dbHandler.DatabaseName);
+            IDataFactory dataFactory = new DataFactory(DatabaseType.Sql, dbHandler.DatabaseName);
             dataCreator = dataFactory.GetDataCreator();
         }
 

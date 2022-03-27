@@ -13,7 +13,7 @@ namespace PswManagerTests.Database.SQLConnectionTests {
 
         public DataEditor() {
             dbHandler = new TestDatabaseHandler(db_Name, numValues);
-            IDataFactory dataFactory = new DataFactory(dbHandler.DatabaseName);
+            IDataFactory dataFactory = new DataFactory(DatabaseType.Sql, dbHandler.DatabaseName);
             dataEditor = dataFactory.GetDataEditor();
         }
 

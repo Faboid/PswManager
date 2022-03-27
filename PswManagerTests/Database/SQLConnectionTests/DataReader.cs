@@ -16,7 +16,7 @@ namespace PswManagerTests.Database.SQLConnectionTests {
 
         public DataReader() {
             dbHandler = new TestDatabaseHandler(db_Name);
-            IDataFactory dataFactory = new DataFactory(dbHandler.DatabaseName);
+            IDataFactory dataFactory = new DataFactory(DatabaseType.Sql, dbHandler.DatabaseName);
             reader = dataFactory.GetDataReader();
         }
 

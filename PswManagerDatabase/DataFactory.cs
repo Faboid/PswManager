@@ -5,13 +5,16 @@ using PswManagerDatabase.DataAccess.SQLDatabase;
 using PswManagerDatabase.DataAccess.TextDatabase;
 using PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper;
 using System;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
+[assembly:InternalsVisibleTo("PswManagerTests")]
 namespace PswManagerDatabase {
 
     public enum DatabaseType {
         TextFile,
         Sql,
-        InMemory
+        InMemory,
     }
 
     public class DataFactory : IDataFactory {
@@ -22,18 +25,28 @@ namespace PswManagerDatabase {
 
             dataConnection = dbType switch {
                 DatabaseType.TextFile => new TextFileConnection(),
-                DatabaseType.Sql => new SQLConnection("PswManagerDB"),
+                DatabaseType.Sql => new SQLConnection(),
                 DatabaseType.InMemory => new MemoryConnection(),
                 _ => throw new ArgumentException("The given DatabaseType enum isn't supported.", nameof(dbType))
             };
         }
 
-        public DataFactory(IPaths customPaths) {
-            dataConnection = new TextFileConnection(customPaths);
-        }
+        /// <summary>
+        /// This allows creating a database with custom parameters. Note: it's to be used only for testing.
+        /// </summary>
+        /// <param name="dbType"></param>
+        /// <param name="arguments"></param>
+        /// <exception cref="ArgumentException"></exception>
+        internal DataFactory(DatabaseType dbType, params object[] arguments) {
+            var dbClassType = dbType switch {
+                DatabaseType.TextFile => typeof(TextFileConnection),
+                DatabaseType.Sql => typeof(SQLConnection),
+                DatabaseType.InMemory => typeof(MemoryConnection),
+                _ => throw new ArgumentException("The given DatabaseType enum isn't supported.", nameof(dbType))
+            };
 
-        public DataFactory(string customDBName) {
-            dataConnection = new SQLConnection(customDBName);
+            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            dataConnection = (IDataConnection)Activator.CreateInstance(dbClassType, flags, null, arguments, null);
         }
 
         public IDataConnection GetDataConnection() => dataConnection;

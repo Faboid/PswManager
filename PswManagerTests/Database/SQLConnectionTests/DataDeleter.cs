@@ -11,7 +11,7 @@ namespace PswManagerTests.Database.SQLConnectionTests {
 
         public DataDeleter() : base() {
             dbHandler = new TestDatabaseHandler(db_Name);
-            IDataFactory dataFactory = new DataFactory(dbHandler.DatabaseName);
+            IDataFactory dataFactory = new DataFactory(DatabaseType.Sql, dbHandler.DatabaseName);
             dataDeleter = dataFactory.GetDataDeleter();
         }
 

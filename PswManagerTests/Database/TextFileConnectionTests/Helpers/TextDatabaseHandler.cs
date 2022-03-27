@@ -15,7 +15,7 @@ namespace PswManagerTests.Database.TextFileConnectionTests.Helpers {
             DefaultValues = new DefaultValues(numValues);
             paths = new CustomPaths(dbFolder);
             CreateFiles();
-            factory = new DataFactory(paths);
+            factory = new DataFactory(DatabaseType.TextFile, paths);
             dataCreator = factory.GetDataCreator();
         }
 

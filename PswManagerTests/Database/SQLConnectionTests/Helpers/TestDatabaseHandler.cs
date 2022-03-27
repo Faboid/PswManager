@@ -25,7 +25,7 @@ namespace PswManagerTests.Database.SQLConnectionTests.Helpers {
         public void SetUpDefaultValues() {
             //reset database
             File.Delete(dbPath);
-            dataCreator = new DataFactory(DatabaseName).GetDataCreator();
+            dataCreator = new DataFactory(DatabaseType.Sql, DatabaseName).GetDataCreator();
             
             foreach(var value in DefaultValues.values) {
                 var account = DefaultValues.ToAccount(value);
