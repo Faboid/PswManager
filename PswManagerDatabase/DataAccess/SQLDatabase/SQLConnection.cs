@@ -8,7 +8,9 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
         readonly DatabaseBuilder database;
         readonly QueriesBuilder queriesBuilder;
 
-        public SQLConnection(string databaseName) {
+        internal SQLConnection() : this("PswManagerDB") { }
+
+        internal SQLConnection(string databaseName) {
             database = new DatabaseBuilder(databaseName);
             queriesBuilder = new QueriesBuilder(database.GetConnection());
         }
