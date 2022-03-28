@@ -12,12 +12,13 @@ namespace PswManagerTests.Database.Generic {
 
         readonly IDataDeleter dataDeleter;
         readonly ITestDBHandler dbHandler;
+        static protected readonly int numValues = 1;
 
         [Fact]
         public void DeleteAccountCorrectly() {
 
             //arrange
-            string name = dbHandler.GetDefaultValues().GetValue(1, TestsHelpers.DefaultValues.TypeValue.Name);
+            string name = dbHandler.GetDefaultValues().GetValue(0, TestsHelpers.DefaultValues.TypeValue.Name);
             bool exists;
 
             //act
