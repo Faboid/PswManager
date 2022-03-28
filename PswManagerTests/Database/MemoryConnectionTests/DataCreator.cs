@@ -5,7 +5,7 @@ namespace PswManagerTests.Database.MemoryConnectionTests {
 
     public class DataCreator : DataCreatorGeneric {
 
-        public DataCreator() : base(new MemoryDBHandler()) { }
+        public DataCreator() : base(new MemoryDBHandler(numValues)) { }
 
     }
 }

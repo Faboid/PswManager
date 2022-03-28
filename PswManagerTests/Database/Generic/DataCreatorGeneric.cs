@@ -15,6 +15,7 @@ namespace PswManagerTests.Database.Generic {
 
         private readonly IDataCreator dataCreator;
         private readonly ITestDBHandler dbHandler;
+        protected static readonly int numValues = 1;
 
         [Fact]
         public void CreateAccountCorrectly() {
