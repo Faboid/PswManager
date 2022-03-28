@@ -69,7 +69,7 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
 
             accountBuilder.Edit(position, newModel);
 
-            return GetAccount(newModel.Name ?? name);
+            return GetAccount(string.IsNullOrWhiteSpace(newModel.Name)? name : newModel.Name);
         }
 
         public ConnectionResult DeleteAccount(string name) {
