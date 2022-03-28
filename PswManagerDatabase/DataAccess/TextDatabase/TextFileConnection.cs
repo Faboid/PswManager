@@ -29,6 +29,9 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
         }
 
         public ConnectionResult CreateAccount(AccountModel model) {
+            if(string.IsNullOrWhiteSpace(model.Name)) {
+                return new ConnectionResult(false, "The given name isn't valid.");
+            }
             if(accountSearcher.AccountExist(model.Name)) {
                 return new ConnectionResult(false, "The given account name is already occupied.");
             }

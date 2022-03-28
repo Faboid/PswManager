@@ -50,6 +50,23 @@ namespace PswManagerTests.Database.Generic {
 
         }
 
+        [Theory]
+        [InlineData("   ")]
+        [InlineData("")]
+        [InlineData(null)]
+        public void CreateAccountFailure_InvalidName(string name) {
+
+            //arrange
+            var account = new AccountModel(name, "passhere", "ema@here.com");
+
+            //act
+            var result = dataCreator.CreateAccount(account);
+
+            //assert
+            Assert.False(result.Success);
+
+        }
+
         public void Dispose() {
             dbHandler.Dispose();
             GC.SuppressFinalize(this);

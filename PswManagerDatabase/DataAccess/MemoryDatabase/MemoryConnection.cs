@@ -19,6 +19,9 @@ namespace PswManagerDatabase.DataAccess.MemoryDatabase {
         }
 
         public ConnectionResult CreateAccount(AccountModel model) {
+            if(string.IsNullOrWhiteSpace(model.Name)) {
+                return new ConnectionResult(false, "The given name isn't valid.");
+            }
             if(AccountExist(model.Name)) {
                 return new ConnectionResult(false, "The given account name is already occupied.");
             }
