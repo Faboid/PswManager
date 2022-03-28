@@ -1,61 +1,12 @@
-﻿using PswManagerDatabase.DataAccess.Interfaces;
-using PswManagerTests.TestsHelpers;
-using Xunit;
-using System;
-using PswManagerTests.Database.TextFileConnectionTests.Helpers;
+﻿using PswManagerTests.Database.TextFileConnectionTests.Helpers;
+using PswManagerTests.Database.Generic;
 
 namespace PswManagerTests.Database.TextFileConnectionTests {
 
-    public class DataDeleter : IDisposable {
+    public class DataDeleter : DataDeleterGeneric {
 
-        public DataDeleter() : base() {
-            dbHandler = new TextDatabaseHandler(dbName, 2).SetUpDefaultValues();
-            dataDeleter = dbHandler.GetDBFactory().GetDataDeleter();
-            dataHelper = dbHandler.GetDBFactory().GetDataHelper();
-        }
-
-        readonly IDataDeleter dataDeleter;
-        readonly IDataHelper dataHelper;
-        readonly TextDatabaseHandler dbHandler;
+        public DataDeleter() : base(new TextDatabaseHandler(dbName, numValues)) { }
         const string dbName = "DataDeleterTestsDB";
 
-        [Fact]
-        public void DeleteAccountCorrectly() {
-
-            //arrange
-            string name = DefaultValues.StaticGetValue(1, DefaultValues.TypeValue.Name);
-            bool exists;
-
-            //act
-            exists = dataHelper.AccountExist(name);
-            dataDeleter.DeleteAccount(name);
-
-            //assert
-            Assert.True(exists);
-            Assert.False(dataHelper.AccountExist(name));
-
-        }
-
-        [Fact]
-        public void DeleteFailure_NonExistentName() {
-
-            //arrange
-            string name = "randomInexistentName";
-            bool exists;
-
-            //act
-            exists = dataHelper.AccountExist(name);
-            var result = dataDeleter.DeleteAccount(name);
-
-            //assert
-            Assert.False(exists);
-            Assert.False(result.Success);
-
-        }
-
-        public void Dispose() {
-            dbHandler.Dispose();
-            GC.SuppressFinalize(this);
-        }
     }
 }

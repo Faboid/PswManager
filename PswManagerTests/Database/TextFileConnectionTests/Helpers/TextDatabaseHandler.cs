@@ -1,11 +1,12 @@
 ﻿using PswManagerDatabase;
 using PswManagerDatabase.DataAccess.Interfaces;
+using PswManagerTests.Database.Generic;
 using PswManagerTests.TestsHelpers;
 using System;
 using System.IO;
 
 namespace PswManagerTests.Database.TextFileConnectionTests.Helpers {
-    internal class TextDatabaseHandler : IDisposable {
+    internal class TextDatabaseHandler : ITestDBHandler, IDisposable {
 
         public TextDatabaseHandler(string dbName) : this(dbName, 5) { }
 
@@ -27,7 +28,7 @@ namespace PswManagerTests.Database.TextFileConnectionTests.Helpers {
         public readonly string DatabaseName;
         private readonly CustomPaths paths;
 
-        public TextDatabaseHandler SetUpDefaultValues() {
+        public ITestDBHandler SetUpDefaultValues() {
             CreateFiles();
 
             foreach(var value in DefaultValues.values) {
@@ -38,7 +39,7 @@ namespace PswManagerTests.Database.TextFileConnectionTests.Helpers {
             return this;
         }
 
-        public DataFactory GetDBFactory() {
+        public IDataFactory GetDBFactory() {
             return factory;
         }
 
@@ -49,8 +50,13 @@ namespace PswManagerTests.Database.TextFileConnectionTests.Helpers {
             File.Create(paths.EmailsFilePath).Close();
         }
 
+        public DefaultValues GetDefaultValues() {
+            return DefaultValues;
+        }
+
         public void Dispose() {
             Directory.Delete(paths.WorkingDirectory, true);
         }
+
     }
 }
