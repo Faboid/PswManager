@@ -26,15 +26,14 @@ namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
             return account;
         }
 
-        public List<AccountModel> GetAll() {
+        public IEnumerable<AccountModel> GetAll() {
             var names = File.ReadAllLines(paths.AccountsFilePath);
             var passwords = File.ReadAllLines(paths.PasswordsFilePath);
             var emails = File.ReadAllLines(paths.EmailsFilePath);
 
             var accounts = Enumerable
                 .Range(0, names.Length)
-                .Select(x => new AccountModel(names[x], passwords[x], emails[x]))
-                .ToList();
+                .Select(x => new AccountModel(names[x], passwords[x], emails[x]));
 
             return accounts;
         }

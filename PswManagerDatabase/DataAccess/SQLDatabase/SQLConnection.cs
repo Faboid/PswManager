@@ -75,7 +75,7 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
             });
         }
 
-        public ConnectionResult<List<AccountModel>> GetAllAccounts() {
+        public ConnectionResult<IEnumerable<AccountModel>> GetAllAccounts() {
 
             using var cmd = queriesBuilder.GetAllAccountsQuery();
             return cmd.Connection.Open(() => {
@@ -91,7 +91,7 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
                     });
                 }
 
-                return new ConnectionResult<List<AccountModel>>(true, accounts);
+                return new ConnectionResult<IEnumerable<AccountModel>>(true, accounts);
             });
         }
 

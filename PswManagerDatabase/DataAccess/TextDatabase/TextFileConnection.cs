@@ -52,11 +52,11 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
             return new ConnectionResult<AccountModel>(true, output);
         }
 
-        public ConnectionResult<List<AccountModel>> GetAllAccounts() {
+        public ConnectionResult<IEnumerable<AccountModel>> GetAllAccounts() {
 
-            List<AccountModel> accounts = accountBuilder.GetAll();
+            IEnumerable<AccountModel> accounts = accountBuilder.GetAll();
 
-            return new ConnectionResult<List<AccountModel>>(true, accounts);
+            return new(true, accounts);
         }
 
         public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {

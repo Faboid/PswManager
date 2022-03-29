@@ -44,15 +44,16 @@ namespace PswManagerTests.Database.Generic {
 
             //act
             var actual = dataReader.GetAllAccounts();
+            var values = actual.Value.ToList();
 
             //assert
             Assert.True(actual.Success);
-            Assert.Equal(expectedAccounts.Count, actual.Value.Count);
+            Assert.Equal(expectedAccounts.Count, values.Count);
 
             Enumerable
                 .Range(0, dbHandler.GetDefaultValues().values.Count - 1)
                 .ForEach(x => {
-                    AccountEqual(expectedAccounts[x], actual.Value[x]);
+                    AccountEqual(expectedAccounts[x], values[x]);
                 });
         }
 

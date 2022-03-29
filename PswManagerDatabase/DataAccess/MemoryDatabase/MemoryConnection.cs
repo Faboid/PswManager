@@ -1,9 +1,6 @@
 ﻿using PswManagerDatabase.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess.MemoryDatabase {
     internal class MemoryConnection : IDataConnection {
@@ -47,9 +44,9 @@ namespace PswManagerDatabase.DataAccess.MemoryDatabase {
             return new ConnectionResult<AccountModel>(true, accounts[name]);
         }
 
-        public ConnectionResult<List<AccountModel>> GetAllAccounts() {
-            List<AccountModel> list = accounts.Values.ToList();
-            return new ConnectionResult<List<AccountModel>>(true, list);
+        public ConnectionResult<IEnumerable<AccountModel>> GetAllAccounts() {
+            var list = accounts.Values.ToList();
+            return new(true, list);
         }
 
         public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {

@@ -64,11 +64,10 @@ namespace PswManagerDatabase.DataAccess.JsonDatabase {
             return new(true, model);
         }
 
-        public ConnectionResult<List<AccountModel>> GetAllAccounts() {
+        public ConnectionResult<IEnumerable<AccountModel>> GetAllAccounts() {
             var accounts = Directory.GetFiles(directoryPath)
                 .Select(x => Path.GetFileNameWithoutExtension(x))
-                .Select(x => GetAccount(x).Value)
-                .ToList();
+                .Select(x => GetAccount(x).Value);
 
             return new(true, accounts);
         }
