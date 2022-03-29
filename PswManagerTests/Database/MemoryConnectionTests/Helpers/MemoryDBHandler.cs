@@ -13,15 +13,14 @@ namespace PswManagerTests.Database.MemoryConnectionTests.Helpers {
         public MemoryDBHandler() : this(5) { }
 
         public MemoryDBHandler(int numDefaultValues) {
-            NumValues = numDefaultValues;
+            numValues = numDefaultValues;
             factory = new DataFactory(DatabaseType.InMemory);
             dbConnection = factory.GetDataConnection();
-            defaultValues = new(NumValues);
+            defaultValues = new(numValues);
         }
 
-        public DefaultValues defaultValues { get; init; }
-        public int NumValues { get; init; }
-
+        readonly int numValues;
+        readonly DefaultValues defaultValues;
         readonly DataFactory factory;
         readonly IDataConnection dbConnection;
 
@@ -30,7 +29,7 @@ namespace PswManagerTests.Database.MemoryConnectionTests.Helpers {
             var accounts = dbConnection.GetAllAccounts().Value;
             accounts.ForEach(x => dbConnection.DeleteAccount(x.Name));
 
-            Enumerable.Range(0, NumValues).ForEach(x => {
+            Enumerable.Range(0, numValues).ForEach(x => {
                 var name = defaultValues.GetValue(x, DefaultValues.TypeValue.Name);
                 var password = defaultValues.GetValue(x, DefaultValues.TypeValue.Password);
                 var email = defaultValues.GetValue(x, DefaultValues.TypeValue.Email);

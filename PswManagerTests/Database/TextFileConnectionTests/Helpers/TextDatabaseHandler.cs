@@ -1,5 +1,6 @@
 ﻿using PswManagerDatabase;
 using PswManagerDatabase.DataAccess.Interfaces;
+using PswManagerHelperMethods;
 using PswManagerTests.Database.Generic;
 using PswManagerTests.TestsHelpers;
 using System;
@@ -12,26 +13,25 @@ namespace PswManagerTests.Database.TextFileConnectionTests.Helpers {
 
         public TextDatabaseHandler(string dbName, int numValues) {
             DatabaseName = $"TextTestDB_{dbName}";
-            dbFolder = Path.Combine(WorkingDirectory, "Data", DatabaseName);
-            DefaultValues = new DefaultValues(numValues);
+            dbFolder = Path.Combine(PathsBuilder.GetWorkingDirectory, "Data", DatabaseName);
+            defaultValues = new DefaultValues(numValues);
             paths = new CustomPaths(dbFolder);
             CreateFiles();
             factory = new DataFactory(DatabaseType.TextFile, paths);
             dataCreator = factory.GetDataCreator();
         }
 
-        public DefaultValues DefaultValues { get; init; }
-        private static readonly string WorkingDirectory = PswManagerHelperMethods.PathsBuilder.GetWorkingDirectory;
+        private readonly DefaultValues defaultValues;
         private readonly string dbFolder;
         private readonly IDataCreator dataCreator;
         private readonly DataFactory factory;
-        public readonly string DatabaseName;
+        private readonly string DatabaseName;
         private readonly CustomPaths paths;
 
         public ITestDBHandler SetUpDefaultValues() {
             CreateFiles();
 
-            foreach(var value in DefaultValues.values) {
+            foreach(var value in defaultValues.values) {
                 var account = DefaultValues.ToAccount(value);
                 dataCreator.CreateAccount(account);
             }
@@ -51,7 +51,7 @@ namespace PswManagerTests.Database.TextFileConnectionTests.Helpers {
         }
 
         public DefaultValues GetDefaultValues() {
-            return DefaultValues;
+            return defaultValues;
         }
 
         public void Dispose() {

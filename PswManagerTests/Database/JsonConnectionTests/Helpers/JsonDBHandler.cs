@@ -11,12 +11,11 @@ namespace PswManagerTests.Database.JsonConnectionTests.Helpers {
 
         public JsonDBHandler(string dbName, int numValues) {
             DatabaseName = $"JsonTestsDB_{dbName}";
-            dbPath = Path.Combine(WorkingDirectory, "Data", DatabaseName);
+            dbPath = Path.Combine(PathsBuilder.GetWorkingDirectory, "Data", DatabaseName);
             factory = new DataFactory(DatabaseType.Json, DatabaseName);
             defaultValues = new DefaultValues(numValues);
         }
 
-        readonly string WorkingDirectory = PathsBuilder.GetWorkingDirectory;
         readonly string DatabaseName;
         readonly string dbPath;
         readonly IDataFactory factory;

@@ -1,4 +1,5 @@
 ﻿using PswManagerDatabase;
+using PswManagerHelperMethods;
 using PswManagerTests.Database.Generic;
 using PswManagerTests.TestsHelpers;
 using System;
@@ -11,24 +12,22 @@ namespace PswManagerTests.Database.SQLConnectionTests.Helpers {
 
         public TestDatabaseHandler(string dbName, int numValues) {
             DatabaseName = $"SQLTestDB_{dbName}";
-            dbPath = Path.Combine(WorkingDirectory, "Data", $"{DatabaseName}.db");
-            DefaultValues = new DefaultValues(numValues);
+            dbPath = Path.Combine(PathsBuilder.GetWorkingDirectory, "Data", $"{DatabaseName}.db");
+            defaultValues = new DefaultValues(numValues);
             dataFactory = new DataFactory(DatabaseType.Sql, DatabaseName);
         }
 
-        public DefaultValues DefaultValues { get; init; }
-
-        private static readonly string WorkingDirectory = PswManagerHelperMethods.PathsBuilder.GetWorkingDirectory;
+        private readonly DefaultValues defaultValues;
         private readonly string dbPath;
         private IDataFactory dataFactory;
-        public readonly string DatabaseName;
+        private readonly string DatabaseName;
 
         public ITestDBHandler SetUpDefaultValues() {
             //reset database
             File.Delete(dbPath);
             dataFactory = new DataFactory(DatabaseType.Sql, DatabaseName);
             
-            foreach(var value in DefaultValues.values) {
+            foreach(var value in defaultValues.values) {
                 var account = DefaultValues.ToAccount(value);
                 dataFactory.GetDataCreator().CreateAccount(account);
             }
@@ -41,7 +40,7 @@ namespace PswManagerTests.Database.SQLConnectionTests.Helpers {
         }
 
         public DefaultValues GetDefaultValues() {
-            return DefaultValues;
+            return defaultValues;
         }
 
         public void Dispose() {
