@@ -1,6 +1,7 @@
 ﻿using PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper;
 using PswManagerDatabase.Models;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace PswManagerDatabase.DataAccess.SQLDatabase {
     internal class SQLConnection : IDataConnection {
@@ -76,23 +77,34 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
         }
 
         public ConnectionResult<IEnumerable<AccountModel>> GetAllAccounts() {
+            return new ConnectionResult<IEnumerable<AccountModel>>(true, GetAccounts());
+        }
 
+        private IEnumerable<AccountModel> GetAccounts() {
             using var cmd = queriesBuilder.GetAllAccountsQuery();
-            return cmd.Connection.Open(() => {
+            try {
+                Debug.WriteLine("Opened the connection.");
+                cmd.Connection.Open();
+
                 using var reader = cmd.ExecuteReader();
-
-                List<AccountModel> accounts = new();
-
                 while(reader.Read()) {
-                    accounts.Add(new AccountModel {
+                    var model = new AccountModel {
                         Name = reader.GetString(0),
                         Password = reader.GetString(1),
                         Email = reader.GetString(2)
-                    });
-                }
+                    };
 
-                return new ConnectionResult<IEnumerable<AccountModel>>(true, accounts);
-            });
+                    Debug.WriteLine($"Returning model: {model}");
+                    yield return model;
+                }
+            } finally {
+                if(cmd.Connection.State == System.Data.ConnectionState.Open) {
+                    cmd.Connection.Close();
+                    Debug.WriteLine("Closed the connection");
+                }
+            }
+
+            Debug.WriteLine("Exiting the call.");
         }
 
         public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {

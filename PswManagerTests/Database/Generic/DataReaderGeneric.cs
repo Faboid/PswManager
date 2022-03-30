@@ -40,7 +40,7 @@ namespace PswManagerTests.Database.Generic {
         public void GetAllShouldGetAll() {
 
             //arrange
-            var expectedAccounts = dbHandler.GetDefaultValues().GetAll();
+            var expectedAccounts = dbHandler.GetDefaultValues().GetAll().ToList();
 
             //act
             var actual = dataReader.GetAllAccounts();
@@ -52,6 +52,30 @@ namespace PswManagerTests.Database.Generic {
 
             Enumerable
                 .Range(0, dbHandler.GetDefaultValues().values.Count - 1)
+                .ForEach(x => {
+                    AccountEqual(expectedAccounts[x], values[x]);
+                });
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public void GetAFewWithIEnumerator(int num) {
+
+            //arrange
+            var expectedAccounts = dbHandler.GetDefaultValues().GetSome(num).ToList();
+
+            //act
+            var actual = dataReader.GetAllAccounts();
+            var values = dataReader.GetAllAccounts().Value.Take(num).ToList();
+
+            //assert
+            Assert.True(actual.Success);
+            Assert.Equal(expectedAccounts.Count, values.Count);
+
+            Enumerable
+                .Range(0, num)
                 .ForEach(x => {
                     AccountEqual(expectedAccounts[x], values[x]);
                 });

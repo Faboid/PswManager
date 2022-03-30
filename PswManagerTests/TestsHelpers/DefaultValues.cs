@@ -46,11 +46,14 @@ namespace PswManagerTests.TestsHelpers {
             return values[position].Split(' ')[(int)type];
         }
 
-        public List<AccountModel> GetAll() {
+        public IEnumerable<AccountModel> GetSome(int num) {
+            return GetAll().Take(num);
+        }
+
+        public IEnumerable<AccountModel> GetAll() {
             return values
                 .Select(x => x.Split(' '))
-                .Select(x => new AccountModel(x[0], x[1], x[2]))
-                .ToList();
+                .Select(x => new AccountModel(x[0], x[1], x[2]));
         }
 
         public enum TypeValue {
