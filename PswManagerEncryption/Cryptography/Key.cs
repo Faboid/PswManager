@@ -1,7 +1,14 @@
 ﻿using System.Runtime.InteropServices;
+using System.Text;
 
 namespace PswManagerEncryption.Cryptography {
     public class Key : IDisposable {
+
+        public Key(byte[] password) : this(Encoding.Unicode.GetChars(password)) {
+            for(int i = 0; i < password.Length; i++) { 
+                password[i] = 0;
+            }
+        }
 
         public Key(char[] password) {
             key = new char[password.Length];
