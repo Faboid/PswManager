@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 namespace PswManagerDatabase.DataAccess {
     /// <summary>
-    /// A skeleton to build databases connections upon. <br/>
-    /// It implements standard validation checks—child classes need only think how to implement the business logic.
+    /// A skeleton to build databases connections upon without worrying about validation. <br/>
+    /// It implements standard validation checks—child classes need only think how to implement the query logic.
     /// <br/><br/>
     /// Important: <see cref="BaseConnection"/> calls <see cref="AccountExist(string)"/> to check for account existence. 
     /// <br/>If the implementation of that call is expensive, it's advised to implement directly <see cref="IDataConnection"/>.
