@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text.Json;
 
 namespace PswManagerDatabase.DataAccess.JsonDatabase {
-    internal class JsonConnection : IDataConnection {
+    internal class JsonConnection : BaseConnection {
 
         internal JsonConnection() : this("Json") { }
 
@@ -20,22 +20,11 @@ namespace PswManagerDatabase.DataAccess.JsonDatabase {
         readonly string directoryPath;
         private string BuildFilePath(string name) => Path.Combine(directoryPath, $"{name}.json");
 
-        public bool AccountExist(string name) {
-            if(string.IsNullOrWhiteSpace(name)) {
-                return false;
-            }
-
+        protected override bool AccountExistHook(string name) {
             return File.Exists(BuildFilePath(name));
         }
 
-        public ConnectionResult CreateAccount(AccountModel model) {
-            if(string.IsNullOrWhiteSpace(model.Name)) {
-                return new ConnectionResult(false, "The given name isn't valid.");
-            }
-            if(AccountExist(model.Name)) {
-                return new ConnectionResult(false, "The given account name is already occupied.");
-            }
-
+        protected override ConnectionResult CreateAccountHook(AccountModel model) {
             var path = BuildFilePath(model.Name);
             var jsonString = JsonSerializer.Serialize(model);
             File.WriteAllText(path, jsonString);
@@ -43,28 +32,20 @@ namespace PswManagerDatabase.DataAccess.JsonDatabase {
             return new ConnectionResult(true);
         }
 
-        public ConnectionResult DeleteAccount(string name) {
-            if(!AccountExist(name)) {
-                return new(false, "The given account doesn't exist.");
-            }
-
+        protected override ConnectionResult DeleteAccountHook(string name) {
             File.Delete(BuildFilePath(name));
 
             return new ConnectionResult(true);
         }
 
-        public ConnectionResult<AccountModel> GetAccount(string name) {
-            if(!AccountExist(name)) {
-                return new(false, "The given account doesn't exist.");
-            }
-
+        protected override ConnectionResult<AccountModel> GetAccountHook(string name) {
             var jsonString = File.ReadAllText(BuildFilePath(name));
             var model = JsonSerializer.Deserialize<AccountModel>(jsonString);
 
             return new(true, model);
         }
 
-        public ConnectionResult<IEnumerable<AccountModel>> GetAllAccounts() {
+        protected override ConnectionResult<IEnumerable<AccountModel>> GetAllAccountsHook() {
             var accounts = Directory.GetFiles(directoryPath)
                 .Select(x => Path.GetFileNameWithoutExtension(x))
                 .Select(x => GetAccount(x).Value);
@@ -72,14 +53,7 @@ namespace PswManagerDatabase.DataAccess.JsonDatabase {
             return new(true, accounts);
         }
 
-        public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {
-            if(!AccountExist(name)) {
-                return new(false, "The given account doesn't exist.");
-            }
-            if(name != newModel.Name && AccountExist(newModel.Name)) {
-                return new(false, "There is already an account with that name.");
-            }
-
+        protected override ConnectionResult<AccountModel> UpdateAccountHook(string name, AccountModel newModel) {
             var path = BuildFilePath(name);
             var jsonString = File.ReadAllText(path);
             var model = JsonSerializer.Deserialize<AccountModel>(jsonString);
