@@ -1,5 +1,6 @@
 ﻿using PswManagerLibrary.UIConnection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace PswManagerConsole {
@@ -12,6 +13,33 @@ namespace PswManagerConsole {
         public string RequestAnswer(string message) {
             Console.WriteLine(message);
             return RequestAnswer();
+        }
+
+        public char[] RequestPassword() {
+            List<char> output = new();
+
+            char asChar;
+            int asNum;
+            do {
+                asChar = Console.ReadKey().KeyChar;
+                asNum = asChar;
+
+                //between space and tilde
+                if(asNum >= 32 && asNum <= 126) {
+                    output.Add(asChar);
+                    Console.Write('\b'); //this deletes the last char printed
+                    Console.Write('*');
+                }
+                //delete key
+                if(asNum == 127) {
+                    output.RemoveAt(output.Count - 1);
+                    Console.Write('\b'); //this deletes the last char printed
+                }
+
+                //while it's not enter
+            } while(asNum != 13);
+
+            return output.ToArray();
         }
 
         public void SendMessage(string message) {

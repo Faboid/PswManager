@@ -1,5 +1,6 @@
 ﻿using PswManagerLibrary.UIConnection;
 using PswManagerLibrary.UIConnection.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -113,6 +114,10 @@ namespace PswManagerTests.Parsing {
 
         public void SendMessage(string message) {
             
+        }
+
+        public char[] RequestPassword() {
+            throw new NotImplementedException();
         }
 
         public bool YesOrNo(string question) {

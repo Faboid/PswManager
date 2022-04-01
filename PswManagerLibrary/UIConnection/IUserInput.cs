@@ -8,5 +8,7 @@
         string RequestAnswer(string message);
 
         string RequestAnswer();
+
+        char[] RequestPassword();
     }
 }
