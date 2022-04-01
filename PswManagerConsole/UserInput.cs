@@ -27,14 +27,19 @@ namespace PswManagerConsole {
                 //between space and tilde
                 if(asNum >= 32 && asNum <= 126) {
                     output.Add(asChar);
-                    Console.Write('\b'); //this deletes the last char printed
-                    Console.Write('*');
                 }
                 //delete key
-                if(asNum == 127) {
+                if(asNum == 8 && output.Count > 0) {
                     output.RemoveAt(output.Count - 1);
-                    Console.Write('\b'); //this deletes the last char printed
                 }
+
+                //clears the line
+                Console.SetCursorPosition(0, Console.CursorTop);
+                Console.Write(new string(' ', Console.BufferWidth));
+                
+                //fills line with asterisks
+                Console.SetCursorPosition(0, Console.CursorTop);
+                Console.Write(new string('*', output.Count));
 
                 //while it's not enter
             } while(asNum != 13);
