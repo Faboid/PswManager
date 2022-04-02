@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerDatabase", "PswMa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerHelperMethods", "PswManagerHelperMethods\PswManagerHelperMethods.csproj", "{F3FB09A3-DB38-470D-BFE1-470D1251A702}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManagerEncryption", "PswManagerEncryption\PswManagerEncryption.csproj", "{215587A2-F95E-4703-8290-085AB9AC9221}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerEncryption", "PswManagerEncryption\PswManagerEncryption.csproj", "{215587A2-F95E-4703-8290-085AB9AC9221}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

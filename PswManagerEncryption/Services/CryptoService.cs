@@ -6,19 +6,22 @@ using System.Text;
 [assembly: InternalsVisibleTo("PswManagerTests")]
 namespace PswManagerEncryption.Services {
     public class CryptoService : ICryptoService, IDisposable {
-        //This class is built upon a derived verions of "A Gazhal"'s answer https://stackoverflow.com/a/27484425/16018958
+        //This class is built upon a derived version of "A Gazhal"'s answer https://stackoverflow.com/a/27484425/16018958
 
+        private const string currentVersion = "1.00";
         private readonly Versioning versioning;
         private readonly SaltGenerator saltGenerator;
         private readonly Key key;
 
-        internal CryptoService(char[] password, string version) {
-            saltGenerator = new SaltGenerator(password);
-            key = new Key(password);
+        public CryptoService(char[] password) : this(password, currentVersion) { }
+        internal CryptoService(char[] password, string version) : this (new Key(password), version){ }
+        public CryptoService(Key key) : this(key, currentVersion) { } 
+
+        internal CryptoService(Key key, string version) { //todo - consider whether to clear the given key
+            this.key = key;
+            saltGenerator = new SaltGenerator(key.Get());
             versioning = new Versioning(version);
         }
-
-        public CryptoService(char[] password) : this(password, "1.00") { }
 
         public string Encrypt(string plainText) {
 
@@ -47,9 +50,9 @@ namespace PswManagerEncryption.Services {
             return Encoding.Unicode.GetString(ms.ToArray());
         }
 
-        private Aes GetAes(byte[] salt, string version) {
+        private Aes GetAes(byte[] salt, string version) { //todo - this is very slow. Attempt optimizing
             Aes aes = Aes.Create();
-            var rfc = new Rfc2898DeriveBytes(Encoding.Unicode.GetBytes(key.Get()), salt, Versioning.GetRfcDerivedBytesIterations(version));
+            using var rfc = new Rfc2898DeriveBytes(Encoding.Unicode.GetBytes(key.Get()), salt, Versioning.GetRfcDerivedBytesIterations(version));
             aes.Key = rfc.GetBytes(32);
             aes.IV = rfc.GetBytes(16);
             aes.Padding = PaddingMode.PKCS7;
