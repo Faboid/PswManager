@@ -1,5 +1,7 @@
-﻿using PswManagerEncryption.Services;
+﻿using PswManagerEncryption.Cryptography;
+using PswManagerEncryption.Services;
 using PswManagerLibrary.Cryptography;
+using System;
 using Xunit;
 
 namespace PswManagerTests.Cryptography {
@@ -61,6 +63,18 @@ namespace PswManagerTests.Cryptography {
 
             //assert
             Assert.Equal(expectedValues, decryptedValues);
+
+        }
+
+        [Fact]
+        public void ThrowArgExceptionIfKeysAreEqual() {
+
+            //arrange
+            var passKey = new Key("TestHere".ToCharArray());
+            var emaKey = new Key("TestHere".ToCharArray());
+
+            //act & assert
+            Assert.Throws<ArgumentException>(() => new CryptoAccount(passKey, emaKey));
 
         }
 

@@ -1,4 +1,7 @@
-﻿using PswManagerEncryption.Services;
+﻿using PswManagerEncryption.Cryptography;
+using PswManagerEncryption.Services;
+using System;
+using System.Linq;
 
 namespace PswManagerLibrary.Cryptography {
     public class CryptoAccount : ICryptoAccount {
@@ -6,6 +9,15 @@ namespace PswManagerLibrary.Cryptography {
         public CryptoAccount(char[] passPassword, char[] emaPassword) {
             PassCryptoString = new CryptoService(passPassword);
             EmaCryptoString = new CryptoService(emaPassword);
+        }
+
+        public CryptoAccount(Key passKey, Key emaKey) {
+            if(Enumerable.SequenceEqual(passKey.Get(), emaKey.Get())) {
+                throw new ArgumentException("The given keys must be different.");
+            }
+
+            PassCryptoString = new CryptoService(passKey);
+            EmaCryptoString = new CryptoService(emaKey);
         }
 
         public CryptoAccount(ICryptoService passCryptoString, ICryptoService emaCryptoString) {
