@@ -35,7 +35,7 @@ namespace PswManagerTests.Encryption {
 
             //arrange
             string password = "rithwydif£ghg\"ytirhs%";
-            using var crypto = new CryptoService(password.ToCharArray(), "test.1");
+            using var crypto = new CryptoService(new Key(password.ToCharArray()), "test.1");
             string valueToTest = "test/ng this r@ndom value!";
             
             //act
