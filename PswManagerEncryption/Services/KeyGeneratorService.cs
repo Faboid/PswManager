@@ -31,16 +31,15 @@ namespace PswManagerEncryption.Services {
         /// <param name="masterKey"></param>
         /// <param name="iterations"></param>
         internal KeyGeneratorService(byte[] salt, char[] masterKey, int iterations) {
-            this.salt = salt;
-            this.masterKey = new Key(masterKey);
-            this.iterations = iterations;
-            keys = GenerateKeys();
+            using var key = new Key(masterKey);
+            byte[] bytes = Encoding.Unicode.GetBytes(key.Get());
+
+            rfc = new Rfc2898DeriveBytes(bytes, salt, iterations);
+            random = new SaltRandom(64, 168, bytes.Sum(x => x / (bytes.Length / 2)));
         }
 
-        private readonly byte[] salt;
-        private readonly Key masterKey;
-        private readonly int iterations;
-        private readonly IEnumerable<Key> keys;
+        private readonly Rfc2898DeriveBytes rfc;
+        private readonly SaltRandom random;
 
         /// <summary>
         /// Generates a finite amount of keys.
@@ -50,23 +49,13 @@ namespace PswManagerEncryption.Services {
         /// <param name="num"></param>
         /// <returns></returns>
         public IEnumerable<Key> GenerateKeys(int num) {
-            return keys.Take(num);
-        }
-
-        //this is set to private to protect from infinite loops
-        private IEnumerable<Key> GenerateKeys() {
-
-            byte[] bytes = Encoding.Unicode.GetBytes(masterKey.Get());
-            var rfc = new Rfc2898DeriveBytes(bytes, salt, iterations);
-
-            var random = new SaltRandom(64, 168, bytes.Sum(x => x / (bytes.Length / 2)));
-            while(true) {
+            for(int i = 0; i < num; i++) {
                 yield return new Key(rfc.GetBytes(random.Next()));
             }
         }
 
         public void Dispose() {
-            masterKey.Dispose();
+            rfc.Dispose();
             GC.SuppressFinalize(this);
         }
     }

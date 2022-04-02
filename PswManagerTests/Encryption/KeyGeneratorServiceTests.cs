@@ -1,5 +1,6 @@
 ﻿using PswManagerEncryption.Services;
 using PswManagerHelperMethods;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -45,17 +46,34 @@ namespace PswManagerTests.Encryption {
             char[] tenth = "蛯鴀쓍蕪ꊑ��Ά�낸拷똥쯘儩◡풗繰瓃ഴ䙢憨웂鄕鱁쮧ﲡ㪡鑊밅�줎뢙ਃ颒唣⊓�嚙蔃䄫蔃⌑㓏释麧羠詣鏱쓶㟵쵙놏䜁觷㊣䣴뒄ᆴ＃ዉ苢Ⓥ븱⿹ઋ㑡䓲⋨쟞녀ᑵᘺ⧒쩲⸨촉鶈⋴️犚�".ToCharArray();
 
             //act
-            var key = generator.GenerateKeys(10);
-            var firstKey = key.First().Get();
-            var secondKey = key.Skip(1).First().Get();
-            var fourthKey = key.Skip(3).First().Get();
-            var tenthKey = key.Skip(9).First().Get();
+            var firstKey = generator.GenerateKeys(1).First().Get(); //1st
+            var secondKey = generator.GenerateKeys(1).First().Get(); //2nd
+            var fourthKey = generator.GenerateKeys(2).Skip(1).First().Get(); //3rd - 4th
+            var tenthKey = generator.GenerateKeys(6).Skip(5).First().Get(); //5th - 10th
 
             //assert
             Assert.Equal(first, firstKey);
             Assert.Equal(second, secondKey);
             Assert.Equal(fourth, fourthKey);
             Assert.Equal(tenth, tenthKey);
+
+        }
+
+        [Fact]
+        public void GenerateDistinctKeys() {
+
+            //arrange
+            char[] masterKey = "randomVeryLongKeyHere".ToCharArray();
+            byte[] salt = new byte[] { 0, 21, 32, 45, 23, 43, 23, 11, 78 };
+            int iterations = 500;
+            var generator = new KeyGeneratorService(salt, masterKey, iterations);
+
+            //act
+            var listKeys = Enumerable.Range(0, 100).Select(x => generator.GenerateKeys(1).First().Get()).ToList();
+            var hashKeys = new HashSet<char[]>(listKeys);
+
+            //assert
+            Assert.True(listKeys.Count == hashKeys.Count);
 
         }
 
