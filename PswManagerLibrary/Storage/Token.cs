@@ -1,118 +1,61 @@
-﻿using PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper;
-using PswManagerLibrary.Cryptography;
-using PswManagerLibrary.UIConnection;
-using System;
+﻿using PswManagerEncryption.Cryptography;
+using PswManagerEncryption.Services;
+using PswManagerHelperMethods;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace PswManagerLibrary.Storage {
-    public class Token : IToken {
+    internal class Token {
 
-        readonly ICryptoAccount cryptoAccount;
-        readonly IPaths paths;
-        readonly IUserInput userInput;
+        private readonly CryptoService cryptoService;
+        private readonly string tokenPath;
+        private const string plainText = "This is the correct password.";
 
-        public Token(ICryptoAccount cryptoAccount, IPaths paths, IUserInput userInput) {
-            this.cryptoAccount = cryptoAccount;
-            this.paths = paths;
-            this.userInput = userInput;
+        public Token(char[] password) : this(new Key(password)) { }
+
+        public Token(char[] password, string customPath) : this(new Key(password), customPath) { }
+
+        public Token(Key key) : this(key, GetDefaultPath()) { }
+
+        public Token(Key key, string customPath) {
+            tokenPath = customPath;
+            cryptoService = new CryptoService(key);
         }
 
-        public bool GetUserConfirmation(out string failureMessage) {
-            failureMessage = "";
+        public bool IsTokenSetUp() => File.Exists(tokenPath) && (File.ReadAllLines(tokenPath).Length == 1);
+        public static bool IsTokenSetUp(string path) => File.Exists(path) && (File.ReadAllLines(path).Length == 1);
+        public static string GetDefaultPath() => Path.Combine(PathsBuilder.GetDataDirectory, "Token.txt");
 
-            //tries to get values
-            var result = TryGet();
+        public bool VerifyToken() {
 
-            //if the values don't exist
-            if(result == null) {
-                string question = $"The tokens are missing or not set up. Do you want to create new tokens? {Environment.NewLine}" +
-                    "Tokens will be used to verify you inserted the correct password(in the future uses). If you refuse to create new, the initialization will be canceled.";
+            string cipherText = GetToken();
 
-                //if the user wants to set up new tokens
-                if(userInput.YesOrNo(question)) {
-                    userInput.SendMessage(
-                        "You will now insert two tokens: make sure they are easy to remember; it's also suggested to write them somewhere." +
-                        Environment.NewLine + "They are the only way to check, in future, if you've inserted the correct passwords."
-                    );
-
-                    //yes
-                    Set(
-                        userInput.RequestAnswer("Write your new first token and press enter. This token will be used to verify your passwords' password."),
-                        userInput.RequestAnswer("Write your new second token and press enter. This token will be used to verify your emails' password.")
-                    );
-
-                    userInput.SendMessage("The tokens have been set up correctly.");
-
-                    return true;
-                } else {
-                    //no
-
-                    failureMessage = "To avoid compomising data in the future, it's necessary to set up the tokens.";
-
-                    return false;
-                }
-
+            if(string.IsNullOrEmpty(cipherText)) {
+                SetToken();
+                return VerifyToken();
             }
 
-            string askTokens = $"The tokens are:{Environment.NewLine} {result.Value.passToken}, {result.Value.emaToken}.{Environment.NewLine} Correct?{Environment.NewLine}" +
-                $"Note: if the tokens aren't the ones you've inserted, accepting them as true will give erroneous information and might corrupt the saved data.";
+            try {
 
-            //if the user recognize the tokens as correct
-            if(userInput.YesOrNo(askTokens)) {
-                //yes
+                string decryptedText = cryptoService.Decrypt(cipherText);
+                return decryptedText == plainText;
 
-                return true;
-
-            } else {
-                //no
-
-                failureMessage = "Enter correct passwords to obtain the correct tokens.";
-
-                return false;
-
-            }
-        }
-
-        public void Set(string passToken, string emaToken) {
-
-            var encrypted = cryptoAccount.Encrypt(passToken, emaToken);
-            var tokens = new[] { encrypted.encryptedPassword, encrypted.encryptedEmail };
-
-            File.WriteAllLines(paths.TokenFilePath, tokens);
-        }
-
-        /// <summary>
-        /// Attempts to get token values. Return null if they don't exist.
-        /// </summary>
-        public (string passToken, string emaToken)? TryGet() {
-
-            if(File.Exists(paths.TokenFilePath) is false || File.ReadAllText(paths.TokenFilePath) == "") {
-                return null;
-            }
-
-            var savedToken = File.ReadAllLines(paths.TokenFilePath);
-
-            //decrypt saved tokens
-            return cryptoAccount.Decrypt(savedToken[0], savedToken[1]);
-        }
-
-        public bool Confront(string passToken, string emaToken) {
-            if(File.Exists(paths.TokenFilePath) is false || File.ReadAllText(paths.TokenFilePath) == "") {
+            } catch (CryptographicException) {
                 return false;
             }
+            
+        }
 
-            //put the tokens in an array to facilitate comparison
-            var tokens = ( passToken, emaToken );
+        private void SetToken() {
+            File.WriteAllText(tokenPath, cryptoService.Encrypt(plainText));
+        }
 
-            //get encrypted tokens
-            var savedToken = File.ReadAllLines(paths.TokenFilePath);
+        private string GetToken() {
+            if(!File.Exists(tokenPath)) {
+                SetToken();
+            }
 
-            //decrypt saved tokens
-            var savedTokens = cryptoAccount.Decrypt(savedToken[0], savedToken[1]);
-
-            //compare given and decrypted tokens
-            return savedTokens == tokens;
-
+            return File.ReadAllText(tokenPath);
         }
 
     }
