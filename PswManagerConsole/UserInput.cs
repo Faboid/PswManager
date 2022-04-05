@@ -44,6 +44,7 @@ namespace PswManagerConsole {
                 //while it's not enter
             } while(asNum != 13);
 
+            Console.WriteLine();
             return output.ToArray();
         }
 
