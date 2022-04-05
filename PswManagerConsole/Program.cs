@@ -2,39 +2,18 @@
 using System.Threading;
 using PswManagerLibrary.UIConnection;
 using PswManagerLibrary.Cryptography;
+using PswManagerConsole;
 
-namespace PswManagerConsole {
-    class Program {
-        static void Main(string[] args) {
+UserInput userInput = new();
 
-            UserInput userInput = new UserInput();
-            //a temporary password for testing. Will be removed once the initial setup is fully complete.
-            CryptoAccount cryptoAccount = new CryptoAccount("gheerwiahgkth".ToCharArray(), "ewrgrthrer".ToCharArray());
+var cryptoAccount = new CryptoFactory(userInput).AskUserPasswords();
 
-            Console.WriteLine("Welcome to PswManager! Please insert a command.");
+Console.WriteLine("Welcome to PswManager! Please insert a command.");
 
-            CommandLoop cmdLoop = new CommandLoop(userInput, cryptoAccount);
+var cmdLoop = new CommandLoop(userInput, cryptoAccount);
 
-            cmdLoop.Start();
+cmdLoop.Start();
 
-            //string command;
-            //while((command = Console.ReadLine().ToLowerInvariant()) is not "exit") {
+Console.WriteLine("Bye bye!");
+Thread.Sleep(500);
 
-            //    try {
-            //        Command cmm = new Command(command);
-
-            //        var result = cq.Start(cmm);
-
-            //        Console.WriteLine(result);
-
-            //    } catch(InvalidCommandException ex) {
-            //        Console.WriteLine($"Error: {ex.Message}");
-            //    }
-
-            //}
-
-            Console.WriteLine("Bye bye!");
-            Thread.Sleep(500);
-        }
-    }
-}
