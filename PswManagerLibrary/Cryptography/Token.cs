@@ -2,12 +2,14 @@
 using PswManagerEncryption.Services;
 using PswManagerHelperMethods;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
+[assembly:InternalsVisibleTo("PswManagerTests")]
 namespace PswManagerLibrary.Cryptography {
     internal class Token {
 
-        private readonly CryptoService cryptoService;
+        private readonly ICryptoService cryptoService;
         private readonly string tokenPath;
         private const string plainText = "This is the correct password.";
 
@@ -17,9 +19,13 @@ namespace PswManagerLibrary.Cryptography {
 
         public Token(Key key) : this(key, GetDefaultPath()) { }
 
-        public Token(Key key, string customPath) {
+        public Token(Key key, string customPath) : this(new CryptoService(key), customPath) { }
+
+        internal Token(ICryptoService cryptoService) : this(cryptoService, GetDefaultPath()) { }
+
+        internal Token(ICryptoService cryptoService, string customPath) {
             tokenPath = customPath;
-            cryptoService = new CryptoService(key);
+            this.cryptoService = cryptoService;
         }
 
         public bool IsTokenSetUp() => File.Exists(tokenPath) && File.ReadAllLines(tokenPath).Length == 1;
