@@ -38,6 +38,7 @@ namespace PswManagerEncryption.Services {
             random = new SaltRandom(64, 168, bytes.Sum(x => x / (bytes.Length / 2)));
         }
 
+        //todo - implement a buffer of Keys to speed up future calls
         private readonly Rfc2898DeriveBytes rfc;
         private readonly SaltRandom random;
 
@@ -48,9 +49,21 @@ namespace PswManagerEncryption.Services {
         /// </summary>
         /// <param name="num"></param>
         /// <returns></returns>
-        public IEnumerable<Key> GenerateKeys(int num) {
-            for(int i = 0; i < num; i++) {
-                yield return new Key(rfc.GetBytes(random.Next()));
+        public List<Key> GenerateKeys(int num) {
+            lock(rfc) {
+                List<Key> keys = new();
+
+                for(int i = 0; i < num; i++) {
+                    keys.Add(new Key(rfc.GetBytes(random.Next())));
+                }
+
+                return keys;
+            }
+        }
+
+        public Key GenerateKey() {
+            lock(rfc) {
+                return new Key(rfc.GetBytes(random.Next())); 
             }
         }
 
