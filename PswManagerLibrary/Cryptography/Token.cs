@@ -4,7 +4,7 @@ using PswManagerHelperMethods;
 using System.IO;
 using System.Security.Cryptography;
 
-namespace PswManagerLibrary.Storage {
+namespace PswManagerLibrary.Cryptography {
     internal class Token {
 
         private readonly CryptoService cryptoService;
@@ -22,8 +22,8 @@ namespace PswManagerLibrary.Storage {
             cryptoService = new CryptoService(key);
         }
 
-        public bool IsTokenSetUp() => File.Exists(tokenPath) && (File.ReadAllLines(tokenPath).Length == 1);
-        public static bool IsTokenSetUp(string path) => File.Exists(path) && (File.ReadAllLines(path).Length == 1);
+        public bool IsTokenSetUp() => File.Exists(tokenPath) && File.ReadAllLines(tokenPath).Length == 1;
+        public static bool IsTokenSetUp(string path) => File.Exists(path) && File.ReadAllLines(path).Length == 1;
         public static string GetDefaultPath() => Path.Combine(PathsBuilder.GetDataDirectory, "Token.txt");
 
         public bool VerifyToken() {
@@ -40,10 +40,11 @@ namespace PswManagerLibrary.Storage {
                 string decryptedText = cryptoService.Decrypt(cipherText);
                 return decryptedText == plainText;
 
-            } catch (CryptographicException) {
+            }
+            catch(CryptographicException) {
                 return false;
             }
-            
+
         }
 
         private void SetToken() {
