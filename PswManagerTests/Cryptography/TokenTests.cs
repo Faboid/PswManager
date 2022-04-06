@@ -11,12 +11,13 @@ namespace PswManagerTests.Cryptography {
 
         public TokenTests() {
             CryptoService crypto = GetService(GetPassword);
-            _token = new Token(crypto);
+            _token = new Token(crypto, GetPath);
             _token.VerifyToken();
         }
 
         static CryptoService GetService(Key password) => new (password, "test.1");
         static Key GetPassword => new ("password".ToCharArray());
+        static string GetPath => Path.Combine(PathsBuilder.GetDataDirectory, "GenericTokenTestsPath.txt");
 
         readonly Token _token;
 
@@ -51,7 +52,7 @@ namespace PswManagerTests.Cryptography {
 
             //arrange
             var wrongKey = new Key("wrongPass".ToCharArray());
-            var token = new Token(GetService(wrongKey));
+            var token = new Token(GetService(wrongKey), GetPath);
 
             //act
             var exists = token.IsTokenSetUp();
@@ -67,7 +68,7 @@ namespace PswManagerTests.Cryptography {
         public void RecognizeCorrectPassword() {
 
             //arrange
-            var token = new Token(GetService(GetPassword));
+            var token = new Token(GetService(GetPassword), GetPath);
 
             //act
             var result = token.VerifyToken();
