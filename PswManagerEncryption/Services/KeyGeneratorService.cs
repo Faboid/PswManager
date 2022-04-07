@@ -1,12 +1,13 @@
 ﻿using PswManagerEncryption.Cryptography;
 using PswManagerEncryption.Random;
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 
 [assembly: InternalsVisibleTo("PswManagerTests")]
 namespace PswManagerEncryption.Services {
-    public class KeyGeneratorService : IDisposable {
+    public class KeyGeneratorService : IAsyncDisposable {
 
         /// <summary>
         /// Instantiates a <see cref="KeyGeneratorService"/> with a fixed salt. 
@@ -36,11 +37,30 @@ namespace PswManagerEncryption.Services {
 
             rfc = new Rfc2898DeriveBytes(bytes, salt, iterations);
             random = new SaltRandom(64, 168, bytes.Sum(x => x / (bytes.Length / 2)));
+
+            channel = new(3);
+            generationTask = AutoGenerateKeysAsync();
         }
 
-        //todo - implement a buffer of Keys to speed up future calls
         private readonly Rfc2898DeriveBytes rfc;
         private readonly SaltRandom random;
+        private readonly Channel<Key> channel;
+        private readonly Task generationTask;
+
+        private async Task AutoGenerateKeysAsync() {
+            while(!channel.Token.IsCancellationRequested) {
+                try {
+                    var key = await GenerateNextKeyAsync(channel.Token);
+                    await channel.WriteAsync(key);
+                } catch (OperationCanceledException) {
+                    //do nothing
+                    return;
+                } catch (ObjectDisposedException) {
+                    //still do nothing
+                    return;
+                }
+            }
+        }
 
         /// <summary>
         /// Generates a finite amount of keys.
@@ -49,27 +69,100 @@ namespace PswManagerEncryption.Services {
         /// </summary>
         /// <param name="num"></param>
         /// <returns></returns>
-        public List<Key> GenerateKeys(int num) {
+        public async Task<List<Key>> GenerateKeysAsync(int num) {
+
+            List<Key> keys = new();
+
+            while(keys.Count < num) {
+                keys.Add(await GenerateKeyAsync());
+            }
+
+            return keys;
+        }
+
+        public async Task<Key> GenerateKeyAsync() {
+
+            return await channel.ReadAsync();
+        }
+
+        private async Task<Key> GenerateNextKeyAsync(CancellationToken cancellationToken) {
+
+            return await Task.Run(() => {
+                return GenerateNextKey();
+            }, cancellationToken);
+
+        }
+
+        private Key GenerateNextKey() {
             lock(rfc) {
-                List<Key> keys = new();
-
-                for(int i = 0; i < num; i++) {
-                    keys.Add(new Key(rfc.GetBytes(random.Next())));
+                lock(random) {
+                    return new(rfc.GetBytes(random.Next()));
                 }
-
-                return keys;
             }
         }
 
-        public Key GenerateKey() {
-            lock(rfc) {
-                return new Key(rfc.GetBytes(random.Next())); 
-            }
+        public async ValueTask DisposeAsync() {
+            channel.Dispose();
+            await generationTask; //this is to find any exception thrown in there
+            rfc.Dispose();
+            GC.SuppressFinalize(this);
+        }
+    }
+
+    internal class Channel<T> : IDisposable {
+
+        public Channel(int length) {
+            buffer = new();
+            cts = new();
+            Token = cts.Token;
+            readSemaphore = new(0);
+            writeSemaphore = new(length);
+        }
+
+        private readonly ConcurrentQueue<T> buffer;
+        private readonly SemaphoreSlim readSemaphore;
+        private readonly SemaphoreSlim writeSemaphore;
+        private readonly CancellationTokenSource cts;
+
+        public CancellationToken Token { get; }
+
+        //public async Task<bool> TryReadAsync(int milliseconds, out T? value) {
+        //    value = default;
+        //    bool entered = await readSemaphore.WaitAsync(milliseconds, Token);
+        //    if(!entered) {
+        //        return false;
+        //    }
+        //    bool success = buffer.TryDequeue(out value);
+        //    return success;
+        //}
+
+        public async Task<T> ReadAsync() {
+
+            T? output;
+            bool success;
+            do {
+                //if readSemaphore enters but there's no value, it was erranously released
+                //therefore, it's fine to lock it in "excess"
+                await readSemaphore.WaitAsync(Token);
+                success = buffer.TryDequeue(out output);
+            } while(!success);
+
+            writeSemaphore.Release();
+            return output!;
+        }
+
+        public async Task WriteAsync(T value) {
+            await writeSemaphore.WaitAsync(Token);
+            buffer.Enqueue(value);
+            readSemaphore.Release();
         }
 
         public void Dispose() {
-            rfc.Dispose();
-            GC.SuppressFinalize(this);
+            cts.Cancel();
+            readSemaphore.Dispose();
+            writeSemaphore.Dispose();
+            cts.Dispose();
+            buffer.Clear();
         }
     }
 }

@@ -2,6 +2,7 @@
 using PswManagerLibrary.UIConnection;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PswManagerLibrary.Cryptography {
     public class CryptoFactory {
@@ -18,16 +19,18 @@ namespace PswManagerLibrary.Cryptography {
                 return new CryptoAccount("gheerwiahgkth".ToCharArray(), "ewrgrthrer".ToCharArray());
             }
 #endif
-            return RequestPasswords();
+            //to stop the async methods from propagating to main,
+            //they are awaited syncronously in here
+            return RequestPasswords().GetAwaiter().GetResult();
         }
 
-        private ICryptoAccount RequestPasswords() =>
+        private async Task<ICryptoAccount> RequestPasswords() =>
             Token.IsTokenSetUp(Token.GetDefaultPath()) switch {
-                true => LogIn(),
-                false => SignUp()
+                true => await LogIn(),
+                false => await SignUp()
             };
 
-        private ICryptoAccount SignUp() {
+        private async Task<ICryptoAccount> SignUp() {
             userInput.SendMessage("First time set up initiated.");
 
             userInput.SendMessage("Please insert the master key.");
@@ -42,44 +45,45 @@ namespace PswManagerLibrary.Cryptography {
                     password = userInput.RequestPassword();
                 } while(!ValidatePassword(password));
 
+                //todo - start keys generation before the password is validated
+                generator = new KeyGeneratorService(password);
                 userInput.SendMessage("The given password is valid.");
                 userInput.SendMessage("Creating a token to validate the password in the future...");
 
-                generator = new KeyGeneratorService(password);
-                token = new Token(generator.GenerateKey());
+                token = new Token(await generator.GenerateKeyAsync());
 
             } while(!token.VerifyToken());
 
             userInput.SendMessage("Completing first time set up... this might take a few seconds.");
 
             try {
-                return new CryptoAccount(generator.GenerateKey(), generator.GenerateKey());
+                return new CryptoAccount(await generator.GenerateKeyAsync(), await generator.GenerateKeyAsync());
             } finally {
-                generator.Dispose();
+                await generator.DisposeAsync();
             }
         }
 
-        private ICryptoAccount LogIn() {
+        private async Task<ICryptoAccount> LogIn() {
 
             while(true) {
                 userInput.SendMessage("Please insert the master key.");
 
                 var password = userInput.RequestPassword();
-                using var generator = new KeyGeneratorService(password);
+                await using var generator = new KeyGeneratorService(password);
 
                 userInput.SendMessage("Verifying password...");
-                var token = new Token(generator.GenerateKey());
+                var token = new Token(await generator.GenerateKeyAsync());
                 
                 //if the password is correct
                 if(token.VerifyToken()) {
                     userInput.SendMessage("The password is correct.");
                     userInput.SendMessage("The log-in process is starting. It might take a few seconds.");
 
-                    return new CryptoAccount(generator.GenerateKey(), generator.GenerateKey());
+                    return new CryptoAccount(await generator.GenerateKeyAsync(), await generator.GenerateKeyAsync());
                 }
 
                 //if the password is wrong
-                userInput.SendMessage("The given password is wrong.");
+                userInput.SendMessage("The given password is incorrect. Please try again.");
             }
 
         }
