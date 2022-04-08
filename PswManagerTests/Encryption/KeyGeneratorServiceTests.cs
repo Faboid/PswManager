@@ -74,7 +74,7 @@ namespace PswManagerTests.Encryption {
             var listKeys = Enumerable
                 .Range(0, 100)
                 .Select(async x => await generator.GenerateKeyAsync())
-                .Select(x => x.Result.Get())
+                .Select(x => x.GetAwaiter().GetResult().Get())
                 .ToList();
             var hashKeys = new HashSet<char[]>(listKeys);
 

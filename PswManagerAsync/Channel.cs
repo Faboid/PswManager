@@ -19,15 +19,15 @@ namespace PswManagerAsync {
 
         public CancellationToken Token { get; }
 
-        //public async Task<bool> TryReadAsync(int milliseconds, out T? value) {
-        //    value = default;
-        //    bool entered = await readSemaphore.WaitAsync(milliseconds, Token);
-        //    if(!entered) {
-        //        return false;
-        //    }
-        //    bool success = buffer.TryDequeue(out value);
-        //    return success;
-        //}
+        public async Task<(bool success, T? value)> TryReadAsync(int milliseconds) {
+            bool entered = await readSemaphore.WaitAsync(milliseconds, Token);
+            if(!entered) {
+                return (false, default);
+            }
+            bool success = buffer.TryDequeue(out T? value);
+            writeSemaphore.Release();
+            return (success, value);
+        }
 
         public async Task<T> ReadAsync() {
 

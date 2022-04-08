@@ -42,13 +42,15 @@ namespace PswManagerEncryption.Services {
             generationTask = AutoGenerateKeysAsync();
         }
 
+        public bool IsDisposed { get; private set; } = false;
+
         private readonly Rfc2898DeriveBytes rfc;
         private readonly SaltRandom random;
         private readonly Channel<Key> channel;
         private readonly Task generationTask;
 
         private async Task AutoGenerateKeysAsync() {
-            while(!channel.Token.IsCancellationRequested) {
+            while(!channel.Token.IsCancellationRequested && !IsDisposed) {
                 try {
                     var key = await GenerateNextKeyAsync(channel.Token);
                     await channel.WriteAsync(key);
@@ -82,7 +84,29 @@ namespace PswManagerEncryption.Services {
 
         public async Task<Key> GenerateKeyAsync() {
 
-            return await channel.ReadAsync();
+            do {
+
+                //check generationTask to make sure it hasn't thrown an exception
+                if(generationTask.IsFaulted) {
+                    try {
+                        await generationTask.ConfigureAwait(false);
+                    }
+                    catch(Exception ex) {
+                        //todo - insert some kind of logging here
+                        throw new Exception("The infinite key-generation task has thrown an exception.", ex);
+                    }
+                }
+
+                if(IsDisposed) {
+                    throw new ObjectDisposedException("This object has already been disposed of.");
+                }
+
+                var (success, key) = await channel.TryReadAsync(2000);
+                if(success) {
+                    return key!;
+                }
+
+            } while(true);
         }
 
         private async Task<Key> GenerateNextKeyAsync(CancellationToken cancellationToken) {
@@ -94,17 +118,14 @@ namespace PswManagerEncryption.Services {
         }
 
         private Key GenerateNextKey() {
-            lock(rfc) {
-                lock(random) {
-                    return new(rfc.GetBytes(random.Next()));
-                }
-            }
+            return new(rfc.GetBytes(random.Next()));
         }
 
         public async ValueTask DisposeAsync() {
             channel.Dispose();
             await generationTask; //this is to find any exception thrown in there
             rfc.Dispose();
+            IsDisposed = true;
             GC.SuppressFinalize(this);
         }
     }
