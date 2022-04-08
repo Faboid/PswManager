@@ -22,6 +22,7 @@ namespace PswManagerLibrary.Cryptography {
             //to stop the async methods from propagating to main,
             //they are awaited syncronously in here
             return RequestPasswords().GetAwaiter().GetResult();
+            //todo - consider whether to turn it fully async. That way, the user won't have to wait
         }
 
         private async Task<ICryptoAccount> RequestPasswords() =>
