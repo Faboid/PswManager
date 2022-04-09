@@ -1,12 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
     internal class SingleValue {
 
         internal static void Create(string path, string value) {
             File.AppendAllLines(path, new string[] { value });
+        }
+
+        internal async static Task CreateAsync(string path, string value) {
+            await File.AppendAllLinesAsync(path, new string[] { value });
         }
 
         internal static string Get(string path, int position) {

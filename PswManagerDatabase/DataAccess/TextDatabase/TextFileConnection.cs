@@ -1,6 +1,7 @@
 ﻿using PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper;
 using PswManagerDatabase.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess.TextDatabase {
 
@@ -38,6 +39,19 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
 
             accountBuilder.Create(model);
 
+            lengthCounter.AddOne();
+            return new ConnectionResult(true);
+        }
+
+        public async Task<ConnectionResult> CreateAccountAsync(AccountModel model) {
+            if(string.IsNullOrWhiteSpace(model.Name)) {
+                return new ConnectionResult(false, "The given name isn't valid.");
+            }
+            if(accountSearcher.AccountExist(model.Name)) {
+                return new ConnectionResult(false, "The given account name is already occupied.");
+            }
+
+            await accountBuilder.CreateAsync(model);
             lengthCounter.AddOne();
             return new ConnectionResult(true);
         }

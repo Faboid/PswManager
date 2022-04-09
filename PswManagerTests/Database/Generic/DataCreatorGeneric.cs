@@ -2,6 +2,7 @@
 using PswManagerDatabase.Models;
 using PswManagerTests.TestsHelpers;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Database.Generic {
@@ -26,6 +27,23 @@ namespace PswManagerTests.Database.Generic {
             //act
             bool exist = dataCreator.AccountExist(account.Name);
             var result = dataCreator.CreateAccount(account);
+
+            //assert
+            Assert.False(exist);
+            Assert.True(result.Success);
+            Assert.True(dataCreator.AccountExist(account.Name));
+
+        }
+
+        [Fact]
+        public async Task CreateAccountCorrectlyAsync() {
+
+            //arrange
+            var account = new AccountModel("validAccountName", "rigteuwokgteuyh", "here@email.it");
+
+            //act
+            bool exist = dataCreator.AccountExist(account.Name);//todo - change to AccountExistAsync once it's implemented
+            var result = await dataCreator.CreateAccountAsync(account);
 
             //assert
             Assert.False(exist);

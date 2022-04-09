@@ -2,6 +2,7 @@
 using PswManagerDatabase.Models;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess.SQLDatabase {
     internal class SQLConnection : IDataConnection {
@@ -39,6 +40,22 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
 
             return cmd.Connection.Open(() => {
                 var result = cmd.ExecuteNonQuery() == 1;
+                return new ConnectionResult(result);
+            });
+        }
+
+        public async Task<ConnectionResult> CreateAccountAsync(AccountModel model) {
+            if(string.IsNullOrWhiteSpace(model.Name)) {
+                return new ConnectionResult(false, "The given name isn't valid.");
+            }
+            if(AccountExist(model.Name)) {
+                return new ConnectionResult(false, "The given account name is already occupied.");
+            }
+
+            using var cmd = queriesBuilder.CreateAccountQuery(model);
+
+            return await cmd.Connection.OpenAsync(async () => {
+                var result = await cmd.ExecuteNonQueryAsync() == 1;
                 return new ConnectionResult(result);
             });
         }

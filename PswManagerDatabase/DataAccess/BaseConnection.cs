@@ -1,5 +1,6 @@
 ﻿using PswManagerDatabase.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess {
     /// <summary>
@@ -28,6 +29,17 @@ namespace PswManagerDatabase.DataAccess {
             }
 
             return CreateAccountHook(model);
+        }
+
+        public async Task<ConnectionResult> CreateAccountAsync(AccountModel model) {
+            if(string.IsNullOrWhiteSpace(model.Name)) {
+                return new ConnectionResult(false, "The given name isn't valid.");
+            }
+            if(AccountExist(model.Name)) {
+                return new ConnectionResult(false, "The given account name is already occupied.");
+            }
+
+            return await CreateAccountHookAsync(model);
         }
 
 
@@ -67,6 +79,7 @@ namespace PswManagerDatabase.DataAccess {
 
         protected abstract bool AccountExistHook(string name);
         protected abstract ConnectionResult CreateAccountHook(AccountModel model);
+        protected abstract Task<ConnectionResult> CreateAccountHookAsync(AccountModel model);
         protected abstract ConnectionResult<AccountModel> GetAccountHook(string name);
         protected abstract ConnectionResult<IEnumerable<AccountModel>> GetAllAccountsHook();
         protected abstract ConnectionResult<AccountModel> UpdateAccountHook(string name, AccountModel newModel);

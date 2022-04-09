@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
     internal class AccountBuilder {
@@ -16,6 +17,12 @@ namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
             SingleValue.Create(paths.AccountsFilePath, account.Name);
             SingleValue.Create(paths.PasswordsFilePath, account.Password);
             SingleValue.Create(paths.EmailsFilePath, account.Email);
+        }
+
+        public async Task CreateAsync(AccountModel account) {
+            await SingleValue.CreateAsync(paths.AccountsFilePath, account.Name);
+            await SingleValue.CreateAsync(paths.PasswordsFilePath, account.Password);
+            await SingleValue.CreateAsync(paths.EmailsFilePath, account.Email);
         }
 
         public AccountModel Get(int position) {

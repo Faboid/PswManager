@@ -1,6 +1,7 @@
 ﻿using PswManagerDatabase.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess.MemoryDatabase {
     internal class MemoryConnection : BaseConnection {
@@ -13,6 +14,11 @@ namespace PswManagerDatabase.DataAccess.MemoryDatabase {
 
         protected override ConnectionResult CreateAccountHook(AccountModel model) {
             accounts.Add(model.Name, model);
+            return new ConnectionResult(true);
+        }
+
+        protected async override Task<ConnectionResult> CreateAccountHookAsync(AccountModel model) {
+            await Task.Run(() => accounts.Add(model.Name, model));
             return new ConnectionResult(true);
         }
 

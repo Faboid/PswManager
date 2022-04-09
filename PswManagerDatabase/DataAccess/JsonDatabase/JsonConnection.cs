@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess.JsonDatabase {
     internal class JsonConnection : BaseConnection {
@@ -29,6 +30,13 @@ namespace PswManagerDatabase.DataAccess.JsonDatabase {
             var jsonString = JsonSerializer.Serialize(model);
             File.WriteAllText(path, jsonString);
 
+            return new ConnectionResult(true);
+        }
+
+        protected async override Task<ConnectionResult> CreateAccountHookAsync(AccountModel model) {
+            var path = BuildFilePath(model.Name);
+            using var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write);
+            await JsonSerializer.SerializeAsync(stream, model);
             return new ConnectionResult(true);
         }
 
