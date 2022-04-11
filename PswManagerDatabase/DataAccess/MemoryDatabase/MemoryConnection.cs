@@ -17,9 +17,9 @@ namespace PswManagerDatabase.DataAccess.MemoryDatabase {
             return new ConnectionResult(true);
         }
 
-        protected async override Task<ConnectionResult> CreateAccountHookAsync(AccountModel model) {
-            await Task.Run(() => accounts.Add(model.Name, model));
-            return new ConnectionResult(true);
+        protected override Task<ConnectionResult> CreateAccountHookAsync(AccountModel model) {
+            accounts.Add(model.Name, model);
+            return Task.FromResult(new ConnectionResult(true));
         }
 
         protected override ConnectionResult DeleteAccountHook(string name) {
