@@ -10,7 +10,7 @@ namespace PswManagerTests.Async.Locks {
         public async Task LocksSuccessfullyAndWaits() {
 
             //arrange
-            NamesLockerHandler locker = new();
+            using NamesLockerHandler locker = new();
             Stopwatch sw = Stopwatch.StartNew();
             string lockName = "Hello!";
 
