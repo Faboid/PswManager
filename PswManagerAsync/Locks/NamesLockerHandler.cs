@@ -1,5 +1,5 @@
 ﻿namespace PswManagerAsync.Locks {
-    public class NamesLockerHandler {
+    public class NamesLockerHandler : IDisposable {
 
         private const string defaultTimeoutMessage = "This is being used elsewhere.";
         private readonly NamesLocker lockers = new();
@@ -63,5 +63,9 @@
             }
         }
 
+        public void Dispose() {
+            lockers.Dispose();
+            GC.SuppressFinalize(this);
+        }
     }
 }

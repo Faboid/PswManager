@@ -1,10 +1,11 @@
 ﻿using System.Collections.Concurrent;
 
 namespace PswManagerAsync.Locks {
-    internal class NamesLocker {
+    internal class NamesLocker : IDisposable {
 
         readonly ConcurrentDictionary<string, RefCount<SemaphoreSlim>> semaphores = new();
         readonly SemaphoreSlim concurrentSemaphore = new(1, 1);
+        private bool isDisposed = false;
 
         public async Task<LockResult> LockAsync(string name, int millisecondsTimeout = -1, string timeoutMessage = "The object is being used elsewhere.") {
             await concurrentSemaphore.WaitAsync();
@@ -70,15 +71,28 @@ namespace PswManagerAsync.Locks {
         }
 
         private RefCount<SemaphoreSlim> GetRefSemaphore(string name) {
+            if(isDisposed) {
+                throw new ObjectDisposedException($"The {nameof(NamesLocker)} object has been already disposed of.");
+            }
+
             SemaphoreSlim slim = new(1, 1);
             RefCount<SemaphoreSlim> refSlim = new(slim);
             var refSemaphore = semaphores.GetOrAdd(name, refSlim);
 
+            //if the dictionary returns an existing value,
+            //the newly-created semaphoreslim is redundant and must be disposed of
             if(!ReferenceEquals(refSlim, refSemaphore)) {
                 slim.Dispose();
             }
 
             return refSemaphore;
+        }
+
+        public void Dispose() {
+            isDisposed = true;
+            concurrentSemaphore.Dispose();
+            Parallel.ForEach(semaphores, refVal => refVal.Value.UseValue(x => x.Dispose()));
+            semaphores.Clear();
         }
 
     }
