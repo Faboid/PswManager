@@ -18,19 +18,22 @@ namespace PswManagerTests.Async.Locks {
             var first = locker.LockHereAsync(lockName, async () => {
                 await orderChecker.WaitFor(1, 200);
                 orderChecker.Done(2);
+                return Task.FromResult(2);
             }, 1000);
 
             //tests timeout mechanic
-            LockResult secondResult = locker.LockHere(lockName, () => {
+            LockResult<int> secondResult = locker.LockHere(lockName, () => {
                 OrderChecker.Never();
+                return 5;
             }, 10);
 
-            Task<LockResult> third = locker.LockHereAsync(lockName, () => {
+            Task<LockResult<int>> third = locker.LockHereAsync(lockName, () => {
                 orderChecker.Done(3);
+                return 4;
             }, 1000);
 
             orderChecker.Done(1);
-            LockResult thirdResult = await third;
+            LockResult<int> thirdResult = await third;
             LockResult firstResult = await first;
 
             //tests x.LockHere with no returns
