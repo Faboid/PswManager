@@ -5,6 +5,7 @@ namespace PswManagerTests.Async.TestsHelpers {
     internal class OrderChecker {
 
         public int CurrentOperation { get; private set; } = 0;
+        private readonly object lockObj = new();
 
         /// <summary>
         /// Signals that the operation number <paramref name="operationNum"/> has been completed.
@@ -14,9 +15,11 @@ namespace PswManagerTests.Async.TestsHelpers {
         /// <param name="operationNum"></param>
         /// <exception cref="OrderException"></exception>
         public void Done(int operationNum) {
-            CurrentOperation++;
-            if(CurrentOperation != operationNum) {
-                throw new OrderException($"The operation number {operationNum} has occurred instead of the number {CurrentOperation}");
+            lock (lockObj) {
+                CurrentOperation++;
+                if(CurrentOperation != operationNum) {
+                    throw new OrderException($"The operation number {operationNum} has occurred instead of the number {CurrentOperation}");
+                }
             }
         }
 
@@ -43,6 +46,13 @@ namespace PswManagerTests.Async.TestsHelpers {
 
         }
 
+        /// <summary>
+        ///This method represents a point in code that shouldn't be reached: throws <see cref="NoRunException"/> and does nothing else.
+        /// </summary>
+        /// <exception cref="NoRunException"></exception>
+        public static void Never() {
+            throw new NoRunException("This point in code shouldn't have been reached.");
+        }
 
     }
 
@@ -52,6 +62,14 @@ namespace PswManagerTests.Async.TestsHelpers {
 
         }
     
+    }
+
+    internal class NoRunException : Exception {
+
+        public NoRunException(string message) : base(message) {
+
+        }
+
     }
 
 }
