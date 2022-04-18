@@ -2,10 +2,11 @@
 using System.Threading.Tasks;
 
 namespace PswManagerTests.Async.TestsHelpers {
-    internal class OrderChecker {
+    internal class OrderChecker : IDisposable {
 
         public int CurrentOperation { get; private set; } = 0;
         private readonly object lockObj = new();
+        private bool isDisposed = false;
 
         /// <summary>
         /// Signals that the operation number <paramref name="operationNum"/> has been completed.
@@ -32,6 +33,7 @@ namespace PswManagerTests.Async.TestsHelpers {
         /// <param name="millisecondsTimeout"></param>
         /// <returns></returns>
         /// <exception cref="TimeoutException"></exception>
+        /// <exception cref="ObjectDisposedException"></exception>
         public async Task WaitFor(int operationToWaitFor, int millisecondsTimeout) {
 
             int awaited = 0;
@@ -39,6 +41,9 @@ namespace PswManagerTests.Async.TestsHelpers {
             while(CurrentOperation < operationToWaitFor) {
                 if(awaited > millisecondsTimeout) {
                     throw new TimeoutException($"The operation number {operationToWaitFor} hasn't been reached. Current operation: {CurrentOperation}");
+                }
+                if(isDisposed) {
+                    throw new ObjectDisposedException(nameof(OrderChecker));
                 }
                 await Task.Delay(cycle);
                 awaited += cycle;
@@ -54,6 +59,9 @@ namespace PswManagerTests.Async.TestsHelpers {
             throw new NoRunException("This point in code shouldn't have been reached.");
         }
 
+        public void Dispose() {
+            isDisposed = true;
+        }
     }
 
     internal class OrderException : Exception {

@@ -13,7 +13,7 @@ namespace PswManagerTests.Async.Locks {
             using NamesLocker locker = new();
             string lock1 = "Hello!";
             string lock2 = "Sup!";
-            OrderChecker orderChecker = new();
+            using OrderChecker orderChecker = new();
 
             //act
             async Task<LockResult> LockLogic() {
