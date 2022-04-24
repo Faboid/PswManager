@@ -4,69 +4,55 @@ namespace PswManagerAsync.Locks {
     internal class NamesLocker : IDisposable {
 
         readonly ConcurrentDictionary<string, RefCount<SemaphoreSlim>> semaphores = new();
-        readonly SemaphoreSlim concurrentSemaphore = new(1, 1);
+        readonly Locker concurrentLocker = new();
         private bool isDisposed = false;
 
         public async Task<LockResult> LockAsync(string name, int millisecondsTimeout = -1, string timeoutMessage = "The object is being used elsewhere.") {
-            await concurrentSemaphore.WaitAsync();
             RefCount<SemaphoreSlim> refSemaphore;
-            try {
+            using(var getLock = await concurrentLocker.GetLockAsync()) {
                 refSemaphore = GetRefSemaphore(name);
-            }
-            finally {
-                concurrentSemaphore.Release();
             }
             var entered = await refSemaphore.UseValueAsync(async x => await x.WaitAsync(millisecondsTimeout));
             return LockResult.CreateResult(entered, timeoutMessage);
         }
 
         public LockResult Lock(string name, int millisecondsTimeout = -1, string timeoutMessage = "The object is being used elsewhere.") {
-            concurrentSemaphore.Wait();
             RefCount<SemaphoreSlim> refSemaphore;
-            try {
+            using (var getLock = concurrentLocker.GetLock()) {
                 refSemaphore = GetRefSemaphore(name);
-            }
-            finally {
-                concurrentSemaphore.Release();
             }
             var entered = refSemaphore.UseValue(x => x.Wait(millisecondsTimeout));
             return LockResult.CreateResult(entered, timeoutMessage);
         }
 
         public void Unlock(string name) {
-            concurrentSemaphore.Wait();
-            try {
+            using var getLock = concurrentLocker.GetLock();
+            lock(semaphores) {
 
-                lock(semaphores) {
+                if(!semaphores.TryGetValue(name, out var refSemaphore)) {
+                    //if there's none, return
+                    return;
+                }
 
-                    if(!semaphores.TryGetValue(name, out var refSemaphore)) {
-                        //if there's none, return
+                lock(refSemaphore) {
+
+                    //if it's not being used, dispose it
+                    if(!refSemaphore.IsInUse) {
+                        semaphores.TryRemove(name, out _);
+                        refSemaphore.UseValue(x => {
+                            x.Dispose();
+                        });
+
                         return;
                     }
 
-                    lock(refSemaphore) {
-
-                        //if it's not being used, dispose it
-                        if(!refSemaphore.IsInUse) {
-                            semaphores.TryRemove(name, out _);
-                            refSemaphore.UseValue(x => {
-                                x.Dispose();
-                            });
-
-                            return;
-                        }
-
-                        //if it's being used, simply release it
-                        refSemaphore.UseValue(x => {
-                            x.Release();
-                        });
-
-                    }
+                    //if it's being used, simply release it
+                    refSemaphore.UseValue(x => {
+                        x.Release();
+                    });
 
                 }
-            }
-            finally {
-                concurrentSemaphore.Release();
+
             }
         }
 
@@ -89,10 +75,12 @@ namespace PswManagerAsync.Locks {
         }
 
         public void Dispose() {
-            isDisposed = true;
-            concurrentSemaphore.Dispose();
-            Parallel.ForEach(semaphores, refVal => refVal.Value.UseValue(x => x.Dispose()));
-            semaphores.Clear();
+            using(var getLock = concurrentLocker.GetLock()) {
+                isDisposed = true;
+                Parallel.ForEach(semaphores, refVal => refVal.Value.UseValue(x => x.Dispose()));
+                semaphores.Clear();
+            }
+            concurrentLocker.Dispose();   
         }
 
     }
