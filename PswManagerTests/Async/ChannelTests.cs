@@ -40,44 +40,39 @@ namespace PswManagerTests.Async {
             Channel<int> channel = new(2);
             int[] expected = { 1, 2, 3, 4 };
             int[] actual = new int[4];
+            OrderChecker orderChecker = new();
 
             //act
-            Task<double> writeTask = Task.Run(async () => {
-                Stopwatch sw = Stopwatch.StartNew();
+            async Task Writer() {
                 await channel.WriteAsync(expected[0]);
                 await channel.WriteAsync(expected[1]);
+                orderChecker.Done(1);
                 await channel.WriteAsync(expected[2]);
                 await channel.WriteAsync(expected[3]);
+                orderChecker.Done(3);
                 //extra values
                 await channel.WriteAsync(10);
                 await channel.WriteAsync(99);
-                sw.Stop();
-                return sw.Elapsed.TotalMilliseconds;
-            });
-            Task<double> readTask = Task.Run(async () => {
-                Stopwatch sw = Stopwatch.StartNew();
-                actual[0] = await TryWaitRead(channel);
-                actual[1] = await channel.ReadAsync();
-                actual[2] = await channel.ReadAsync();
-                await Task.Delay(200);
-                actual[3] = await channel.ReadAsync();
-                sw.Stop();
-                return sw.Elapsed.TotalMilliseconds;
-            });
-
-            //act
-            var timeoutTask = Task.Delay(1000);
-
-            //assert
-            if(await Task.WhenAny(writeTask, readTask, timeoutTask) == timeoutTask) {
-
-                throw new TimeoutException("The task is probably in a deadlock. The test has failed.");
+                orderChecker.Done(5);
             }
 
-            await Task.WhenAll(writeTask, readTask);
-            //based on pre-established locks, "readTask" should finish before "writeTask",
-            //as WriteAsync() should be locked until the stored values are read
-            Assert.True(writeTask.Result > readTask.Result);
+            async Task Reader() {
+                await orderChecker.WaitFor(1, 200);
+                actual[0] = await TryWaitRead(channel);
+                orderChecker.Done(2);
+                actual[1] = await channel.ReadAsync();
+                await orderChecker.WaitFor(3, 100);
+                actual[2] = await channel.ReadAsync();
+                orderChecker.Done(4);
+                actual[3] = await channel.ReadAsync();
+            }
+
+            //act
+            var writerTask = Writer();
+            var readerTask = Reader();
+
+            //assert
+            await Task.WhenAll(writerTask, readerTask).ThrowIfTakesOver(1000);
             Assert.Equal(expected, actual);
 
         }
