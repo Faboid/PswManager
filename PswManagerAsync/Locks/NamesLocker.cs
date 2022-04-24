@@ -4,29 +4,25 @@ namespace PswManagerAsync.Locks {
     internal class NamesLocker : IDisposable {
 
         readonly ConcurrentDictionary<string, RefCount<Locker>> lockers = new();
-        readonly Locker concurrentLocker = new();
+        readonly Locker synchronizationLocker = new();
         private bool isDisposed = false;
         
         public async Task<Lock> GetLockAsync(string name, int millisecondsTimeout = -1) {
             RefCount<Locker> refLocker;
-            using(var getLock = await concurrentLocker.GetLockAsync()) {
-                refLocker = GetRefLocker(name);
-            }
+            refLocker = GetRefLocker(name);
             var heldLock = await refLocker.UseValueAsync(async x => await x.GetLockAsync(millisecondsTimeout));
             return new(name, heldLock, this);
         }
 
         public Lock GetLock(string name, int millisecondsTimeout = -1) {
             RefCount<Locker> refLocker;
-            using (var getLock = concurrentLocker.GetLock()) {
-                refLocker = GetRefLocker(name);
-            }
+            refLocker = GetRefLocker(name);
             var heldLock = refLocker.UseValue(x => x.GetLock(millisecondsTimeout));
             return new(name, heldLock, this);
         }
 
         private void Unlock(string name, Locker.Lock internalLock) {
-            using var getLock = concurrentLocker.GetLock();
+            using var getLock = synchronizationLocker.GetLock();
             lock(lockers) {
 
                 if(!lockers.TryGetValue(name, out var refLocker)) {
@@ -59,6 +55,7 @@ namespace PswManagerAsync.Locks {
                 throw new ObjectDisposedException($"The {nameof(NamesLocker)} object has been already disposed of.");
             }
 
+            using var syncLock = synchronizationLocker.GetLock();
             Locker defaultLocker = new(1);
             RefCount<Locker> refSlim = new(defaultLocker);
             var refLocker = lockers.GetOrAdd(name, refSlim);
@@ -73,12 +70,12 @@ namespace PswManagerAsync.Locks {
         }
 
         public void Dispose() {
-            using(var getLock = concurrentLocker.GetLock()) {
+            using(var syncLock = synchronizationLocker.GetLock()) {
                 isDisposed = true;
                 Parallel.ForEach(lockers, refVal => refVal.Value.UseValue(x => x.Dispose()));
                 lockers.Clear();
             }
-            concurrentLocker.Dispose();   
+            synchronizationLocker.Dispose();   
         }
 
         public struct Lock : IDisposable {
