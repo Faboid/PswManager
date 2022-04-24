@@ -3,45 +3,43 @@
 namespace PswManagerAsync.Locks {
     internal class NamesLocker : IDisposable {
 
-        //todo -1 swap usage of SemaphoreSlim with new Locker
-        //todo -2 return disposable objects to use the "using" keyword
-        readonly ConcurrentDictionary<string, RefCount<SemaphoreSlim>> semaphores = new();
+        readonly ConcurrentDictionary<string, RefCount<Locker>> lockers = new();
         readonly Locker concurrentLocker = new();
         private bool isDisposed = false;
         
         public async Task<Lock> GetLockAsync(string name, int millisecondsTimeout = -1) {
-            RefCount<SemaphoreSlim> refSemaphore;
+            RefCount<Locker> refLocker;
             using(var getLock = await concurrentLocker.GetLockAsync()) {
-                refSemaphore = GetRefSemaphore(name);
+                refLocker = GetRefLocker(name);
             }
-            var entered = await refSemaphore.UseValueAsync(async x => await x.WaitAsync(millisecondsTimeout));
-            return new(entered, name, this);
+            var heldLock = await refLocker.UseValueAsync(async x => await x.GetLockAsync(millisecondsTimeout));
+            return new(name, heldLock, this);
         }
 
         public Lock GetLock(string name, int millisecondsTimeout = -1) {
-            RefCount<SemaphoreSlim> refSemaphore;
+            RefCount<Locker> refLocker;
             using (var getLock = concurrentLocker.GetLock()) {
-                refSemaphore = GetRefSemaphore(name);
+                refLocker = GetRefLocker(name);
             }
-            var entered = refSemaphore.UseValue(x => x.Wait(millisecondsTimeout));
-            return new(entered, name, this);
+            var heldLock = refLocker.UseValue(x => x.GetLock(millisecondsTimeout));
+            return new(name, heldLock, this);
         }
 
-        private void Unlock(string name) {
+        private void Unlock(string name, Locker.Lock internalLock) {
             using var getLock = concurrentLocker.GetLock();
-            lock(semaphores) {
+            lock(lockers) {
 
-                if(!semaphores.TryGetValue(name, out var refSemaphore)) {
+                if(!lockers.TryGetValue(name, out var refLocker)) {
                     //if there's none, return
                     return;
                 }
 
-                lock(refSemaphore) {
+                lock(refLocker) {
 
                     //if it's not being used, dispose it
-                    if(!refSemaphore.IsInUse) {
-                        semaphores.TryRemove(name, out _);
-                        refSemaphore.UseValue(x => {
+                    if(!refLocker.IsInUse) {
+                        lockers.TryRemove(name, out _);
+                        refLocker.UseValue(x => {
                             x.Dispose();
                         });
 
@@ -49,38 +47,36 @@ namespace PswManagerAsync.Locks {
                     }
 
                     //if it's being used, simply release it
-                    refSemaphore.UseValue(x => {
-                        x.Release();
-                    });
+                    internalLock.Dispose();
 
                 }
 
             }
         }
 
-        private RefCount<SemaphoreSlim> GetRefSemaphore(string name) {
+        private RefCount<Locker> GetRefLocker(string name) {
             if(isDisposed) {
                 throw new ObjectDisposedException($"The {nameof(NamesLocker)} object has been already disposed of.");
             }
 
-            SemaphoreSlim slim = new(1, 1);
-            RefCount<SemaphoreSlim> refSlim = new(slim);
-            var refSemaphore = semaphores.GetOrAdd(name, refSlim);
+            Locker defaultLocker = new(1);
+            RefCount<Locker> refSlim = new(defaultLocker);
+            var refLocker = lockers.GetOrAdd(name, refSlim);
 
             //if the dictionary returns an existing value,
-            //the newly-created semaphoreslim is redundant and must be disposed of
-            if(!ReferenceEquals(refSlim, refSemaphore)) {
-                slim.Dispose();
+            //the newly-created locker is redundant and must be disposed of
+            if(!ReferenceEquals(refSlim, refLocker)) {
+                defaultLocker.Dispose();
             }
 
-            return refSemaphore;
+            return refLocker;
         }
 
         public void Dispose() {
             using(var getLock = concurrentLocker.GetLock()) {
                 isDisposed = true;
-                Parallel.ForEach(semaphores, refVal => refVal.Value.UseValue(x => x.Dispose()));
-                semaphores.Clear();
+                Parallel.ForEach(lockers, refVal => refVal.Value.UseValue(x => x.Dispose()));
+                lockers.Clear();
             }
             concurrentLocker.Dispose();   
         }
@@ -88,15 +84,17 @@ namespace PswManagerAsync.Locks {
         public struct Lock : IDisposable {
 
             private readonly NamesLocker locker;
+            private readonly Locker.Lock internalLock;
             private bool isDisposed = false;
 
             public readonly bool Obtained { get; init; }
             public readonly string Name { get; init; }
 
-            internal Lock(bool obtained, string name, NamesLocker locker) {
-                this.locker = locker;
+            internal Lock(string name, Locker.Lock internalLock, NamesLocker locker) {
                 Name = name;
-                Obtained = obtained;
+                this.internalLock = internalLock;
+                this.locker = locker;
+                Obtained = internalLock.Obtained;
             }
 
             public void Dispose() {
@@ -106,7 +104,7 @@ namespace PswManagerAsync.Locks {
 
                 isDisposed = true;
                 if(Obtained) {
-                    locker.Unlock(Name);
+                    locker.Unlock(Name, internalLock);
                 }
             }
         }
