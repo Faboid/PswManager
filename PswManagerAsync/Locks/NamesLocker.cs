@@ -3,29 +3,31 @@
 namespace PswManagerAsync.Locks {
     internal class NamesLocker : IDisposable {
 
+        //todo -1 swap usage of SemaphoreSlim with new Locker
+        //todo -2 return disposable objects to use the "using" keyword
         readonly ConcurrentDictionary<string, RefCount<SemaphoreSlim>> semaphores = new();
         readonly Locker concurrentLocker = new();
         private bool isDisposed = false;
-
-        public async Task<LockResult> LockAsync(string name, int millisecondsTimeout = -1, string timeoutMessage = "The object is being used elsewhere.") {
+        
+        public async Task<Lock> GetLockAsync(string name, int millisecondsTimeout = -1) {
             RefCount<SemaphoreSlim> refSemaphore;
             using(var getLock = await concurrentLocker.GetLockAsync()) {
                 refSemaphore = GetRefSemaphore(name);
             }
             var entered = await refSemaphore.UseValueAsync(async x => await x.WaitAsync(millisecondsTimeout));
-            return LockResult.CreateResult(entered, timeoutMessage);
+            return new(entered, name, this);
         }
 
-        public LockResult Lock(string name, int millisecondsTimeout = -1, string timeoutMessage = "The object is being used elsewhere.") {
+        public Lock GetLock(string name, int millisecondsTimeout = -1) {
             RefCount<SemaphoreSlim> refSemaphore;
             using (var getLock = concurrentLocker.GetLock()) {
                 refSemaphore = GetRefSemaphore(name);
             }
             var entered = refSemaphore.UseValue(x => x.Wait(millisecondsTimeout));
-            return LockResult.CreateResult(entered, timeoutMessage);
+            return new(entered, name, this);
         }
 
-        public void Unlock(string name) {
+        private void Unlock(string name) {
             using var getLock = concurrentLocker.GetLock();
             lock(semaphores) {
 
@@ -81,6 +83,32 @@ namespace PswManagerAsync.Locks {
                 semaphores.Clear();
             }
             concurrentLocker.Dispose();   
+        }
+
+        public struct Lock : IDisposable {
+
+            private readonly NamesLocker locker;
+            private bool isDisposed = false;
+
+            public readonly bool Obtained { get; init; }
+            public readonly string Name { get; init; }
+
+            internal Lock(bool obtained, string name, NamesLocker locker) {
+                this.locker = locker;
+                Name = name;
+                Obtained = obtained;
+            }
+
+            public void Dispose() {
+                if(isDisposed) {
+                    throw new ObjectDisposedException(nameof(GetLock));
+                }
+
+                isDisposed = true;
+                if(Obtained) {
+                    locker.Unlock(Name);
+                }
+            }
         }
 
     }

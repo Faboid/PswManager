@@ -51,7 +51,7 @@
 
             public readonly bool Obtained { get; init; }
 
-            public Lock(bool obtained, Locker locker) {
+            internal Lock(bool obtained, Locker locker) {
                 this.locker = locker;
                 Obtained = obtained;
             }
