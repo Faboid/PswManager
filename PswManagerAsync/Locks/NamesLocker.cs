@@ -1,22 +1,110 @@
 ﻿using System.Collections.Concurrent;
 
 namespace PswManagerAsync.Locks {
-    internal class NamesLocker : IDisposable {
+    public class NamesLocker : IDisposable {
 
         readonly ConcurrentDictionary<string, RefCount<Locker>> lockers = new();
+
+        /// <summary>
+        /// This locker is used to obtain a generic lock on ALL lockers.
+        /// The logic surrounding it is a bit messy, but it was the best I could come up with.
+        /// </summary>
+        readonly Locker mainLocker = new();
+
+        /// <summary>
+        /// Used to synchronize access to <see cref="lockers"/>.
+        /// </summary>
         readonly Locker synchronizationLocker = new();
         private bool isDisposed = false;
-        
+
+        public async Task<MainLock> GetAllLocksAsync(int millisecondsTimeout = -1) {
+            var mainLock = await mainLocker.GetLockAsync(millisecondsTimeout);
+            if(mainLock.Obtained == false) {
+                return new(mainLock, new(), this);
+            }
+
+            var listLocks = lockers
+                .AsParallel()
+                .Select(async x => new Lock(
+                        x.Key, 
+                        await x.Value.UseValueAsync(async x => await x.GetLockAsync(millisecondsTimeout)), 
+                        this
+                    )
+                );
+
+            var result = (await Task.WhenAll(listLocks)).ToList();
+
+            //if any of the locks has failed to be acquired, the method has failed to lock
+            //therefore, every lock should be freed and the list cleared
+            if(result.Any(x => x.Obtained == false)) {
+                result.ForEach(x => x.Dispose());
+                result.Clear();
+                mainLock.Dispose();
+                return new(this);
+            }
+
+            return new(mainLock, result, this);
+        }
+
+        public MainLock GetAllLocks(int millisecondsTimeout = -1) {
+            var mainLock = mainLocker.GetLock(millisecondsTimeout);
+            if(mainLock.Obtained == false) {
+                return new(mainLock, new(), this);
+            }
+
+            var listLocks = lockers
+                .AsParallel()
+                .Select(x => new Lock(
+                        x.Key,
+                        x.Value.UseValue(x => x.GetLock(millisecondsTimeout)),
+                        this
+                    )
+                )
+                .ToList();
+
+
+            //if any of the locks has failed to be acquired, the method has failed to lock
+            //therefore, every lock should be freed and the list cleared
+            if(listLocks.Any(x => x.Obtained == false)) {
+                listLocks.ForEach(x => x.Dispose());
+                listLocks.Clear();
+                mainLock.Dispose();
+                return new(this);
+            }
+
+            return new(mainLock, listLocks, this);
+        }
+
         public async Task<Lock> GetLockAsync(string name, int millisecondsTimeout = -1) {
+            if(string.IsNullOrWhiteSpace(name)) {
+                throw new ArgumentException("The given name is null or empty.", nameof(name));
+            }
+
             RefCount<Locker> refLocker;
-            refLocker = GetRefLocker(name);
+            using(var allLock = await mainLocker.GetLockAsync(millisecondsTimeout)) {
+                if(!allLock.Obtained) {
+                    return new(name, allLock, this);
+                }
+
+                refLocker = GetRefLocker(name);
+            }
             var heldLock = await refLocker.UseValueAsync(async x => await x.GetLockAsync(millisecondsTimeout));
             return new(name, heldLock, this);
         }
 
         public Lock GetLock(string name, int millisecondsTimeout = -1) {
+            if(string.IsNullOrWhiteSpace(name)) {
+                throw new ArgumentException("The given name is null or empty.", nameof(name));
+            }
+
             RefCount<Locker> refLocker;
-            refLocker = GetRefLocker(name);
+            using(var allLock = mainLocker.GetLock(millisecondsTimeout)) {
+                if(!allLock.Obtained) {
+                    return new(name, allLock, this);
+                }
+
+                refLocker = GetRefLocker(name);
+            }
             var heldLock = refLocker.UseValue(x => x.GetLock(millisecondsTimeout));
             return new(name, heldLock, this);
         }
@@ -65,7 +153,7 @@ namespace PswManagerAsync.Locks {
             if(!ReferenceEquals(refSlim, refLocker)) {
                 defaultLocker.Dispose();
             }
-
+            
             return refLocker;
         }
 
@@ -75,17 +163,18 @@ namespace PswManagerAsync.Locks {
                 Parallel.ForEach(lockers, refVal => refVal.Value.UseValue(x => x.Dispose()));
                 lockers.Clear();
             }
-            synchronizationLocker.Dispose();   
+            synchronizationLocker.Dispose();
+            GC.SuppressFinalize(this);
         }
 
-        public struct Lock : IDisposable {
+        public class Lock : IDisposable {
 
             private readonly NamesLocker locker;
             private readonly Locker.Lock internalLock;
             private bool isDisposed = false;
 
-            public readonly bool Obtained { get; init; }
-            public readonly string Name { get; init; }
+            public bool Obtained { get; init; }
+            public string Name { get; init; }
 
             internal Lock(string name, Locker.Lock internalLock, NamesLocker locker) {
                 Name = name;
@@ -96,14 +185,53 @@ namespace PswManagerAsync.Locks {
 
             public void Dispose() {
                 if(isDisposed) {
-                    throw new ObjectDisposedException(nameof(GetLock));
+                    throw new ObjectDisposedException(nameof(Lock));
                 }
 
                 isDisposed = true;
                 if(Obtained) {
                     locker.Unlock(Name, internalLock);
                 }
+                GC.SuppressFinalize(this);
             }
+        }
+
+        public class MainLock : IDisposable {
+
+            private readonly NamesLocker locker;
+            private readonly Locker.Lock mainLock;
+            private readonly List<Lock> internalLocks;
+            private bool isDisposed = false;
+
+            public bool Obtained { get; init; }
+            
+            internal MainLock(NamesLocker locker) {
+                Obtained = false;
+                this.locker = locker;
+                mainLock = default;
+                internalLocks = new();
+            }
+
+            internal MainLock(Locker.Lock mainLock, List<Lock> internalLocks, NamesLocker locker) {
+                this.mainLock = mainLock;
+                this.internalLocks = internalLocks;
+                this.locker = locker;
+                Obtained = mainLock.Obtained;
+            }
+
+            public void Dispose() {
+                if(isDisposed) {
+                    throw new ObjectDisposedException(nameof(MainLock));
+                }
+                isDisposed = true;
+
+                if(Obtained) {
+                    mainLock.Dispose();
+                    internalLocks.ForEach(x => x.Dispose());
+                }
+                GC.SuppressFinalize(this);
+            }
+
         }
 
     }
