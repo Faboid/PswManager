@@ -33,17 +33,7 @@ namespace PswManagerAsync.Locks {
                 );
 
             var result = (await Task.WhenAll(listLocks)).ToList();
-
-            //if any of the locks has failed to be acquired, the method has failed to lock
-            //therefore, every lock should be freed and the list cleared
-            if(result.Any(x => x.Obtained == false)) {
-                result.ForEach(x => x.Dispose());
-                result.Clear();
-                mainLock.Dispose();
-                return new(this);
-            }
-
-            return new(mainLock, result, this);
+            return ManageLocksToCreateMainLock(mainLock, result);
         }
 
         public MainLock GetAllLocks(int millisecondsTimeout = -1) {
@@ -62,7 +52,10 @@ namespace PswManagerAsync.Locks {
                 )
                 .ToList();
 
+            return ManageLocksToCreateMainLock(mainLock, listLocks);
+        }
 
+        private MainLock ManageLocksToCreateMainLock(Locker.Lock mainLock, List<Lock> listLocks) {
             //if any of the locks has failed to be acquired, the method has failed to lock
             //therefore, every lock should be freed and the list cleared
             if(listLocks.Any(x => x.Obtained == false)) {
