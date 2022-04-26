@@ -23,7 +23,7 @@ namespace PswManagerAsync.Locks {
                 return new(mainLock, new(), this);
             }
 
-            var listLocks = lockers
+            var listLocksTasks = lockers
                 .AsParallel()
                 .Select(async x => new Lock(
                         x.Key, 
@@ -32,8 +32,8 @@ namespace PswManagerAsync.Locks {
                     )
                 );
 
-            var result = (await Task.WhenAll(listLocks)).ToList();
-            return ManageLocksToCreateMainLock(mainLock, result);
+            var listLocks = (await Task.WhenAll(listLocksTasks)).ToList();
+            return ManageLocksToCreateMainLock(mainLock, listLocks);
         }
 
         public MainLock GetAllLocks(int millisecondsTimeout = -1) {
