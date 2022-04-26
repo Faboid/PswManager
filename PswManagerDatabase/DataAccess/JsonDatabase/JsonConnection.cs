@@ -80,7 +80,7 @@ namespace PswManagerDatabase.DataAccess.JsonDatabase {
             var newJsonString = JsonSerializer.Serialize(model);
             File.WriteAllText(newPath, newJsonString);
 
-            return GetAccount(model.Name);
+            return GetAccountHook(model.Name);
         }
     }
 }

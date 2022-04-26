@@ -1,30 +1,52 @@
 ﻿using PswManagerDatabase.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using PswManagerAsync.Locks;
+using System;
 
 namespace PswManagerDatabase.DataAccess {
     /// <summary>
-    /// A skeleton to build databases connections upon without worrying about validation. <br/>
-    /// It implements standard validation checks—child classes need only think how to implement the query logic.
+    /// A skeleton to build databases connections upon without worrying about validation and locking. <br/>
+    /// It implements standard validation checks—child classes need only think how to implement the query logic—and
+    /// locking to make sure the same account can be only called once at a time.
     /// <br/><br/>
-    /// Important: <see cref="BaseConnection"/> calls <see cref="AccountExist(string)"/> to check for account existence. 
-    /// <br/>If the implementation of that call is expensive, it's advised to implement directly <see cref="IDataConnection"/>.
+    /// Important points: 
+    /// <br/>- <see cref="BaseConnection"/> calls <see cref="AccountExist(string)"/> to check for account existence. 
+    /// If the implementation of that call is expensive, it's advised to implement directly <see cref="IDataConnection"/>.
+    /// <br/>- Calls to <see cref="GetAllAccounts"/> lock ALL accounts. 
+    /// Implemening <see cref="IDataConnection"/> directly can allow locking one at a time.
     /// </summary>
     internal abstract class BaseConnection : IDataConnection {
+
+        //todo - implement IDisposable to clean up NamesLocker
+        protected NamesLocker Locker { get; } = new();
+
+        private static readonly ConnectionResult cachedInvalidNameResult = new(false, "The given name isn't valid.");
+        private static readonly ConnectionResult cachedFailToLockResult = new(false, "The given account is being used elsewhere.");
 
         public bool AccountExist(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
                 return false;
             }
 
-            return AccountExistHook(name);
+            using var ownedLock = Locker.GetLock(name, 10000);
+            if(ownedLock.Obtained == false) {
+                throw new TimeoutException($"The lock in {nameof(AccountExist)} has failed to lock for over ten seconds.");
+            }
+            return AccountExistInternal(name);
         }
 
         public ConnectionResult CreateAccount(AccountModel model) {
             if(string.IsNullOrWhiteSpace(model.Name)) {
-                return new ConnectionResult(false, "The given name isn't valid.");
+                return cachedInvalidNameResult;
             }
-            if(AccountExist(model.Name)) {
+
+            using var ownLock = Locker.GetLock(model.Name, 50);
+            if(!ownLock.Obtained) {
+                return cachedFailToLockResult;
+            }
+
+            if(AccountExistInternal(model.Name)) {
                 return new ConnectionResult(false, "The given account name is already occupied.");
             }
 
@@ -33,9 +55,15 @@ namespace PswManagerDatabase.DataAccess {
 
         public async Task<ConnectionResult> CreateAccountAsync(AccountModel model) {
             if(string.IsNullOrWhiteSpace(model.Name)) {
-                return new ConnectionResult(false, "The given name isn't valid.");
+                return cachedInvalidNameResult;
             }
-            if(AccountExist(model.Name)) {
+
+            using var ownedLock = await Locker.GetLockAsync(model.Name, 50);
+            if(!ownedLock.Obtained) {
+                return cachedFailToLockResult;
+            }
+
+            if(AccountExistInternal(model.Name)) {
                 return new ConnectionResult(false, "The given account name is already occupied.");
             }
 
@@ -44,7 +72,16 @@ namespace PswManagerDatabase.DataAccess {
 
 
         public ConnectionResult DeleteAccount(string name) {
-            if(!AccountExist(name)) {
+            if(string.IsNullOrWhiteSpace(name)) {
+                return cachedInvalidNameResult;
+            }
+
+            using var ownedLock = Locker.GetLock(name, 50);
+            if(!ownedLock.Obtained) {
+                return cachedFailToLockResult;
+            }
+
+            if(!AccountExistInternal(name)) {
                 return new ConnectionResult(false, "The given account doesn't exist.");
             }
 
@@ -53,28 +90,67 @@ namespace PswManagerDatabase.DataAccess {
 
 
         public ConnectionResult<AccountModel> GetAccount(string name) {
-            if(!AccountExist(name)) {
+            if(string.IsNullOrWhiteSpace(name)) {
+                return new(cachedInvalidNameResult.Success, cachedInvalidNameResult.ErrorMessage);
+            }
+
+            using var ownedLock = Locker.GetLock(name, 50);
+            if(!ownedLock.Obtained) {
+                return new(cachedFailToLockResult.Success, cachedFailToLockResult.ErrorMessage);
+            }
+
+            if(!AccountExistInternal(name)) {
                 return new ConnectionResult<AccountModel>(false, "The given account doesn't exist.");
             }
 
             return GetAccountHook(name);
         }
 
-
         public ConnectionResult<IEnumerable<AccountModel>> GetAllAccounts() {
+            using var mainLock = Locker.GetAllLocks();
             return GetAllAccountsHook();
         }
 
-
         public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {
-            if(!AccountExist(name)) {
+            if(string.IsNullOrWhiteSpace(name)) {
+                return new(cachedInvalidNameResult.Success, cachedInvalidNameResult.ErrorMessage);
+            }
+
+            using var oldModelLock = Locker.GetLock(name, 50);
+            if(!oldModelLock.Obtained) {
+                return new(cachedFailToLockResult.Success, cachedFailToLockResult.ErrorMessage);
+            }
+
+            if(!AccountExistInternal(name)) {
                 return new(false, "The given account doesn't exist.");
             }
-            if(name != newModel.Name && AccountExist(newModel.Name)) {
-                return new(false, "There is already an account with that name.");
+
+            NamesLocker.Lock newModelLock = null;
+            if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
+                newModelLock = Locker.GetLock(newModel.Name, 50);
+                if(!newModelLock.Obtained) {
+                    return new(cachedFailToLockResult.Success, cachedFailToLockResult.ErrorMessage);
+                }
+                if(AccountExistInternal(newModel.Name)) {
+                    return new(false, "There is already an account with that name.");
+                }
+            }
+            
+            try {
+                return UpdateAccountHook(name, newModel);
+            } finally {
+                if(newModelLock != null) {
+                    newModelLock.Dispose();
+                }
+            }
+        }
+
+        private bool AccountExistInternal(string name) {
+            if(string.IsNullOrWhiteSpace(name)) {
+                return false;
             }
 
-            return UpdateAccountHook(name, newModel);
+            return AccountExistHook(name);
         }
 
         protected abstract bool AccountExistHook(string name);
