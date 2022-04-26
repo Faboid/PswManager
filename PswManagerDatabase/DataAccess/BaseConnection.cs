@@ -19,8 +19,7 @@ namespace PswManagerDatabase.DataAccess {
     internal abstract class BaseConnection : IDataConnection {
 
         //todo - implement IDisposable to clean up NamesLocker
-        protected NamesLocker Locker { get; } = new();
-
+        private readonly NamesLocker Locker = new();
         private static readonly ConnectionResult cachedInvalidNameResult = new(false, "The given name isn't valid.");
         private static readonly ConnectionResult cachedFailToLockResult = new(false, "The given account is being used elsewhere.");
 
