@@ -59,6 +59,10 @@ namespace PswManagerTests.Async.TestsHelpers {
             throw new NoRunException("This point in code shouldn't have been reached.");
         }
 
+        public static void Never(string message) {
+            throw new NoRunException(message);
+        }
+
         public void Dispose() {
             isDisposed = true;
         }
