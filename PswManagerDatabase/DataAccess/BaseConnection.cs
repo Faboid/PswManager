@@ -125,17 +125,17 @@ namespace PswManagerDatabase.DataAccess {
             }
 
             NamesLocker.Lock newModelLock = null;
-            if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
-                newModelLock = Locker.GetLock(newModel.Name, 50);
-                if(!newModelLock.Obtained) {
-                    return new(cachedFailToLockResult.Success, cachedFailToLockResult.ErrorMessage);
-                }
-                if(AccountExistInternal(newModel.Name)) {
-                    return new(false, "There is already an account with that name.");
-                }
-            }
-            
             try {
+                if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
+                    newModelLock = Locker.GetLock(newModel.Name, 50);
+                    if(!newModelLock.Obtained) {
+                        return new(cachedFailToLockResult.Success, cachedFailToLockResult.ErrorMessage);
+                    }
+                    if(AccountExistInternal(newModel.Name)) {
+                        return new(false, "There is already an account with that name.");
+                    }
+                }
+            
                 return UpdateAccountHook(name, newModel);
             } finally {
                 if(newModelLock != null) {
