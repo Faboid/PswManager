@@ -44,7 +44,7 @@ namespace PswManagerTests.Database.Generic {
 
             //act
             var actual = dataReader.GetAllAccounts();
-            var values = actual.Value.ToList();
+            var values = actual.Value.OrderBy(x => x.Name).ToList();
 
             //assert
             Assert.True(actual.Success);
@@ -68,7 +68,11 @@ namespace PswManagerTests.Database.Generic {
 
             //act
             var actual = dataReader.GetAllAccounts();
-            var values = dataReader.GetAllAccounts().Value.Take(num).ToList();
+            var values = dataReader.GetAllAccounts()
+                .Value
+                .OrderBy(x => x.Name)
+                .Take(num)
+                .ToList();
 
             //assert
             Assert.True(actual.Success);

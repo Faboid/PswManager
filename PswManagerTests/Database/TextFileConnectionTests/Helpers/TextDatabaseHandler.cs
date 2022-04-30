@@ -13,24 +13,19 @@ namespace PswManagerTests.Database.TextFileConnectionTests.Helpers {
 
         public TextDatabaseHandler(string dbName, int numValues) {
             DatabaseName = $"TextTestDB_{dbName}";
-            dbFolder = Path.Combine(PathsBuilder.GetWorkingDirectory, "Data", DatabaseName);
             defaultValues = new DefaultValues(numValues);
-            paths = new CustomPaths(dbFolder);
-            CreateFiles();
-            factory = new DataFactory(DatabaseType.TextFile, paths);
+            factory = new DataFactory(DatabaseType.TextFile, DatabaseName);
             dataCreator = factory.GetDataCreator();
+            folderDB = Path.Combine(PathsBuilder.GetWorkingDirectory, "Data", DatabaseName);
         }
 
         private readonly DefaultValues defaultValues;
-        private readonly string dbFolder;
         private readonly IDataCreator dataCreator;
         private readonly DataFactory factory;
         private readonly string DatabaseName;
-        private readonly CustomPaths paths;
+        private readonly string folderDB;
 
         public ITestDBHandler SetUpDefaultValues() {
-            CreateFiles();
-
             foreach(var value in defaultValues.values) {
                 var account = DefaultValues.ToAccount(value);
                 dataCreator.CreateAccount(account);
@@ -43,19 +38,12 @@ namespace PswManagerTests.Database.TextFileConnectionTests.Helpers {
             return factory;
         }
 
-        private void CreateFiles() {
-            Directory.CreateDirectory(paths.WorkingDirectory);
-            File.Create(paths.AccountsFilePath).Close();
-            File.Create(paths.PasswordsFilePath).Close();
-            File.Create(paths.EmailsFilePath).Close();
-        }
-
         public DefaultValues GetDefaultValues() {
             return defaultValues;
         }
 
         public void Dispose() {
-            Directory.Delete(paths.WorkingDirectory, true);
+            Directory.Delete(folderDB, true);
         }
 
     }
