@@ -38,4 +38,12 @@ namespace PswManagerDatabase.Models {
 
     }
 
+    public class AccountResult : ConnectionResult<AccountModel> {
+
+        public AccountResult(bool success) : base(success) { }
+        public AccountResult(bool success, string errorMessage) : base(success, errorMessage) { }
+        public AccountResult(bool success, AccountModel value) : base(success, value) { }
+
+    }
+
 }

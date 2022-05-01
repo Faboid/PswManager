@@ -4,16 +4,16 @@ using PswManagerDatabase.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess.TextDatabase {
     public class TextFileConnection : IDataConnection {
 
-        readonly static ConnectionResult invalidNameResult = new(false, "The given name is not valid.");
-        readonly static ConnectionResult usedElsewhereResult = new(false, "This account is being used elsewhere.");
-        readonly static ConnectionResult accountExistsAlreadyResult = new(false, "The given account exists already.");
-        readonly static ConnectionResult accountDoesNotExistResult = new(false, "The given account does not exist.");
+        //cached values
+        readonly static AccountResult invalidNameResult = new(false, "The given name is not valid.");
+        readonly static AccountResult usedElsewhereResult = new(false, "This account is being used elsewhere.");
+        readonly static AccountResult accountExistsAlreadyResult = new(false, "The given account exists already.");
+        readonly static AccountResult accountDoesNotExistResult = new(false, "The given account does not exist.");
 
         internal TextFileConnection() {
             fileSaver = new();
@@ -101,16 +101,16 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
 
         public ConnectionResult<AccountModel> GetAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return invalidNameResult.ToConnectionResult<AccountModel>();
+                return invalidNameResult;
             }
 
             using var accLock = locker.GetLock(name, 50);
             if(!accLock.Obtained) {
-                return usedElsewhereResult.ToConnectionResult<AccountModel>();
+                return usedElsewhereResult;
             }
 
             if(!fileSaver.Exists(name)) {
-                return accountDoesNotExistResult.ToConnectionResult<AccountModel>();
+                return accountDoesNotExistResult;
             }
 
             var account = fileSaver.Get(name);
@@ -131,16 +131,16 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
 
         public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return invalidNameResult.ToConnectionResult<AccountModel>();
+                return invalidNameResult;
             }
 
             using var nameLock = locker.GetLock(name, 50);
             if(!nameLock.Obtained) {
-                return usedElsewhereResult.ToConnectionResult<AccountModel>();
+                return usedElsewhereResult;
             }
 
             if(!fileSaver.Exists(name)) {
-                return accountDoesNotExistResult.ToConnectionResult<AccountModel>();
+                return accountDoesNotExistResult;
             }
 
             NamesLocker.Lock newModelLock = null;
@@ -148,7 +148,7 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
                 if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
                     newModelLock = locker.GetLock(newModel.Name, 50);
                     if(!newModelLock.Obtained) {
-                        return usedElsewhereResult.ToConnectionResult<AccountModel>();
+                        return usedElsewhereResult;
                     }
                     if(fileSaver.Exists(newModel.Name)) {
                         return new(false, $"There is already an account called {newModel.Name}.");

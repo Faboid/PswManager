@@ -53,7 +53,7 @@ namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
             return AccountSerializer.Deserialize(serialized);
         }
 
-        public IEnumerable<ConnectionResult<AccountModel>> GetAll(NamesLocker locker) {
+        public IEnumerable<AccountResult> GetAll(NamesLocker locker) {
             return Directory.GetFiles(directoryPath)
                 .AsParallel()
                 .Select(x => {
@@ -68,7 +68,7 @@ namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
 
                     var values = File.ReadAllLines(x);
                     var account = AccountSerializer.Deserialize(values);
-                    return new ConnectionResult<AccountModel>(true, account);
+                    return new AccountResult(true, account);
                 });
         }
 
