@@ -60,15 +60,15 @@ namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
                     var name = Path.GetFileNameWithoutExtension(x);
                     using var nameLock = locker.GetLock(name, 5000);
                     if(!nameLock.Obtained) {
-                        return new(false, $"The account {name} is being used elsewhere.");
+                        return new(name, $"The account {name} is being used elsewhere.");
                     }
                     if(!Exists(name)) {
-                        return new(false, $"The account {name} has been deleted or edited.");
+                        return new(name, $"The account {name} has been deleted or edited.");
                     }
 
                     var values = File.ReadAllLines(x);
                     var account = AccountSerializer.Deserialize(values);
-                    return new AccountResult(true, account);
+                    return new AccountResult(name, account);
                 });
         }
 

@@ -145,16 +145,16 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
             });
         }
 
-        public ConnectionResult<IEnumerable<AccountModel>> GetAllAccounts() {
+        public ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts() {
             using var mainLock = locker.GetAllLocks(10000);
             if(mainLock.Obtained == false) {
                 return new(false, "Some account is being used elsewhere in a long operation.");
             }
 
-            return new ConnectionResult<IEnumerable<AccountModel>>(true, GetAccounts());
+            return new (true, GetAccounts());
         }
 
-        private IEnumerable<AccountModel> GetAccounts() {
+        private IEnumerable<AccountResult> GetAccounts() {
             using var cmd = queriesBuilder.GetAllAccountsQuery();
             try {
                 Debug.WriteLine("Opened the connection.");
@@ -169,7 +169,7 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
                     };
 
                     Debug.WriteLine($"Returning model: {model}");
-                    yield return model;
+                    yield return new(model.Name, model);
                 }
             } finally {
                 if(cmd.Connection.State == System.Data.ConnectionState.Open) {

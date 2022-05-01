@@ -31,8 +31,12 @@ namespace PswManagerDatabase.DataAccess.MemoryDatabase {
             return new ConnectionResult<AccountModel>(true, accounts[name]);
         }
 
-        protected override ConnectionResult<IEnumerable<AccountModel>> GetAllAccountsHook() {
-            var list = accounts.Values.ToList();
+        protected override ConnectionResult<IEnumerable<AccountResult>> GetAllAccountsHook() {
+            var list = accounts
+                .Values
+                .Select(x => new AccountResult(x.Name, x))
+                .ToList();
+
             return new(true, list);
         }
 

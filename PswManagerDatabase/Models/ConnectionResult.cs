@@ -40,9 +40,25 @@ namespace PswManagerDatabase.Models {
 
     public class AccountResult : ConnectionResult<AccountModel> {
 
-        public AccountResult(bool success) : base(success) { }
-        public AccountResult(bool success, string errorMessage) : base(success, errorMessage) { }
-        public AccountResult(bool success, AccountModel value) : base(success, value) { }
+        public string NameAccount { get; init; }
+
+        public AccountResult(string nameAccount, bool success) : base(success) { 
+            NameAccount = nameAccount;
+        }
+
+        public AccountResult(string nameAccount, string errorMessage) : base(false, errorMessage) { 
+            NameAccount = nameAccount;
+        }
+
+        public AccountResult(string nameAccount, AccountModel value) : base(true, value) {
+            NameAccount = nameAccount;
+        }
+
+        public AccountResult(string nameAccount, ConnectionResult<AccountModel> connResult) : base(connResult.Success) {
+            NameAccount = nameAccount;
+            Value = connResult.Value;
+            ErrorMessage = connResult.ErrorMessage;
+        }
 
     }
 

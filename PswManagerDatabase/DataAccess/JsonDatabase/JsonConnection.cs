@@ -53,10 +53,10 @@ namespace PswManagerDatabase.DataAccess.JsonDatabase {
             return new(true, model);
         }
 
-        protected override ConnectionResult<IEnumerable<AccountModel>> GetAllAccountsHook() {
+        protected override ConnectionResult<IEnumerable<AccountResult>> GetAllAccountsHook() {
             var accounts = Directory.GetFiles(directoryPath)
                 .Select(x => Path.GetFileNameWithoutExtension(x))
-                .Select(x => GetAccount(x).Value);
+                .Select(x => new AccountResult(x, GetAccount(x)));
 
             return new(true, accounts);
         }

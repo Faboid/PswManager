@@ -10,10 +10,10 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
     public class TextFileConnection : IDataConnection {
 
         //cached values
-        readonly static AccountResult invalidNameResult = new(false, "The given name is not valid.");
-        readonly static AccountResult usedElsewhereResult = new(false, "This account is being used elsewhere.");
-        readonly static AccountResult accountExistsAlreadyResult = new(false, "The given account exists already.");
-        readonly static AccountResult accountDoesNotExistResult = new(false, "The given account does not exist.");
+        readonly static ConnectionResult<AccountModel> invalidNameResult = new(false, "The given name is not valid.");
+        readonly static ConnectionResult<AccountModel> usedElsewhereResult = new(false, "This account is being used elsewhere.");
+        readonly static ConnectionResult<AccountModel> accountExistsAlreadyResult = new(false, "The given account exists already.");
+        readonly static ConnectionResult<AccountModel> accountDoesNotExistResult = new(false, "The given account does not exist.");
 
         internal TextFileConnection() {
             fileSaver = new();
@@ -117,15 +117,8 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
             return new(true, account);
         }
 
-        //todo - turn this into ConnectionResult<IEnumerable<ConnectionResult<AccountModel>>>
-        public ConnectionResult<IEnumerable<AccountModel>> GetAllAccounts() {
-
-            //as returning empty AccountModel(s) will throw when decrypting,
-            //the timeout values are temporarily filtered off.
-            var accounts = fileSaver.GetAll(locker)
-                .Where(x => x.Success)
-                .Select(x => x.Value);
-
+        public ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts() {
+            var accounts = fileSaver.GetAll(locker);
             return new(true, accounts);
         }
 

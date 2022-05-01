@@ -105,7 +105,7 @@ namespace PswManagerDatabase.DataAccess {
             return GetAccountHook(name);
         }
 
-        public ConnectionResult<IEnumerable<AccountModel>> GetAllAccounts() {
+        public ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts() {
             using var mainLock = Locker.GetAllLocks();
             return GetAllAccountsHook();
         }
@@ -156,7 +156,7 @@ namespace PswManagerDatabase.DataAccess {
         protected abstract ConnectionResult CreateAccountHook(AccountModel model);
         protected abstract Task<ConnectionResult> CreateAccountHookAsync(AccountModel model);
         protected abstract ConnectionResult<AccountModel> GetAccountHook(string name);
-        protected abstract ConnectionResult<IEnumerable<AccountModel>> GetAllAccountsHook();
+        protected abstract ConnectionResult<IEnumerable<AccountResult>> GetAllAccountsHook();
         protected abstract ConnectionResult<AccountModel> UpdateAccountHook(string name, AccountModel newModel);
         protected abstract ConnectionResult DeleteAccountHook(string name);
 

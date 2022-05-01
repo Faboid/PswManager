@@ -6,7 +6,6 @@ using PswManagerDatabase.Models;
 using PswManagerLibrary.Commands.ArgsModels;
 using PswManagerLibrary.Commands.Validation.ValidationTypes;
 using PswManagerLibrary.Cryptography;
-using PswManagerLibrary.UIConnection.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,17 +31,15 @@ namespace PswManagerLibrary.Commands {
                 return new CommandResult($"There has been an error: {result.ErrorMessage}", false);
             }
 
-            if(string.IsNullOrWhiteSpace(arguments.Keys)) { 
-                return new CommandResult("The list has been retrieved.", true, string.Join(Environment.NewLine, result.Value.Select(Decrypt)));
+            if(string.IsNullOrWhiteSpace(arguments.Keys)) {
+                return new CommandResult("The list has been retrieved.", true, string.Join(Environment.NewLine, result.Value.Select(Unwrap)));
             }
             bool getNames = arguments.SplitKeys().Contains(validKeys[0]);
             bool getPasswords = arguments.SplitKeys().Contains(validKeys[1]);
             bool getEmails = arguments.SplitKeys().Contains(validKeys[2]);
 
             var accounts = result.Value
-                .Select(Decrypt)
-                .Select(x => Take(x, getNames, getPasswords, getEmails).ToArray())
-                .Select(Merge);
+                .Select(x => Unwrap(x, getNames, getPasswords, getEmails));
 
             return new CommandResult("The list has been retrieved.", true, string.Join(Environment.NewLine, accounts));
         }
@@ -55,6 +52,20 @@ namespace PswManagerLibrary.Commands {
             .AddRule<ValidValuesRule>()
             .AddRule<NoDuplicateValuesRule>();
 
+        private string Unwrap(AccountResult account) {
+            return Unwrap(account, true, true, true);
+        }
+
+        private string Unwrap(AccountResult result, bool getNames, bool getPasswords, bool getEmails) {
+            if(result.Success) {
+                var decrypted = Decrypt(result.Value);
+                var stringRepresenation = Take(decrypted, getNames, getPasswords, getEmails);
+                return Merge(stringRepresenation);
+            }
+
+            return $"Error when getting {result.NameAccount}: {result.ErrorMessage ?? "Undefined"}";
+        }
+
         private AccountModel Decrypt(AccountModel account) {
             (account.Password, account.Email) = cryptoAccount.Decrypt(account.Password, account.Email);
             return account;
@@ -66,7 +77,7 @@ namespace PswManagerLibrary.Commands {
             if(takeEmail) yield return account.Email;
         }
 
-        private static string Merge(string[] values) => string.Join(' ', values);
+        private static string Merge(IEnumerable<string> values) => string.Join(' ', values);
 
     }
 }
