@@ -1,46 +1,78 @@
-﻿using System;
+﻿using PswManagerAsync.Locks;
+using System;
 using System.Data.SQLite;
 using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper {
     internal static class ConnectionHandler {
 
-        public async static Task<T> OpenAsync<T>(this SQLiteConnection cnn, Func<Task<T>> predicate) {
-            try {
-                cnn.Open();
+        public static async Task<AsyncConnection> GetConnectionAsync(this SQLiteConnection cnn) {
+            await cnn.OpenAsync();
+            return new(cnn);
+        }
 
-                return await predicate.Invoke();
+        public static Connection GetConnection(this SQLiteConnection cnn) {
+            cnn.Open();
+            return new(cnn);
+        }
 
+        public struct Connection : IDisposable {
+
+            readonly SQLiteConnection cnn;
+            readonly bool isNotDefaulted;
+            bool isDisposed = false;
+
+            internal Connection(SQLiteConnection connection) {
+                cnn = connection;
+                isNotDefaulted = true;
             }
-            finally {
-                if(cnn.State == System.Data.ConnectionState.Open) {
-                    cnn.Close();
+
+            public void Dispose() {
+                if(!isNotDefaulted) {
+                    return;
+                }
+
+                lock(cnn) {
+                    if(isDisposed) {
+                        throw new ObjectDisposedException(nameof(Connection));
+                    }
+
+                    if(cnn.State == System.Data.ConnectionState.Open) {
+                        cnn.Close();
+                    }
+
+                    isDisposed = true;
                 }
             }
         }
 
-        public static T Open<T>(this SQLiteConnection cnn, Func<T> predicate) {
-            try {
-                cnn.Open();
+        public struct AsyncConnection : IAsyncDisposable {
 
-                return predicate.Invoke();
+            readonly SQLiteConnection cnn;
+            readonly Locker locker = new(1);
+            readonly bool isNotDefaulted;
+            bool isDisposed = false;
 
-            } finally {
-                if(cnn.State == System.Data.ConnectionState.Open) {
-                    cnn.Close();
-                }
+            internal AsyncConnection(SQLiteConnection connection) {
+                cnn = connection;
+                isNotDefaulted = true;
             }
-        }
 
-        public static void Open(this SQLiteConnection cnn, Action predicate) {
-            try {
-                cnn.Open();
-                predicate.Invoke();
-            }
-            finally {
-                if(cnn.State == System.Data.ConnectionState.Open) {
-                    cnn.Close();
+            public async ValueTask DisposeAsync() {
+                if(!isNotDefaulted) {
+                    return;
                 }
+
+                using var heldLock = await locker.GetLockAsync();
+                if(isDisposed) {
+                    throw new ObjectDisposedException(nameof(Connection));
+                }
+
+                if(cnn.State == System.Data.ConnectionState.Open) {
+                    await cnn.CloseAsync();
+                }
+
+                isDisposed = true;
             }
         }
 

@@ -38,13 +38,9 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
 
         private bool AccountExist_NoLock(string name) {
             using var cmd = queriesBuilder.GetAccountQuery(name);
-            try {
-                cmd.Connection.Open();
-                using var reader = cmd.ExecuteReader();
-                return reader.Read();
-            } finally {
-                cmd.Connection.Close();
-            }
+            using var cnn = cmd.Connection.GetConnection();
+            using var reader = cmd.ExecuteReader();
+            return reader.Read();
         }
 
         public ConnectionResult CreateAccount(AccountModel model) {
@@ -62,11 +58,9 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
             }
 
             using var cmd = queriesBuilder.CreateAccountQuery(model);
-
-            return cmd.Connection.Open(() => {
-                var result = cmd.ExecuteNonQuery() == 1;
-                return new ConnectionResult(result);
-            });
+            using var cnn = cmd.Connection.GetConnection();
+            var result = cmd.ExecuteNonQuery() == 1;
+            return new ConnectionResult(result);
         }
 
         public async Task<ConnectionResult> CreateAccountAsync(AccountModel model) {
@@ -84,11 +78,9 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
             }
 
             using var cmd = queriesBuilder.CreateAccountQuery(model);
-
-            return await cmd.Connection.OpenAsync(async () => {
-                var result = await cmd.ExecuteNonQueryAsync() == 1;
-                return new ConnectionResult(result);
-            });
+            await using var cnn = await cmd.Connection.GetConnectionAsync();
+            var result = await cmd.ExecuteNonQueryAsync() == 1;
+            return new ConnectionResult(result);
         }
 
         public ConnectionResult DeleteAccount(string name) {
@@ -106,10 +98,9 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
             }
 
             using var cmd = queriesBuilder.DeleteAccountQuery(name);
-            return cmd.Connection.Open(() => {
-                var result = cmd.ExecuteNonQuery() == 1;
-                return new ConnectionResult(result);
-            });
+            using var cnn = cmd.Connection.GetConnection();
+            var result = cmd.ExecuteNonQuery() == 1;
+            return new ConnectionResult(result);
         }
 
         public ConnectionResult<AccountModel> GetAccount(string name) {
@@ -127,22 +118,21 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
 
         private ConnectionResult<AccountModel> GetAccount_NoLock(string name) {
             using var cmd = queriesBuilder.GetAccountQuery(name);
-            return cmd.Connection.Open(() => {
-                using var reader = cmd.ExecuteReader();
+            using var connection = cmd.Connection.GetConnection();
+            using var reader = cmd.ExecuteReader();
 
-                if(!reader.HasRows) {
-                    return new ConnectionResult<AccountModel>(false, "The given account doesn't exist.");
-                }
+            if(!reader.HasRows) {
+                return new ConnectionResult<AccountModel>(false, "The given account doesn't exist.");
+            }
 
-                reader.Read();
-                var model = new AccountModel {
-                    Name = reader.GetString(0),
-                    Password = reader.GetString(1),
-                    Email = reader.GetString(2)
-                };
+            reader.Read();
+            var model = new AccountModel {
+                Name = reader.GetString(0),
+                Password = reader.GetString(1),
+                Email = reader.GetString(2)
+            };
 
-                return new ConnectionResult<AccountModel>(true, model);
-            });
+            return new ConnectionResult<AccountModel>(true, model);
         }
 
         public ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts() {
@@ -205,11 +195,10 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
                     }
                 }
 
-
                 using var cmd = queriesBuilder.UpdateAccountQuery(name, newModel);
-                cmd.Connection.Open(() => {
+                using(var cnn = cmd.Connection.GetConnection()) {
                     cmd.ExecuteNonQuery();
-                });
+                }
 
                 return GetAccount_NoLock(string.IsNullOrWhiteSpace(newModel.Name)? name : newModel.Name);
 
