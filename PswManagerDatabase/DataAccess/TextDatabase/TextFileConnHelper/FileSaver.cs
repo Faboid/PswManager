@@ -62,6 +62,8 @@ namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
                     if(!nameLock.Obtained) {
                         return new(name, $"The account {name} is being used elsewhere.");
                     }
+
+                    //checks if the account has been deleted while waiting
                     if(!Exists(name)) {
                         return new(name, $"The account {name} has been deleted or edited.");
                     }
@@ -72,25 +74,28 @@ namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
                 });
         }
 
-        public async Task<ConnectionResult<AccountModel>[]> GetAllAsync(NamesLocker locker) {
+        public async IAsyncEnumerable<AccountResult> GetAllAsync(NamesLocker locker) {
             var tasks = Directory.GetFiles(directoryPath)
-                .AsParallel()
                 .Select(async x => {
                     var name = Path.GetFileNameWithoutExtension(x);
                     using var nameLock = await locker.GetLockAsync(name, 5000);
                     if(!nameLock.Obtained) {
-                        return new(false, $"The account {name} is being used elsewhere.");
+                        return new(name, $"The account {name} is being used elsewhere.");
                     }
+
+                    //checks if the account has been deleted while waiting
                     if(!Exists(name)) {
-                        return new(false, $"The account {name} has been deleted or edited.");
+                        return new(name, $"The account {name} has been deleted or edited.");
                     }
 
                     var values = await File.ReadAllLinesAsync(x);
                     var account = AccountSerializer.Deserialize(values);
-                    return new ConnectionResult<AccountModel>(true, account);
+                    return new AccountResult(name, account);
                 });
 
-            return await Task.WhenAll(tasks);
+            foreach(var task in tasks) {
+                yield return await task;
+            }
         }
 
         public AccountModel Update(string name, AccountModel newModel) {

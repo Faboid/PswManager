@@ -3,7 +3,6 @@ using PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper;
 using PswManagerDatabase.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess.TextDatabase {
@@ -120,6 +119,11 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
         public ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts() {
             var accounts = fileSaver.GetAll(locker);
             return new(true, accounts);
+        }
+
+        public Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsAsync() { 
+            var accounts = fileSaver.GetAllAsync(locker);
+            return Task.FromResult(new ConnectionResult<IAsyncEnumerable<AccountResult>>(true, accounts));
         }
 
         public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {

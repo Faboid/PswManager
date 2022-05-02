@@ -36,7 +36,7 @@ namespace PswManagerDatabase.DataAccess.JsonDatabase {
         protected async override Task<ConnectionResult> CreateAccountHookAsync(AccountModel model) {
             var path = BuildFilePath(model.Name);
             using var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write);
-            await JsonSerializer.SerializeAsync(stream, model);
+            await JsonSerializer.SerializeAsync(stream, model).ConfigureAwait(false);
             return new ConnectionResult(true);
         }
 
@@ -53,12 +53,33 @@ namespace PswManagerDatabase.DataAccess.JsonDatabase {
             return new(true, model);
         }
 
+        protected async Task<AccountResult> GetAccountHookAsync(string name) {
+            var path = BuildFilePath(name);
+            using var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+            AccountModel model = await JsonSerializer.DeserializeAsync<AccountModel>(stream).ConfigureAwait(false);
+            return new(name, model);
+        }
+
         protected override ConnectionResult<IEnumerable<AccountResult>> GetAllAccountsHook() {
             var accounts = Directory.GetFiles(directoryPath)
                 .Select(x => Path.GetFileNameWithoutExtension(x))
-                .Select(x => new AccountResult(x, GetAccount(x)));
+                .Select(x => new AccountResult(x, GetAccountHook(x)));
 
             return new(true, accounts);
+        }
+
+        protected override Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsHookAsync() {
+            return Task.FromResult(new ConnectionResult<IAsyncEnumerable<AccountResult>>(true, GetAccountsAsync()));
+        }
+
+        private async IAsyncEnumerable<AccountResult> GetAccountsAsync() {
+            var accounts = Directory.GetFiles(directoryPath)
+                .Select(x => Path.GetFileNameWithoutExtension(x))
+                .Select(x => GetAccountHookAsync(x));
+
+            foreach(var account in accounts) {
+                yield return await account.ConfigureAwait(false);
+            }
         }
 
         protected override ConnectionResult<AccountModel> UpdateAccountHook(string name, AccountModel newModel) {

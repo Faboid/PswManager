@@ -34,10 +34,21 @@ namespace PswManagerDatabase.DataAccess.MemoryDatabase {
         protected override ConnectionResult<IEnumerable<AccountResult>> GetAllAccountsHook() {
             var list = accounts
                 .Values
-                .Select(x => new AccountResult(x.Name, x))
-                .ToList();
+                .Select(x => new AccountResult(x.Name, x));
 
             return new(true, list);
+        }
+
+        protected override Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsHookAsync() {
+            //fake async as it's just reading a list
+            async IAsyncEnumerable<AccountResult> GetAccounts() {
+                var list = GetAllAccountsHook().Value;
+                foreach(var account in list) {
+                    yield return await Task.FromResult(account);
+                }
+            }
+
+            return Task.FromResult(new ConnectionResult<IAsyncEnumerable<AccountResult>>(true, GetAccounts()));
         }
 
         protected override ConnectionResult<AccountModel> UpdateAccountHook(string name, AccountModel newModel) {

@@ -144,31 +144,45 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
             return new (true, GetAccounts());
         }
 
-        private IEnumerable<AccountResult> GetAccounts() {
-            using var cmd = queriesBuilder.GetAllAccountsQuery();
-            try {
-                Debug.WriteLine("Opened the connection.");
-                cmd.Connection.Open();
-
-                using var reader = cmd.ExecuteReader();
-                while(reader.Read()) {
-                    var model = new AccountModel {
-                        Name = reader.GetString(0),
-                        Password = reader.GetString(1),
-                        Email = reader.GetString(2)
-                    };
-
-                    Debug.WriteLine($"Returning model: {model}");
-                    yield return new(model.Name, model);
-                }
-            } finally {
-                if(cmd.Connection.State == System.Data.ConnectionState.Open) {
-                    cmd.Connection.Close();
-                    Debug.WriteLine("Closed the connection");
-                }
+        public async Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsAsync() {
+            using var mainLock = await locker.GetAllLocksAsync(10000);
+            if(mainLock.Obtained == false) {
+                return new(false, "Some account is being used elsewhere in a long operation.");
             }
 
-            Debug.WriteLine("Exiting the call.");
+            return new(true, GetAccountsAsync());
+        }
+
+        private IEnumerable<AccountResult> GetAccounts() {
+            using var cmd = queriesBuilder.GetAllAccountsQuery();
+            using var cnn = cmd.Connection.GetConnection();
+
+            using var reader = cmd.ExecuteReader();
+            while(reader.Read()) {
+                var model = new AccountModel {
+                    Name = reader.GetString(0),
+                    Password = reader.GetString(1),
+                    Email = reader.GetString(2)
+                };
+
+                yield return new(model.Name, model);
+            }
+        }
+
+        private async IAsyncEnumerable<AccountResult> GetAccountsAsync() {
+            using var cmd = queriesBuilder.GetAllAccountsQuery();
+            await using var cnn = await cmd.Connection.GetConnectionAsync();
+
+            using var reader = await cmd.ExecuteReaderAsync();
+            while(await reader.ReadAsync()) {
+                var model = new AccountModel {
+                    Name = reader.GetString(0),
+                    Password = reader.GetString(1),
+                    Email = reader.GetString(2)
+                };
+
+                yield return new(model.Name, model);
+            }
         }
 
         public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {

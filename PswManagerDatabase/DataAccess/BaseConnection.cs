@@ -106,8 +106,21 @@ namespace PswManagerDatabase.DataAccess {
         }
 
         public ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts() {
-            using var mainLock = Locker.GetAllLocks();
+            using var mainLock = Locker.GetAllLocks(10000);
+            if(mainLock.Obtained == false) {
+                return new(false, "Some account is being used elsewhere in a long operation.");
+            }
+
             return GetAllAccountsHook();
+        }
+
+        public async Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsAsync() {
+            using var mainLock = await Locker.GetAllLocksAsync(10000);
+            if(mainLock.Obtained == false) {
+                return new(false, "Some account is being used elsewhere in a long operation.");
+            }
+
+            return await GetAllAccountsHookAsync();
         }
 
         public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {
@@ -157,6 +170,7 @@ namespace PswManagerDatabase.DataAccess {
         protected abstract Task<ConnectionResult> CreateAccountHookAsync(AccountModel model);
         protected abstract ConnectionResult<AccountModel> GetAccountHook(string name);
         protected abstract ConnectionResult<IEnumerable<AccountResult>> GetAllAccountsHook();
+        protected abstract Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsHookAsync();
         protected abstract ConnectionResult<AccountModel> UpdateAccountHook(string name, AccountModel newModel);
         protected abstract ConnectionResult DeleteAccountHook(string name);
 
