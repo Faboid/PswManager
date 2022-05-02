@@ -2,7 +2,9 @@
 using PswManagerDatabase.Models;
 using PswManagerHelperMethods;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Database.Generic {
@@ -60,6 +62,31 @@ namespace PswManagerTests.Database.Generic {
                 });
         }
 
+        [Fact]
+        public async Task GetAllShouldGetAllAsync() {
+
+            //arrange
+            var expectedAccounts = dbHandler.GetDefaultValues().GetAll().ToList();
+
+            //act
+            var actual = await dataReader.GetAllAccountsAsync();
+            List<AccountModel> values = await actual
+                .Value
+                .Select(x => x.Value)
+                .ToList();
+            values.Sort((x, y) => x.Name.CompareTo(y.Name));
+
+            //assert
+            Assert.True(actual.Success);
+            Assert.Equal(expectedAccounts.Count, values.Count);
+
+            Enumerable
+                .Range(0, dbHandler.GetDefaultValues().values.Count - 1)
+                .ForEach(x => {
+                    AccountEqual(expectedAccounts[x], values[x]);
+                });
+        }
+
         [Theory]
         [InlineData(0)]
         [InlineData(2)]
@@ -71,7 +98,7 @@ namespace PswManagerTests.Database.Generic {
 
             //act
             var actual = dataReader.GetAllAccounts();
-            var values = dataReader.GetAllAccounts()
+            var values = actual
                 .Value
                 .Select(x => x.Value)
                 .OrderBy(x => x.Name)
@@ -87,6 +114,32 @@ namespace PswManagerTests.Database.Generic {
                 .ForEach(x => {
                     AccountEqual(expectedAccounts[x], values[x]);
                 });
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task GetAFewWithIAsyncEnumerator(int num) {
+
+            //arrange
+            var expectedAccounts = dbHandler.GetDefaultValues().GetSome(num).ToList();
+
+            //act
+            var actual = await dataReader.GetAllAccountsAsync().ConfigureAwait(false);
+            List<AccountModel> values = await actual.Value.Select(x => x.Value).Take(num);
+            values.Sort((x, y) => x.Name.CompareTo(y.Name));
+
+            //assert
+            Assert.True(actual.Success);
+            Assert.Equal(expectedAccounts.Count, values.Count);
+
+            Enumerable
+                .Range(0, num)
+                .ForEach(x => {
+                    AccountEqual(expectedAccounts[x], values[x]);
+                });
+
         }
 
         private static void AccountEqual(AccountModel expected, AccountModel actual) {
