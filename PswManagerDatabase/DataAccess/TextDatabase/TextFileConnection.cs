@@ -111,6 +111,24 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
             return new(true);
         }
 
+        public async ValueTask<ConnectionResult> DeleteAccountAsync(string name) { 
+            if(string.IsNullOrWhiteSpace(name)) {
+                return invalidNameResult;
+            }
+
+            using var heldLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
+            if(!heldLock.Obtained) {
+                return usedElsewhereResult;
+            }
+
+            if(!await fileSaver.ExistsAsync(name).ConfigureAwait(false)) {
+                return accountDoesNotExistResult;
+            }
+
+            await fileSaver.DeleteAsync(name);
+            return new(true);
+        }
+
         public ConnectionResult<AccountModel> GetAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
                 return invalidNameResult;

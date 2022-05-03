@@ -35,10 +35,10 @@ namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public async ValueTask<bool> ExistsAsync(string name) {
+        public Task<bool> ExistsAsync(string name) {
             //wrapper to move it to another thread
             //it's not ideal, but the lack of an async overload leaves no choice
-            return await Task.Run(() => File.Exists(BuildFilePath(name))).ConfigureAwait(false);
+            return Task.Run(() => File.Exists(BuildFilePath(name)));
         }
 
         public void Create(AccountModel account) {
@@ -56,6 +56,16 @@ namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
         public void Delete(string name) {
             var path = BuildFilePath(name);
             File.Delete(path);
+        }
+
+        /// <summary>
+        /// Deleted a file in another thread by wrapping <see cref="File.Delete(string)"/> with <see cref="Task.Run(Action)"/>.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public Task DeleteAsync(string name) {
+            var path = BuildFilePath(name);
+            return Task.Run(() => File.Delete(path));
         }
 
         public AccountModel Get(string name) {

@@ -119,12 +119,32 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
             }
 
             if(!AccountExist_NoLock(name)) {
-                return new ConnectionResult(false, "The given account doesn't exist.");
+                return doesNotExistResult;
             }
 
             using var cmd = queriesBuilder.DeleteAccountQuery(name);
             using var cnn = cmd.Connection.GetConnection();
             var result = cmd.ExecuteNonQuery() == 1;
+            return new ConnectionResult(result);
+        }
+
+        public async ValueTask<ConnectionResult> DeleteAccountAsync(string name) { 
+            if(string.IsNullOrWhiteSpace(name)) {
+                return invalidNameResult;
+            }
+
+            using var heldLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
+            if(!heldLock.Obtained) {
+                return usedElsewhereResult;
+            }
+
+            if(!await AccountExistAsync_NoLock(name).ConfigureAwait(false)) {
+                return doesNotExistResult;
+            }
+
+            using var cmd = queriesBuilder.DeleteAccountQuery(name);
+            await using var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
+            var result = await cmd.ExecuteNonQueryAsync() == 1;
             return new ConnectionResult(result);
         }
 

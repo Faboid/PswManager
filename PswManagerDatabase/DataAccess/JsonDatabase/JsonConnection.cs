@@ -55,6 +55,13 @@ namespace PswManagerDatabase.DataAccess.JsonDatabase {
             return new ConnectionResult(true);
         }
 
+        protected override ValueTask<ConnectionResult> DeleteAccountHookAsync(string name) {
+            //there's no overload, and it's expected to be quick anyway, so I've left it to be synchronous
+            //might decide to wrap it in a Task.Run()
+            File.Delete(BuildFilePath(name));
+            return ValueTask.FromResult(new ConnectionResult(true));
+        }
+
         protected override ConnectionResult<AccountModel> GetAccountHook(string name) {
             var jsonString = File.ReadAllText(BuildFilePath(name));
             var model = JsonSerializer.Deserialize<AccountModel>(jsonString);

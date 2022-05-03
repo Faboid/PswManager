@@ -31,6 +31,11 @@ namespace PswManagerDatabase.DataAccess.MemoryDatabase {
             return new ConnectionResult(true);
         }
 
+        protected override ValueTask<ConnectionResult> DeleteAccountHookAsync(string name) {
+            accounts.Remove(name);
+            return ValueTask.FromResult(new ConnectionResult(true));
+        }
+
         protected override ConnectionResult<AccountModel> GetAccountHook(string name) {
             return new ConnectionResult<AccountModel>(true, accounts[name]);
         }

@@ -1,5 +1,6 @@
 ﻿using PswManagerDatabase.DataAccess.Interfaces;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Database.Generic {
@@ -33,7 +34,25 @@ namespace PswManagerTests.Database.Generic {
         }
 
         [Fact]
-        public void DeleteFailure_NonExistentName() {
+        public async Task DeleteAccountCorrectlyAsynchronously() {
+
+            //arrange
+            string name = dbHandler.GetDefaultValues().GetValue(0, TestsHelpers.DefaultValues.TypeValue.Name);
+            bool exists;
+
+            //act
+            exists = await dataDeleter.AccountExistAsync(name).ConfigureAwait(false);
+            var result = await dataDeleter.DeleteAccountAsync(name).ConfigureAwait(false);
+
+            //assert
+            Assert.True(exists);
+            Assert.True(result.Success);
+            Assert.False(await dataDeleter.AccountExistAsync(name).ConfigureAwait(false));
+
+        }
+
+        [Fact]
+        public async Task DeleteFailure_NonExistentName() {
 
             //arrange
             string name = "gerobhipubihtsiyhrti";
@@ -42,10 +61,12 @@ namespace PswManagerTests.Database.Generic {
             //act
             exists = dataDeleter.AccountExist(name);
             var result = dataDeleter.DeleteAccount(name);
+            var resultAsync = await dataDeleter.DeleteAccountAsync(name).ConfigureAwait(false);
 
             //assert
             Assert.False(exists);
             Assert.False(result.Success);
+            Assert.False(resultAsync.Success);
 
         }
 

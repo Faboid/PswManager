@@ -95,12 +95,28 @@ namespace PswManagerDatabase.DataAccess {
             }
 
             if(!AccountExistInternal(name)) {
-                return new ConnectionResult(false, "The given account doesn't exist.");
+                return doesNotExistResult;
             }
 
             return DeleteAccountHook(name);
         }
 
+        public async ValueTask<ConnectionResult> DeleteAccountAsync(string name) { 
+            if(string.IsNullOrWhiteSpace(name)) {
+                return cachedInvalidNameResult;
+            }
+
+            using var ownedLock = await Locker.GetLockAsync(name, 50).ConfigureAwait(false);
+            if(!ownedLock.Obtained) {
+                return cachedFailToLockResult;
+            }
+
+            if(!await AccountExistInternalAsync(name).ConfigureAwait(false)) {
+                return doesNotExistResult;
+            }
+
+            return await DeleteAccountHookAsync(name).ConfigureAwait(false);
+        }
 
         public ConnectionResult<AccountModel> GetAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
@@ -214,6 +230,7 @@ namespace PswManagerDatabase.DataAccess {
         protected abstract Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsHookAsync();
         protected abstract ConnectionResult<AccountModel> UpdateAccountHook(string name, AccountModel newModel);
         protected abstract ConnectionResult DeleteAccountHook(string name);
+        protected abstract ValueTask<ConnectionResult> DeleteAccountHookAsync(string name);
 
     }
 }
