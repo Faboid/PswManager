@@ -101,7 +101,7 @@ namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
                     }
 
                     //checks if the account has been deleted while waiting
-                    if(!Exists(name)) {
+                    if(!await ExistsAsync(name).ConfigureAwait(false)) {
                         return new(name, $"The account {name} has been deleted or edited.");
                     }
 

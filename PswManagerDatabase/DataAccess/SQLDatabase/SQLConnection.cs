@@ -58,6 +58,10 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
         }
 
         private async ValueTask<bool> AccountExistAsync_NoLock(string name) {
+            if(string.IsNullOrWhiteSpace(name)) {
+                return false;
+            }
+
             using var cmd = queriesBuilder.GetAccountQuery(name);
             await using var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
             using var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false);
@@ -94,7 +98,7 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
                 return usedElsewhereResult;
             }
 
-            if(AccountExist_NoLock(model.Name)) {
+            if(await AccountExistAsync_NoLock(model.Name).ConfigureAwait(false)) {
                 return new ConnectionResult(false, "The given account name is already occupied.");
             }
 
@@ -156,7 +160,7 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
             using var reader = cmd.ExecuteReader();
 
             if(!reader.HasRows) {
-                return new ConnectionResult<AccountModel>(false, "The given account doesn't exist.");
+                return doesNotExistResult;
             }
 
             reader.Read();

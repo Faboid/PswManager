@@ -43,11 +43,10 @@ namespace PswManagerDatabase.DataAccess {
 
             using var ownedLock = await Locker.GetLockAsync(name, 10000).ConfigureAwait(false);
             if(!ownedLock.Obtained) {
-                throw new TimeoutException($"The lock in {nameof(AccountExist)} has failed to lock for over ten seconds.");
+                throw new TimeoutException($"The lock in {nameof(AccountExistAsync)} has failed to lock for over ten seconds.");
             }
 
-            var result = await AccountExistInternalAsync(name).ConfigureAwait(false);
-            return result;
+            return await AccountExistInternalAsync(name).ConfigureAwait(false);
         }
 
         public ConnectionResult CreateAccount(AccountModel model) {
@@ -77,7 +76,7 @@ namespace PswManagerDatabase.DataAccess {
                 return cachedFailToLockResult;
             }
 
-            if(AccountExistInternal(model.Name)) {
+            if(await AccountExistInternalAsync(model.Name).ConfigureAwait(false)) {
                 return new ConnectionResult(false, "The given account name is already occupied.");
             }
 
@@ -130,7 +129,7 @@ namespace PswManagerDatabase.DataAccess {
                 return cachedFailToLockResult;
             }
 
-            if(!AccountExistInternal(name)) {
+            if(!await AccountExistInternalAsync(name).ConfigureAwait(false)) {
                 return doesNotExistResult;
             }
 

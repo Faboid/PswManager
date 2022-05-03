@@ -85,7 +85,7 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
                 return usedElsewhereResult;
             }
 
-            if(fileSaver.Exists(model.Name)) {
+            if(await fileSaver.ExistsAsync(model.Name).ConfigureAwait(false)) {
                 return accountExistsAlreadyResult;
             }
 
@@ -134,12 +134,12 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
                 return invalidNameResult;
             }
 
-            using var accLock = await locker.GetLockAsync(name, 50);
+            using var accLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!accLock.Obtained) {
                 return usedElsewhereResult;
             }
 
-            if(!fileSaver.Exists(name)) {
+            if(!await fileSaver.ExistsAsync(name).ConfigureAwait(false)) {
                 return accountDoesNotExistResult;
             }
 
