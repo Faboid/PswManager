@@ -39,7 +39,7 @@ namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
         public async Task CreateAsync(AccountModel account) {
             var path = BuildFilePath(account.Name);
             var serialized = AccountSerializer.Serialize(account);
-            await File.WriteAllLinesAsync(path, serialized);
+            await File.WriteAllLinesAsync(path, serialized).ConfigureAwait(false);
         }
 
         public void Delete(string name) {
@@ -78,7 +78,7 @@ namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
             var tasks = Directory.GetFiles(directoryPath)
                 .Select(async x => {
                     var name = Path.GetFileNameWithoutExtension(x);
-                    using var nameLock = await locker.GetLockAsync(name, 5000);
+                    using var nameLock = await locker.GetLockAsync(name, 5000).ConfigureAwait(false);
                     if(!nameLock.Obtained) {
                         return new(name, $"The account {name} is being used elsewhere.");
                     }
@@ -88,13 +88,13 @@ namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
                         return new(name, $"The account {name} has been deleted or edited.");
                     }
 
-                    var values = await File.ReadAllLinesAsync(x);
+                    var values = await File.ReadAllLinesAsync(x).ConfigureAwait(false);
                     var account = AccountSerializer.Deserialize(values);
                     return new AccountResult(name, account);
                 });
 
             foreach(var task in tasks) {
-                yield return await task;
+                yield return await task.ConfigureAwait(false);
             }
         }
 

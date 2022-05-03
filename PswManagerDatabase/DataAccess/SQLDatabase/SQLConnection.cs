@@ -68,7 +68,7 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
                 return invalidNameResult;
             }
 
-            using var heldLock = await locker.GetLockAsync(model.Name, 50);
+            using var heldLock = await locker.GetLockAsync(model.Name, 50).ConfigureAwait(false);
             if(heldLock.Obtained == false) {
                 return usedElsewhereResult;
             }
@@ -78,8 +78,8 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
             }
 
             using var cmd = queriesBuilder.CreateAccountQuery(model);
-            await using var cnn = await cmd.Connection.GetConnectionAsync();
-            var result = await cmd.ExecuteNonQueryAsync() == 1;
+            await using var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
+            var result = await cmd.ExecuteNonQueryAsync().ConfigureAwait(false) == 1;
             return new ConnectionResult(result);
         }
 
@@ -145,7 +145,7 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
         }
 
         public async Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsAsync() {
-            using var mainLock = await locker.GetAllLocksAsync(10000);
+            using var mainLock = await locker.GetAllLocksAsync(10000).ConfigureAwait(false);
             if(mainLock.Obtained == false) {
                 return new(false, "Some account is being used elsewhere in a long operation.");
             }
@@ -171,10 +171,10 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
 
         private async IAsyncEnumerable<AccountResult> GetAccountsAsync() {
             using var cmd = queriesBuilder.GetAllAccountsQuery();
-            await using var cnn = await cmd.Connection.GetConnectionAsync();
+            await using var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
 
-            using var reader = await cmd.ExecuteReaderAsync();
-            while(await reader.ReadAsync()) {
+            using var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false);
+            while(await reader.ReadAsync().ConfigureAwait(false)) {
                 var model = new AccountModel {
                     Name = reader.GetString(0),
                     Password = reader.GetString(1),

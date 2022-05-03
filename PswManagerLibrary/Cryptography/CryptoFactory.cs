@@ -27,8 +27,8 @@ namespace PswManagerLibrary.Cryptography {
 
         private async Task<ICryptoAccount> RequestPasswords() =>
             Token.IsTokenSetUp(Token.GetDefaultPath()) switch {
-                true => await LogIn(),
-                false => await SignUp()
+                true => await LogIn().ConfigureAwait(false),
+                false => await SignUp().ConfigureAwait(false)
             };
 
         private async Task<ICryptoAccount> SignUp() {
@@ -51,16 +51,16 @@ namespace PswManagerLibrary.Cryptography {
                 userInput.SendMessage("The given password is valid.");
                 userInput.SendMessage("Creating a token to validate the password in the future...");
 
-                token = new Token(await generator.GenerateKeyAsync());
+                token = new Token(await generator.GenerateKeyAsync().ConfigureAwait(false));
 
             } while(!token.VerifyToken());
 
             userInput.SendMessage("Completing first time set up... this might take a few seconds.");
 
             try {
-                return new CryptoAccount(await generator.GenerateKeyAsync(), await generator.GenerateKeyAsync());
+                return new CryptoAccount(await generator.GenerateKeyAsync().ConfigureAwait(false), await generator.GenerateKeyAsync().ConfigureAwait(false));
             } finally {
-                await generator.DisposeAsync();
+                await generator.DisposeAsync().ConfigureAwait(false);
             }
         }
 
@@ -73,14 +73,14 @@ namespace PswManagerLibrary.Cryptography {
                 await using var generator = new KeyGeneratorService(password);
 
                 userInput.SendMessage("Verifying password...");
-                var token = new Token(await generator.GenerateKeyAsync());
+                var token = new Token(await generator.GenerateKeyAsync().ConfigureAwait(false));
                 
                 //if the password is correct
                 if(token.VerifyToken()) {
                     userInput.SendMessage("The password is correct.");
                     userInput.SendMessage("The log-in process is starting. It might take a few seconds.");
 
-                    return new CryptoAccount(await generator.GenerateKeyAsync(), await generator.GenerateKeyAsync());
+                    return new CryptoAccount(await generator.GenerateKeyAsync().ConfigureAwait(false), await generator.GenerateKeyAsync().ConfigureAwait(false));
                 }
 
                 //if the password is wrong

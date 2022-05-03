@@ -67,7 +67,7 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
                 return invalidNameResult;
             }
 
-            using var accLock = await locker.GetLockAsync(model.Name, 50);
+            using var accLock = await locker.GetLockAsync(model.Name, 50).ConfigureAwait(false);
             if(!accLock.Obtained) {
                 return usedElsewhereResult;
             }
@@ -76,7 +76,7 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
                 return accountExistsAlreadyResult;
             }
 
-            await fileSaver.CreateAsync(model);
+            await fileSaver.CreateAsync(model).ConfigureAwait(false);
             return new(true);
         }
 

@@ -18,7 +18,7 @@ namespace PswManagerAsync.Locks {
         private bool isDisposed = false;
 
         public async Task<MainLock> GetAllLocksAsync(int millisecondsTimeout = -1) {
-            var mainLock = await mainLocker.GetLockAsync(millisecondsTimeout);
+            var mainLock = await mainLocker.GetLockAsync(millisecondsTimeout).ConfigureAwait(false);
             if(mainLock.Obtained == false) {
                 return new(mainLock, new(), this);
             }
@@ -27,12 +27,12 @@ namespace PswManagerAsync.Locks {
                 .AsParallel()
                 .Select(async x => new Lock(
                         x.Key, 
-                        await x.Value.UseValueAsync(async x => await x.GetLockAsync(millisecondsTimeout)), 
+                        await x.Value.UseValueAsync(async x => await x.GetLockAsync(millisecondsTimeout).ConfigureAwait(false)).ConfigureAwait(false), 
                         this
                     )
                 );
 
-            var listLocks = (await Task.WhenAll(listLocksTasks)).ToList();
+            var listLocks = (await Task.WhenAll(listLocksTasks).ConfigureAwait(false)).ToList();
             return ManageLocksToCreateMainLock(mainLock, listLocks);
         }
 
@@ -74,14 +74,14 @@ namespace PswManagerAsync.Locks {
             }
 
             RefCount<Locker> refLocker;
-            using(var allLock = await mainLocker.GetLockAsync(millisecondsTimeout)) {
+            using(var allLock = await mainLocker.GetLockAsync(millisecondsTimeout).ConfigureAwait(false)) {
                 if(!allLock.Obtained) {
                     return new(name, allLock, this);
                 }
 
                 refLocker = GetRefLocker(name);
             }
-            var heldLock = await refLocker.UseValueAsync(async x => await x.GetLockAsync(millisecondsTimeout));
+            var heldLock = await refLocker.UseValueAsync(async x => await x.GetLockAsync(millisecondsTimeout).ConfigureAwait(false)).ConfigureAwait(false);
             return new(name, heldLock, this);
         }
 

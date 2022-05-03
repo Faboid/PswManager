@@ -69,11 +69,12 @@ namespace PswManagerTests.Database.Generic {
             var expectedAccounts = dbHandler.GetDefaultValues().GetAll().ToList();
 
             //act
-            var actual = await dataReader.GetAllAccountsAsync();
+            var actual = await dataReader.GetAllAccountsAsync().ConfigureAwait(false);
             List<AccountModel> values = await actual
                 .Value
                 .Select(x => x.Value)
-                .ToList();
+                .ToList()
+                .ConfigureAwait(false);
             values.Sort((x, y) => x.Name.CompareTo(y.Name));
 
             //assert
@@ -127,7 +128,7 @@ namespace PswManagerTests.Database.Generic {
 
             //act
             var actual = await dataReader.GetAllAccountsAsync().ConfigureAwait(false);
-            List<AccountModel> values = await actual.Value.Select(x => x.Value).Take(num);
+            List<AccountModel> values = await actual.Value.Select(x => x.Value).Take(num).ConfigureAwait(false);
             values.Sort((x, y) => x.Name.CompareTo(y.Name));
 
             //assert

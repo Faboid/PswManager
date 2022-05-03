@@ -11,7 +11,7 @@ namespace PswManagerHelperMethods {
             List<T> list = new();
 
             int curr = 0;
-            await foreach(var item in enumerable) {
+            await foreach(var item in enumerable.ConfigureAwait(false)) {
                 if(curr >= count) {
                     break;
                 }
@@ -24,21 +24,21 @@ namespace PswManagerHelperMethods {
 
         public static async Task<List<T>> ToList<T>(this IAsyncEnumerable<T> enumerable) {
             List<T> list = new();
-            await foreach(var item in enumerable) {
+            await foreach(var item in enumerable.ConfigureAwait(false)) {
                 list.Add(item);
             }
             return list;
         }
 
         public static async IAsyncEnumerable<U> Select<T, U>(this IAsyncEnumerable<T> enumerable, Func<T, U> selector) { 
-            await foreach(var item in enumerable) {
+            await foreach(var item in enumerable.ConfigureAwait(false)) {
                 yield return selector(item);
             }
         }
 
         public static async IAsyncEnumerable<U> Select<T, U>(this IAsyncEnumerable<T> enumerable, Func<T, Task<U>> selector) {
-            await foreach(var item in enumerable) {
-                yield return await selector(item);
+            await foreach(var item in enumerable.ConfigureAwait(false)) {
+                yield return await selector(item).ConfigureAwait(false);
             }
         }
 

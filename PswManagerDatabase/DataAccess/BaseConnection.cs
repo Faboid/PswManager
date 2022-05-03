@@ -57,7 +57,7 @@ namespace PswManagerDatabase.DataAccess {
                 return cachedInvalidNameResult;
             }
 
-            using var ownedLock = await Locker.GetLockAsync(model.Name, 50);
+            using var ownedLock = await Locker.GetLockAsync(model.Name, 50).ConfigureAwait(false);
             if(!ownedLock.Obtained) {
                 return cachedFailToLockResult;
             }
@@ -66,7 +66,7 @@ namespace PswManagerDatabase.DataAccess {
                 return new ConnectionResult(false, "The given account name is already occupied.");
             }
 
-            return await CreateAccountHookAsync(model);
+            return await CreateAccountHookAsync(model).ConfigureAwait(false);
         }
 
 
@@ -115,12 +115,12 @@ namespace PswManagerDatabase.DataAccess {
         }
 
         public async Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsAsync() {
-            using var mainLock = await Locker.GetAllLocksAsync(10000);
+            using var mainLock = await Locker.GetAllLocksAsync(10000).ConfigureAwait(false);
             if(mainLock.Obtained == false) {
                 return new(false, "Some account is being used elsewhere in a long operation.");
             }
 
-            return await GetAllAccountsHookAsync();
+            return await GetAllAccountsHookAsync().ConfigureAwait(false);
         }
 
         public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {

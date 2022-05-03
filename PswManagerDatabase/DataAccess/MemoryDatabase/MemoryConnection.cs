@@ -44,7 +44,7 @@ namespace PswManagerDatabase.DataAccess.MemoryDatabase {
             async IAsyncEnumerable<AccountResult> GetAccounts() {
                 var list = GetAllAccountsHook().Value;
                 foreach(var account in list) {
-                    yield return await Task.FromResult(account);
+                    yield return await Task.FromResult(account).ConfigureAwait(false);
                 }
             }
 

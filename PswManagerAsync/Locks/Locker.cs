@@ -23,16 +23,16 @@
         }
 
         public async Task<Lock> GetLockAsync() {
-            await semaphore.WaitAsync();
+            await semaphore.WaitAsync().ConfigureAwait(false);
             return new(true, this);
         }
 
         public async Task<Lock> GetLockAsync(int millisecondsTimeout) {
-            return new(await semaphore.WaitAsync(millisecondsTimeout), this);
+            return new(await semaphore.WaitAsync(millisecondsTimeout).ConfigureAwait(false), this);
         }
 
         public async Task<Lock> GetLockAsync(int millisecondsTimeout, CancellationToken cancellationToken) {
-            return new(await semaphore.WaitAsync(millisecondsTimeout, cancellationToken), this);
+            return new(await semaphore.WaitAsync(millisecondsTimeout, cancellationToken).ConfigureAwait(false), this);
         }
 
         private void Unlock() {

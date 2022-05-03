@@ -7,7 +7,7 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper {
     internal static class ConnectionHandler {
 
         public static async Task<AsyncConnection> GetConnectionAsync(this SQLiteConnection cnn) {
-            await cnn.OpenAsync();
+            await cnn.OpenAsync().ConfigureAwait(false);
             return new(cnn);
         }
 
@@ -63,13 +63,13 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper {
                     return;
                 }
 
-                using var heldLock = await locker.GetLockAsync();
+                using var heldLock = await locker.GetLockAsync().ConfigureAwait(false);
                 if(isDisposed) {
                     throw new ObjectDisposedException(nameof(Connection));
                 }
 
                 if(cnn.State == System.Data.ConnectionState.Open) {
-                    await cnn.CloseAsync();
+                    await cnn.CloseAsync().ConfigureAwait(false);
                 }
 
                 isDisposed = true;

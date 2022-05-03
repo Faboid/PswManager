@@ -80,7 +80,7 @@ namespace PswManagerTests.Async {
 
         private static async Task<T> TryWaitRead<T>(Channel<T> channel) {
             while(true) {
-                var (success, value) = await channel.TryReadAsync(500);
+                var (success, value) = await channel.TryReadAsync(500).ConfigureAwait(false);
 
                 if(success) {
                     return value;

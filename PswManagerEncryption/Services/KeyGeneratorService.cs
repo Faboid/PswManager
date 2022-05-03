@@ -52,8 +52,8 @@ namespace PswManagerEncryption.Services {
         private async Task AutoGenerateKeysAsync() {
             while(!channel.Token.IsCancellationRequested && !IsDisposed) {
                 try {
-                    var key = await GenerateNextKeyAsync(channel.Token);
-                    await channel.WriteAsync(key);
+                    var key = await GenerateNextKeyAsync(channel.Token).ConfigureAwait(false);
+                    await channel.WriteAsync(key).ConfigureAwait(false);
                 } catch (OperationCanceledException) {
                     //do nothing
                     return;
@@ -76,7 +76,7 @@ namespace PswManagerEncryption.Services {
             List<Key> keys = new();
 
             while(keys.Count < num) {
-                keys.Add(await GenerateKeyAsync());
+                keys.Add(await GenerateKeyAsync().ConfigureAwait(false));
             }
 
             return keys;
@@ -101,7 +101,7 @@ namespace PswManagerEncryption.Services {
                     throw new ObjectDisposedException("This object has already been disposed of.");
                 }
 
-                var (success, key) = await channel.TryReadAsync(2000);
+                var (success, key) = await channel.TryReadAsync(2000).ConfigureAwait(false);
                 if(success) {
                     return key!;
                 }
@@ -113,7 +113,7 @@ namespace PswManagerEncryption.Services {
 
             return await Task.Run(() => {
                 return GenerateNextKey();
-            }, cancellationToken);
+            }, cancellationToken).ConfigureAwait(false);
 
         }
 
@@ -123,7 +123,7 @@ namespace PswManagerEncryption.Services {
 
         public async ValueTask DisposeAsync() {
             channel.Dispose();
-            await generationTask; //this is to find any exception thrown in there
+            await generationTask.ConfigureAwait(false); //this is to find any exception thrown in there
             rfc.Dispose();
             IsDisposed = true;
             GC.SuppressFinalize(this);

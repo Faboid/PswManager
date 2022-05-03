@@ -20,7 +20,7 @@ namespace PswManagerAsync {
         public CancellationToken Token { get; }
 
         public async Task<(bool success, T? value)> TryReadAsync(int milliseconds) {
-            bool entered = await readSemaphore.WaitAsync(milliseconds, Token);
+            bool entered = await readSemaphore.WaitAsync(milliseconds, Token).ConfigureAwait(false);
             if(!entered) {
                 return (false, default);
             }
@@ -36,7 +36,7 @@ namespace PswManagerAsync {
             do {
                 //if readSemaphore enters but there's no value, it was erranously released
                 //therefore, it's fine to lock it in "excess"
-                await readSemaphore.WaitAsync(Token);
+                await readSemaphore.WaitAsync(Token).ConfigureAwait(false);
                 success = buffer.TryDequeue(out output);
             } while(!success);
 
@@ -45,7 +45,7 @@ namespace PswManagerAsync {
         }
 
         public async Task WriteAsync(T value) {
-            await writeSemaphore.WaitAsync(Token);
+            await writeSemaphore.WaitAsync(Token).ConfigureAwait(false);
             buffer.Enqueue(value);
             readSemaphore.Release();
         }
@@ -56,6 +56,7 @@ namespace PswManagerAsync {
             writeSemaphore.Dispose();
             cts.Dispose();
             buffer.Clear();
+            GC.SuppressFinalize(this);
         }
     }
 }
