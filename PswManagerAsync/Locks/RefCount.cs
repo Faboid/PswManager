@@ -11,44 +11,39 @@
         private readonly TValue value;
         private int references;
 
-        public async Task UseValueAsync(Func<Task> predicate) {
-            try {
-                references++;
-                await predicate.Invoke();
-            }
-            finally {
-                references--;
-            }
+        public Ref GetRef() => new(this, value);
+
+        private void Take() {
+            references++;
+        }
+        private void Free() {
+            references--;
         }
 
-        public async Task<T> UseValueAsync<T>(Func<TValue, Task<T>> predicate) {
-            try {
-                references++;
-                return await predicate.Invoke(value);
-            }
-            finally {
-                references--;
-            }
-        }
+        public struct Ref : IDisposable {
 
-        public void UseValue(Action<TValue> action) {
-            try {
-                references++;
-                action.Invoke(value);
-            }
-            finally {
-                references--;
-            }
-        }
+            public readonly TValue Value { get; }
 
-        public T UseValue<T>(Func<TValue, T> predicate) {
-            try {
-                references++;
-                return predicate.Invoke(value);
+            private readonly RefCount<TValue> refCount;
+            private bool isDisposed = false;
+
+            public Ref(RefCount<TValue> instance, TValue value) {
+                Value = value;
+                refCount = instance;
+                refCount.Take();
             }
-            finally {
-                references--;
+
+            public void Dispose() {
+                lock(refCount) {
+                    if(isDisposed) {
+                        throw new ObjectDisposedException(nameof(Ref));
+                    }
+
+                    refCount.Free();
+                    isDisposed = true;
+                }
             }
+
         }
 
     }

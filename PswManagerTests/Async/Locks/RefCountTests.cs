@@ -12,13 +12,19 @@ namespace PswManagerTests.Async.Locks {
             //arrange
             RefCount<int> refCount = new(5);
             OrderChecker orderChecker = new();
+            TaskFactory taskFactory = new();
 
             //act
-            bool correctIsInUse = refCount.UseValue(x => refCount.IsInUse);
-            var task = refCount.UseValueAsync(async () => {
+            bool correctIsInUse;
+            using(var reference = refCount.GetRef()) {
+                correctIsInUse = refCount.IsInUse;
+            }
+            var task = await taskFactory.StartNew(async () => {
+                using var reference = refCount.GetRef();
                 orderChecker.Done(1);
                 await orderChecker.WaitFor(2, 200);
             });
+            await orderChecker.WaitFor(1, 100);
             bool asyncIsInUse = refCount.IsInUse;
             orderChecker.Done(2);
             await task;

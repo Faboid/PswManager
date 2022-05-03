@@ -25,12 +25,14 @@ namespace PswManagerAsync.Locks {
 
             var listLocksTasks = lockers
                 .AsParallel()
-                .Select(async x => new Lock(
-                        x.Key, 
-                        await x.Value.UseValueAsync(async x => await x.GetLockAsync(millisecondsTimeout).ConfigureAwait(false)).ConfigureAwait(false), 
+                .Select(async x => {
+                    using var reference = x.Value.GetRef();
+                    return new Lock(
+                        x.Key,
+                        await reference.Value.GetLockAsync(millisecondsTimeout).ConfigureAwait(false),
                         this
-                    )
-                );
+                    );
+                });
 
             var listLocks = (await Task.WhenAll(listLocksTasks).ConfigureAwait(false)).ToList();
             return ManageLocksToCreateMainLock(mainLock, listLocks);
@@ -44,12 +46,14 @@ namespace PswManagerAsync.Locks {
 
             var listLocks = lockers
                 .AsParallel()
-                .Select(x => new Lock(
+                .Select(x => {
+                    using var reference = x.Value.GetRef();
+                    return new Lock(
                         x.Key,
-                        x.Value.UseValue(x => x.GetLock(millisecondsTimeout)),
+                        reference.Value.GetLock(millisecondsTimeout),
                         this
-                    )
-                )
+                    );
+                })
                 .ToList();
 
             return ManageLocksToCreateMainLock(mainLock, listLocks);
@@ -70,35 +74,31 @@ namespace PswManagerAsync.Locks {
 
         public async Task<Lock> GetLockAsync(string name, int millisecondsTimeout = -1) {
             if(string.IsNullOrWhiteSpace(name)) {
-                throw new ArgumentException("The given name is null or empty.", nameof(name));
+                throw new ArgumentException("The given name is null, empty, or white space.", nameof(name));
             }
 
-            RefCount<Locker> refLocker;
-            using(var allLock = await mainLocker.GetLockAsync(millisecondsTimeout).ConfigureAwait(false)) {
-                if(!allLock.Obtained) {
-                    return new(name, allLock, this);
-                }
-
-                refLocker = GetRefLocker(name);
+            var allLock = await mainLocker.GetLockAsync(millisecondsTimeout).ConfigureAwait(false);
+            if(!allLock.Obtained) {
+                return new(name, allLock, this);
             }
-            var heldLock = await refLocker.UseValueAsync(async x => await x.GetLockAsync(millisecondsTimeout).ConfigureAwait(false)).ConfigureAwait(false);
+
+            using var reference = GetRefLocker(name, allLock);
+            var heldLock = await reference.Value.GetLockAsync(millisecondsTimeout).ConfigureAwait(false);
             return new(name, heldLock, this);
         }
 
         public Lock GetLock(string name, int millisecondsTimeout = -1) {
             if(string.IsNullOrWhiteSpace(name)) {
-                throw new ArgumentException("The given name is null or empty.", nameof(name));
+                throw new ArgumentException("The given name is null, empty, or white space.", nameof(name));
             }
 
-            RefCount<Locker> refLocker;
-            using(var allLock = mainLocker.GetLock(millisecondsTimeout)) {
-                if(!allLock.Obtained) {
-                    return new(name, allLock, this);
-                }
-
-                refLocker = GetRefLocker(name);
+            var allLock = mainLocker.GetLock(millisecondsTimeout);
+            if(!allLock.Obtained) {
+                return new(name, allLock, this);
             }
-            var heldLock = refLocker.UseValue(x => x.GetLock(millisecondsTimeout));
+
+            using var refLocker = GetRefLocker(name, allLock);
+            var heldLock = refLocker.Value.GetLock(millisecondsTimeout);
             return new(name, heldLock, this);
         }
 
@@ -116,10 +116,8 @@ namespace PswManagerAsync.Locks {
                     //if it's not being used, dispose it
                     if(!refLocker.IsInUse) {
                         lockers.TryRemove(name, out _);
-                        refLocker.UseValue(x => {
-                            x.Dispose();
-                        });
-
+                        using var reference = refLocker.GetRef();
+                        reference.Value.Dispose();
                         return;
                     }
 
@@ -131,7 +129,7 @@ namespace PswManagerAsync.Locks {
             }
         }
 
-        private RefCount<Locker> GetRefLocker(string name) {
+        private RefCount<Locker>.Ref GetRefLocker(string name, Locker.Lock mainLock) {
             if(isDisposed) {
                 throw new ObjectDisposedException($"The {nameof(NamesLocker)} object has been already disposed of.");
             }
@@ -146,14 +144,21 @@ namespace PswManagerAsync.Locks {
             if(!ReferenceEquals(refSlim, refLocker)) {
                 defaultLocker.Dispose();
             }
-            
-            return refLocker;
+
+            //by unlocking the lock after getting the reference, we protect from race conditions for the disposal of locks
+            var output = refLocker.GetRef();
+            mainLock.Dispose();
+
+            return output;
         }
 
         public void Dispose() {
             using(var syncLock = synchronizationLocker.GetLock()) {
                 isDisposed = true;
-                Parallel.ForEach(lockers, refVal => refVal.Value.UseValue(x => x.Dispose()));
+                Parallel.ForEach(lockers, refVal => {
+                    using var reference = refVal.Value.GetRef();
+                    reference.Value.Dispose();
+                });
                 lockers.Clear();
             }
             synchronizationLocker.Dispose();
