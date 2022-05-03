@@ -42,18 +42,18 @@ namespace PswManagerTests.Database.Generic {
             var account = new AccountModel("validAccountName", "rigteuwokgteuyh", "here@email.it");
 
             //act
-            bool exist = dataCreator.AccountExist(account.Name);//todo - change to AccountExistAsync once it's implemented
-            var result = await dataCreator.CreateAccountAsync(account);
+            bool exist = await dataCreator.AccountExistAsync(account.Name).ConfigureAwait(false);
+            var result = await dataCreator.CreateAccountAsync(account).ConfigureAwait(false);
 
             //assert
             Assert.False(exist);
             Assert.True(result.Success);
-            Assert.True(dataCreator.AccountExist(account.Name));
+            Assert.True(await dataCreator.AccountExistAsync(account.Name).ConfigureAwait(false));
 
         }
 
         [Fact]
-        public void CreateAccountFailure_AlreadyExists() {
+        public async Task CreateAccountFailure_AlreadyExists() {
 
             //arrange
             var account = new AccountModel(DefaultValues.StaticGetValue(0, DefaultValues.TypeValue.Name), "password", "email@here.com");
@@ -61,10 +61,12 @@ namespace PswManagerTests.Database.Generic {
             //act
             bool exist = dataCreator.AccountExist(account.Name);
             var result = dataCreator.CreateAccount(account);
+            var resultAsync = await dataCreator.CreateAccountAsync(account).ConfigureAwait(false);
 
             //assert
             Assert.True(exist);
             Assert.False(result.Success);
+            Assert.False(resultAsync.Success);
 
         }
 
@@ -72,16 +74,18 @@ namespace PswManagerTests.Database.Generic {
         [InlineData("   ")]
         [InlineData("")]
         [InlineData(null)]
-        public void CreateAccountFailure_InvalidName(string name) {
+        public async void CreateAccountFailure_InvalidName(string name) {
 
             //arrange
             var account = new AccountModel(name, "passhere", "ema@here.com");
 
             //act
             var result = dataCreator.CreateAccount(account);
+            var resultAsync = await dataCreator.CreateAccountAsync(account);
 
             //assert
             Assert.False(result.Success);
+            Assert.False(resultAsync.Success);
 
         }
 
