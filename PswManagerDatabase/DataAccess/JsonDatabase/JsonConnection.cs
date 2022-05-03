@@ -25,6 +25,15 @@ namespace PswManagerDatabase.DataAccess.JsonDatabase {
             return File.Exists(BuildFilePath(name));
         }
 
+        /// <summary>
+        /// Checks if the account exists with a <see cref="Task.Run(System.Func{Task?})"/> wrapper of <see cref="File.Exists(string?)"/>.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        protected override async ValueTask<bool> AccountExistHookAsync(string name) {
+            return await Task.Run(() => File.Exists(BuildFilePath(name))).ConfigureAwait(false);
+        }
+
         protected override ConnectionResult CreateAccountHook(AccountModel model) {
             var path = BuildFilePath(model.Name);
             var jsonString = JsonSerializer.Serialize(model);

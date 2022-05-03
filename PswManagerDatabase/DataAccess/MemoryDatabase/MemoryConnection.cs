@@ -12,6 +12,10 @@ namespace PswManagerDatabase.DataAccess.MemoryDatabase {
             return accounts.ContainsKey(name);
         }
 
+        protected override ValueTask<bool> AccountExistHookAsync(string name) {
+            return ValueTask.FromResult(accounts.ContainsKey(name));
+        }
+
         protected override ConnectionResult CreateAccountHook(AccountModel model) {
             accounts.Add(model.Name, model);
             return new ConnectionResult(true);

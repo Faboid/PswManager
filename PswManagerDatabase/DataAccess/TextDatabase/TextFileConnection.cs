@@ -44,6 +44,19 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
             return fileSaver.Exists(name);
         }
 
+        public async ValueTask<bool> AccountExistAsync(string name) { 
+            if(string.IsNullOrWhiteSpace(name)) {
+                return false;
+            }
+
+            using var accLock = await locker.GetLockAsync(name, 5000).ConfigureAwait(false);
+            if(!accLock.Obtained) {
+                throw new TimeoutException($"The account {name} is being used elsewhere.");
+            }
+
+            return await fileSaver.ExistsAsync(name).ConfigureAwait(false);
+        }
+
         public ConnectionResult CreateAccount(AccountModel model) {
             if(string.IsNullOrWhiteSpace(model.Name)) {
                 return invalidNameResult;

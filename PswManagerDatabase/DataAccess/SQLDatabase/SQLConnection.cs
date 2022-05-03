@@ -44,6 +44,26 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
             return reader.Read();
         }
 
+        public async ValueTask<bool> AccountExistAsync(string name) { 
+            if(string.IsNullOrWhiteSpace(name)) {
+                return false;
+            }
+
+            using var heldLock = await locker.GetLockAsync(name, 10000);
+            if(!heldLock.Obtained) {
+                throw new TimeoutException("The lock to check the account's existence has failed to be taken for ten seconds.");
+            }
+
+            return await AccountExistAsync_NoLock(name).ConfigureAwait(false);
+        }
+
+        private async ValueTask<bool> AccountExistAsync_NoLock(string name) {
+            using var cmd = queriesBuilder.GetAccountQuery(name);
+            await using var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
+            using var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false);
+            return await reader.ReadAsync().ConfigureAwait(false);
+        }
+
         public ConnectionResult CreateAccount(AccountModel model) {
             if(string.IsNullOrWhiteSpace(model.Name)) {
                 return invalidNameResult;

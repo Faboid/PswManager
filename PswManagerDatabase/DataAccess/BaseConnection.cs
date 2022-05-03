@@ -36,6 +36,20 @@ namespace PswManagerDatabase.DataAccess {
             return AccountExistInternal(name);
         }
 
+        public async ValueTask<bool> AccountExistAsync(string name) {
+            if(string.IsNullOrWhiteSpace(name)) {
+                return false;
+            }
+
+            using var ownedLock = await Locker.GetLockAsync(name, 10000).ConfigureAwait(false);
+            if(!ownedLock.Obtained) {
+                throw new TimeoutException($"The lock in {nameof(AccountExist)} has failed to lock for over ten seconds.");
+            }
+
+            var result = await AccountExistInternalAsync(name).ConfigureAwait(false);
+            return result;
+        }
+
         public ConnectionResult CreateAccount(AccountModel model) {
             if(string.IsNullOrWhiteSpace(model.Name)) {
                 return cachedInvalidNameResult;
@@ -183,7 +197,16 @@ namespace PswManagerDatabase.DataAccess {
             return AccountExistHook(name);
         }
 
+        private async ValueTask<bool> AccountExistInternalAsync(string name) {
+            if(string.IsNullOrWhiteSpace(name)) {
+                return false;
+            }
+
+            return await AccountExistHookAsync(name).ConfigureAwait(false);
+        }
+
         protected abstract bool AccountExistHook(string name);
+        protected abstract ValueTask<bool> AccountExistHookAsync(string name);
         protected abstract ConnectionResult CreateAccountHook(AccountModel model);
         protected abstract ValueTask<ConnectionResult> CreateAccountHookAsync(AccountModel model);
         protected abstract ConnectionResult<AccountModel> GetAccountHook(string name);

@@ -30,6 +30,17 @@ namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
             return File.Exists(BuildFilePath(name));
         }
 
+        /// <summary>
+        /// Checks whether a file exists by offloading <see cref="File.Exists(string?)"/> to another thread.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public async ValueTask<bool> ExistsAsync(string name) {
+            //wrapper to move it to another thread
+            //it's not ideal, but the lack of an async overload leaves no choice
+            return await Task.Run(() => File.Exists(BuildFilePath(name))).ConfigureAwait(false);
+        }
+
         public void Create(AccountModel account) {
             var path = BuildFilePath(account.Name);
             var serialized = AccountSerializer.Serialize(account);
