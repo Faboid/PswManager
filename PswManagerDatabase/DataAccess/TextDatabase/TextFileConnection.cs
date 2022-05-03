@@ -209,5 +209,39 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
             }
 
         }
+
+        public async ValueTask<ConnectionResult<AccountModel>> UpdateAccountAsync(string name, AccountModel newModel) { 
+            if(string.IsNullOrWhiteSpace(name)) {
+                return invalidNameResult;
+            }
+
+            using var nameLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
+            if(!nameLock.Obtained) {
+                return usedElsewhereResult;
+            }
+
+            if(!await fileSaver.ExistsAsync(name)) {
+                return accountDoesNotExistResult;
+            }
+
+            NamesLocker.Lock newModelLock = null;
+            try {
+                if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
+                    newModelLock = await locker.GetLockAsync(newModel.Name, 50).ConfigureAwait(false);
+                    if(!newModelLock.Obtained) {
+                        return usedElsewhereResult;
+                    }
+                    if(await fileSaver.ExistsAsync(newModel.Name)) {
+                        return new(false, $"There is already an account named {newModel.Name}.");
+                    }
+                }
+
+                var newValues = await fileSaver.UpdateAsync(name, newModel).ConfigureAwait(false);
+                return new(true, newValues);
+
+            } finally {
+                newModelLock?.Dispose();
+            }
+        }
     }
 }

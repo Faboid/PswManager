@@ -128,27 +128,42 @@ namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
         public AccountModel Update(string name, AccountModel newModel) {
             var path = BuildFilePath(name);
             var values = File.ReadAllLines(path);
-
-            bool deleteOldFile = !string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name;
-
-            if(!string.IsNullOrWhiteSpace(newModel.Name)) {
-                values[0] = newModel.Name;
-            }
-            if(!string.IsNullOrWhiteSpace(newModel.Password)) {
-                values[1] = newModel.Password;
-            }
-            if(!string.IsNullOrWhiteSpace(newModel.Email)) {
-                values[2] = newModel.Email;
-            }
-
+            OverWriteModel(values, newModel);
             var newPath = BuildFilePath(values[0]);
             File.WriteAllLines(newPath, values);
 
-            if(deleteOldFile) {
+            if(path != newPath) {
                 File.Delete(path);
             }
 
             return Get(values[0]);
         }
+
+        public async Task<AccountModel> UpdateAsync(string name, AccountModel newModel) {
+            var path = BuildFilePath(name);
+            var values = await File.ReadAllLinesAsync(path);
+            OverWriteModel(values, newModel);
+            var newPath = BuildFilePath(values[0]);
+            await File.WriteAllLinesAsync(newPath, values);
+
+            if(path != newPath) {
+                File.Delete(path);
+            }
+
+            return await GetAsync(values[0]);
+        }
+
+        private static void OverWriteModel(string[] oldAccount, AccountModel newAccount) {
+            if(!string.IsNullOrWhiteSpace(newAccount.Name)) {
+                oldAccount[0] = newAccount.Name;
+            }
+            if(!string.IsNullOrWhiteSpace(newAccount.Password)) {
+                oldAccount[1] = newAccount.Password;
+            }
+            if(!string.IsNullOrWhiteSpace(newAccount.Email)) {
+                oldAccount[2] = newAccount.Email;
+            }
+        }
+
     }
 }

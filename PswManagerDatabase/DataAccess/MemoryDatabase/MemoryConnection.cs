@@ -83,5 +83,10 @@ namespace PswManagerDatabase.DataAccess.MemoryDatabase {
             return new(true, account);
         }
 
+        protected override ValueTask<ConnectionResult<AccountModel>> UpdateAccountHookAsync(string name, AccountModel newModel) {
+            var result = UpdateAccountHook(name, newModel);
+            return ValueTask.FromResult(result);
+        }
+
     }
 }

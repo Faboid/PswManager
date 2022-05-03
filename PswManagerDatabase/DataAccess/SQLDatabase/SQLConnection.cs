@@ -264,16 +264,16 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
 
         public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return invalidNameResult.ToConnectionResult<AccountModel>();
+                return invalidNameResult;
             }
 
             using var nameLock = locker.GetLock(name);
             if(nameLock.Obtained == false) {
-                return usedElsewhereResult.ToConnectionResult<AccountModel>();
+                return usedElsewhereResult;
             }
 
             if(!AccountExist_NoLock(name)) {
-                return new(false, "The given account doesn't exist.");
+                return doesNotExistResult;
             }
 
             NamesLocker.Lock newModelLock = null;
@@ -292,6 +292,42 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
                 }
 
                 return GetAccount_NoLock(string.IsNullOrWhiteSpace(newModel.Name)? name : newModel.Name);
+
+            } finally {
+                newModelLock?.Dispose();
+            }
+        }
+
+        public async ValueTask<ConnectionResult<AccountModel>> UpdateAccountAsync(string name, AccountModel newModel) {
+            if(string.IsNullOrWhiteSpace(name)) {
+                return invalidNameResult;
+            }
+
+            using var nameLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
+            if(!nameLock.Obtained) {
+                return usedElsewhereResult;
+            }
+
+            if(!await AccountExistAsync_NoLock(name).ConfigureAwait(false)) {
+                return doesNotExistResult;
+            }
+
+            NamesLocker.Lock newModelLock = null;
+            try {
+                if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
+                    newModelLock = await locker.GetLockAsync(newModel.Name, 50).ConfigureAwait(false);
+
+                    if(await AccountExistAsync_NoLock(newModel.Name).ConfigureAwait(false)) {
+                        return new(false, "There is already an account with that name.");
+                    }
+                }
+
+                using var cmd = queriesBuilder.UpdateAccountQuery(name, newModel);
+                await using(var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false)) {
+                    await cmd.ExecuteNonQueryAsync();
+                }
+
+                return await GetAccountAsync_NoLock(string.IsNullOrWhiteSpace(newModel.Name) ? name : newModel.Name);
 
             } finally {
                 newModelLock?.Dispose();

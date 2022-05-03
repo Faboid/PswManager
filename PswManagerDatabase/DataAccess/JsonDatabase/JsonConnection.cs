@@ -102,22 +102,50 @@ namespace PswManagerDatabase.DataAccess.JsonDatabase {
             var path = BuildFilePath(name);
             var jsonString = File.ReadAllText(path);
             var model = JsonSerializer.Deserialize<AccountModel>(jsonString);
-
-            if(!string.IsNullOrWhiteSpace(newModel.Name)) {
-                model.Name = newModel.Name;
-            }
-            if(!string.IsNullOrWhiteSpace(newModel.Password)) {
-                model.Password = newModel.Password;
-            }
-            if(!string.IsNullOrWhiteSpace(newModel.Email)) {
-                model.Email = newModel.Email;
-            }
-
+            OverWriteOldModel(model, newModel);
             var newPath = BuildFilePath(model.Name);
             var newJsonString = JsonSerializer.Serialize(model);
             File.WriteAllText(newPath, newJsonString);
 
+            if(path != newPath) {
+                File.Delete(path);
+            }
+
             return GetAccountHook(model.Name);
         }
+
+        protected override async ValueTask<ConnectionResult<AccountModel>> UpdateAccountHookAsync(string name, AccountModel newModel) {
+            var path = BuildFilePath(name);
+            AccountModel model;
+            using(var readStream = new FileStream(path, FileMode.Open)) {
+                model = await JsonSerializer.DeserializeAsync<AccountModel>(readStream).ConfigureAwait(false);
+            }
+            OverWriteOldModel(model, newModel);
+            var newPath = BuildFilePath(model.Name);
+
+            using(var stream = new FileStream(newPath, FileMode.Create)) {
+                await JsonSerializer.SerializeAsync(stream, model).ConfigureAwait(false);
+            }
+
+            //if the file name was changed, deleted the older version
+            if(path != newPath) {
+                File.Delete(path);
+            }
+
+            return await GetAccountHookAsync(model.Name).ConfigureAwait(false);
+        }
+
+        private static void OverWriteOldModel(AccountModel oldAccount, AccountModel newAccount) {
+            if(!string.IsNullOrWhiteSpace(newAccount.Name)) {
+                oldAccount.Name = newAccount.Name;
+            }
+            if(!string.IsNullOrWhiteSpace(newAccount.Password)) {
+                oldAccount.Password = newAccount.Password;
+            }
+            if(!string.IsNullOrWhiteSpace(newAccount.Email)) {
+                oldAccount.Email = newAccount.Email;
+            }
+        }
+
     }
 }

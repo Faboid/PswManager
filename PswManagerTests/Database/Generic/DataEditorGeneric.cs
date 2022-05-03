@@ -3,6 +3,7 @@ using PswManagerDatabase.Models;
 using PswManagerTests.TestsHelpers;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Database.Generic {
@@ -47,9 +48,17 @@ namespace PswManagerTests.Database.Generic {
             );
         }
 
+        private bool firstRun = true;
+
         [Theory]
         [MemberData(nameof(UpdateAccountCorrectlyData))]
         public void UpdateAccountCorrectly(string name, AccountModel newAccount, AccountModel expected) {
+
+            //arrange
+            if(firstRun) {
+                dbHandler.SetUpDefaultValues();
+                firstRun = false;
+            }
 
             //act
             var actual = dataEditor.UpdateAccount(name, newAccount);
@@ -60,24 +69,48 @@ namespace PswManagerTests.Database.Generic {
 
         }
 
-        [Fact]
-        public void UpdateAccountFailure_InexistentAccount() {
+        private bool firstAsyncRun = true;
 
+        [Theory]
+        [MemberData(nameof(UpdateAccountCorrectlyData))]
+        public async Task UpdateAccountCorrectlyAsync(string name, AccountModel newAccount, AccountModel expected) {
+            
             //arrange
-            string inexistantName = "guioehgioneiopghby";
+            if(firstAsyncRun) {
+                dbHandler.SetUpDefaultValues();
+                firstAsyncRun = false;
+            }
 
             //act
-            var exist = dataEditor.AccountExist(inexistantName);
-            var result = dataEditor.UpdateAccount(inexistantName, new("somenewName", "newPass", "newEma"));
+            var actual = await dataEditor.UpdateAccountAsync(name, newAccount).ConfigureAwait(false);
 
             //assert
-            Assert.False(exist);
-            Assert.False(result.Success);
+            Assert.True(actual.Success);
+            AssertAccountEqual(expected, actual.Value);
 
         }
 
         [Fact]
-        public void UpdateAccountFailure_TriedRenamingToExistingAccountName() {
+        public async Task UpdateAccountFailure_InexistentAccount() {
+
+            //arrange
+            string inexistantName = "guioehgioneiopghby";
+            AccountModel model = new("somenewName", "newPass", "newEma");
+
+            //act
+            var exist = dataEditor.AccountExist(inexistantName);
+            var result = dataEditor.UpdateAccount(inexistantName, model);
+            var resultAsync = await dataEditor.UpdateAccountAsync(inexistantName, model);
+
+            //assert
+            Assert.False(exist);
+            Assert.False(result.Success);
+            Assert.False(resultAsync.Success);
+
+        }
+
+        [Fact]
+        public async Task UpdateAccountFailure_TriedRenamingToExistingAccountName() {
 
             //arrange
             string currentName = dbHandler.GetDefaultValues().GetValue(4, DefaultValues.TypeValue.Name);
@@ -88,11 +121,13 @@ namespace PswManagerTests.Database.Generic {
             var currExists = dataEditor.AccountExist(currentName);
             var newExists = dataEditor.AccountExist(newExistingName);
             var result = dataEditor.UpdateAccount(currentName, newModel);
+            var resultAsync = await dataEditor.UpdateAccountAsync(currentName, newModel).ConfigureAwait(false);
 
             //assert
             Assert.True(currExists);
             Assert.True(newExists);
             Assert.False(result.Success);
+            Assert.False(resultAsync.Success);
 
         }
 
