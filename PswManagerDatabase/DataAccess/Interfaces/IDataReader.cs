@@ -9,6 +9,7 @@ namespace PswManagerDatabase.DataAccess.Interfaces {
         ConnectionResult<AccountModel> GetAccount(string name);
 
         Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsAsync();
+        ValueTask<ConnectionResult<AccountModel>> GetAccountAsync(string name);
 
     }
 }

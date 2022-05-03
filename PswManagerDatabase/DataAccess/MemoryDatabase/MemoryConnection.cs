@@ -17,9 +17,9 @@ namespace PswManagerDatabase.DataAccess.MemoryDatabase {
             return new ConnectionResult(true);
         }
 
-        protected override Task<ConnectionResult> CreateAccountHookAsync(AccountModel model) {
+        protected override ValueTask<ConnectionResult> CreateAccountHookAsync(AccountModel model) {
             accounts.Add(model.Name, model);
-            return Task.FromResult(new ConnectionResult(true));
+            return ValueTask.FromResult(new ConnectionResult(true));
         }
 
         protected override ConnectionResult DeleteAccountHook(string name) {
@@ -29,6 +29,10 @@ namespace PswManagerDatabase.DataAccess.MemoryDatabase {
 
         protected override ConnectionResult<AccountModel> GetAccountHook(string name) {
             return new ConnectionResult<AccountModel>(true, accounts[name]);
+        }
+
+        protected override ValueTask<AccountResult> GetAccountHookAsync(string name) {
+            return ValueTask.FromResult(new AccountResult(name, accounts[name]));
         }
 
         protected override ConnectionResult<IEnumerable<AccountResult>> GetAllAccountsHook() {

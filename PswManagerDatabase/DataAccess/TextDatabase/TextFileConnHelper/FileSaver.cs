@@ -53,6 +53,12 @@ namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
             return AccountSerializer.Deserialize(serialized);
         }
 
+        public async Task<AccountModel> GetAsync(string name) {
+            var path = BuildFilePath(name);
+            var serialized = await File.ReadAllLinesAsync(path).ConfigureAwait(false);
+            return AccountSerializer.Deserialize(serialized);
+        }
+
         public IEnumerable<AccountResult> GetAll(NamesLocker locker) {
             return Directory.GetFiles(directoryPath)
                 .AsParallel()

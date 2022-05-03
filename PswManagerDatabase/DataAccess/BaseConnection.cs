@@ -20,8 +20,9 @@ namespace PswManagerDatabase.DataAccess {
 
         //todo - implement IDisposable to clean up NamesLocker
         private readonly NamesLocker Locker = new();
-        private static readonly ConnectionResult cachedInvalidNameResult = new(false, "The given name isn't valid.");
-        private static readonly ConnectionResult cachedFailToLockResult = new(false, "The given account is being used elsewhere.");
+        private static readonly ConnectionResult<AccountModel> cachedInvalidNameResult = new(false, "The given name isn't valid.");
+        private static readonly ConnectionResult<AccountModel> cachedFailToLockResult = new(false, "The given account is being used elsewhere.");
+        private static readonly ConnectionResult<AccountModel> doesNotExistResult = new(false, "The given account does not exist");
 
         public bool AccountExist(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
@@ -90,19 +91,36 @@ namespace PswManagerDatabase.DataAccess {
 
         public ConnectionResult<AccountModel> GetAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return new(cachedInvalidNameResult.Success, cachedInvalidNameResult.ErrorMessage);
+                return cachedInvalidNameResult;
             }
 
             using var ownedLock = Locker.GetLock(name, 50);
             if(!ownedLock.Obtained) {
-                return new(cachedFailToLockResult.Success, cachedFailToLockResult.ErrorMessage);
+                return cachedFailToLockResult;
             }
 
             if(!AccountExistInternal(name)) {
-                return new ConnectionResult<AccountModel>(false, "The given account doesn't exist.");
+                return doesNotExistResult;
             }
 
             return GetAccountHook(name);
+        }
+
+        public async ValueTask<ConnectionResult<AccountModel>> GetAccountAsync(string name) { 
+            if(string.IsNullOrWhiteSpace(name)) {
+                return cachedInvalidNameResult;
+            }
+
+            using var ownedLock = await Locker.GetLockAsync(name, 50).ConfigureAwait(false);
+            if(!ownedLock.Obtained) {
+                return cachedFailToLockResult;
+            }
+
+            if(!AccountExistInternal(name)) {
+                return doesNotExistResult;
+            }
+
+            return await GetAccountHookAsync(name).ConfigureAwait(false);
         }
 
         public ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts() {
@@ -167,8 +185,9 @@ namespace PswManagerDatabase.DataAccess {
 
         protected abstract bool AccountExistHook(string name);
         protected abstract ConnectionResult CreateAccountHook(AccountModel model);
-        protected abstract Task<ConnectionResult> CreateAccountHookAsync(AccountModel model);
+        protected abstract ValueTask<ConnectionResult> CreateAccountHookAsync(AccountModel model);
         protected abstract ConnectionResult<AccountModel> GetAccountHook(string name);
+        protected abstract ValueTask<AccountResult> GetAccountHookAsync(string name);
         protected abstract ConnectionResult<IEnumerable<AccountResult>> GetAllAccountsHook();
         protected abstract Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsHookAsync();
         protected abstract ConnectionResult<AccountModel> UpdateAccountHook(string name, AccountModel newModel);

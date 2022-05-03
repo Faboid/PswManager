@@ -39,6 +39,21 @@ namespace PswManagerTests.Database.Generic {
         }
 
         [Fact]
+        public async Task GetOneShouldReturnAsync() {
+
+            //arrange
+            AccountModel expected = dbHandler.GetDefaultValues().GetSome(1).First();
+
+            //act
+            var actual = await dataReader.GetAccountAsync(expected.Name);
+
+            //assert
+            Assert.True(actual.Success);
+            AccountEqual(expected, actual.Value);
+
+        }
+
+        [Fact]
         public void GetAllShouldGetAll() {
 
             //arrange

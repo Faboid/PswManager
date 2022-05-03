@@ -116,6 +116,24 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
             return new(true, account);
         }
 
+        public async ValueTask<ConnectionResult<AccountModel>> GetAccountAsync(string name) {
+            if(string.IsNullOrWhiteSpace(name)) {
+                return invalidNameResult;
+            }
+
+            using var accLock = await locker.GetLockAsync(name, 50);
+            if(!accLock.Obtained) {
+                return usedElsewhereResult;
+            }
+
+            if(!fileSaver.Exists(name)) {
+                return accountDoesNotExistResult;
+            }
+
+            var account = await fileSaver.GetAsync(name);
+            return new(true, account);
+        }
+
         public ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts() {
             var accounts = fileSaver.GetAll(locker);
             return new(true, accounts);

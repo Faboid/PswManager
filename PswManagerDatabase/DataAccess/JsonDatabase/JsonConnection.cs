@@ -33,7 +33,7 @@ namespace PswManagerDatabase.DataAccess.JsonDatabase {
             return new ConnectionResult(true);
         }
 
-        protected async override Task<ConnectionResult> CreateAccountHookAsync(AccountModel model) {
+        protected async override ValueTask<ConnectionResult> CreateAccountHookAsync(AccountModel model) {
             var path = BuildFilePath(model.Name);
             using var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write);
             await JsonSerializer.SerializeAsync(stream, model).ConfigureAwait(false);
@@ -53,7 +53,7 @@ namespace PswManagerDatabase.DataAccess.JsonDatabase {
             return new(true, model);
         }
 
-        protected async Task<AccountResult> GetAccountHookAsync(string name) {
+        protected override async ValueTask<AccountResult> GetAccountHookAsync(string name) {
             var path = BuildFilePath(name);
             using var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
             AccountModel model = await JsonSerializer.DeserializeAsync<AccountModel>(stream).ConfigureAwait(false);

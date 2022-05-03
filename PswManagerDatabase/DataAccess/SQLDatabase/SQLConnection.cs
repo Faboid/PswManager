@@ -13,8 +13,9 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
         readonly DatabaseBuilder database;
         readonly QueriesBuilder queriesBuilder;
 
-        readonly static ConnectionResult invalidNameResult = new(false, "The given name is not valid.");
-        readonly static ConnectionResult usedElsewhereResult = new(false, "This account is being used elsewhere.");
+        readonly static ConnectionResult<AccountModel> invalidNameResult = new(false, "The given name is not valid.");
+        readonly static ConnectionResult<AccountModel> usedElsewhereResult = new(false, "This account is being used elsewhere.");
+        readonly static ConnectionResult<AccountModel> doesNotExistResult = new(false, "The given account does not exist.");
 
         internal SQLConnection() : this("PswManagerDB") { }
 
@@ -105,15 +106,28 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
 
         public ConnectionResult<AccountModel> GetAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return invalidNameResult.ToConnectionResult<AccountModel>();
+                return invalidNameResult;
             }
 
             using var heldLock = locker.GetLock(name, 50);
             if(heldLock.Obtained == false) {
-                return usedElsewhereResult.ToConnectionResult<AccountModel>();
+                return usedElsewhereResult;
             }
 
             return GetAccount_NoLock(name);
+        }
+
+        public async ValueTask<ConnectionResult<AccountModel>> GetAccountAsync(string name) {
+            if(string.IsNullOrWhiteSpace(name)) {
+                return invalidNameResult;
+            }
+
+            using var heldLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
+            if(!heldLock.Obtained) {
+                return usedElsewhereResult;
+            }
+
+            return await GetAccountAsync_NoLock(name).ConfigureAwait(false);
         }
 
         private ConnectionResult<AccountModel> GetAccount_NoLock(string name) {
@@ -133,6 +147,25 @@ namespace PswManagerDatabase.DataAccess.SQLDatabase {
             };
 
             return new ConnectionResult<AccountModel>(true, model);
+        }
+
+        private async Task<ConnectionResult<AccountModel>> GetAccountAsync_NoLock(string name) {
+            using var cmd = queriesBuilder.GetAccountQuery(name);
+            await using var connection = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
+            using var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false);
+
+            if(!reader.HasRows) {
+                return doesNotExistResult;
+            }
+
+            await reader.ReadAsync().ConfigureAwait(false);
+            var model = new AccountModel {
+                Name = reader.GetString(0),
+                Password = reader.GetString(1),
+                Email = reader.GetString(2),
+            };
+
+            return new(true, model);
         }
 
         public ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts() {
