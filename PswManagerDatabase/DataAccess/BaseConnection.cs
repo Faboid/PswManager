@@ -20,9 +20,6 @@ namespace PswManagerDatabase.DataAccess {
 
         //todo - implement IDisposable to clean up NamesLocker
         private readonly NamesLocker Locker = new();
-        private static readonly ConnectionResult<AccountModel> cachedInvalidNameResult = new(false, "The given name isn't valid.");
-        private static readonly ConnectionResult<AccountModel> cachedFailToLockResult = new(false, "The given account is being used elsewhere.");
-        private static readonly ConnectionResult<AccountModel> doesNotExistResult = new(false, "The given account does not exist");
 
         public bool AccountExist(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
@@ -51,16 +48,16 @@ namespace PswManagerDatabase.DataAccess {
 
         public ConnectionResult CreateAccount(AccountModel model) {
             if(string.IsNullOrWhiteSpace(model.Name)) {
-                return cachedInvalidNameResult;
+                return CachedResults.InvalidNameResult;
             }
 
             using var ownLock = Locker.GetLock(model.Name, 50);
             if(!ownLock.Obtained) {
-                return cachedFailToLockResult;
+                return CachedResults.UsedElsewhereResult;
             }
 
             if(AccountExistInternal(model.Name)) {
-                return new ConnectionResult(false, "The given account name is already occupied.");
+                return CachedResults.CreateAccountAlreadyExistsResult;
             }
 
             return CreateAccountHook(model);
@@ -68,16 +65,16 @@ namespace PswManagerDatabase.DataAccess {
 
         public async Task<ConnectionResult> CreateAccountAsync(AccountModel model) {
             if(string.IsNullOrWhiteSpace(model.Name)) {
-                return cachedInvalidNameResult;
+                return CachedResults.InvalidNameResult;
             }
 
             using var ownedLock = await Locker.GetLockAsync(model.Name, 50).ConfigureAwait(false);
             if(!ownedLock.Obtained) {
-                return cachedFailToLockResult;
+                return CachedResults.UsedElsewhereResult;
             }
 
             if(await AccountExistInternalAsync(model.Name).ConfigureAwait(false)) {
-                return new ConnectionResult(false, "The given account name is already occupied.");
+                return CachedResults.CreateAccountAlreadyExistsResult;
             }
 
             return await CreateAccountHookAsync(model).ConfigureAwait(false);
@@ -86,16 +83,16 @@ namespace PswManagerDatabase.DataAccess {
 
         public ConnectionResult DeleteAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return cachedInvalidNameResult;
+                return CachedResults.InvalidNameResult;
             }
 
             using var ownedLock = Locker.GetLock(name, 50);
             if(!ownedLock.Obtained) {
-                return cachedFailToLockResult;
+                return CachedResults.UsedElsewhereResult;
             }
 
             if(!AccountExistInternal(name)) {
-                return doesNotExistResult;
+                return CachedResults.DoesNotExistResult;
             }
 
             return DeleteAccountHook(name);
@@ -103,16 +100,16 @@ namespace PswManagerDatabase.DataAccess {
 
         public async ValueTask<ConnectionResult> DeleteAccountAsync(string name) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return cachedInvalidNameResult;
+                return CachedResults.InvalidNameResult;
             }
 
             using var ownedLock = await Locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!ownedLock.Obtained) {
-                return cachedFailToLockResult;
+                return CachedResults.UsedElsewhereResult;
             }
 
             if(!await AccountExistInternalAsync(name).ConfigureAwait(false)) {
-                return doesNotExistResult;
+                return CachedResults.DoesNotExistResult;
             }
 
             return await DeleteAccountHookAsync(name).ConfigureAwait(false);
@@ -120,16 +117,16 @@ namespace PswManagerDatabase.DataAccess {
 
         public ConnectionResult<AccountModel> GetAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return cachedInvalidNameResult;
+                return CachedResults.InvalidNameResult;
             }
 
             using var ownedLock = Locker.GetLock(name, 50);
             if(!ownedLock.Obtained) {
-                return cachedFailToLockResult;
+                return CachedResults.UsedElsewhereResult;
             }
 
             if(!AccountExistInternal(name)) {
-                return doesNotExistResult;
+                return CachedResults.DoesNotExistResult;
             }
 
             return GetAccountHook(name);
@@ -137,16 +134,16 @@ namespace PswManagerDatabase.DataAccess {
 
         public async ValueTask<ConnectionResult<AccountModel>> GetAccountAsync(string name) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return cachedInvalidNameResult;
+                return CachedResults.InvalidNameResult;
             }
 
             using var ownedLock = await Locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!ownedLock.Obtained) {
-                return cachedFailToLockResult;
+                return CachedResults.UsedElsewhereResult;
             }
 
             if(!await AccountExistInternalAsync(name).ConfigureAwait(false)) {
-                return doesNotExistResult;
+                return CachedResults.DoesNotExistResult;
             }
 
             return await GetAccountHookAsync(name).ConfigureAwait(false);
@@ -155,7 +152,7 @@ namespace PswManagerDatabase.DataAccess {
         public ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts() {
             using var mainLock = Locker.GetAllLocks(10000);
             if(mainLock.Obtained == false) {
-                return new(false, "Some account is being used elsewhere in a long operation.");
+                return CachedResults.SomeAccountUsedElsewhereResult;
             }
 
             return GetAllAccountsHook();
@@ -164,7 +161,7 @@ namespace PswManagerDatabase.DataAccess {
         public async Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsAsync() {
             using var mainLock = await Locker.GetAllLocksAsync(10000).ConfigureAwait(false);
             if(mainLock.Obtained == false) {
-                return new(false, "Some account is being used elsewhere in a long operation.");
+                return CachedResults.SomeAccountUsedElsewhereResultAsync;
             }
 
             return await GetAllAccountsHookAsync().ConfigureAwait(false);
@@ -172,16 +169,16 @@ namespace PswManagerDatabase.DataAccess {
 
         public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return cachedInvalidNameResult;
+                return CachedResults.InvalidNameResult;
             }
 
             using var oldModelLock = Locker.GetLock(name, 50);
             if(!oldModelLock.Obtained) {
-                return cachedFailToLockResult;
+                return CachedResults.UsedElsewhereResult;
             }
 
             if(!AccountExistInternal(name)) {
-                return doesNotExistResult;
+                return CachedResults.DoesNotExistResult;
             }
 
             NamesLocker.Lock newModelLock = null;
@@ -189,7 +186,7 @@ namespace PswManagerDatabase.DataAccess {
                 if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
                     newModelLock = Locker.GetLock(newModel.Name, 50);
                     if(!newModelLock.Obtained) {
-                        return cachedFailToLockResult;
+                        return CachedResults.UsedElsewhereResult;
                     }
                     if(AccountExistInternal(newModel.Name)) {
                         return new(false, "There is already an account with that name.");
@@ -206,16 +203,16 @@ namespace PswManagerDatabase.DataAccess {
 
         public async ValueTask<ConnectionResult<AccountModel>> UpdateAccountAsync(string name, AccountModel newModel) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return cachedInvalidNameResult;
+                return CachedResults.InvalidNameResult;
             }
 
             using var oldModelLock = await Locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!oldModelLock.Obtained) {
-                return cachedFailToLockResult;
+                return CachedResults.UsedElsewhereResult;
             }
 
             if(!await AccountExistInternalAsync(name).ConfigureAwait(false)) {
-                return doesNotExistResult;
+                return CachedResults.DoesNotExistResult;
             }
 
             NamesLocker.Lock newModelLock = null;
@@ -223,7 +220,7 @@ namespace PswManagerDatabase.DataAccess {
                 if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
                     newModelLock = await Locker.GetLockAsync(newModel.Name, 50).ConfigureAwait(false);
                     if(!newModelLock.Obtained) {
-                        return cachedFailToLockResult;
+                        return CachedResults.UsedElsewhereResult;
                     }
                     if(await AccountExistInternalAsync(newModel.Name)) {
                         return new(false, "There is already an account with that name.");

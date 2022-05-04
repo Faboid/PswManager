@@ -8,12 +8,6 @@ using System.Threading.Tasks;
 namespace PswManagerDatabase.DataAccess.TextDatabase {
     public class TextFileConnection : IDataConnection {
 
-        //cached values
-        readonly static ConnectionResult<AccountModel> invalidNameResult = new(false, "The given name is not valid.");
-        readonly static ConnectionResult<AccountModel> usedElsewhereResult = new(false, "This account is being used elsewhere.");
-        readonly static ConnectionResult<AccountModel> accountExistsAlreadyResult = new(false, "The given account exists already.");
-        readonly static ConnectionResult<AccountModel> accountDoesNotExistResult = new(false, "The given account does not exist.");
-
         internal TextFileConnection() {
             fileSaver = new();
         }
@@ -59,16 +53,16 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
 
         public ConnectionResult CreateAccount(AccountModel model) {
             if(string.IsNullOrWhiteSpace(model.Name)) {
-                return invalidNameResult;
+                return CachedResults.InvalidNameResult;
             }
 
             using var accLock = locker.GetLock(model.Name, 50);
             if(!accLock.Obtained) {
-                return usedElsewhereResult;
+                return CachedResults.UsedElsewhereResult;
             }
 
             if(fileSaver.Exists(model.Name)) {
-                return accountExistsAlreadyResult;
+                return CachedResults.CreateAccountAlreadyExistsResult;
             }
 
             fileSaver.Create(model);
@@ -77,16 +71,16 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
 
         public async Task<ConnectionResult> CreateAccountAsync(AccountModel model) {
             if(string.IsNullOrWhiteSpace(model.Name)) {
-                return invalidNameResult;
+                return CachedResults.InvalidNameResult;
             }
 
             using var accLock = await locker.GetLockAsync(model.Name, 50).ConfigureAwait(false);
             if(!accLock.Obtained) {
-                return usedElsewhereResult;
+                return CachedResults.UsedElsewhereResult;
             }
 
             if(await fileSaver.ExistsAsync(model.Name).ConfigureAwait(false)) {
-                return accountExistsAlreadyResult;
+                return CachedResults.CreateAccountAlreadyExistsResult;
             }
 
             await fileSaver.CreateAsync(model).ConfigureAwait(false);
@@ -95,16 +89,16 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
 
         public ConnectionResult DeleteAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return invalidNameResult;
+                return CachedResults.InvalidNameResult;
             }
 
             using var accLock = locker.GetLock(name, 50);
             if(!accLock.Obtained) {
-                return usedElsewhereResult;
+                return CachedResults.UsedElsewhereResult;
             }
 
             if(!fileSaver.Exists(name)) {
-                return accountDoesNotExistResult;
+                return CachedResults.DoesNotExistResult;
             }
 
             fileSaver.Delete(name);
@@ -113,16 +107,16 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
 
         public async ValueTask<ConnectionResult> DeleteAccountAsync(string name) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return invalidNameResult;
+                return CachedResults.InvalidNameResult;
             }
 
             using var heldLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!heldLock.Obtained) {
-                return usedElsewhereResult;
+                return CachedResults.UsedElsewhereResult;
             }
 
             if(!await fileSaver.ExistsAsync(name).ConfigureAwait(false)) {
-                return accountDoesNotExistResult;
+                return CachedResults.DoesNotExistResult;
             }
 
             await fileSaver.DeleteAsync(name);
@@ -131,16 +125,16 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
 
         public ConnectionResult<AccountModel> GetAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return invalidNameResult;
+                return CachedResults.InvalidNameResult;
             }
 
             using var accLock = locker.GetLock(name, 50);
             if(!accLock.Obtained) {
-                return usedElsewhereResult;
+                return CachedResults.UsedElsewhereResult;
             }
 
             if(!fileSaver.Exists(name)) {
-                return accountDoesNotExistResult;
+                return CachedResults.DoesNotExistResult;
             }
 
             var account = fileSaver.Get(name);
@@ -149,16 +143,16 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
 
         public async ValueTask<ConnectionResult<AccountModel>> GetAccountAsync(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return invalidNameResult;
+                return CachedResults.InvalidNameResult;
             }
 
             using var accLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!accLock.Obtained) {
-                return usedElsewhereResult;
+                return CachedResults.UsedElsewhereResult;
             }
 
             if(!await fileSaver.ExistsAsync(name).ConfigureAwait(false)) {
-                return accountDoesNotExistResult;
+                return CachedResults.DoesNotExistResult;
             }
 
             var account = await fileSaver.GetAsync(name);
@@ -177,16 +171,16 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
 
         public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return invalidNameResult;
+                return CachedResults.InvalidNameResult;
             }
 
             using var nameLock = locker.GetLock(name, 50);
             if(!nameLock.Obtained) {
-                return usedElsewhereResult;
+                return CachedResults.UsedElsewhereResult;
             }
 
             if(!fileSaver.Exists(name)) {
-                return accountDoesNotExistResult;
+                return CachedResults.DoesNotExistResult;
             }
 
             NamesLocker.Lock newModelLock = null;
@@ -194,7 +188,7 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
                 if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
                     newModelLock = locker.GetLock(newModel.Name, 50);
                     if(!newModelLock.Obtained) {
-                        return usedElsewhereResult;
+                        return CachedResults.UsedElsewhereResult;
                     }
                     if(fileSaver.Exists(newModel.Name)) {
                         return new(false, $"There is already an account called {newModel.Name}.");
@@ -212,16 +206,16 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
 
         public async ValueTask<ConnectionResult<AccountModel>> UpdateAccountAsync(string name, AccountModel newModel) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return invalidNameResult;
+                return CachedResults.InvalidNameResult;
             }
 
             using var nameLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!nameLock.Obtained) {
-                return usedElsewhereResult;
+                return CachedResults.UsedElsewhereResult;
             }
 
             if(!await fileSaver.ExistsAsync(name)) {
-                return accountDoesNotExistResult;
+                return CachedResults.DoesNotExistResult;
             }
 
             NamesLocker.Lock newModelLock = null;
@@ -229,7 +223,7 @@ namespace PswManagerDatabase.DataAccess.TextDatabase {
                 if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
                     newModelLock = await locker.GetLockAsync(newModel.Name, 50).ConfigureAwait(false);
                     if(!newModelLock.Obtained) {
-                        return usedElsewhereResult;
+                        return CachedResults.UsedElsewhereResult;
                     }
                     if(await fileSaver.ExistsAsync(newModel.Name)) {
                         return new(false, $"There is already an account named {newModel.Name}.");
