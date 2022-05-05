@@ -4,6 +4,7 @@ using PswManagerLibrary.Commands;
 using PswManagerLibrary.Cryptography;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PswManagerLibrary.UIConnection {
     //todo - this class is doing too much. Split it into multiple classes and use proper DI
@@ -68,7 +69,15 @@ namespace PswManagerLibrary.UIConnection {
 
         public void SingleQuery(string cmdType, ICommandInput inputArgs) {
             var result = query.Query(cmdType, inputArgs);
+            HandleQueryResult(result);
+        }
 
+        public async Task SingleQueryAsync(string cmdType, ICommandInput inputArgs) {
+            var result = await query.QueryAsync(cmdType, inputArgs);
+            HandleQueryResult(result);
+        }
+
+        private void HandleQueryResult(CommandResult result) {
             userInput.SendMessage(result.BackMessage);
             if(result.QueryReturnValue != null) {
                 userInput.SendMessage(result.QueryReturnValue);
