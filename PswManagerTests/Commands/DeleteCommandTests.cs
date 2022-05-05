@@ -6,6 +6,7 @@ using PswManagerTests.Commands.Helper;
 using PswManagerTests.Database.MemoryConnectionTests.Helpers;
 using PswManagerTests.TestsHelpers;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Commands {
@@ -13,7 +14,7 @@ namespace PswManagerTests.Commands {
     public class DeleteCommandTests {
 
         public DeleteCommandTests() {
-            var dbFactory = new MemoryDBHandler(1).SetUpDefaultValues().GetDBFactory();
+            var dbFactory = new MemoryDBHandler(2).SetUpDefaultValues().GetDBFactory();
             delCommand = new DeleteCommand(dbFactory.GetDataDeleter(), MockedObjects.GetDefaultAutoInput());
             dataHelper = dbFactory.GetDataHelper();
         }
@@ -38,6 +39,23 @@ namespace PswManagerTests.Commands {
 
         }
 
+        [Fact]
+        public async Task DeleteSuccessfullyAsync() {
+
+            //arrange
+            string name = DefaultValues.StaticGetValue(1, DefaultValues.TypeValue.Name);
+            var obj = ClassBuilder.Build<DeleteCommand>(new List<string> { name });
+
+            //act
+            bool exist = await dataHelper.AccountExistAsync(name).ConfigureAwait(false);
+            await delCommand.RunAsync(obj).ConfigureAwait(false);
+
+            //assert
+            Assert.True(exist);
+            Assert.False(await dataHelper.AccountExistAsync(name).ConfigureAwait(false));
+
+        }
+
         public static IEnumerable<object[]> ExpectedValidationFailuresData() {
             static object[] NewObj(string errorMessage, string name)
                 => new object[] {
@@ -56,21 +74,30 @@ namespace PswManagerTests.Commands {
 
         [Theory]
         [MemberData(nameof(ExpectedValidationFailuresData))]
-        public void ExpectedValidationFailures(string expectedErrorMessage, ICommandInput args) {
+        public async Task ExpectedValidationFailures(string expectedErrorMessage, ICommandInput args) {
 
             //arrange
             bool valid;
             CommandResult result;
+            CommandResult resultAsync;
 
             //act
             valid = delCommand.Validate(args).success;
             result = delCommand.Run(args);
+            resultAsync = await delCommand.RunAsync(args).ConfigureAwait(false);
 
             //assert
             Assert.False(valid);
+
+            //sync result
             Assert.False(result.Success);
             Assert.NotEmpty(result.ErrorMessages);
             Assert.Contains(expectedErrorMessage, result.ErrorMessages);
+
+            //async result
+            Assert.False(resultAsync.Success);
+            Assert.NotEmpty(resultAsync.ErrorMessages);
+            Assert.Contains(expectedErrorMessage, resultAsync.ErrorMessages);
 
         }
 
