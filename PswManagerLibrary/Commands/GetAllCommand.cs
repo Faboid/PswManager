@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace PswManagerLibrary.Commands {
     public class GetAllCommand : BaseCommand<GetAllCommandArgs> {
-
+        
         readonly IDataReader dataReader;
         readonly ICryptoAccount cryptoAccount;
         static readonly string[] validKeys = new string[] { "names", "passwords", "emails" };
@@ -24,8 +24,8 @@ namespace PswManagerLibrary.Commands {
         private static CommandResult GetErrorResult(string error) => new($"There has been an error: {error}", false);
         private CommandResult GetAllAccountsValuesResult(IEnumerable<AccountResult> accounts)
             => new("The list has been retrieved.", true, string.Join(Environment.NewLine, accounts.Select(Unwrap)));
-        private CommandResult GetAllAccountsValuesAsyncResult(IAsyncEnumerable<AccountResult> accounts) 
-            => new("The list has been retrieved.", true, string.Join(Environment.NewLine, accounts.Select(Unwrap)));
+        private async Task<CommandResult> GetAllAccountsValuesResultAsync(IAsyncEnumerable<AccountResult> accounts) 
+            => new("The list has been retrieved.", true, await accounts.Select(Unwrap).JoinStrings(Environment.NewLine).ConfigureAwait(false));
         private static CommandResult GetStringEnumResult(IEnumerable<string> accounts)
             => new("The list has been retrieved.", true, string.Join(Environment.NewLine, accounts));
         private static async Task<CommandResult> GetStringEnumResultAsync(IAsyncEnumerable<string> accounts)
@@ -76,7 +76,7 @@ namespace PswManagerLibrary.Commands {
             }
 
             if(string.IsNullOrWhiteSpace(args.Keys)) {
-                return GetAllAccountsValuesAsyncResult(result.Value);
+                return await GetAllAccountsValuesResultAsync(result.Value);
             }
 
             var toGet = new ValuesToGet(args);
