@@ -3,7 +3,7 @@ using PswManagerCommands;
 using PswManagerLibrary.Commands;
 using PswManagerTests.Commands.Helper;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Commands {
@@ -40,7 +40,7 @@ namespace PswManagerTests.Commands {
 
         [Theory]
         [MemberData(nameof(GetGenericHelpCorrectlyData))]
-        public void GetGenericHelpCorrectly(string emptyValue) {
+        public async Task GetGenericHelpCorrectly(string emptyValue) {
 
             //arrange
             string expectedToContain = string.Join("  ", dicCommands.Keys);
@@ -48,15 +48,18 @@ namespace PswManagerTests.Commands {
 
             //act
             var result = helpCommand.Run(obj);
+            var resultAsync = await helpCommand.RunAsync(obj).ConfigureAwait(false);
 
             //assert
             Assert.True(result.Success);
             Assert.Contains(expectedToContain, result.QueryReturnValue);
+            Assert.True(resultAsync.Success);
+            Assert.Contains(expectedToContain, resultAsync.QueryReturnValue);
 
         }
 
         [Fact]
-        public void GetSpecificCommandDescription() {
+        public async Task GetSpecificCommandDescription() {
 
             //arrange
             string expectedDescription = mockedCommand.GetDescription();
@@ -64,15 +67,18 @@ namespace PswManagerTests.Commands {
 
             //act
             var result = helpCommand.Run(obj);
+            var resultAsync = await helpCommand.RunAsync(obj).ConfigureAwait(false);
 
             //assert
             Assert.True(result.Success);
             Assert.Equal(expectedDescription, result.BackMessage);
+            Assert.True(resultAsync.Success);
+            Assert.Equal(expectedDescription, resultAsync.BackMessage);
 
         }
 
         [Fact]
-        public void GetSyntaxButEmptyDictionary() {
+        public async Task GetSyntaxButEmptyDictionary() {
 
             //arrange
             Dictionary<string, ICommand> commands = new();
@@ -82,15 +88,18 @@ namespace PswManagerTests.Commands {
 
             //act
             var result = helpCommand.Run(obj);
+            var resultAsync = await helpCommand.RunAsync(obj).ConfigureAwait(false);
 
             //assert
             Assert.False(result.Success);
             Assert.Equal(expected, result.BackMessage);
+            Assert.False(resultAsync.Success);
+            Assert.Equal(expected, resultAsync.BackMessage);
 
         }
 
         [Fact]
-        public void Failure_GivenCommandDoesNotExist() {
+        public async Task Failure_GivenCommandDoesNotExist() {
 
             //arrange
             var args = ClassBuilder.Build<HelpCommand>(new List<string>() { "nonexistentcommand" });
@@ -101,12 +110,20 @@ namespace PswManagerTests.Commands {
             //act
             valid = helpCommand.Validate(args).success;
             result = helpCommand.Run(args);
+            var resultAsync = await helpCommand.RunAsync(args).ConfigureAwait(false);
 
             //assert
             Assert.False(valid);
+
+            //sync
             Assert.False(result.Success);
             Assert.NotEmpty(result.ErrorMessages);
             Assert.Contains(expectedErrorMessage, result.ErrorMessages);
+            
+            //async
+            Assert.False(resultAsync.Success);
+            Assert.NotEmpty(resultAsync.ErrorMessages);
+            Assert.Contains(expectedErrorMessage, resultAsync.ErrorMessages);
 
         }
 
