@@ -6,6 +6,7 @@ using PswManagerCommands.AbstractCommands;
 using PswManagerLibrary.Commands.Validation.ValidationLogic;
 using PswManagerLibrary.Commands.ArgsModels;
 using PswManagerCommands.Validation.Builders;
+using System.Threading.Tasks;
 
 namespace PswManagerLibrary.Commands {
 
@@ -25,6 +26,18 @@ namespace PswManagerLibrary.Commands {
             (obj.Password, obj.Email) = cryptoAccount.Encrypt(obj.Password, obj.Email);
             var account = new AccountModel(obj.Name, obj.Password, obj.Email);
             var result = dataCreator.CreateAccount(account);
+
+            return result.Success switch {
+                true => new CommandResult("The account has been created successfully.", true),
+                false => new CommandResult($"There has been an error: {result.ErrorMessage}", false)
+            };
+        }
+
+        protected override async ValueTask<CommandResult> RunLogicAsync(AddCommandArgs obj) {
+
+            (obj.Password, obj.Email) = await Task.Run(() => cryptoAccount.Encrypt(obj.Password, obj.Email)).ConfigureAwait(false);
+            var account = new AccountModel(obj.Name, obj.Password, obj.Email);
+            var result = await dataCreator.CreateAccountAsync(account).ConfigureAwait(false);
 
             return result.Success switch {
                 true => new CommandResult("The account has been created successfully.", true),

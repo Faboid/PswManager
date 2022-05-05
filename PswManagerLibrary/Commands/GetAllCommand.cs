@@ -3,21 +3,48 @@ using PswManagerCommands.AbstractCommands;
 using PswManagerCommands.Validation.Builders;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;
+using PswManagerHelperMethods;
 using PswManagerLibrary.Commands.ArgsModels;
 using PswManagerLibrary.Commands.Validation.ValidationTypes;
 using PswManagerLibrary.Cryptography;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PswManagerLibrary.Commands {
     public class GetAllCommand : BaseCommand<GetAllCommandArgs> {
 
         readonly IDataReader dataReader;
         readonly ICryptoAccount cryptoAccount;
-        readonly string[] validKeys = new string[] { "names", "passwords", "emails" };
+        static readonly string[] validKeys = new string[] { "names", "passwords", "emails" };
         public const string InexistentKeyErrorMessage = "Invalid key(s) has been found. Valid keys: names, passwords, emails.";
         public const string DuplicateKeyErrorMessage = "Duplicate keys aren't allowed.";
+
+        private static CommandResult GetErrorResult(string error) => new($"There has been an error: {error}", false);
+        private CommandResult GetAllAccountsValuesResult(IEnumerable<AccountResult> accounts)
+            => new("The list has been retrieved.", true, string.Join(Environment.NewLine, accounts.Select(Unwrap)));
+        private CommandResult GetAllAccountsValuesAsyncResult(IAsyncEnumerable<AccountResult> accounts) 
+            => new("The list has been retrieved.", true, string.Join(Environment.NewLine, accounts.Select(Unwrap)));
+        private static CommandResult GetStringEnumResult(IEnumerable<string> accounts)
+            => new("The list has been retrieved.", true, string.Join(Environment.NewLine, accounts));
+        private static async Task<CommandResult> GetStringEnumResultAsync(IAsyncEnumerable<string> accounts)
+            => new("The list has been retrieved.", true, await accounts.JoinStrings(Environment.NewLine).ConfigureAwait(false));
+        //todo - consider adding overload for CommandResult to give it the possibility of keeping an IEnumerable.
+        //it would allow returning without enumerating everything; which would be quite expensive when dealing with
+        //huge datasets
+
+        private record ValuesToGet() {
+            public ValuesToGet(GetAllCommandArgs args) : this() {
+                Names = args.SplitKeys().Contains(validKeys[0]);
+                Passwords = args.SplitKeys().Contains(validKeys[1]);
+                Emails = args.SplitKeys().Contains(validKeys[2]);
+            }
+
+            public bool Names { get; } = true;
+            public bool Passwords { get; } = true;
+            public bool Emails { get; } = true;
+        }
 
         public GetAllCommand(IDataReader dataReader, ICryptoAccount cryptoAccount) {
             this.dataReader = dataReader;
@@ -28,20 +55,33 @@ namespace PswManagerLibrary.Commands {
             var result = dataReader.GetAllAccounts();
 
             if(!result.Success) {
-                return new CommandResult($"There has been an error: {result.ErrorMessage}", false);
+                return GetErrorResult(result.ErrorMessage);
             }
 
             if(string.IsNullOrWhiteSpace(arguments.Keys)) {
-                return new CommandResult("The list has been retrieved.", true, string.Join(Environment.NewLine, result.Value.Select(Unwrap)));
+                return GetAllAccountsValuesResult(result.Value);
             }
-            bool getNames = arguments.SplitKeys().Contains(validKeys[0]);
-            bool getPasswords = arguments.SplitKeys().Contains(validKeys[1]);
-            bool getEmails = arguments.SplitKeys().Contains(validKeys[2]);
 
-            var accounts = result.Value
-                .Select(x => Unwrap(x, getNames, getPasswords, getEmails));
+            var toGet = new ValuesToGet(arguments);
+            var accounts = UnwrapAll(result.Value, toGet);
 
-            return new CommandResult("The list has been retrieved.", true, string.Join(Environment.NewLine, accounts));
+            return GetStringEnumResult(accounts);
+        }
+
+        protected override async ValueTask<CommandResult> RunLogicAsync(GetAllCommandArgs args) {
+            var result = await dataReader.GetAllAccountsAsync().ConfigureAwait(false);
+
+            if(!result.Success) {
+                return GetErrorResult(result.ErrorMessage);
+            }
+
+            if(string.IsNullOrWhiteSpace(args.Keys)) {
+                return GetAllAccountsValuesAsyncResult(result.Value);
+            }
+
+            var toGet = new ValuesToGet(args);
+            var accounts = UnwrapAll(result.Value, toGet);
+            return await GetStringEnumResultAsync(accounts);
         }
 
         public override string GetDescription() {
@@ -52,14 +92,23 @@ namespace PswManagerLibrary.Commands {
             .AddRule<ValidValuesRule>()
             .AddRule<NoDuplicateValuesRule>();
 
-        private string Unwrap(AccountResult account) {
-            return Unwrap(account, true, true, true);
+        private IEnumerable<string> UnwrapAll(IEnumerable<AccountResult> accounts, ValuesToGet toGet) {
+            return accounts.AsParallel().Select(x => Unwrap(x, toGet));
         }
 
-        private string Unwrap(AccountResult result, bool getNames, bool getPasswords, bool getEmails) {
+        //as this is cpu-bound work, there is not much that can be done to make it async beside wrapping it in a Task.Run().
+        private IAsyncEnumerable<string> UnwrapAll(IAsyncEnumerable<AccountResult> accounts, ValuesToGet toGet) {
+            return accounts.Select(x => Task.Run(() => Unwrap(x, toGet)));
+        }
+
+        private string Unwrap(AccountResult account) {
+            return Unwrap(account, new());
+        }
+
+        private string Unwrap(AccountResult result, ValuesToGet toGet) {
             if(result.Success) {
                 var decrypted = Decrypt(result.Value);
-                var stringRepresenation = Take(decrypted, getNames, getPasswords, getEmails);
+                var stringRepresenation = Take(decrypted, toGet);
                 return Merge(stringRepresenation);
             }
 
@@ -71,10 +120,10 @@ namespace PswManagerLibrary.Commands {
             return account;
         }
 
-        private static IEnumerable<string> Take(AccountModel account, bool takeName, bool takePassword, bool takeEmail) {
-            if(takeName) yield return account.Name;
-            if(takePassword) yield return account.Password;
-            if(takeEmail) yield return account.Email;
+        private static IEnumerable<string> Take(AccountModel account, ValuesToGet toGet) {
+            if(toGet.Names) yield return account.Name;
+            if(toGet.Passwords) yield return account.Password;
+            if(toGet.Emails) yield return account.Email;
         }
 
         private static string Merge(IEnumerable<string> values) => string.Join(' ', values);

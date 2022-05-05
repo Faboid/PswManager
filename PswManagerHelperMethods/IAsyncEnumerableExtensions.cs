@@ -42,5 +42,14 @@ namespace PswManagerHelperMethods {
             }
         }
 
+        public static async Task<string> JoinStrings(this IAsyncEnumerable<string> enumerable, string separator) { 
+            List<string> values = new();
+            await foreach(var s in enumerable.ConfigureAwait(false)) {
+                values.Add(s);
+            }
+
+            return string.Join(separator, values);
+        }
+
     }
 }

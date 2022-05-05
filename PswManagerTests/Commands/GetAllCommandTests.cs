@@ -58,7 +58,9 @@ namespace PswManagerTests.Commands {
             result = getAllCommand.Run(obj);
 
             //assert
-            Assert.Equal(string.Join(Environment.NewLine, expectedValues), result.QueryReturnValue);
+            foreach(var value in expectedValues) {
+                Assert.Contains(value, result.QueryReturnValue);
+            }
 
         }
 
