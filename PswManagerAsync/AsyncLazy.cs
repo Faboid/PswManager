@@ -8,11 +8,15 @@ namespace PswManagerAsync {
         private AsyncLazy() { }
         public AsyncLazy(Func<Task<T>> func) : base (Task.Factory.StartNew(func).Unwrap()) { }
         public AsyncLazy(Func<T> valueFactory) : base(Task.Factory.StartNew(valueFactory)) { }
+        public AsyncLazy(Task<T> value) : base(Task.Factory.StartNew(() => value).Unwrap()) { }
         public AsyncLazy(T value) : base(Task.FromResult(value)) {}
+
+        public new bool IsValueCreated => Value.IsCompleted;
 
         public TaskAwaiter<T> GetAwaiter() => Value.GetAwaiter();
 
         public static implicit operator AsyncLazy<T>(T value) => new(value);
+        public static implicit operator AsyncLazy<T>(Task<T> value) => new(value);
         public static implicit operator AsyncLazy<T>(Func<T> valueFactory) => new(valueFactory);
         public static implicit operator AsyncLazy<T>(Func<Task<T>> func) => new(func);
 
