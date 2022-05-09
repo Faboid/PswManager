@@ -86,10 +86,9 @@ namespace PswManagerTests.Cryptography {
             //arrange
             OrderChecker orderChecker = new();
 
-            static async Task<ICryptoService> GetKeyAsync(int value, OrderChecker orderChecker) {
+            static async Task<Key> GetKeyAsync(int value, OrderChecker orderChecker) {
                 await orderChecker.WaitForAsync(value, 50);
-                var key = new Key(new string((char)value, 30).ToCharArray());
-                return new CryptoService(key);
+                return new Key(new string((char)value, 30).ToCharArray());
             }
 
             //act

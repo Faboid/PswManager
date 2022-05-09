@@ -27,6 +27,11 @@ namespace PswManagerLibrary.Cryptography {
             EmaCryptoString = new(emaCryptoString);
         }
 
+        public CryptoAccount(Task<Key> passKeyTask, Task<Key> emaKeyTask) : this (
+            passKeyTask.ContinueWith(async x => new CryptoService(await x) as ICryptoService).Unwrap(),
+            emaKeyTask.ContinueWith(async x => new CryptoService(await x) as ICryptoService).Unwrap()
+        ) { }
+
         public CryptoAccount(Task<ICryptoService> passKeyTask, Task<ICryptoService> emaKeyTask) {
             PassCryptoString = new(() => passKeyTask);
             EmaCryptoString = new(() => emaKeyTask);
