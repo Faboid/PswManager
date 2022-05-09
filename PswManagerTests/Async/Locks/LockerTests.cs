@@ -61,11 +61,11 @@ namespace PswManagerTests.Async.Locks {
             //act & assert
             Task task1 = factory.StartNew(async () => {
                 using var lock1 = await locker.GetLockAsync(10);
-                await checker.WaitFor(2, 100);
+                await checker.WaitForAsync(2, 100);
                 checker.Done(3);
             });
             Task task2 = factory.StartNew(async () => {
-                await checker.WaitFor(1, 20);
+                await checker.WaitForAsync(1, 20);
                 checker.Done(2);
                 using var lock2 = await locker.GetLockAsync(20);
                 checker.Done(4);

@@ -22,9 +22,9 @@ namespace PswManagerTests.Async.Locks {
             var task = await taskFactory.StartNew(async () => {
                 using var reference = refCount.GetRef();
                 orderChecker.Done(1);
-                await orderChecker.WaitFor(2, 200);
+                await orderChecker.WaitForAsync(2, 200);
             });
-            await orderChecker.WaitFor(1, 100);
+            await orderChecker.WaitForAsync(1, 100);
             bool asyncIsInUse = refCount.IsInUse;
             orderChecker.Done(2);
             await task;

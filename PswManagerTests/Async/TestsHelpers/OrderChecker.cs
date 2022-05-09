@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PswManagerTests.Async.TestsHelpers {
@@ -34,7 +35,7 @@ namespace PswManagerTests.Async.TestsHelpers {
         /// <returns></returns>
         /// <exception cref="TimeoutException"></exception>
         /// <exception cref="ObjectDisposedException"></exception>
-        public async Task WaitFor(int operationToWaitFor, int millisecondsTimeout) {
+        public async Task WaitForAsync(int operationToWaitFor, int millisecondsTimeout) {
 
             int awaited = 0;
             int cycle = 10;
@@ -49,6 +50,28 @@ namespace PswManagerTests.Async.TestsHelpers {
                 awaited += cycle;
             }
 
+        }
+
+        /// <summary>
+        /// Uses <see cref="Thread.Sleep(int)"/> to wait until <see cref="CurrentOperation"/> is equal or above of <paramref name="operationToWaitFor"/>.
+        /// </summary>
+        /// <param name="operationToWaitFor"></param>
+        /// <param name="millisecondsTimeout"></param>
+        /// <exception cref="TimeoutException"></exception>
+        /// <exception cref="ObjectDisposedException"></exception>
+        public void WaitFor(int operationToWaitFor, int millisecondsTimeout) {
+            int awaited = 0;
+            int cycle = 10;
+            while(CurrentOperation < operationToWaitFor) {
+                if(awaited > millisecondsTimeout) {
+                    throw new TimeoutException($"The operation number {operationToWaitFor} hasn't been reached. Current operation: {CurrentOperation}");
+                }
+                if(isDisposed) {
+                    throw new ObjectDisposedException(nameof(OrderChecker));
+                }
+                Thread.Sleep(cycle);
+                awaited += cycle;
+            }
         }
 
         /// <summary>

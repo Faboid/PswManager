@@ -32,7 +32,7 @@ namespace PswManagerTests.Async.Locks {
             }
 
             async Task UnlockLogic(NamesLocker.Lock heldLock2) {
-                await orderChecker.WaitFor(2, 100);
+                await orderChecker.WaitForAsync(2, 100);
                 heldLock2.Dispose();
                 orderChecker.Done(3);
             }

@@ -57,11 +57,11 @@ namespace PswManagerTests.Async {
             }
 
             async Task Reader() {
-                await orderChecker.WaitFor(1, 200);
+                await orderChecker.WaitForAsync(1, 200);
                 actual[0] = await TryWaitRead(channel);
                 orderChecker.Done(2);
                 actual[1] = await channel.ReadAsync();
-                await orderChecker.WaitFor(3, 100);
+                await orderChecker.WaitForAsync(3, 100);
                 actual[2] = await channel.ReadAsync();
                 orderChecker.Done(4);
                 actual[3] = await channel.ReadAsync();
