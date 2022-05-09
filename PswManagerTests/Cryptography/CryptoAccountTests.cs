@@ -1,7 +1,9 @@
 ﻿using PswManagerEncryption.Cryptography;
 using PswManagerEncryption.Services;
 using PswManagerLibrary.Cryptography;
+using PswManagerTests.Async.TestsHelpers;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Cryptography {
@@ -75,6 +77,42 @@ namespace PswManagerTests.Cryptography {
 
             //act & assert
             Assert.Throws<ArgumentException>(() => new CryptoAccount(passKey, emaKey));
+
+        }
+
+        [Fact]
+        public async Task InitializeAsync() {
+
+            //arrange
+            OrderChecker orderChecker = new();
+
+            static async Task<ICryptoService> GetKeyAsync(int value, OrderChecker orderChecker) {
+                await orderChecker.WaitForAsync(value, 50);
+                var key = new Key(new string((char)value, 30).ToCharArray());
+                return new CryptoService(key);
+            }
+
+            //act
+            var account = new CryptoAccount(GetKeyAsync(1, orderChecker), GetKeyAsync(2, orderChecker));
+            var passTask = account.GetPassCryptoServiceAsync();
+            var emaTask = account.GetEmaCryptoServiceAsync();
+            bool isPassWaiting = !passTask.IsCompleted;
+            bool isEmaWaiting = !emaTask.IsCompleted;
+            _ = Task.Factory.StartNew(async () => {
+                await Task.Delay(10);
+                orderChecker.Done(1);
+                await Task.Delay(10);
+                orderChecker.Done(2);
+            });
+            var passCrypto = await passTask;
+            var emaCrypto = emaTask.Result;
+
+            //assert
+            Assert.NotNull(account);
+            Assert.True(isPassWaiting);
+            Assert.True(isEmaWaiting);
+            Assert.True(passCrypto.GetType() == typeof(CryptoService));
+            Assert.True(emaCrypto.GetType() == typeof(CryptoService));
 
         }
 
