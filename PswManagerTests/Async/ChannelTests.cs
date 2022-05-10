@@ -30,6 +30,11 @@ namespace PswManagerTests.Async {
 
             //assert
             Assert.Equal(expected, actual);
+            
+            //try to dispose several times to see if it errors out
+            channel.Dispose();
+            channel.Dispose();
+            channel.Dispose();
 
         }
 
@@ -37,7 +42,7 @@ namespace PswManagerTests.Async {
         public async void CorrectOrder() {
 
             //arrange
-            Channel<int> channel = new(2);
+            using Channel<int> channel = new(2);
             int[] expected = { 1, 2, 3, 4 };
             int[] actual = new int[4];
             OrderChecker orderChecker = new();

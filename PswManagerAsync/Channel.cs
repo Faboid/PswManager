@@ -16,6 +16,7 @@ namespace PswManagerAsync {
         private readonly SemaphoreSlim readSemaphore;
         private readonly SemaphoreSlim writeSemaphore;
         private readonly CancellationTokenSource cts;
+        private bool isDisposed = false;
 
         public CancellationToken Token { get; }
 
@@ -51,12 +52,23 @@ namespace PswManagerAsync {
         }
 
         public void Dispose() {
-            cts.Cancel();
-            readSemaphore.Dispose();
-            writeSemaphore.Dispose();
-            cts.Dispose();
-            buffer.Clear();
-            GC.SuppressFinalize(this);
+            lock(cts) {
+                if(isDisposed) {
+                    return;
+                }
+
+                if(!cts.IsCancellationRequested) {
+                    cts.Cancel();
+                }
+                readSemaphore.Dispose();
+                writeSemaphore.Dispose();
+                cts.Dispose();
+                buffer.Clear();
+                GC.SuppressFinalize(this);
+
+                isDisposed = true;
+            }
+
         }
     }
 }
