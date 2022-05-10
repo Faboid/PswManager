@@ -1,5 +1,7 @@
-﻿namespace PswManagerAsync.Locks {
-    internal class RefCount<TValue> {
+﻿using System;
+
+namespace PswManagerHelperMethods.WrappingObjects {
+    public class RefCount<TValue> {
 
         public RefCount(TValue value) {
             this.value = value;
