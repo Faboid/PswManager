@@ -1,4 +1,7 @@
-﻿using PswManagerEncryption.Services;
+﻿using PswManagerAsync.Locks;
+using PswManagerEncryption.Cryptography;
+using PswManagerEncryption.Services;
+using PswManagerHelperMethods.WrappingObjects;
 using PswManagerLibrary.UIConnection;
 using System;
 using System.Linq;
@@ -6,12 +9,22 @@ using System.Threading.Tasks;
 
 namespace PswManagerLibrary.Cryptography {
     public class CryptoFactory {
-
+        //todo - split/organize this class
+        //todo - properly test this class
         public CryptoFactory(IUserInput userInput) {
             this.userInput = userInput;
         }
 
         private readonly IUserInput userInput;
+
+        public async Task<ICryptoAccount> AskUserPasswordsAsync() {
+#if DEBUG
+            if(userInput.YesOrNo("You are currently in DEBUG mode. Do you want to use pre-made, fixed passwords?")) {
+                return new CryptoAccount("gheerwiahgkth".ToCharArray(), "ewrgrthrer".ToCharArray());
+            }
+#endif
+            return await RequestPasswords().ConfigureAwait(false);
+        }
 
         public ICryptoAccount AskUserPasswords() {
 #if DEBUG
@@ -21,14 +34,14 @@ namespace PswManagerLibrary.Cryptography {
 #endif
             //to stop the async methods from propagating to main,
             //they are awaited syncronously in here
-            return RequestPasswords().GetAwaiter().GetResult();
-            //todo - consider whether to turn it fully async. That way, the user won't have to wait
+            return RequestPasswords()
+                .GetAwaiter().GetResult();
         }
 
-        private async Task<ICryptoAccount> RequestPasswords() =>
+        private Task<ICryptoAccount> RequestPasswords() =>
             Token.IsTokenSetUp(Token.GetDefaultPath()) switch {
-                true => await LogIn().ConfigureAwait(false),
-                false => await SignUp().ConfigureAwait(false)
+                true => LogIn(),
+                false => SignUp()
             };
 
         private async Task<ICryptoAccount> SignUp() {
@@ -38,15 +51,21 @@ namespace PswManagerLibrary.Cryptography {
             userInput.SendMessage("Suggestion: use an easy-to-remember, long password like a passphrase.");
 
             Token token;
-            KeyGeneratorService generator;
+            KeyGeneratorService generator = null;
             do {
+                //if the generator was assigned in a previous loop,
+                //it's surely using a wrong password,
+                //and thus it's best to clean it up
+                if(generator != null) {
+                    await generator.DisposeAsync().ConfigureAwait(false);
+                }
+
                 char[] password;
                 do {
                     userInput.SendMessage("Please insert the master key:");
                     password = userInput.RequestPassword();
                 } while(!ValidatePassword(password));
 
-                //todo - start keys generation before the password is validated
                 generator = new KeyGeneratorService(password);
                 userInput.SendMessage("The given password is valid.");
                 userInput.SendMessage("Creating a token to validate the password in the future...");
@@ -57,36 +76,55 @@ namespace PswManagerLibrary.Cryptography {
 
             userInput.SendMessage("Completing first time set up... this might take a few seconds.");
 
-            try {
-                return new CryptoAccount(await generator.GenerateKeyAsync().ConfigureAwait(false), await generator.GenerateKeyAsync().ConfigureAwait(false));
-            } finally {
-                await generator.DisposeAsync().ConfigureAwait(false);
-            }
+            return CreateCryptoAccountAsync(generator);
         }
 
         private async Task<ICryptoAccount> LogIn() {
 
+            KeyGeneratorService generator;
             while(true) {
                 userInput.SendMessage("Please insert the master key.");
 
                 var password = userInput.RequestPassword();
-                await using var generator = new KeyGeneratorService(password);
+                generator = new KeyGeneratorService(password);
 
                 userInput.SendMessage("Verifying password...");
                 var token = new Token(await generator.GenerateKeyAsync().ConfigureAwait(false));
                 
-                //if the password is correct
+                //if the password is correct, exit
                 if(token.VerifyToken()) {
-                    userInput.SendMessage("The password is correct.");
-                    userInput.SendMessage("The log-in process is starting. It might take a few seconds.");
-
-                    return new CryptoAccount(await generator.GenerateKeyAsync().ConfigureAwait(false), await generator.GenerateKeyAsync().ConfigureAwait(false));
+                    break;
                 }
+
+                //since this generator is using a wrong password, it's fine to dispose it
+                await generator.DisposeAsync().ConfigureAwait(false);
 
                 //if the password is wrong
                 userInput.SendMessage("The given password is incorrect. Please try again.");
             }
 
+            userInput.SendMessage("The password is correct.");
+            userInput.SendMessage("The log-in process is starting. It might take a few seconds.");
+
+            return CreateCryptoAccountAsync(generator);
+        }
+
+        private static ICryptoAccount CreateCryptoAccountAsync(KeyGeneratorService generator) {
+            var lockerReference = new RefCount<Locker>(new());
+            return new CryptoAccount(GenerateKeyAndDisposeGenerator(generator, lockerReference), GenerateKeyAndDisposeGenerator(generator, lockerReference));
+        }
+
+        private static async Task<Key> GenerateKeyAndDisposeGenerator(KeyGeneratorService generator, RefCount<Locker> lockerRef) {
+            
+            try {
+                using var reference = lockerRef.GetRef();
+                using var lockhere = await reference.Value.GetLockAsync().ConfigureAwait(false);
+                return await generator.GenerateKeyAsync().ConfigureAwait(false);
+            } finally {
+                if(!lockerRef.IsInUse) {
+                    await generator.DisposeAsync().ConfigureAwait(false);
+                }
+            }
         }
 
         private bool ValidatePassword(char[] password) {
@@ -105,7 +143,6 @@ namespace PswManagerLibrary.Cryptography {
 
             return true;
         }
-
 
     }
 }
