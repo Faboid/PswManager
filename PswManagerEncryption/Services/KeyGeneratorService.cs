@@ -4,6 +4,7 @@ using PswManagerAsync;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
+using PswManagerAsync.Locks;
 
 [assembly: InternalsVisibleTo("PswManagerTests")]
 namespace PswManagerEncryption.Services {
@@ -48,6 +49,7 @@ namespace PswManagerEncryption.Services {
         private readonly SaltRandom random;
         private readonly Channel<Key> channel;
         private readonly Task generationTask;
+        private readonly Locker locker = new(1);
 
         private async Task AutoGenerateKeysAsync() {
             while(!channel.Token.IsCancellationRequested && !IsDisposed) {
@@ -83,7 +85,7 @@ namespace PswManagerEncryption.Services {
         }
 
         public async Task<Key> GenerateKeyAsync() {
-
+            using var lockhere = await locker.GetLockAsync().ConfigureAwait(false);
             do {
 
                 //check generationTask to make sure it hasn't thrown an exception
@@ -110,7 +112,6 @@ namespace PswManagerEncryption.Services {
         }
 
         private async Task<Key> GenerateNextKeyAsync(CancellationToken cancellationToken) {
-
             return await Task.Run(() => {
                 return GenerateNextKey();
             }, cancellationToken).ConfigureAwait(false);
@@ -122,11 +123,17 @@ namespace PswManagerEncryption.Services {
         }
 
         public async ValueTask DisposeAsync() {
+            if(IsDisposed) {
+                return;
+            }
+            
             channel.Dispose();
             await generationTask.ConfigureAwait(false); //this is to find any exception thrown in there
             rfc.Dispose();
             IsDisposed = true;
+            locker.Dispose();
             GC.SuppressFinalize(this);
+
         }
     }
 }
