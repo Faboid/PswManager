@@ -1,7 +1,9 @@
 ﻿using PswManagerEncryption.Services;
 using PswManagerHelperMethods;
+using PswManagerTests.Async.TestsHelpers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Encryption {
@@ -83,6 +85,30 @@ namespace PswManagerTests.Encryption {
 
         }
 
+        [Fact]
+        public async Task DisposeSafely() {
+
+            //arrange
+            char[] masterKey = "randomVeryLongKeyHere".ToCharArray();
+            byte[] salt = new byte[] { 0, 21, 32, 45, 23, 43, 23, 11, 78 };
+            int iterations = 50000;
+            var generator = new KeyGeneratorService(salt, masterKey, iterations);
+
+            //act
+            var task = generator.GenerateKeyAsync();
+            var disposeTask1 = generator.DisposeAsync();
+            var disposeTask2 = generator.DisposeAsync();
+            var disposeTask3 = generator.DisposeAsync();
+
+            //assert
+            await disposeTask1.ThrowIfTakesOver(1000);
+            await disposeTask2.ThrowIfTakesOver(1000);
+            await disposeTask3.ThrowIfTakesOver(1000);
+
+            //todo - this last test fails. Fix it
+            await task.ThrowIfTakesOver(1000);
+
+        }
 
     }
 }
