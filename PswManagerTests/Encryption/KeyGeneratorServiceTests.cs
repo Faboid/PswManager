@@ -1,6 +1,7 @@
 ﻿using PswManagerEncryption.Services;
 using PswManagerHelperMethods;
 using PswManagerTests.Async.TestsHelpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -96,6 +97,7 @@ namespace PswManagerTests.Encryption {
 
             //act
             var task = generator.GenerateKeyAsync();
+            var task2 = generator.GenerateKeyAsync();
             var disposeTask1 = generator.DisposeAsync();
             var disposeTask2 = generator.DisposeAsync();
             var disposeTask3 = generator.DisposeAsync();
@@ -105,8 +107,8 @@ namespace PswManagerTests.Encryption {
             await disposeTask2.ThrowIfTakesOver(1000);
             await disposeTask3.ThrowIfTakesOver(1000);
 
-            //todo - this last test fails. Fix it
-            await task.ThrowIfTakesOver(1000);
+            await Assert.ThrowsAsync<ObjectDisposedException>(async () => await task.ThrowIfTakesOver(1000));
+            await Assert.ThrowsAsync<ObjectDisposedException>(async () => await task2.ThrowIfTakesOver(1000));
 
         }
 

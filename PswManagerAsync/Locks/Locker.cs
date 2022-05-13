@@ -8,45 +8,75 @@
         }
 
         private readonly SemaphoreSlim semaphore;
+        private bool isDisposed = false;
+
+        private void ThrowIfDisposed() {
+            if(isDisposed) {
+                throw new ObjectDisposedException(nameof(Locker));
+            }
+        }
 
         public Lock GetLock() {
             semaphore.Wait();
+            ThrowIfDisposed();
             return new(true, this);
         }
 
         public Lock GetLock(int millisecondsTimeout) {
-            return new(semaphore.Wait(millisecondsTimeout), this);
+            bool result = semaphore.Wait(millisecondsTimeout);
+            
+            ThrowIfDisposed();
+            return new(result, this);
         }
 
         public Lock GetLock(int millisecondsTimeout, CancellationToken cancellationToken) {
-            return new(semaphore.Wait(millisecondsTimeout, cancellationToken), this);
+            bool result = semaphore.Wait(millisecondsTimeout, cancellationToken);
+
+            ThrowIfDisposed();
+            return new(result, this);
         }
 
         public async Task<Lock> GetLockAsync() {
             await semaphore.WaitAsync().ConfigureAwait(false);
+            ThrowIfDisposed();
             return new(true, this);
         }
 
         public async Task<Lock> GetLockAsync(int millisecondsTimeout) {
-            return new(await semaphore.WaitAsync(millisecondsTimeout).ConfigureAwait(false), this);
+            bool result = await semaphore.WaitAsync(millisecondsTimeout).ConfigureAwait(false);
+            ThrowIfDisposed();
+            return new(result, this);
         }
 
         public async Task<Lock> GetLockAsync(CancellationToken cancellationToken) {
             await semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+            ThrowIfDisposed();
             return new(true, this);
         }
 
         public async Task<Lock> GetLockAsync(int millisecondsTimeout, CancellationToken cancellationToken) {
-            return new(await semaphore.WaitAsync(millisecondsTimeout, cancellationToken).ConfigureAwait(false), this);
+            bool result = await semaphore.WaitAsync(millisecondsTimeout, cancellationToken).ConfigureAwait(false);
+            ThrowIfDisposed();
+            return new(result, this);
         }
 
         private void Unlock() {
             semaphore.Release();
         }
 
+        private void ReleaseAll() {
+            isDisposed = true;
+            while(semaphore.CurrentCount < 1) {
+                semaphore.Release();
+            }
+        }
+
         public void Dispose() {
-            semaphore.Dispose();
-            GC.SuppressFinalize(this);
+            lock(semaphore) {
+                ReleaseAll();
+                semaphore.Dispose();
+                GC.SuppressFinalize(this);
+            }
         }
 
         public struct Lock : IDisposable {
