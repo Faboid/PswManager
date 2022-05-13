@@ -31,6 +31,11 @@
             return new(await semaphore.WaitAsync(millisecondsTimeout).ConfigureAwait(false), this);
         }
 
+        public async Task<Lock> GetLockAsync(CancellationToken cancellationToken) {
+            await semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+            return new(true, this);
+        }
+
         public async Task<Lock> GetLockAsync(int millisecondsTimeout, CancellationToken cancellationToken) {
             return new(await semaphore.WaitAsync(millisecondsTimeout, cancellationToken).ConfigureAwait(false), this);
         }
