@@ -91,5 +91,37 @@ namespace PswManagerTests.Async.Locks {
 
         }
 
+        [Fact] //this is to make sure no deadlock occurs, no matter when .Dispose() is called
+        public async Task SafeDisposal() {
+
+            //arrange
+            Locker locker = new();
+
+            //act
+            var gainedLock = await locker.GetLockAsync(10);
+            
+            //locks that will never be gained
+            var lockTask1 = locker.GetLockAsync(1000);
+            var lockTask2 = locker.GetLockAsync(1000);
+            var lockTask3 = locker.GetLockAsync(1000);
+            var lockTask4 = locker.GetLockAsync(1000);
+
+            //multiple disposals to make sure there's no issue with it
+            locker.Dispose();
+            locker.Dispose();
+            locker.Dispose();
+            locker.Dispose();
+
+            //assert
+            await Assert.ThrowsAsync<ObjectDisposedException>(async () => await lockTask1);
+            await Assert.ThrowsAsync<ObjectDisposedException>(async () => await lockTask2);
+            await Assert.ThrowsAsync<ObjectDisposedException>(async () => await lockTask3);
+            await Assert.ThrowsAsync<ObjectDisposedException>(async () => await lockTask4);
+            
+            //disposal of locks afterwards should not cause errors
+            gainedLock.Dispose();
+
+        }
+
     }
 }

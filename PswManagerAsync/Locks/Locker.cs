@@ -61,11 +61,16 @@
         }
 
         private void Unlock() {
+
+            //even if it's disposed, Unlock() should be a valid call
+            if(isDisposed) {
+                return;
+            }
+
             semaphore.Release();
         }
 
         private void ReleaseAll() {
-            isDisposed = true;
             while(semaphore.CurrentCount < 1) {
                 semaphore.Release();
             }
@@ -73,6 +78,11 @@
 
         public void Dispose() {
             lock(semaphore) {
+                if(isDisposed) {
+                    return;
+                }
+
+                isDisposed = true;
                 ReleaseAll();
                 semaphore.Dispose();
                 GC.SuppressFinalize(this);
