@@ -14,6 +14,16 @@ namespace PswManagerTests.Async.TestsHelpers {
             await task;
         }
 
+        public static async Task<T> ThrowIfTakesOver<T>(this ValueTask<T> task, int milliseconds) {
+            await task.AsTask().TimeoutIfOver(milliseconds);
+            return await task;
+        }
+
+        public static async Task ThrowIfTakesOver(this ValueTask task, int milliseconds) {
+            await task.AsTask().TimeoutIfOver(milliseconds);
+            await task;
+        }
+
         private static async Task TimeoutIfOver(this Task task, int milliseconds) {
             //logic to wait for the task's end taken from https://stackoverflow.com/questions/4238345/asynchronously-wait-for-taskt-to-complete-with-timeout/11191070#11191070
             Task waitTask = Task.Delay(milliseconds);
@@ -23,4 +33,5 @@ namespace PswManagerTests.Async.TestsHelpers {
         }
 
     }
+
 }
