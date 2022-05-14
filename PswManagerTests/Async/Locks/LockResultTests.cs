@@ -1,4 +1,4 @@
-﻿using PswManagerAsync.Locks;
+﻿using PswManager.Async.Locks;
 using Xunit;
 
 namespace PswManagerTests.Async.Locks {

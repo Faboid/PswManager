@@ -1,10 +1,10 @@
 ﻿using PswManagerEncryption.Cryptography;
 using PswManagerEncryption.Random;
-using PswManagerAsync;
+using PswManager.Async;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
-using PswManagerAsync.Locks;
+using PswManager.Async.Locks;
 
 [assembly: InternalsVisibleTo("PswManagerTests")]
 namespace PswManagerEncryption.Services {

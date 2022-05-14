@@ -1,4 +1,4 @@
-﻿using PswManagerAsync.Locks;
+﻿using PswManager.Async.Locks;
 using PswManagerEncryption.Cryptography;
 using PswManagerEncryption.Services;
 using PswManagerHelperMethods.WrappingObjects;

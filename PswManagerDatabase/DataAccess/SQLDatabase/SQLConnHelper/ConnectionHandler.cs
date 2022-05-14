@@ -1,4 +1,4 @@
-﻿using PswManagerAsync.Locks;
+﻿using PswManager.Async.Locks;
 using System;
 using System.Data.SQLite;
 using System.Threading.Tasks;

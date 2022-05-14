@@ -1,7 +1,7 @@
 ﻿using PswManagerDatabase.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PswManagerAsync.Locks;
+using PswManager.Async.Locks;
 using System;
 
 namespace PswManagerDatabase.DataAccess {

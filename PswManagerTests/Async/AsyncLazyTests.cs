@@ -1,4 +1,4 @@
-﻿using PswManagerAsync;
+﻿using PswManager.Async;
 using PswManagerTests.Async.TestsHelpers;
 using System.Threading;
 using System.Threading.Tasks;

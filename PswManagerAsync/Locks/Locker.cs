@@ -1,4 +1,4 @@
-﻿namespace PswManagerAsync.Locks {
+﻿namespace PswManager.Async.Locks {
     public class Locker : IDisposable {
 
         public Locker() : this(1) { }

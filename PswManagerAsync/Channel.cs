@@ -1,8 +1,8 @@
-﻿using PswManagerAsync.Locks;
+﻿using PswManager.Async.Locks;
 using PswManagerHelperMethods;
 using System.Collections.Concurrent;
 
-namespace PswManagerAsync {
+namespace PswManager.Async {
 
     public class Channel<T> : IDisposable {
 

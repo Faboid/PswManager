@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using PswManagerHelperMethods.WrappingObjects;
 
-namespace PswManagerAsync.Locks {
+namespace PswManager.Async.Locks {
     public class NamesLocker : IDisposable {
 
         readonly ConcurrentDictionary<string, RefCount<Locker>> lockers = new();

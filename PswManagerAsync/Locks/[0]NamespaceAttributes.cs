@@ -1,4 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
 
 [assembly:InternalsVisibleTo("PswManagerTests")]
-namespace PswManagerAsync.Locks; 
+namespace PswManager.Async.Locks; 

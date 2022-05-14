@@ -1,4 +1,4 @@
-﻿using PswManagerAsync.Locks;
+﻿using PswManager.Async.Locks;
 using PswManagerTests.Async.TestsHelpers;
 using System.Threading.Tasks;
 using Xunit;

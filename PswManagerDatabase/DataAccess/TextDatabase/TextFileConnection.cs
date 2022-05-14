@@ -1,4 +1,4 @@
-﻿using PswManagerAsync.Locks;
+﻿using PswManager.Async.Locks;
 using PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper;
 using PswManagerDatabase.Models;
 using System;

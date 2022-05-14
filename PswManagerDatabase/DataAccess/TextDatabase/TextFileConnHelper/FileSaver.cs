@@ -1,4 +1,4 @@
-﻿using PswManagerAsync.Locks;
+﻿using PswManager.Async.Locks;
 using PswManagerDatabase.Models;
 using PswManagerHelperMethods;
 using System;

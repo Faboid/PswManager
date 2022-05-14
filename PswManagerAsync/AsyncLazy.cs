@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace PswManagerAsync {
+namespace PswManager.Async {
     public class AsyncLazy<T> : Lazy<Task<T>> {
 
         //this class is derived from https://devblogs.microsoft.com/pfxteam/asynclazyt/
