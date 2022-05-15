@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PswManager.Async\PswManager.Async.csproj" />
-    <ProjectReference Include="..\PswManagerCommands\PswManager.Commands.csproj" />
+    <ProjectReference Include="..\PswManager.Commands\PswManager.Commands.csproj" />
     <ProjectReference Include="..\PswManagerDatabase\PswManagerDatabase.csproj" />
     <ProjectReference Include="..\PswManagerEncryption\PswManagerEncryption.csproj" />
     <ProjectReference Include="..\PswManagerLibrary\PswManagerLibrary.csproj" />

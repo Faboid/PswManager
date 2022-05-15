@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PswManagerCommands\PswManager.Commands.csproj" />
+    <ProjectReference Include="..\PswManager.Commands\PswManager.Commands.csproj" />
     <ProjectReference Include="..\PswManagerDatabase\PswManagerDatabase.csproj" />
     <ProjectReference Include="..\PswManagerEncryption\PswManagerEncryption.csproj" />
     <ProjectReference Include="..\PswManagerHelperMethods\PswManagerHelperMethods.csproj" />
