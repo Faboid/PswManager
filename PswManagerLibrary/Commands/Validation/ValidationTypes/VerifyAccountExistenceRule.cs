@@ -1,6 +1,6 @@
 ﻿using PswManager.Commands.Validation.Attributes;
 using PswManager.Commands.Validation.Models;
-using PswManagerDatabase.DataAccess.Interfaces;
+using PswManager.Database.DataAccess.Interfaces;
 using PswManagerLibrary.Commands.Validation.Attributes;
 
 namespace PswManagerLibrary.Commands.Validation.ValidationLogic {

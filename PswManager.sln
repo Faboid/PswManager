@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerTests", "PswManag
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Commands", "PswManager.Commands\PswManager.Commands.csproj", "{EDC2911F-7A40-4BD5-9999-17CB72517BDB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerDatabase", "PswManagerDatabase\PswManagerDatabase.csproj", "{5472D15F-056E-492A-B7D8-472357A94E39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Database", "PswManager.Database\PswManager.Database.csproj", "{5472D15F-056E-492A-B7D8-472357A94E39}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerHelperMethods", "PswManagerHelperMethods\PswManagerHelperMethods.csproj", "{F3FB09A3-DB38-470D-BFE1-470D1251A702}"
 EndProject

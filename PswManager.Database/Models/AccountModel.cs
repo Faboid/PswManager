@@ -1,4 +1,4 @@
-﻿namespace PswManagerDatabase.Models {
+﻿namespace PswManager.Database.Models {
     public class AccountModel {
 
         public AccountModel() {

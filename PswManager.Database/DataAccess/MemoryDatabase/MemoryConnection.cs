@@ -1,9 +1,9 @@
-﻿using PswManagerDatabase.Models;
+﻿using PswManager.Database.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PswManagerDatabase.DataAccess.MemoryDatabase {
+namespace PswManager.Database.DataAccess.MemoryDatabase {
     internal class MemoryConnection : BaseConnection {
 
         readonly Dictionary<string, AccountModel> accounts = new();

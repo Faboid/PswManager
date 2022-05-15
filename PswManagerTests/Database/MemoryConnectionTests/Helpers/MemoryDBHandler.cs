@@ -1,6 +1,6 @@
-﻿using PswManagerDatabase;
-using PswManagerDatabase.DataAccess;
-using PswManagerDatabase.Models;
+﻿using PswManager.Database;
+using PswManager.Database.DataAccess;
+using PswManager.Database.Models;
 using PswManagerHelperMethods;
 using PswManagerTests.Database.Generic;
 using PswManagerTests.TestsHelpers;

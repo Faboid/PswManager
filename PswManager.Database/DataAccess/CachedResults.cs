@@ -1,7 +1,7 @@
-﻿using PswManagerDatabase.Models;
+﻿using PswManager.Database.Models;
 using System.Collections.Generic;
 
-namespace PswManagerDatabase.DataAccess {
+namespace PswManager.Database.DataAccess {
     public static class CachedResults {
 
         public static ConnectionResult<AccountModel> InvalidNameResult { get; } = new(false, "The given name is not valid.");

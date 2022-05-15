@@ -1,6 +1,6 @@
 ﻿using PswManager.Commands;
-using PswManagerDatabase.DataAccess.Interfaces;
-using PswManagerDatabase.Models;
+using PswManager.Database.DataAccess.Interfaces;
+using PswManager.Database.Models;
 using PswManagerLibrary.Cryptography;
 using PswManager.Commands.AbstractCommands;
 using PswManagerLibrary.Commands.Validation.ValidationLogic;

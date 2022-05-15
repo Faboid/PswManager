@@ -1,4 +1,4 @@
-﻿using PswManagerDatabase;
+﻿using PswManager.Database;
 using PswManagerTests.TestsHelpers;
 using System;
 

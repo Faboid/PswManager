@@ -1,7 +1,7 @@
-﻿using PswManagerDatabase.Models;
+﻿using PswManager.Database.Models;
 using System.Threading.Tasks;
 
-namespace PswManagerDatabase.DataAccess.Interfaces {
+namespace PswManager.Database.DataAccess.Interfaces {
     public interface IDataCreator : IDataHelper {
 
         ConnectionResult CreateAccount(AccountModel model);

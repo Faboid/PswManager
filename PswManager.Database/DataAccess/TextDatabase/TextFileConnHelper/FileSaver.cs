@@ -1,5 +1,5 @@
 ﻿using PswManager.Async.Locks;
-using PswManagerDatabase.Models;
+using PswManager.Database.Models;
 using PswManagerHelperMethods;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
+namespace PswManager.Database.DataAccess.TextDatabase.TextFileConnHelper {
     internal class FileSaver {
 
         public FileSaver() : this("TextSaves") { }

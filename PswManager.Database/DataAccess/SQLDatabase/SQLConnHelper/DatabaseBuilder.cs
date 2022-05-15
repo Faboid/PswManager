@@ -2,7 +2,7 @@
 using System.Data.SQLite;
 using System.IO;
 
-namespace PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper {
+namespace PswManager.Database.DataAccess.SQLDatabase.SQLConnHelper {
     internal class DatabaseBuilder {
 
         public DatabaseBuilder(string db_name) {

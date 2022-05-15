@@ -1,15 +1,15 @@
-﻿using PswManagerDatabase.DataAccess;
-using PswManagerDatabase.DataAccess.Interfaces;
-using PswManagerDatabase.DataAccess.JsonDatabase;
-using PswManagerDatabase.DataAccess.MemoryDatabase;
-using PswManagerDatabase.DataAccess.SQLDatabase;
-using PswManagerDatabase.DataAccess.TextDatabase;
+﻿using PswManager.Database.DataAccess;
+using PswManager.Database.DataAccess.Interfaces;
+using PswManager.Database.DataAccess.JsonDatabase;
+using PswManager.Database.DataAccess.MemoryDatabase;
+using PswManager.Database.DataAccess.SQLDatabase;
+using PswManager.Database.DataAccess.TextDatabase;
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
 [assembly:InternalsVisibleTo("PswManagerTests")]
-namespace PswManagerDatabase {
+namespace PswManager.Database {
 
     public enum DatabaseType {
         TextFile,

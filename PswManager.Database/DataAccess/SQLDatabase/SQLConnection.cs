@@ -1,11 +1,11 @@
 ﻿using PswManager.Async.Locks;
-using PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper;
-using PswManagerDatabase.Models;
+using PswManager.Database.DataAccess.SQLDatabase.SQLConnHelper;
+using PswManager.Database.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PswManagerDatabase.DataAccess.SQLDatabase {
+namespace PswManager.Database.DataAccess.SQLDatabase {
     internal class SQLConnection : IDataConnection {
 
         readonly NamesLocker locker = new();

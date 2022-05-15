@@ -1,4 +1,4 @@
-﻿using PswManagerDatabase.DataAccess.Interfaces;
+﻿using PswManager.Database.DataAccess.Interfaces;
 using PswManagerTests.Database.Generic;
 using PswManagerTests.Database.TextFileConnectionTests.Helpers;
 using PswManagerTests.TestsHelpers;

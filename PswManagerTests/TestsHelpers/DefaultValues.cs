@@ -1,4 +1,4 @@
-﻿using PswManagerDatabase.Models;
+﻿using PswManager.Database.Models;
 using PswManagerHelperMethods;
 using System.Collections.Generic;
 using System.Linq;

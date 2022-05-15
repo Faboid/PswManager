@@ -3,7 +3,7 @@ using System;
 using System.Data.SQLite;
 using System.Threading.Tasks;
 
-namespace PswManagerDatabase.DataAccess.SQLDatabase.SQLConnHelper {
+namespace PswManager.Database.DataAccess.SQLDatabase.SQLConnHelper {
     internal static class ConnectionHandler {
 
         public static async Task<AsyncConnection> GetConnectionAsync(this SQLiteConnection cnn) {

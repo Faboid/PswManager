@@ -1,6 +1,6 @@
-﻿using PswManagerDatabase.DataAccess.Interfaces;
+﻿using PswManager.Database.DataAccess.Interfaces;
 
-namespace PswManagerDatabase.DataAccess {
+namespace PswManager.Database.DataAccess {
     public interface IDataConnection : IDataCreator, IDataReader, IDataEditor, IDataDeleter {
 
 

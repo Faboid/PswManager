@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PswManagerDatabase.Models {
+namespace PswManager.Database.Models {
     public class ConnectionResult {
 
         public ConnectionResult(bool success) {

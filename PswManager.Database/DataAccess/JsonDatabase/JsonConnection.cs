@@ -1,4 +1,4 @@
-﻿using PswManagerDatabase.Models;
+﻿using PswManager.Database.Models;
 using PswManagerHelperMethods;
 using System.Collections.Generic;
 using System.IO;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace PswManagerDatabase.DataAccess.JsonDatabase {
+namespace PswManager.Database.DataAccess.JsonDatabase {
     internal class JsonConnection : BaseConnection {
 
         internal JsonConnection() : this("Json") { }

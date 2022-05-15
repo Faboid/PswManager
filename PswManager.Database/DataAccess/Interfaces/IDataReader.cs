@@ -1,8 +1,8 @@
-﻿using PswManagerDatabase.Models;
+﻿using PswManager.Database.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PswManagerDatabase.DataAccess.Interfaces {
+namespace PswManager.Database.DataAccess.Interfaces {
     public interface IDataReader : IDataHelper {
 
         ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts();

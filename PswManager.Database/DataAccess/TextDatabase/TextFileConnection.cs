@@ -1,11 +1,11 @@
 ﻿using PswManager.Async.Locks;
-using PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper;
-using PswManagerDatabase.Models;
+using PswManager.Database.DataAccess.TextDatabase.TextFileConnHelper;
+using PswManager.Database.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PswManagerDatabase.DataAccess.TextDatabase {
+namespace PswManager.Database.DataAccess.TextDatabase {
     public class TextFileConnection : IDataConnection {
 
         internal TextFileConnection() {

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace PswManagerDatabase.DataAccess.Interfaces {
+namespace PswManager.Database.DataAccess.Interfaces {
     public interface IDataHelper {
         //todo - decide whether to turn these into connection results
 

@@ -1,5 +1,5 @@
-﻿using PswManagerDatabase;
-using PswManagerDatabase.DataAccess.Interfaces;
+﻿using PswManager.Database;
+using PswManager.Database.DataAccess.Interfaces;
 using PswManagerHelperMethods;
 using PswManagerTests.Database.Generic;
 using PswManagerTests.TestsHelpers;

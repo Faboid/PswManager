@@ -1,5 +1,5 @@
-﻿using PswManagerDatabase.DataAccess.Interfaces;
-using PswManagerDatabase.Models;
+﻿using PswManager.Database.DataAccess.Interfaces;
+using PswManager.Database.Models;
 using PswManagerHelperMethods;
 using System;
 using System.Collections.Generic;

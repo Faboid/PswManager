@@ -1,6 +1,6 @@
-﻿using PswManagerDatabase.Models;
+﻿using PswManager.Database.Models;
 
-namespace PswManagerDatabase.DataAccess.TextDatabase.TextFileConnHelper {
+namespace PswManager.Database.DataAccess.TextDatabase.TextFileConnHelper {
     internal class AccountSerializer {
 
         public static string[] Serialize(AccountModel account) {

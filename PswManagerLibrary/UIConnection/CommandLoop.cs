@@ -1,5 +1,5 @@
 ﻿using PswManager.Commands;
-using PswManagerDatabase;
+using PswManager.Database;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Cryptography;
 using System;

@@ -1,4 +1,4 @@
-﻿using PswManagerDatabase.DataAccess.Interfaces;
+﻿using PswManager.Database.DataAccess.Interfaces;
 using System;
 using System.Threading.Tasks;
 using Xunit;

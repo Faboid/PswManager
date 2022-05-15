@@ -1,5 +1,5 @@
 ﻿using PswManager.Commands;
-using PswManagerDatabase.DataAccess.Interfaces;
+using PswManager.Database.DataAccess.Interfaces;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Commands.Validation.Attributes;
 using PswManagerTests.Commands.Helper;
