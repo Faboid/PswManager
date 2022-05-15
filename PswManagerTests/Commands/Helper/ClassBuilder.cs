@@ -1,5 +1,5 @@
 ﻿using PswManager.Commands;
-using PswManagerLibrary.UIConnection.Attributes;
+using PswManager.Core.UIConnection.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;

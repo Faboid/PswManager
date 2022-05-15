@@ -1,6 +1,6 @@
 ﻿using PswManager.Encryption.Cryptography;
 using PswManager.Encryption.Services;
-using PswManagerLibrary.Cryptography;
+using PswManager.Core.Cryptography;
 using PswManagerTests.Async.TestsHelpers;
 using System;
 using System.Threading.Tasks;

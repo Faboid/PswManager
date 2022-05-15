@@ -1,5 +1,5 @@
 ﻿using System;
-using PswManagerLibrary.Cryptography;
+using PswManager.Core.Cryptography;
 using PswManager.Encryption.Cryptography;
 using System.IO;
 using PswManager.Utils;

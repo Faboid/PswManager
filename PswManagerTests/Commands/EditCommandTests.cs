@@ -1,6 +1,6 @@
 ﻿using PswManager.Commands;
-using PswManagerLibrary.Commands;
-using PswManagerLibrary.Commands.Validation.Attributes;
+using PswManager.Core.Commands;
+using PswManager.Core.Commands.Validation.Attributes;
 using PswManagerTests.Commands.Helper;
 using PswManagerTests.Database.MemoryConnectionTests.Helpers;
 using PswManagerTests.TestsHelpers;

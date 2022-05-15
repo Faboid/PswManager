@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PswManagerLibrary\PswManagerLibrary.csproj" />
+    <ProjectReference Include="..\PswManager.Core\PswManager.Core.csproj" />
   </ItemGroup>
 
 </Project>

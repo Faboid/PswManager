@@ -1,4 +1,4 @@
-﻿using PswManagerLibrary.UIConnection;
+﻿using PswManager.Core.UIConnection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
