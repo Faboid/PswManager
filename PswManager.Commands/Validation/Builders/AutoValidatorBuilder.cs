@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using PswManagerHelperMethods;
+using PswManager.Utils;
 using PswManager.Commands.Validation.Validators;
 
 [assembly: InternalsVisibleTo("PswManagerTests")]

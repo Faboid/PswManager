@@ -2,7 +2,7 @@
 using PswManagerLibrary.Cryptography;
 using PswManager.Encryption.Cryptography;
 using System.IO;
-using PswManagerHelperMethods;
+using PswManager.Utils;
 using Xunit;
 using PswManager.Encryption.Services;
 

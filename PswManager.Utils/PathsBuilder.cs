@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace PswManagerHelperMethods {
+namespace PswManager.Utils {
     public static class PathsBuilder {
 
         static PathsBuilder() {

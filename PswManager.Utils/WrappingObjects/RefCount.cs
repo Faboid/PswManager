@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PswManagerHelperMethods.WrappingObjects {
+namespace PswManager.Utils.WrappingObjects {
     public class RefCount<TValue> {
 
         public RefCount(TValue value) {

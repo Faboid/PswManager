@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PswManagerHelperMethods {
+namespace PswManager.Utils {
     public static class IEnumerableExtensions {
 
         public static IEnumerable<T> ForEach<T>(this IEnumerable<T> enumeration, Action<T> action) {

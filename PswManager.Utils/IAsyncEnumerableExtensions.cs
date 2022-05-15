@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PswManagerHelperMethods {
+namespace PswManager.Utils {
     public static class IAsyncEnumerableExtensions {
 
         public static async Task<List<T>> Take<T>(this IAsyncEnumerable<T> enumerable, int count) {

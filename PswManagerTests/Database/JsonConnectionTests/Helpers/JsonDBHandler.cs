@@ -1,5 +1,5 @@
 ﻿using PswManager.Database;
-using PswManagerHelperMethods;
+using PswManager.Utils;
 using PswManagerTests.Database.Generic;
 using PswManagerTests.TestsHelpers;
 using System.IO;
