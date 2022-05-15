@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Core", "PswManag
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.ConsoleUI", "PswManager.ConsoleUI\PswManager.ConsoleUI.csproj", "{E0FC07AF-04D3-41FA-8E3A-F53939B52ABC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerTests", "PswManagerTests\PswManagerTests.csproj", "{C4C2C729-7344-4172-AF50-CD1C2FF97522}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Tests", "PswManager.Tests\PswManager.Tests.csproj", "{C4C2C729-7344-4172-AF50-CD1C2FF97522}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Commands", "PswManager.Commands\PswManager.Commands.csproj", "{EDC2911F-7A40-4BD5-9999-17CB72517BDB}"
 EndProject

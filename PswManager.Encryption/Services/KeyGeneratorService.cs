@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using PswManager.Async.Locks;
 
-[assembly: InternalsVisibleTo("PswManagerTests")]
+[assembly: InternalsVisibleTo("PswManager.Tests")]
 namespace PswManager.Encryption.Services {
     public class KeyGeneratorService : IAsyncDisposable {
 

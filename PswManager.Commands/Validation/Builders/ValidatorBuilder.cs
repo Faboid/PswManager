@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("PswManagerTests")]
+[assembly: InternalsVisibleTo("PswManager.Tests")]
 namespace PswManager.Commands.Validation.Builders {
     public class ValidatorBuilder<T> {
 
