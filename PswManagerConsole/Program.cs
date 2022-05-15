@@ -2,7 +2,7 @@
 using System.Threading;
 using PswManagerLibrary.UIConnection;
 using PswManagerLibrary.Cryptography;
-using PswManagerConsole;
+using PswManager.ConsoleUI;
 
 UserInput userInput = new();
 

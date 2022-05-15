@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PswManagerConsole {
+namespace PswManager.ConsoleUI {
     public class UserInput : IUserInput {
 
         public string RequestAnswer() {
