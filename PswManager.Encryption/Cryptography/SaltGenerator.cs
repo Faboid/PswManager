@@ -1,7 +1,7 @@
-﻿using PswManagerEncryption.Random;
+﻿using PswManager.Encryption.Random;
 using System.Security.Cryptography;
 
-namespace PswManagerEncryption.Cryptography {
+namespace PswManager.Encryption.Cryptography {
     internal class SaltGenerator {
 
         readonly private int length;

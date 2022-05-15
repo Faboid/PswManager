@@ -1,6 +1,6 @@
 ﻿using PswManager.Async;
-using PswManagerEncryption.Cryptography;
-using PswManagerEncryption.Services;
+using PswManager.Encryption.Cryptography;
+using PswManager.Encryption.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

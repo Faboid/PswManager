@@ -1,5 +1,5 @@
-﻿using PswManagerEncryption.Cryptography;
-using PswManagerEncryption.Services;
+﻿using PswManager.Encryption.Cryptography;
+using PswManager.Encryption.Services;
 using PswManagerLibrary.Cryptography;
 using PswManagerTests.Async.TestsHelpers;
 using System;

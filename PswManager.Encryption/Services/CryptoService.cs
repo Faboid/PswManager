@@ -1,10 +1,10 @@
-﻿using PswManagerEncryption.Cryptography;
+﻿using PswManager.Encryption.Cryptography;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 
 [assembly: InternalsVisibleTo("PswManagerTests")]
-namespace PswManagerEncryption.Services {
+namespace PswManager.Encryption.Services {
     public class CryptoService : ICryptoService, IDisposable {
         //This class is built upon a derived version of "A Gazhal"'s answer https://stackoverflow.com/a/27484425/16018958
 

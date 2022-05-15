@@ -1,4 +1,4 @@
-﻿using PswManagerEncryption.Services;
+﻿using PswManager.Encryption.Services;
 using PswManagerHelperMethods;
 using PswManagerTests.Async.TestsHelpers;
 using System;

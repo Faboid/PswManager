@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Database", "PswM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerHelperMethods", "PswManagerHelperMethods\PswManagerHelperMethods.csproj", "{F3FB09A3-DB38-470D-BFE1-470D1251A702}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerEncryption", "PswManagerEncryption\PswManagerEncryption.csproj", "{215587A2-F95E-4703-8290-085AB9AC9221}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Encryption", "PswManager.Encryption\PswManager.Encryption.csproj", "{215587A2-F95E-4703-8290-085AB9AC9221}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Async", "PswManager.Async\PswManager.Async.csproj", "{C1F0F60C-4D57-42D5-8828-D44E275C8F4A}"
 EndProject

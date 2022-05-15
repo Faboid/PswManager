@@ -1,5 +1,5 @@
-﻿using PswManagerEncryption.Cryptography;
-using PswManagerEncryption.Random;
+﻿using PswManager.Encryption.Cryptography;
+using PswManager.Encryption.Random;
 using PswManager.Async;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
@@ -7,7 +7,7 @@ using System.Text;
 using PswManager.Async.Locks;
 
 [assembly: InternalsVisibleTo("PswManagerTests")]
-namespace PswManagerEncryption.Services {
+namespace PswManager.Encryption.Services {
     public class KeyGeneratorService : IAsyncDisposable {
 
         /// <summary>

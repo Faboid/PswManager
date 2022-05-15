@@ -1,4 +1,4 @@
-﻿using PswManagerEncryption.Random;
+﻿using PswManager.Encryption.Random;
 using Xunit;
 using System;
 

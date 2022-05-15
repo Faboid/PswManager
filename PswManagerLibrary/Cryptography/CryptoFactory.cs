@@ -1,6 +1,6 @@
 ﻿using PswManager.Async.Locks;
-using PswManagerEncryption.Cryptography;
-using PswManagerEncryption.Services;
+using PswManager.Encryption.Cryptography;
+using PswManager.Encryption.Services;
 using PswManagerHelperMethods.WrappingObjects;
 using PswManagerLibrary.UIConnection;
 using System;

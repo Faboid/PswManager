@@ -1,10 +1,10 @@
 ﻿using System;
 using PswManagerLibrary.Cryptography;
-using PswManagerEncryption.Cryptography;
+using PswManager.Encryption.Cryptography;
 using System.IO;
 using PswManagerHelperMethods;
 using Xunit;
-using PswManagerEncryption.Services;
+using PswManager.Encryption.Services;
 
 namespace PswManagerTests.Cryptography {
     public class TokenTests : IDisposable {

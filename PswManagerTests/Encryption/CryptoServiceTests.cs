@@ -1,5 +1,5 @@
-﻿using PswManagerEncryption.Cryptography;
-using PswManagerEncryption.Services;
+﻿using PswManager.Encryption.Cryptography;
+using PswManager.Encryption.Services;
 using System.Linq;
 using System.Reflection;
 using Xunit;

@@ -1,4 +1,4 @@
-﻿namespace PswManagerEncryption.Services {
+﻿namespace PswManager.Encryption.Services {
     public interface ICryptoService {
 
         string Encrypt(string plainText);
