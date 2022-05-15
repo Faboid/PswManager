@@ -1,6 +1,6 @@
-﻿using PswManagerCommands;
-using PswManagerCommands.Unused.Parsing;
-using PswManagerCommands.Unused.Parsing.Attributes;
+﻿using PswManager.Commands;
+using PswManager.Commands.Unused.Parsing;
+using PswManager.Commands.Unused.Parsing.Attributes;
 using System.Collections.Generic;
 using Xunit;
 

@@ -1,4 +1,4 @@
-﻿using PswManagerCommands;
+﻿using PswManager.Commands;
 using PswManagerLibrary.Commands;
 using PswManagerTests.Commands.Helper;
 using PswManagerTests.Database.MemoryConnectionTests.Helpers;

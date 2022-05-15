@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PswManagerCommands.Unused.Parsing.Helpers {
+namespace PswManager.Commands.Unused.Parsing.Helpers {
     internal static class Splitter {
 
         public static IEnumerable<string> GetArgs(this string input, string separator)

@@ -1,5 +1,5 @@
 ﻿using Moq;
-using PswManagerCommands;
+using PswManager.Commands;
 using PswManagerLibrary.Commands;
 using PswManagerTests.Commands.Helper;
 using System.Collections.Generic;

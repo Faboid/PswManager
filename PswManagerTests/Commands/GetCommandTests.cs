@@ -1,4 +1,4 @@
-﻿using PswManagerCommands;
+﻿using PswManager.Commands;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Commands.Validation.Attributes;
 using PswManagerTests.Commands.Helper;

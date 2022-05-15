@@ -1,4 +1,4 @@
-﻿using PswManagerCommands;
+﻿using PswManager.Commands;
 using PswManagerLibrary.Commands.Validation.Attributes;
 using PswManagerLibrary.UIConnection.Attributes;
 using System;

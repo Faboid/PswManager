@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PswManagerCommands {
+namespace PswManager.Commands {
 
     /// <summary>
     /// Represents a command.

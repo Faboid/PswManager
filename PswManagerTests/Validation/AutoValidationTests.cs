@@ -1,7 +1,7 @@
-﻿using PswManagerCommands.Validation.Attributes;
-using PswManagerCommands.Validation.Builders;
-using PswManagerCommands.Validation.Models;
-using PswManagerCommands.Validation.Validators;
+﻿using PswManager.Commands.Validation.Attributes;
+using PswManager.Commands.Validation.Builders;
+using PswManager.Commands.Validation.Models;
+using PswManager.Commands.Validation.Validators;
 using System;
 using Xunit;
 

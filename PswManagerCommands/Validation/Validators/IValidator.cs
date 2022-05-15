@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PswManagerCommands.Validation.Validators {
+namespace PswManager.Commands.Validation.Validators {
     public interface IValidator<T> {
         IEnumerable<string> Validate(T obj);
     }

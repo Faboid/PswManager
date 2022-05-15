@@ -1,11 +1,11 @@
-﻿using PswManagerCommands;
+﻿using PswManager.Commands;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerDatabase.Models;
 using PswManagerLibrary.Cryptography;
-using PswManagerCommands.AbstractCommands;
+using PswManager.Commands.AbstractCommands;
 using PswManagerLibrary.Commands.Validation.ValidationLogic;
 using PswManagerLibrary.Commands.ArgsModels;
-using PswManagerCommands.Validation.Builders;
+using PswManager.Commands.Validation.Builders;
 using System.Threading.Tasks;
 
 namespace PswManagerLibrary.Commands {

@@ -1,9 +1,9 @@
-﻿using PswManagerCommands.Unused.Parsing.Helpers;
+﻿using PswManager.Commands.Unused.Parsing.Helpers;
 using PswManagerHelperMethods;
 using System;
 using System.Linq;
 
-namespace PswManagerCommands.Unused.Parsing {
+namespace PswManager.Commands.Unused.Parsing {
     public class Parser : IParser, IParserReady {
 
         public static IParser CreateInstance() { return new Parser(); }

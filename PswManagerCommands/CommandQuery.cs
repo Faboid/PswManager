@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PswManagerCommands {
+namespace PswManager.Commands {
     public class CommandQuery {
 
         readonly IReadOnlyDictionary<string, ICommand> _commands;

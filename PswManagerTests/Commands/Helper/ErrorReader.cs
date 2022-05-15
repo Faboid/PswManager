@@ -1,5 +1,5 @@
-﻿using PswManagerCommands;
-using PswManagerCommands.Validation.Attributes;
+﻿using PswManager.Commands;
+using PswManager.Commands.Validation.Attributes;
 using System;
 using System.Reflection;
 

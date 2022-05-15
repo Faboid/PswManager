@@ -1,11 +1,11 @@
-﻿using PswManagerCommands.Validation.Builders;
-using PswManagerCommands.Validation.Validators;
+﻿using PswManager.Commands.Validation.Builders;
+using PswManager.Commands.Validation.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PswManagerCommands.AbstractCommands {
+namespace PswManager.Commands.AbstractCommands {
 
     /// <summary>
     /// Represents a command that uses complex objects as input values.

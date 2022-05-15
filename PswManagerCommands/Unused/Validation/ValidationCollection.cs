@@ -1,9 +1,9 @@
-﻿using PswManagerCommands.Validation.Models;
+﻿using PswManager.Commands.Validation.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PswManagerCommands.Unused.Validation {
+namespace PswManager.Commands.Unused.Validation {
 
     public class ValidationCollection<T> : IValidationCollection<T> {
 

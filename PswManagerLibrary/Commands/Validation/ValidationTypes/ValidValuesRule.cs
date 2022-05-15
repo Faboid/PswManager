@@ -1,5 +1,5 @@
-﻿using PswManagerCommands.Validation.Attributes;
-using PswManagerCommands.Validation.Models;
+﻿using PswManager.Commands.Validation.Attributes;
+using PswManager.Commands.Validation.Models;
 using PswManagerLibrary.Commands.Validation.Attributes;
 using System;
 using System.Linq;

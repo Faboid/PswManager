@@ -1,4 +1,4 @@
-﻿using PswManagerCommands;
+﻿using PswManager.Commands;
 using PswManagerDatabase;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Cryptography;

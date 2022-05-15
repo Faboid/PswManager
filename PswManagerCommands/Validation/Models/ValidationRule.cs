@@ -1,7 +1,7 @@
-﻿using PswManagerCommands.Validation.Attributes;
+﻿using PswManager.Commands.Validation.Attributes;
 using System;
 
-namespace PswManagerCommands.Validation.Models {
+namespace PswManager.Commands.Validation.Models {
 
     public abstract class ValidationRule {
 

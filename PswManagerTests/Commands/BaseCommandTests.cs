@@ -1,5 +1,5 @@
-﻿using PswManagerCommands;
-using PswManagerCommands.AbstractCommands;
+﻿using PswManager.Commands;
+using PswManager.Commands.AbstractCommands;
 using System;
 using System.Threading.Tasks;
 using Xunit;

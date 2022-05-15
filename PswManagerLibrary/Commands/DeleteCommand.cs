@@ -1,6 +1,6 @@
-﻿using PswManagerCommands;
-using PswManagerCommands.AbstractCommands;
-using PswManagerCommands.Validation.Builders;
+﻿using PswManager.Commands;
+using PswManager.Commands.AbstractCommands;
+using PswManager.Commands.Validation.Builders;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands.ArgsModels;
 using PswManagerLibrary.Commands.Validation.ValidationLogic;

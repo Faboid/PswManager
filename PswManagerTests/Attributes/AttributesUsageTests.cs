@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using PswManagerCommands.Validation.Attributes;
-using PswManagerCommands.Unused.Parsing.Attributes;
+using PswManager.Commands.Validation.Attributes;
+using PswManager.Commands.Unused.Parsing.Attributes;
 
 namespace PswManagerTests.Attributes {
     public class AttributesUsageTests {

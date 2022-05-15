@@ -1,15 +1,15 @@
-﻿using PswManagerCommands.Validation.Attributes;
-using PswManagerCommands.Validation.Models;
+﻿using PswManager.Commands.Validation.Attributes;
+using PswManager.Commands.Validation.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using PswManagerHelperMethods;
-using PswManagerCommands.Validation.Validators;
+using PswManager.Commands.Validation.Validators;
 
 [assembly: InternalsVisibleTo("PswManagerTests")]
-namespace PswManagerCommands.Validation.Builders {
+namespace PswManager.Commands.Validation.Builders {
 
     public class AutoValidatorBuilder<TObj> {
 

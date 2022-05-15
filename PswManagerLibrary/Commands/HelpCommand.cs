@@ -1,7 +1,7 @@
-﻿using PswManagerCommands;
-using PswManagerCommands.AbstractCommands;
-using PswManagerCommands.Validation.Builders;
-using PswManagerCommands.Validation.Models;
+﻿using PswManager.Commands;
+using PswManager.Commands.AbstractCommands;
+using PswManager.Commands.Validation.Builders;
+using PswManager.Commands.Validation.Models;
 using PswManagerLibrary.UIConnection.Attributes;
 using System;
 using System.Collections.Generic;

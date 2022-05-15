@@ -1,10 +1,10 @@
-﻿using PswManagerCommands.Validation.Attributes;
-using PswManagerCommands.Validation.Models;
+﻿using PswManager.Commands.Validation.Attributes;
+using PswManager.Commands.Validation.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace PswManagerCommands.Validation.Validators {
+namespace PswManager.Commands.Validation.Validators {
 
     internal class AutoValidator<T> : IAutoValidator<T> {
 

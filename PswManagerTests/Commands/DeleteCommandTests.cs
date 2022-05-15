@@ -1,4 +1,4 @@
-﻿using PswManagerCommands;
+﻿using PswManager.Commands;
 using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Commands.Validation.Attributes;

@@ -1,4 +1,4 @@
-﻿namespace PswManagerCommands {
+﻿namespace PswManager.Commands {
     public interface ICommandInput {
     }
 }

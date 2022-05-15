@@ -1,4 +1,4 @@
-﻿using PswManagerCommands.Validation.Attributes;
+﻿using PswManager.Commands.Validation.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;

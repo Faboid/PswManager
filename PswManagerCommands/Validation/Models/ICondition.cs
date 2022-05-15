@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PswManagerCommands.Validation.Models {
+namespace PswManager.Commands.Validation.Models {
     public interface ICondition<T> {
         string GetErrorMessage();
         bool IsValid(T obj);

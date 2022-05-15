@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PswManagerCommands.Validation.Models {
+namespace PswManager.Commands.Validation.Models {
     public sealed class IndexHelper {
 
         /// <summary>

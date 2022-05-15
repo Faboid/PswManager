@@ -1,7 +1,7 @@
-﻿using PswManagerCommands;
-using PswManagerCommands.Validation.Attributes;
-using PswManagerCommands.Validation.Builders;
-using PswManagerCommands.Validation.Models;
+﻿using PswManager.Commands;
+using PswManager.Commands.Validation.Attributes;
+using PswManager.Commands.Validation.Builders;
+using PswManager.Commands.Validation.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
