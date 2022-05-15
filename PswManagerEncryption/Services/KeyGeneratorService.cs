@@ -1,12 +1,14 @@
 ﻿using PswManagerEncryption.Cryptography;
 using PswManagerEncryption.Random;
+using PswManagerAsync;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
+using PswManagerAsync.Locks;
 
 [assembly: InternalsVisibleTo("PswManagerTests")]
 namespace PswManagerEncryption.Services {
-    public class KeyGeneratorService : IDisposable {
+    public class KeyGeneratorService : IAsyncDisposable {
 
         /// <summary>
         /// Instantiates a <see cref="KeyGeneratorService"/> with a fixed salt. 
@@ -36,11 +38,33 @@ namespace PswManagerEncryption.Services {
 
             rfc = new Rfc2898DeriveBytes(bytes, salt, iterations);
             random = new SaltRandom(64, 168, bytes.Sum(x => x / (bytes.Length / 2)));
+
+            channel = new(3);
+            generationTask = AutoGenerateKeysAsync();
         }
 
-        //todo - implement a buffer of Keys to speed up future calls
+        public bool IsDisposed { get; private set; } = false;
+
         private readonly Rfc2898DeriveBytes rfc;
         private readonly SaltRandom random;
+        private readonly Channel<Key> channel;
+        private readonly Task generationTask;
+        private readonly Locker locker = new(1);
+
+        private async Task AutoGenerateKeysAsync() {
+            while(!channel.Token.IsCancellationRequested && !IsDisposed) {
+                try {
+                    var key = await GenerateNextKeyAsync(channel.Token).ConfigureAwait(false);
+                    await channel.WriteAsync(key).ConfigureAwait(false);
+                } catch (OperationCanceledException) {
+                    //do nothing
+                    return;
+                } catch (ObjectDisposedException) {
+                    //still do nothing
+                    return;
+                }
+            }
+        }
 
         /// <summary>
         /// Generates a finite amount of keys.
@@ -49,27 +73,67 @@ namespace PswManagerEncryption.Services {
         /// </summary>
         /// <param name="num"></param>
         /// <returns></returns>
-        public List<Key> GenerateKeys(int num) {
-            lock(rfc) {
-                List<Key> keys = new();
+        public async Task<List<Key>> GenerateKeysAsync(int num) {
 
-                for(int i = 0; i < num; i++) {
-                    keys.Add(new Key(rfc.GetBytes(random.Next())));
+            List<Key> keys = new();
+
+            while(keys.Count < num) {
+                keys.Add(await GenerateKeyAsync().ConfigureAwait(false));
+            }
+
+            return keys;
+        }
+
+        public async Task<Key> GenerateKeyAsync() {
+            using var lockhere = await locker.GetLockAsync().ConfigureAwait(false);
+            do {
+
+                //check generationTask to make sure it hasn't thrown an exception
+                if(generationTask.IsFaulted) {
+                    try {
+                        await generationTask.ConfigureAwait(false);
+                    }
+                    catch(Exception ex) {
+                        //todo - insert some kind of logging here
+                        throw new Exception("The infinite key-generation task has thrown an exception.", ex);
+                    }
                 }
 
-                return keys;
-            }
+                if(IsDisposed) {
+                    throw new ObjectDisposedException("This object has already been disposed of.");
+                }
+
+                var (success, key) = await channel.TryReadAsync(2000).ConfigureAwait(false);
+                if(success) {
+                    return key!;
+                }
+
+            } while(true);
         }
 
-        public Key GenerateKey() {
-            lock(rfc) {
-                return new Key(rfc.GetBytes(random.Next())); 
-            }
+        private async Task<Key> GenerateNextKeyAsync(CancellationToken cancellationToken) {
+            return await Task.Run(() => {
+                return GenerateNextKey();
+            }, cancellationToken).ConfigureAwait(false);
+
         }
 
-        public void Dispose() {
+        private Key GenerateNextKey() {
+            return new(rfc.GetBytes(random.Next()));
+        }
+
+        public async ValueTask DisposeAsync() {
+            if(IsDisposed) {
+                return;
+            }
+            
+            channel.Dispose();
+            await generationTask.ConfigureAwait(false); //this is to find any exception thrown in there
             rfc.Dispose();
+            IsDisposed = true;
+            locker.Dispose();
             GC.SuppressFinalize(this);
+
         }
     }
 }

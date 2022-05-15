@@ -6,13 +6,13 @@ using PswManagerConsole;
 
 UserInput userInput = new();
 
-var cryptoAccount = new CryptoFactory(userInput).AskUserPasswords();
+var cryptoFactory = new CryptoFactory(userInput);
+var cryptoAccount = await cryptoFactory.AskUserPasswordsAsync();
 
 Console.WriteLine("Welcome to PswManager! Please insert a command.");
-
 var cmdLoop = new CommandLoop(userInput, cryptoAccount);
 
-cmdLoop.Start();
+await cmdLoop.StartAsync();
 
 Console.WriteLine("Bye bye!");
 Thread.Sleep(500);

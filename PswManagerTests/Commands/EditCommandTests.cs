@@ -5,6 +5,7 @@ using PswManagerTests.Commands.Helper;
 using PswManagerTests.Database.MemoryConnectionTests.Helpers;
 using PswManagerTests.TestsHelpers;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Commands {
@@ -57,12 +58,32 @@ namespace PswManagerTests.Commands {
 
             //act
             var previous = getCommand.Run(ClassBuilder.Build<GetCommand>(new List<string>() { name }));
-            editCommand.Run(args);
+            var result = editCommand.Run(args);
             var actual = getCommand.Run(ClassBuilder.Build<GetCommand>(new List<string>() { newName ?? name }));
 
             //assert
             Assert.NotEqual(previous, actual);
             Assert.Equal(expected, actual.QueryReturnValue);
+            Assert.True(result.Success);
+
+        }
+
+        [Theory]
+        [MemberData(nameof(EditSuccessfullyData))]
+        public async Task EditSuccessfullyAsync(string name, string newName, ICommandInput args, string expected) {
+
+            //arrange
+            dbHandler.SetUpDefaultValues();
+
+            //act
+            var previous = await getCommand.RunAsync(ClassBuilder.Build<GetCommand>(new List<string>() { name })).ConfigureAwait(false);
+            var result = await editCommand.RunAsync(args).ConfigureAwait(false);
+            var actual = await getCommand.RunAsync(ClassBuilder.Build<GetCommand>(new List<string>() { newName ?? name })).ConfigureAwait(false);
+
+            //assert
+            Assert.NotEqual(previous, actual);
+            Assert.Equal(expected, actual.QueryReturnValue);
+            Assert.True(result.Success);
 
         }
 
@@ -85,21 +106,30 @@ namespace PswManagerTests.Commands {
 
         [Theory]
         [MemberData(nameof(ExpectedValidationFailuresData))]
-        public void ExpectedValidationFailures(string expectedErrorMessage, ICommandInput args) {
+        public async void ExpectedValidationFailures(string expectedErrorMessage, ICommandInput args) {
 
             //arrange
             bool valid;
             CommandResult result;
-            
+            CommandResult resultAsync;
+
             //act
             valid = editCommand.Validate(args).success;
             result = editCommand.Run(args);
+            resultAsync = await editCommand.RunAsync(args).ConfigureAwait(false);
 
             //assert
             Assert.False(valid);
+
+            //sync
             Assert.False(result.Success);
             Assert.NotEmpty(result.ErrorMessages);
             Assert.Contains(expectedErrorMessage, result.ErrorMessages);
+
+            //async
+            Assert.False(resultAsync.Success);
+            Assert.NotEmpty(resultAsync.ErrorMessages);
+            Assert.Contains(expectedErrorMessage, resultAsync.ErrorMessages);
 
         }
 

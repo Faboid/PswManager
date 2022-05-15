@@ -2,6 +2,7 @@
 using PswManagerTests.TestsHelpers;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Database.Generic {
@@ -33,6 +34,12 @@ namespace PswManagerTests.Database.Generic {
 
             Assert.True(dataHelper.AccountExist(name) == shouldExist);
 
+        }
+
+        [Theory]
+        [MemberData(nameof(AccountExistTestsData))]
+        public async Task AccountExistsAsync(string name, bool shouldExist) {
+            Assert.True(await dataHelper.AccountExistAsync(name) == shouldExist);
         }
 
         public void Dispose() {

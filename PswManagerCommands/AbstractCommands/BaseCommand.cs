@@ -3,6 +3,7 @@ using PswManagerCommands.Validation.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PswManagerCommands.AbstractCommands {
 
@@ -34,7 +35,24 @@ namespace PswManagerCommands.AbstractCommands {
             return RunLogic((TInput)arguments);
         }
 
-        protected abstract CommandResult RunLogic(TInput obj);
+        /// <summary>
+        /// <inheritdoc/>
+        /// <br/>Note: The given input will be cast to <see cref="TInput"/>. You can get <see cref="TInput"/>'s type by calling <see cref="GetCommandInputType"/>.
+        /// </summary>
+        /// <param name="arguments"></param>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="arguments"/> is null.</exception>
+        /// <returns></returns>
+        public async ValueTask<CommandResult> RunAsync(ICommandInput arguments) {
+            var (success, errorMessages) = Validate(arguments);
+            if(!success) {
+                return new CommandResult("The command has failed the validation process.", false, null, errorMessages.ToArray());
+            }
+
+            return await RunLogicAsync((TInput)arguments);
+        }
+
+        protected abstract CommandResult RunLogic(TInput args);
+        protected abstract ValueTask<CommandResult> RunLogicAsync(TInput args);
 
         /// <summary>
         /// <inheritdoc/>

@@ -3,9 +3,9 @@ using PswManagerLibrary.Commands;
 using PswManagerTests.Commands.Helper;
 using PswManagerTests.Database.MemoryConnectionTests.Helpers;
 using PswManagerTests.TestsHelpers;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Commands {
@@ -48,17 +48,22 @@ namespace PswManagerTests.Commands {
 
         [Theory]
         [MemberData(nameof(CommandSuccessData))]
-        public void CommandSuccess(string input, string[] expectedValues) {
+        public async Task CommandSuccess(string input, string[] expectedValues) {
 
             //arrange
             CommandResult result;
+            CommandResult resultAsync;
             var obj = ClassBuilder.Build<GetAllCommand>(new List<string>() { input });
 
             //act
             result = getAllCommand.Run(obj);
+            resultAsync = await getAllCommand.RunAsync(obj).ConfigureAwait(false);
 
             //assert
-            Assert.Equal(string.Join(Environment.NewLine, expectedValues), result.QueryReturnValue);
+            foreach(var value in expectedValues) {
+                Assert.Contains(value, result.QueryReturnValue);
+                Assert.Contains(value, resultAsync.QueryReturnValue);
+            }
 
         }
 
@@ -72,22 +77,31 @@ namespace PswManagerTests.Commands {
 
         [Theory]
         [MemberData(nameof(ExpectedValidationFailuresData))]
-        public void ExpectedValidationFailures(string expectedErrorMessage, string keys) {
+        public async Task ExpectedValidationFailures(string expectedErrorMessage, string keys) {
 
             //arrange
             bool valid;
             CommandResult result;
+            CommandResult resultAsync;
             var obj = ClassBuilder.Build<GetAllCommand>(new List<string>() { keys });
 
             //act
             valid = getAllCommand.Validate(obj).success;
             result = getAllCommand.Run(obj);
+            resultAsync = await getAllCommand.RunAsync(obj).ConfigureAwait(false);
 
             //assert
             Assert.False(valid);
+
+            //sync
             Assert.False(result.Success);
             Assert.NotEmpty(result.ErrorMessages);
             Assert.Contains(expectedErrorMessage, result.ErrorMessages);
+            
+            //async
+            Assert.False(resultAsync.Success);
+            Assert.NotEmpty(resultAsync.ErrorMessages);
+            Assert.Contains(expectedErrorMessage, resultAsync.ErrorMessages);
 
         }
 

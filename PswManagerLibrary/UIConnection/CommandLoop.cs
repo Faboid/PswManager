@@ -2,13 +2,16 @@
 using PswManagerDatabase;
 using PswManagerLibrary.Commands;
 using PswManagerLibrary.Cryptography;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PswManagerLibrary.UIConnection {
     //todo - this class is doing too much. Split it into multiple classes and use proper DI
     public class CommandLoop {
 
+        private readonly Dictionary<Type, Requester> cachedRequesters = new();
         private readonly IUserInput userInput;
         private CommandQuery query;
 
@@ -48,27 +51,62 @@ namespace PswManagerLibrary.UIConnection {
             string cmdType;
             while((cmdType = userInput.RequestAnswer().ToLowerInvariant()) != "exit") {
 
-                var (foundTemplate, inputType) = query.TryGetCommandInputTemplate(cmdType);
-                if(!foundTemplate) {
-                    userInput.SendMessage("The command you've given doesn't exist.");
-                    continue;
-                }
-
-                Requester requester = new(inputType, userInput);
-                var (success, obj) = requester.Build();
-                if(!success) {
-                    userInput.SendMessage("Something wrong wrong with the arguments' building phase.");
+                if(!TryGetInput(cmdType, out string errorMessage, out var obj)) {
+                    userInput.SendMessage(errorMessage);
                     continue;
                 }
 
                 SingleQuery(cmdType, (ICommandInput)obj);
             }
+        }
 
+        public async Task StartAsync() {
+            string cmdType;
+            while((cmdType = userInput.RequestAnswer().ToLowerInvariant()) != "exit") {
+
+                if(!TryGetInput(cmdType, out string errorMessage, out var obj)) {
+                    userInput.SendMessage(errorMessage);
+                    continue;
+                }
+
+                await SingleQueryAsync(cmdType, (ICommandInput)obj);
+            }
+        }
+
+        private bool TryGetInput(string cmdType, out string errorMessage, out object inputObj) {
+            
+            var (foundTemplate, type) = query.TryGetCommandInputTemplate(cmdType);
+            if(!foundTemplate) {
+                errorMessage = "The command you've given doesn't exist.";
+                inputObj = default;
+                return false;
+            }
+
+            if(!cachedRequesters.ContainsKey(type)) {
+                cachedRequesters.Add(type, new Requester(type, userInput));
+            }
+
+            (bool success, inputObj) = cachedRequesters[type].Build(); 
+            if(!success) {
+                errorMessage = "Something went wrong with the arguments' building phase.";
+                return false;
+            }
+
+            errorMessage = "";
+            return true;
         }
 
         public void SingleQuery(string cmdType, ICommandInput inputArgs) {
             var result = query.Query(cmdType, inputArgs);
+            HandleQueryResult(result);
+        }
 
+        public async Task SingleQueryAsync(string cmdType, ICommandInput inputArgs) {
+            var result = await query.QueryAsync(cmdType, inputArgs);
+            HandleQueryResult(result);
+        }
+
+        private void HandleQueryResult(CommandResult result) {
             userInput.SendMessage(result.BackMessage);
             if(result.QueryReturnValue != null) {
                 userInput.SendMessage(result.QueryReturnValue);

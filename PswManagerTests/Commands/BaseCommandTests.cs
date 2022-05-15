@@ -1,6 +1,7 @@
 ﻿using PswManagerCommands;
 using PswManagerCommands.AbstractCommands;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Commands {
@@ -9,17 +10,19 @@ namespace PswManagerTests.Commands {
         readonly MockedChildrenCommand command = new MockedChildrenCommand();
 
         [Fact]
-        public void ReturnExpectedValue() {
+        public async Task ReturnExpectedValue() {
 
             //arrange
             MockedArgs args = new MockedArgs();
 
             //act
             var result = command.Run(args);
+            var resultAsync = await command.RunAsync(args).ConfigureAwait(false);
 
             //assert
             Assert.True(result.Success);
             Assert.Equal(command.Result, result.BackMessage);
+            Assert.Equal(command.Result, resultAsync.BackMessage);
 
         }
 
@@ -38,21 +41,23 @@ namespace PswManagerTests.Commands {
         }
 
         [Fact]
-        public void ThrowOnNullArgument() {
+        public async Task ThrowOnNullArgument() {
 
             Assert.Throws<ArgumentNullException>(() => command.Validate(null));
             Assert.Throws<ArgumentNullException>(() => command.Run(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await command.RunAsync(null).ConfigureAwait(false)).ConfigureAwait(false);
 
         }
 
         [Fact]
-        public void ThrowOnWrongArgumentType() {
+        public async Task ThrowOnWrongArgumentType() {
 
             //arrange
             var args = new MockedArgsTwo();
 
             Assert.Throws<InvalidCastException>(() => command.Validate(args));
             Assert.Throws<InvalidCastException>(() => command.Run(args));
+            await Assert.ThrowsAsync<InvalidCastException>(async () => await command.RunAsync(args).ConfigureAwait(false)).ConfigureAwait(false);
 
         }
 
@@ -68,6 +73,10 @@ namespace PswManagerTests.Commands {
 
         protected override CommandResult RunLogic(MockedArgs obj) {
             return new CommandResult(Result, true);
+        }
+
+        protected override ValueTask<CommandResult> RunLogicAsync(MockedArgs args) {
+            return ValueTask.FromResult(RunLogic(args));
         }
     }
 

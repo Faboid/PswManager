@@ -5,6 +5,7 @@ using PswManagerTests.Commands.Helper;
 using PswManagerTests.Database.MemoryConnectionTests.Helpers;
 using PswManagerTests.TestsHelpers;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Commands {
@@ -19,17 +20,23 @@ namespace PswManagerTests.Commands {
         readonly GetCommand getCommand;
 
         [Fact]
-        public void CommandSuccess() {
+        public async Task CommandSuccess() {
 
             //arrange
             CommandResult result;
+            CommandResult resultAsync;
+            string expected = new DefaultValues(1).values[0];
             var obj = ClassBuilder.Build<GetCommand>(new List<string>() { DefaultValues.StaticGetValue(0, DefaultValues.TypeValue.Name) });
 
             //act
             result = getCommand.Run(obj);
+            resultAsync = await getCommand.RunAsync(obj).ConfigureAwait(false);
 
             //assert
-            Assert.Equal(new DefaultValues(1).values[0], result.QueryReturnValue);
+            Assert.True(result.Success);
+            Assert.True(resultAsync.Success);
+            Assert.Equal(expected, result.QueryReturnValue);
+            Assert.Equal(expected, resultAsync.QueryReturnValue);
 
         }
 
@@ -51,21 +58,30 @@ namespace PswManagerTests.Commands {
 
         [Theory]
         [MemberData(nameof(ExpectedValidationFailuresData))]
-        public void ExpectedValidationFailures(string expectedErrorMessage, ICommandInput args) {
+        public async Task ExpectedValidationFailures(string expectedErrorMessage, ICommandInput args) {
 
             //arrange
             bool valid;
             CommandResult result;
+            CommandResult resultAsync;
 
             //act
             valid = getCommand.Validate(args).success;
             result = getCommand.Run(args);
+            resultAsync = await getCommand.RunAsync(args).ConfigureAwait(false);
 
             //assert
             Assert.False(valid);
+
+            //sync
             Assert.False(result.Success);
             Assert.NotEmpty(result.ErrorMessages);
             Assert.Contains(expectedErrorMessage, result.ErrorMessages);
+
+            //async
+            Assert.False(resultAsync.Success);
+            Assert.NotEmpty(resultAsync.ErrorMessages);
+            Assert.Contains(expectedErrorMessage, resultAsync.ErrorMessages);
 
         }
 

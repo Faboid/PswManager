@@ -1,7 +1,9 @@
-﻿using PswManagerEncryption.Cryptography;
+﻿using PswManagerAsync;
+using PswManagerEncryption.Cryptography;
 using PswManagerEncryption.Services;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PswManagerLibrary.Cryptography {
     public class CryptoAccount : ICryptoAccount {
@@ -21,29 +23,38 @@ namespace PswManagerLibrary.Cryptography {
         }
 
         public CryptoAccount(ICryptoService passCryptoString, ICryptoService emaCryptoString) {
-            PassCryptoString = passCryptoString;
-            EmaCryptoString = emaCryptoString;
+            PassCryptoString = new(passCryptoString);
+            EmaCryptoString = new(emaCryptoString);
         }
 
-        public ICryptoService PassCryptoString { get; }
-        public ICryptoService EmaCryptoString { get; }
+        public CryptoAccount(Task<Key> passKeyTask, Task<Key> emaKeyTask) : this (
+            passKeyTask.ContinueWith(async x => new CryptoService(await x) as ICryptoService).Unwrap(),
+            emaKeyTask.ContinueWith(async x => new CryptoService(await x) as ICryptoService).Unwrap()
+        ) { }
 
-        public ICryptoService GetPassCryptoService() => PassCryptoString;
-        public ICryptoService GetEmaCryptoService() => EmaCryptoString;
+        public CryptoAccount(Task<ICryptoService> passKeyTask, Task<ICryptoService> emaKeyTask) {
+            PassCryptoString = new(() => passKeyTask);
+            EmaCryptoString = new(() => emaKeyTask);
+        }
+
+        private AsyncLazy<ICryptoService> PassCryptoString { get; }
+        private AsyncLazy<ICryptoService> EmaCryptoString { get; }
+
+        public ICryptoService GetPassCryptoService() => PassCryptoString.Value.Result;
+        public ICryptoService GetEmaCryptoService() => EmaCryptoString.Value.Result;
+        public Task<ICryptoService> GetPassCryptoServiceAsync() => EmaCryptoString.Value;
+        public Task<ICryptoService> GetEmaCryptoServiceAsync() => PassCryptoString.Value;
 
 
         public (string encryptedPassword, string encryptedEmail) Encrypt(string password, string email) {
-            return (PassCryptoString.Encrypt(password), EmaCryptoString.Encrypt(email));
+            return (GetPassCryptoService().Encrypt(password), GetEmaCryptoService().Encrypt(email));
         }
 
         public (string decryptedPassword, string decryptedEmail) Decrypt(string encryptedPassword, string encryptedEmail) {
-            return (PassCryptoString.Decrypt(encryptedPassword), EmaCryptoString.Decrypt(encryptedEmail));
+            return (GetPassCryptoService().Decrypt(encryptedPassword), GetEmaCryptoService().Decrypt(encryptedEmail));
         }
 
-
-
         public (string encryptedPassword, string encryptedEmail) Encrypt((string password, string email) values) => Encrypt(values.password, values.email);
-
         public (string decryptedPassword, string decryptedEmail) Decrypt((string encryptedPassword, string encryptedEmail) values) => Decrypt(values.encryptedPassword, values.encryptedEmail);
 
     }

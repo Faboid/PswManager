@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PswManagerCommands {
 
@@ -19,6 +20,13 @@ namespace PswManagerCommands {
         /// <param name="input"></param>
         /// <returns></returns>
         CommandResult Run(ICommandInput input);
+
+        /// <summary>
+        /// Runs the argument through a validation check, and, if they pass it, runs the command asynchronously.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        ValueTask<CommandResult> RunAsync(ICommandInput input);
 
         /// <summary>
         /// Validates the given arguments. If there's any failure, it returns <see langword="false"/> and a list with all the failures that occurred.

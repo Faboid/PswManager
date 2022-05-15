@@ -6,6 +6,7 @@ using PswManagerTests.Commands.Helper;
 using PswManagerTests.Database.MemoryConnectionTests.Helpers;
 using PswManagerTests.TestsHelpers;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace PswManagerTests.Commands {
@@ -43,6 +44,28 @@ namespace PswManagerTests.Commands {
 
         }
 
+        [Theory]
+        [InlineData("someasyncname", "passhere", "ema@yoyo,com")]
+        [InlineData("xmlnyyasyncx", "ightueasyncghtuy", "this@mail.com")]
+        [InlineData("AsyncValuehere", "&&%£@#[][+*é", "valueNameHere@thisdomain.com")]
+        public async Task AddSuccessfullyAsync(string name, string password, string email) {
+
+            //arrange
+            var obj = ClassBuilder.Build<AddCommand>(new List<string> { password, name, email });
+            bool exists;
+            CommandResult result;
+
+            //act
+            exists = await dataHelper.AccountExistAsync(name).ConfigureAwait(false);
+            result = await addCommand.RunAsync(obj).ConfigureAwait(false);
+
+            //assert
+            Assert.False(exists);
+            Assert.True(result.Success);
+            Assert.True(await dataHelper.AccountExistAsync(name).ConfigureAwait(false));
+
+        }
+
         public static IEnumerable<object[]> ExpectedValidationFailuresData() {
             static object[] NewObj(string errorMessage, string name, string password, string email) 
                 => new object[] { 
@@ -64,22 +87,31 @@ namespace PswManagerTests.Commands {
 
         [Theory]
         [MemberData(nameof(ExpectedValidationFailuresData))]
-        public void ExpectedValidationFailures(string expectedErrorMessage, ICommandInput args) {
+        public async void ExpectedValidationFailures(string expectedErrorMessage, ICommandInput args) {
 
             //arrange
             bool valid;
             CommandResult result;
+            CommandResult resultAsync;
 
             //act
             valid = addCommand.Validate(args).success;
             result = addCommand.Run(args);
+            resultAsync = await addCommand.RunAsync(args).ConfigureAwait(false);
 
             //assert
             Assert.False(valid);
+            
+            //sync
             Assert.False(result.Success);
             Assert.NotEmpty(result.ErrorMessages);
             Assert.Contains(expectedErrorMessage, result.ErrorMessages);
 
+            //async
+            Assert.False(resultAsync.Success);
+            Assert.NotEmpty(resultAsync.ErrorMessages);
+            Assert.Contains(expectedErrorMessage, resultAsync.ErrorMessages);
+        
         }
 
     }

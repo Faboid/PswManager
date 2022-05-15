@@ -1,11 +1,15 @@
 ﻿using PswManagerDatabase.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PswManagerDatabase.DataAccess.Interfaces {
     public interface IDataReader : IDataHelper {
 
-        ConnectionResult<IEnumerable<AccountModel>> GetAllAccounts();
+        ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts();
         ConnectionResult<AccountModel> GetAccount(string name);
+
+        Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsAsync();
+        ValueTask<ConnectionResult<AccountModel>> GetAccountAsync(string name);
 
     }
 }

@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PswManagerAsync\PswManagerAsync.csproj" />
     <ProjectReference Include="..\PswManagerHelperMethods\PswManagerHelperMethods.csproj" />
   </ItemGroup>
 

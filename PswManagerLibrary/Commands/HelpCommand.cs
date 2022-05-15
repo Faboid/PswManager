@@ -5,6 +5,7 @@ using PswManagerCommands.Validation.Models;
 using PswManagerLibrary.UIConnection.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PswManagerLibrary.Commands {
     public class HelpCommand : BaseCommand<HelpCommand.Args> {
@@ -32,6 +33,10 @@ namespace PswManagerLibrary.Commands {
             //return command-specific message
             string commandDetails = commands[arguments.CmdName.ToLowerInvariant()].GetDescription();
             return new CommandResult(commandDetails, true);
+        }
+
+        protected override ValueTask<CommandResult> RunLogicAsync(Args args) {
+            return ValueTask.FromResult(RunLogic(args));
         }
 
         public override string GetDescription() {

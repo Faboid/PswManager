@@ -5,7 +5,7 @@ using PswManagerDatabase.DataAccess.Interfaces;
 using PswManagerLibrary.Commands.ArgsModels;
 using PswManagerLibrary.Commands.Validation.ValidationLogic;
 using PswManagerLibrary.UIConnection;
-using PswManagerLibrary.UIConnection.Attributes;
+using System.Threading.Tasks;
 
 namespace PswManagerLibrary.Commands {
     public class DeleteCommand : BaseCommand<DeleteCommandArgs> {
@@ -13,19 +13,32 @@ namespace PswManagerLibrary.Commands {
         private readonly IDataDeleter dataDeleter;
         private readonly IUserInput userInput;
 
-        public DeleteCommand(IDataDeleter pswManager, IUserInput userInput) {
-            this.dataDeleter = pswManager;
+        private readonly CommandResult stoppedEarlyResult = new("The operation has been stopped.", false);
+        private readonly CommandResult successResult = new("Account deleted successfully.", true);
+
+        public DeleteCommand(IDataDeleter dataDeleter, IUserInput userInput) {
+            this.dataDeleter = dataDeleter;
             this.userInput = userInput;
         }
 
         protected override CommandResult RunLogic(DeleteCommandArgs args) {
-            var result = userInput.YesOrNo("Are you sure? This account will be deleted forever.");
-            if(result == false) { return new CommandResult("The operation has been stopped.", false); }
+            if(StopEarlyQuestion()) { return stoppedEarlyResult; }
 
             var cnnResult = dataDeleter.DeleteAccount(args.Name);
 
             return cnnResult.Success switch {
-                true => new CommandResult("Account deleted successfully.", true),
+                true => successResult,
+                false => new CommandResult($"There has been an error: {cnnResult.ErrorMessage}", false)
+            };
+        }
+
+        protected override async ValueTask<CommandResult> RunLogicAsync(DeleteCommandArgs args) {
+            if(StopEarlyQuestion()) { return stoppedEarlyResult; }
+
+            var cnnResult = await dataDeleter.DeleteAccountAsync(args.Name).ConfigureAwait(false);
+
+            return cnnResult.Success switch {
+                true => successResult,
                 false => new CommandResult($"There has been an error: {cnnResult.ErrorMessage}", false)
             };
         }
@@ -36,6 +49,13 @@ namespace PswManagerLibrary.Commands {
 
         protected override AutoValidatorBuilder<DeleteCommandArgs> AddRules(AutoValidatorBuilder<DeleteCommandArgs> builder) => builder
             .AddRule(new VerifyAccountExistenceRule(dataDeleter));
+
+        private bool StopEarlyQuestion() {
+            //if the user inputs yes, they are sure and want to keep going
+            //if the user inputs no, they want to stop
+            //as this methods checks if they want to stop, it must be inverted.
+            return !userInput.YesOrNo("Are you sure? This account will be deleted forever.");
+        }
 
     }
 }
