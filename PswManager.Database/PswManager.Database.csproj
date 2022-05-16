@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.115.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PswManager.Async\PswManager.Async.csproj" />
+    <ProjectReference Include="..\PswManager.Utils\PswManager.Utils.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -3,21 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerLibrary", "PswManagerLibrary\PswManagerLibrary.csproj", "{02353A73-B60B-4434-9819-AC8A3ADDE864}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Core", "PswManager.Core\PswManager.Core.csproj", "{02353A73-B60B-4434-9819-AC8A3ADDE864}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerConsole", "PswManagerConsole\PswManagerConsole.csproj", "{E0FC07AF-04D3-41FA-8E3A-F53939B52ABC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.ConsoleUI", "PswManager.ConsoleUI\PswManager.ConsoleUI.csproj", "{E0FC07AF-04D3-41FA-8E3A-F53939B52ABC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerTests", "PswManagerTests\PswManagerTests.csproj", "{C4C2C729-7344-4172-AF50-CD1C2FF97522}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Tests", "PswManager.Tests\PswManager.Tests.csproj", "{C4C2C729-7344-4172-AF50-CD1C2FF97522}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerCommands", "PswManagerCommands\PswManagerCommands.csproj", "{EDC2911F-7A40-4BD5-9999-17CB72517BDB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Commands", "PswManager.Commands\PswManager.Commands.csproj", "{EDC2911F-7A40-4BD5-9999-17CB72517BDB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerDatabase", "PswManagerDatabase\PswManagerDatabase.csproj", "{5472D15F-056E-492A-B7D8-472357A94E39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Database", "PswManager.Database\PswManager.Database.csproj", "{5472D15F-056E-492A-B7D8-472357A94E39}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerHelperMethods", "PswManagerHelperMethods\PswManagerHelperMethods.csproj", "{F3FB09A3-DB38-470D-BFE1-470D1251A702}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Utils", "PswManager.Utils\PswManager.Utils.csproj", "{F3FB09A3-DB38-470D-BFE1-470D1251A702}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManagerEncryption", "PswManagerEncryption\PswManagerEncryption.csproj", "{215587A2-F95E-4703-8290-085AB9AC9221}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Encryption", "PswManager.Encryption\PswManager.Encryption.csproj", "{215587A2-F95E-4703-8290-085AB9AC9221}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManagerAsync", "PswManagerAsync\PswManagerAsync.csproj", "{C1F0F60C-4D57-42D5-8828-D44E275C8F4A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Async", "PswManager.Async\PswManager.Async.csproj", "{C1F0F60C-4D57-42D5-8828-D44E275C8F4A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
