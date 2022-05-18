@@ -1,10 +1,11 @@
 ﻿using PswManager.Utils.WrappingObjects;
+using System.Threading.Tasks;
 
 namespace PswManager.Core.Inner.Interfaces {
     public interface IAccountDeleter {
 
         Result DeleteAccount(string name);
-        AsyncResult DeleteAccountAsync(string name);
+        Task<Result> DeleteAccountAsync(string name);
 
     }
 }

@@ -2,6 +2,7 @@
 using PswManager.Database.Models;
 using PswManager.Utils.WrappingObjects;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PswManager.Core {
     public class AccountsManager : IAccountDeleter, IAccountEditor, IAccountReader, IAccountCreator {
@@ -9,6 +10,13 @@ namespace PswManager.Core {
         //introduce enum to choose db types(maybe?)
         public AccountsManager() {
             
+        }
+
+        internal AccountsManager(IAccountCreator accountCreator, IAccountReader accountReader, IAccountEditor accountEditor, IAccountDeleter accountDeleter) {
+            this.accountCreator = accountCreator;
+            this.accountReader = accountReader;
+            this.accountEditor = accountEditor;
+            this.accountDeleter = accountDeleter;
         }
 
         readonly IAccountCreator accountCreator;
@@ -20,7 +28,7 @@ namespace PswManager.Core {
             return accountCreator.CreateAccount(model);
         }
 
-        public AsyncResult CreateAccountAsync(AccountModel model) {
+        public Task<Result> CreateAccountAsync(AccountModel model) {
             return accountCreator.CreateAccountAsync(model);
         }
 
@@ -28,7 +36,7 @@ namespace PswManager.Core {
             return accountReader.ReadAccount(name);
         }
 
-        public AsyncResult<AccountModel> ReadAccountAsync(string name) {
+        public Task<Result<AccountModel>> ReadAccountAsync(string name) {
             return accountReader.ReadAccountAsync(name);
         }
 
@@ -36,7 +44,7 @@ namespace PswManager.Core {
             return accountReader.ReadAllAccounts();
         }
 
-        public AsyncResult<IAsyncEnumerable<AccountModel>> ReadAllAccountsAsync() {
+        public Task<Result<IAsyncEnumerable<AccountModel>>> ReadAllAccountsAsync() {
             return accountReader.ReadAllAccountsAsync();
         }
 
@@ -44,7 +52,7 @@ namespace PswManager.Core {
             return accountEditor.UpdateAccount(name, newValues);
         }
 
-        public AsyncResult<AccountModel> UpdateAccountAsync(string name, AccountModel newValues) {
+        public Task<Result<AccountModel>> UpdateAccountAsync(string name, AccountModel newValues) {
             return accountEditor.UpdateAccountAsync(name, newValues);
         }
 
@@ -52,7 +60,7 @@ namespace PswManager.Core {
             return accountDeleter.DeleteAccount(name);
         }
 
-        public AsyncResult DeleteAccountAsync(string name) {
+        public Task<Result> DeleteAccountAsync(string name) {
             return accountDeleter.DeleteAccountAsync(name);
         }
     }
