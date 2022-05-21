@@ -1,7 +1,7 @@
 ﻿using PswManager.Utils;
 using Xunit;
 
-namespace PswManager.Tests.Generic {
+namespace PswManager.Tests.Utils {
     public class EnumExtensionsTests {
 
         [Theory]

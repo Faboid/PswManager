@@ -2,7 +2,7 @@
 using System;
 using Xunit;
 
-namespace PswManager.Tests.Generic {
+namespace PswManager.Tests.Utils {
     public class ExceptionsHelperTests {
     
         [Fact]
