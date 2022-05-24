@@ -16,14 +16,11 @@ namespace PswManager.Core.Inner {
         readonly IDataCreator dataCreator;
         readonly ICryptoAccount cryptoAccount;
 
-        readonly Result nullOrWhiteSpaceNameResult = new("You must provide a valid account name.");
-        readonly Result nullOrWhiteSpacePasswordResult = new("You must provide a valid password.");
-        readonly Result nullOrWhiteSpaceEmailResult = new("You must provide a valid email.");
         readonly Result alreadyExistingAccountResult = new($"The given account exists already.");
 
         public Result CreateAccount(AccountModel model) {
 
-            if(IsAnyValueNullOrEmpty(model, out var failResult)) {
+            if(model.IsAnyValueNullOrEmpty(out var failResult)) {
                 return failResult;
             }
 
@@ -39,7 +36,7 @@ namespace PswManager.Core.Inner {
 
         public async Task<Result> CreateAccountAsync(AccountModel model) {
 
-            if(IsAnyValueNullOrEmpty(model, out var failResult)) {
+            if(model.IsAnyValueNullOrEmpty(out var failResult)) {
                 return failResult;
             }
 
@@ -59,29 +56,6 @@ namespace PswManager.Core.Inner {
                 true => new Result(true),
                 false => new Result(connResult.ErrorMessage)
             };
-        }
-
-        //todo - experiment with struct-based validation to get rid of this boilerplate
-        private bool IsAnyValueNullOrEmpty(AccountModel account, out Result failureResult) {
-
-            if(string.IsNullOrWhiteSpace(account.Name)) {
-                failureResult = nullOrWhiteSpaceNameResult;
-                return true;
-            }
-
-            if(string.IsNullOrWhiteSpace(account.Password)) {
-                failureResult = nullOrWhiteSpacePasswordResult;
-                return true;
-            }
-
-            if(string.IsNullOrWhiteSpace(account.Email)) {
-                failureResult = nullOrWhiteSpaceEmailResult;
-                return true;
-            }
-
-            failureResult = null;
-            return false;
-
         }
 
     }
