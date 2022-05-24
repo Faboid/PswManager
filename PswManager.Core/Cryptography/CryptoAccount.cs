@@ -1,4 +1,5 @@
 ﻿using PswManager.Async;
+using PswManager.Database.Models;
 using PswManager.Encryption.Cryptography;
 using PswManager.Encryption.Services;
 using System;
@@ -57,5 +58,31 @@ namespace PswManager.Core.Cryptography {
         public (string encryptedPassword, string encryptedEmail) Encrypt((string password, string email) values) => Encrypt(values.password, values.email);
         public (string decryptedPassword, string decryptedEmail) Decrypt((string encryptedPassword, string encryptedEmail) values) => Decrypt(values.encryptedPassword, values.encryptedEmail);
 
+        public AccountModel Encrypt(AccountModel model) {
+            AccountModel output = new(model.Name, model.Password, model.Email);
+
+            if(!string.IsNullOrWhiteSpace(output.Password)) {
+                output.Password = GetPassCryptoService().Encrypt(output.Password);
+            }
+            if(!string.IsNullOrWhiteSpace(output.Email)) {
+                output.Email = GetPassCryptoService().Encrypt(output.Email);
+            }
+
+            return output;
+        }
+
+        public AccountModel Decrypt(AccountModel model) {
+            AccountModel output = new(model.Name, model.Password, model.Email);
+
+            if(!string.IsNullOrWhiteSpace(output.Password)) {
+                output.Password = GetPassCryptoService().Decrypt(output.Password);
+            }
+
+            if(!string.IsNullOrWhiteSpace(output.Email)) {
+                output.Email = GetPassCryptoService().Decrypt(output.Email);
+            }
+
+            return output;
+        }
     }
 }
