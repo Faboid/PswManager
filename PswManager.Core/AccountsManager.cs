@@ -1,4 +1,7 @@
-﻿using PswManager.Core.Inner.Interfaces;
+﻿using PswManager.Core.Cryptography;
+using PswManager.Core.Inner;
+using PswManager.Core.Inner.Interfaces;
+using PswManager.Database;
 using PswManager.Database.Models;
 using PswManager.Utils.WrappingObjects;
 using System.Collections.Generic;
@@ -7,9 +10,13 @@ using System.Threading.Tasks;
 namespace PswManager.Core {
     public class AccountsManager : IAccountDeleter, IAccountEditor, IAccountReader, IAccountCreator {
 
-        //introduce enum to choose db types(maybe?)
-        public AccountsManager() {
-            
+        //todo - consider whether to use an additional enum
+        public AccountsManager(DatabaseType dbType, ICryptoAccount cryptoAccount) {
+            var dataFactory = new DataFactory(dbType);
+            accountCreator = new AccountCreator(dataFactory.GetDataCreator(), cryptoAccount);
+            accountReader = new AccountReader(dataFactory.GetDataReader(), cryptoAccount);
+            accountEditor = new AccountEditor(dataFactory.GetDataEditor(), cryptoAccount);
+            accountDeleter = new AccountDeleter(dataFactory.GetDataDeleter());
         }
 
         internal AccountsManager(IAccountCreator accountCreator, IAccountReader accountReader, IAccountEditor accountEditor, IAccountDeleter accountDeleter) {
