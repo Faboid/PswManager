@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Encryption", "Ps
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Async", "PswManager.Async\PswManager.Async.csproj", "{C1F0F60C-4D57-42D5-8828-D44E275C8F4A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManager.Core.Tests", "PswManager.Core.Tests\PswManager.Core.Tests.csproj", "{824857BD-69C7-4C37-8F5A-FD19533CB0E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{C1F0F60C-4D57-42D5-8828-D44E275C8F4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1F0F60C-4D57-42D5-8828-D44E275C8F4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1F0F60C-4D57-42D5-8828-D44E275C8F4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{824857BD-69C7-4C37-8F5A-FD19533CB0E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{824857BD-69C7-4C37-8F5A-FD19533CB0E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{824857BD-69C7-4C37-8F5A-FD19533CB0E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{824857BD-69C7-4C37-8F5A-FD19533CB0E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
