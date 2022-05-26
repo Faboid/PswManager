@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 [assembly: InternalsVisibleTo("PswManager.Tests")]
+[assembly: InternalsVisibleTo("PswManager.Core.Tests")]
 namespace PswManager.Encryption.Services {
     public class CryptoService : ICryptoService, IDisposable {
         //This class is built upon a derived version of "A Gazhal"'s answer https://stackoverflow.com/a/27484425/16018958
