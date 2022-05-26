@@ -16,16 +16,10 @@ namespace PswManager.Core.Inner {
         readonly IDataCreator dataCreator;
         readonly ICryptoAccount cryptoAccount;
 
-        readonly Result alreadyExistingAccountResult = new($"The given account exists already.");
-
         public Result CreateAccount(AccountModel model) {
 
             if(model.IsAnyValueNullOrEmpty(out var failResult)) {
                 return failResult;
-            }
-
-            if(dataCreator.AccountExist(model.Name)) {
-                return alreadyExistingAccountResult;
             }
 
             (model.Password, model.Email) = cryptoAccount.Encrypt(model.Password, model.Email);
@@ -38,10 +32,6 @@ namespace PswManager.Core.Inner {
 
             if(model.IsAnyValueNullOrEmpty(out var failResult)) {
                 return failResult;
-            }
-
-            if(await dataCreator.AccountExistAsync(model.Name)) {
-                return alreadyExistingAccountResult;
             }
 
             (model.Password, model.Email) = await Task.Run(() => cryptoAccount.Encrypt(model.Password, model.Email)).ConfigureAwait(false);

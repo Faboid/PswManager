@@ -42,6 +42,7 @@ namespace PswManager.Core.Tests.Inner {
             //assert
             Assert.True(result.Success);
             dataCreatorMock.Verify(x => x.CreateAccount(It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))));
+            dataCreatorMock.VerifyNoOtherCalls();
 
         }
 
@@ -58,6 +59,7 @@ namespace PswManager.Core.Tests.Inner {
             //assert
             Assert.True(result.Success);
             dataCreatorMock.Verify(x => x.CreateAccountAsync(It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))));
+            dataCreatorMock.VerifyNoOtherCalls();
 
         }
 
