@@ -1,6 +1,7 @@
 ﻿using Moq;
 using PswManager.Core.Cryptography;
 using PswManager.Core.Inner;
+using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
@@ -40,7 +41,7 @@ namespace PswManager.Core.Tests.Inner {
 
             //assert
             Assert.True(result.Success);
-            dataCreatorMock.Verify(x => x.CreateAccount(It.Is<AccountModel>(x => AssertEqual(expected, x))));
+            dataCreatorMock.Verify(x => x.CreateAccount(It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))));
 
         }
 
@@ -56,8 +57,15 @@ namespace PswManager.Core.Tests.Inner {
 
             //assert
             Assert.True(result.Success);
-            dataCreatorMock.Verify(x => x.CreateAccountAsync(It.Is<AccountModel>(x => AssertEqual(expected, x))));
+            dataCreatorMock.Verify(x => x.CreateAccountAsync(It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))));
 
+        }
+
+        private (AccountCreator creator, AccountModel input, AccountModel expected) ArrangeTest(string name, string password, string email) {
+            var creator = new AccountCreator(dataCreatorMock.Object, cryptoAccount);
+            var input = new AccountModel(name, password, email);
+            var expected = cryptoAccount.Encrypt(input);
+            return (creator, input, expected);
         }
 
         private static ConnectionResult MockConnectionResult(AccountModel model) {
@@ -68,20 +76,6 @@ namespace PswManager.Core.Tests.Inner {
             };
 
             return new ConnectionResult(!isAnyNullOrEmpty.Any(x => x));
-        }
-
-        private (AccountCreator creator, AccountModel input, AccountModel expected) ArrangeTest(string name, string password, string email) {
-            var creator = new AccountCreator(dataCreatorMock.Object, cryptoAccount);
-            var input = new AccountModel(name, password, email);
-            var expected = cryptoAccount.Encrypt(input);
-            return (creator, input, expected);
-        }
-
-        private static bool AssertEqual(AccountModel expected, AccountModel actual) {
-            Assert.Equal(expected.Name, actual.Name);
-            Assert.Equal(expected.Password, actual.Password);
-            Assert.Equal(expected.Email, actual.Email);
-            return true;
         }
 
     }
