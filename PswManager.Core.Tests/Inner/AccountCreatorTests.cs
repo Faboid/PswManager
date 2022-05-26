@@ -1,26 +1,16 @@
 ﻿using Moq;
 using PswManager.Core.Cryptography;
 using PswManager.Core.Inner;
+using PswManager.Core.Tests.Mocks;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
-using PswManager.Encryption.Services;
 using Xunit;
 
 namespace PswManager.Core.Tests.Inner {
     public class AccountCreatorTests {
 
         public AccountCreatorTests() {
-            var mockPassCryptoService = new Mock<ICryptoService>();
-            mockPassCryptoService
-                .Setup(x => x.Encrypt(It.IsAny<string>()))
-                .Returns<string>(x => new string(x?.Reverse().ToArray() ?? throw new NullReferenceException()));
-
-            var mockEmaCryptoService = new Mock<ICryptoService>();
-            mockEmaCryptoService
-                .Setup(x => x.Encrypt(It.IsAny<string>()))
-                .Returns<string>(x => x?.Aggregate((x, y) => (char)(x + y)).ToString() ?? throw new NullReferenceException());
-
-            cryptoAccount = new CryptoAccount(mockPassCryptoService.Object, mockEmaCryptoService.Object);
+            cryptoAccount = new CryptoAccount(ICryptoServiceMocks.GetReverseEncryptor().Object, ICryptoServiceMocks.GetStringToOneCharEncryptor().Object);
 
             dataCreatorMock = new Mock<IDataCreator>();
             dataCreatorMock
