@@ -55,11 +55,11 @@ namespace PswManager.Core {
             return accountReader.ReadAllAccountsAsync();
         }
 
-        public Result<AccountModel> UpdateAccount(string name, AccountModel newValues) {
+        public Result UpdateAccount(string name, AccountModel newValues) {
             return accountEditor.UpdateAccount(name, newValues);
         }
 
-        public Task<Result<AccountModel>> UpdateAccountAsync(string name, AccountModel newValues) {
+        public Task<Result> UpdateAccountAsync(string name, AccountModel newValues) {
             return accountEditor.UpdateAccountAsync(name, newValues);
         }
 

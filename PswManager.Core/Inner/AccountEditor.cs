@@ -20,7 +20,7 @@ namespace PswManager.Core.Inner {
             this.cryptoAccount = cryptoAccount;
         }
 
-        public Result<AccountModel> UpdateAccount(string name, AccountModel newValues) {
+        public Result UpdateAccount(string name, AccountModel newValues) {
 
             if(string.IsNullOrWhiteSpace(name)) {
                 return invalidNameResult;
@@ -43,7 +43,7 @@ namespace PswManager.Core.Inner {
             };
         }
 
-        public async Task<Result<AccountModel>> UpdateAccountAsync(string name, AccountModel newValues) {
+        public async Task<Result> UpdateAccountAsync(string name, AccountModel newValues) {
 
             if(string.IsNullOrWhiteSpace(name)) {
                 return invalidNameResult;

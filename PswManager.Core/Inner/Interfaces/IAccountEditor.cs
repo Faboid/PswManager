@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 namespace PswManager.Core.Inner.Interfaces {
     public interface IAccountEditor {
 
-        Result<AccountModel> UpdateAccount(string name, AccountModel newValues);
-        Task<Result<AccountModel>> UpdateAccountAsync(string name, AccountModel newValues);
+        Result UpdateAccount(string name, AccountModel newValues);
+        Task<Result> UpdateAccountAsync(string name, AccountModel newValues);
 
     }
 }
