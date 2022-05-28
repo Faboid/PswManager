@@ -16,10 +16,10 @@ namespace PswManager.Core.Tests.Inner {
             dataCreatorMock = new Mock<IDataCreator>();
             dataCreatorMock
                 .Setup(x => x.CreateAccount(It.IsAny<AccountModel>()))
-                .Returns<AccountModel>(MockConnectionResult);
+                .Returns<AccountModel>(ConnectionResultMocks.SuccessIfAllValuesAreNotEmpty);
             dataCreatorMock
                 .Setup(x => x.CreateAccountAsync(It.IsAny<AccountModel>()))
-                .Returns<AccountModel>(x => Task.FromResult(MockConnectionResult(x)));
+                .Returns<AccountModel>(x => Task.FromResult((ConnectionResult)ConnectionResultMocks.SuccessIfAllValuesAreNotEmpty(x)));
         }
 
         //since the purpose of this class is encrypting the password & email,
@@ -68,16 +68,6 @@ namespace PswManager.Core.Tests.Inner {
             var input = new AccountModel(name, password, email);
             var expected = cryptoAccount.Encrypt(input);
             return (creator, input, expected);
-        }
-
-        private static ConnectionResult MockConnectionResult(AccountModel model) {
-            bool[] isAnyNullOrEmpty = new bool[] {
-                string.IsNullOrWhiteSpace(model.Name),
-                string.IsNullOrWhiteSpace(model.Password),
-                string.IsNullOrWhiteSpace(model.Email)
-            };
-
-            return new ConnectionResult(!isAnyNullOrEmpty.Any(x => x));
         }
 
     }
