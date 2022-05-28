@@ -26,14 +26,6 @@ namespace PswManager.Core.Inner {
                 return invalidNameResult;
             }
 
-            if(!dataEditor.AccountExist(name)) {
-                return inexistentAccountResult;
-            }
-
-            if(name != newValues.Name && dataEditor.AccountExist(newValues.Name)) {
-                return newNameIsOccupiedResult;
-            }
-
             EncryptModel(newValues);
             var result = dataEditor.UpdateAccount(name, newValues);
 
@@ -48,15 +40,6 @@ namespace PswManager.Core.Inner {
             if(string.IsNullOrWhiteSpace(name)) {
                 return invalidNameResult;
             }
-
-            if(!await dataEditor.AccountExistAsync(name)) {
-                return inexistentAccountResult;
-            }
-
-            if(name != newValues.Name && await dataEditor.AccountExistAsync(newValues.Name)) {
-                return newNameIsOccupiedResult;
-            }
-
 
             await Task.Run(() => EncryptModel(newValues)).ConfigureAwait(false);
             var result = await dataEditor.UpdateAccountAsync(name, newValues).ConfigureAwait(false);
