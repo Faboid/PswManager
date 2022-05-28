@@ -63,6 +63,27 @@ namespace PswManager.Core.Tests.Inner {
 
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("    ")]
+        public async Task NoCallsIfInvalidName(string name) {
+
+            //arrange
+            var input = new AccountModel(name, "some", "newEma");
+            AccountCreator creator = new(dataCreatorMock.Object, cryptoAccount);
+
+            //act
+            var result = creator.CreateAccount(input);
+            var resultAsync = await creator.CreateAccountAsync(input);
+
+            //assert
+            Assert.False(result.Success);
+            Assert.False(resultAsync.Success);
+            dataCreatorMock.VerifyNoOtherCalls();
+
+        }
+
         private (AccountCreator creator, AccountModel input, AccountModel expected) ArrangeTest(string name, string password, string email) {
             var creator = new AccountCreator(dataCreatorMock.Object, cryptoAccount);
             var input = new AccountModel(name, password, email);
