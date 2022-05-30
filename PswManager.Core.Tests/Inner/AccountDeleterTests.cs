@@ -41,7 +41,7 @@ namespace PswManager.Core.Tests.Inner {
 
         [Theory]
         [InlineData("someName")]
-        public async Task DeleteAccountCallsDBCorrectlyAsync(string name) {
+        public async Task DeleteAccountAsyncCallsDBCorrectly(string name) {
 
             //arrange
             AccountDeleter deleter = new(dataDeleterMock.Object);
