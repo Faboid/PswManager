@@ -10,7 +10,7 @@ namespace PswManager.Core.Tests.Mocks {
                 string.IsNullOrWhiteSpace(model.Email)
             };
 
-            return new(!isAnyNullOrEmpty.Any(x => x));
+            return new(!isAnyNullOrEmpty.Any(x => x), model);
         }
 
     }
