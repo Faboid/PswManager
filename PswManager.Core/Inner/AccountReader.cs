@@ -15,17 +15,27 @@ namespace PswManager.Core.Inner {
         private readonly IDataReader dataReader;
         private readonly ICryptoAccount cryptoAccount;
 
+        private readonly Result<AccountModel> NameInvalidResult = new("The name cannot be empty.");
+
         public AccountReader(IDataReader dataReader, ICryptoAccount cryptoAccount) {
             this.dataReader = dataReader;
             this.cryptoAccount = cryptoAccount;
         }
 
         public Result<AccountModel> ReadAccount(string name) {
+            if(string.IsNullOrWhiteSpace(name)) {
+                return NameInvalidResult;
+            }
+
             var result = dataReader.GetAccount(name);
             return Decrypt(result);
         }
 
         public async Task<Result<AccountModel>> ReadAccountAsync(string name) {
+            if(string.IsNullOrWhiteSpace(name)) {
+                return NameInvalidResult;
+            }
+
             var result = await dataReader.GetAccountAsync(name).ConfigureAwait(false);
             return await DecryptAsync(result);
         }
