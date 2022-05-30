@@ -11,7 +11,7 @@ namespace PswManager.Core.Tests.Inner {
     public class AccountCreatorTests {
 
         public AccountCreatorTests() {
-            cryptoAccount = new CryptoAccount(ICryptoServiceMocks.GetReverseEncryptor().Object, ICryptoServiceMocks.GetStringToOneCharEncryptor().Object);
+            cryptoAccount = new CryptoAccount(ICryptoServiceMocks.GetReverseCryptor().Object, ICryptoServiceMocks.GetSummingCryptor().Object);
 
             dataCreatorMock = new Mock<IDataCreator>();
             dataCreatorMock

@@ -9,21 +9,29 @@ using System.Threading.Tasks;
 namespace PswManager.Core.Tests.Mocks {
     public static class ICryptoServiceMocks {
         
-        //decryption methods aren't yet required. Might add later
-
-        public static Mock<ICryptoService> GetReverseEncryptor() {
+        public static Mock<ICryptoService> GetReverseCryptor() {
             var output = new Mock<ICryptoService>();
             output
                 .Setup(x => x.Encrypt(It.IsAny<string>()))
                 .Returns<string>(x => new string(x?.Reverse().ToArray() ?? throw new NullReferenceException()));
+
+            output
+                .Setup(x => x.Decrypt(It.IsAny<string>()))
+                .Returns<string>(x => new string(x?.Reverse().ToArray() ?? throw new NullReferenceException()));
+
             return output;
         }
 
-        public static Mock<ICryptoService> GetStringToOneCharEncryptor() {
+        public static Mock<ICryptoService> GetSummingCryptor() {
             var output = new Mock<ICryptoService>();
             output
                 .Setup(x => x.Encrypt(It.IsAny<string>()))
-                .Returns<string>(x => x?.Aggregate((x, y) => (char)(x + y)).ToString() ?? throw new NullReferenceException());
+                .Returns<string>(x => new string(x?.Select(x => (char)(x + 2)).ToArray() ?? throw new NullReferenceException()));
+
+            output
+                .Setup(x => x.Decrypt(It.IsAny<string>()))
+                .Returns<string>(x => new string(x?.Select(x => (char)(x - 2)).ToArray() ?? throw new NullReferenceException()));
+
             return output;
         }
 

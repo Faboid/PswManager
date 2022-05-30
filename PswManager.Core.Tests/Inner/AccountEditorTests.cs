@@ -11,7 +11,7 @@ namespace PswManager.Core.Tests.Inner {
     public class AccountEditorTests {
 
         public AccountEditorTests() {
-            cryptoAccount = new CryptoAccount(ICryptoServiceMocks.GetReverseEncryptor().Object, ICryptoServiceMocks.GetStringToOneCharEncryptor().Object);
+            cryptoAccount = new CryptoAccount(ICryptoServiceMocks.GetReverseCryptor().Object, ICryptoServiceMocks.GetSummingCryptor().Object);
 
             dataEditorMock = new Mock<IDataEditor>();
             dataEditorMock
