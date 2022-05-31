@@ -5,6 +5,7 @@ using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
+using PswManager.Utils;
 using Xunit;
 
 namespace PswManager.Core.Tests.Inner {
@@ -24,6 +25,14 @@ namespace PswManager.Core.Tests.Inner {
                 .Returns<string>(x => 
                     ValueTask.FromResult(ConnectionResultMocks.GenerateEncryptedSuccessFromName(x, cryptoAccount))
                 );
+
+            dataReaderMock
+                .Setup(x => x.GetAllAccounts())
+                .Returns(() => ConnectionResultMocks.GenerateInfiniteAccountList());
+
+            dataReaderMock
+                .Setup(x => x.GetAllAccountsAsync())
+                .Returns(() => Task.FromResult(ConnectionResultMocks.GenerateInfiniteAccountListAsync()));
         }
 
         readonly Mock<IDataReader> dataReaderMock;
@@ -31,7 +40,7 @@ namespace PswManager.Core.Tests.Inner {
 
         [Theory]
         [InlineData("someName")]
-        public void DeleteAccountCallsDBCorrectly(string name) {
+        public void ReadAccountCallsDBCorrectly(string name) {
 
             //arrange
             AccountReader reader = new(dataReaderMock.Object, cryptoAccount);
@@ -50,7 +59,7 @@ namespace PswManager.Core.Tests.Inner {
 
         [Theory]
         [InlineData("someName")]
-        public async Task DeleteAccountCallsDBCorrectlyAsync(string name) {
+        public async Task ReadAccountCallsDBCorrectlyAsync(string name) {
 
             //arrange
             AccountReader reader = new(dataReaderMock.Object, cryptoAccount);
@@ -83,6 +92,42 @@ namespace PswManager.Core.Tests.Inner {
             //assert
             Assert.False(result.Success);
             Assert.False(resultAsync.Success);
+            dataReaderMock.VerifyNoOtherCalls();
+
+        }
+
+        [Fact] //if it's iterated, it will deadlock
+        public void GetAllAccountsIsNotIterated() {
+
+            //arrange
+            AccountReader reader = new(dataReaderMock.Object, cryptoAccount);
+
+            //act
+            var result = reader.ReadAllAccounts();
+            var listValues = result.Value.Take(50).ToList();
+
+            //assert
+            Assert.True(result.Success);
+            Assert.True(listValues.Count == 50 && listValues.All(x => x != null));
+            dataReaderMock.Verify(x => x.GetAllAccounts());
+            dataReaderMock.VerifyNoOtherCalls();
+
+        }
+
+        [Fact] //if it's iterated, it will deadlock
+        public async Task GetAllAccountsIsNotIteratedAsync() {
+
+            //arrange
+            AccountReader reader = new(dataReaderMock.Object, cryptoAccount);
+
+            //act
+            var result = await reader.ReadAllAccountsAsync();
+            var listValues = (await result.Value.Take(50)).ToList();
+
+            //assert
+            Assert.True(result.Success);
+            Assert.True(listValues.Count == 50 && listValues.All(x => x != null));
+            dataReaderMock.Verify(x => x.GetAllAccountsAsync());
             dataReaderMock.VerifyNoOtherCalls();
 
         }
