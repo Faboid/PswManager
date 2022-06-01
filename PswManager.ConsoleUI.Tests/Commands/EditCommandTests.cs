@@ -2,6 +2,7 @@
 using PswManager.ConsoleUI.Commands;
 using PswManager.ConsoleUI.Commands.Validation.Attributes;
 using PswManager.ConsoleUI.Tests.Commands.Helper;
+using PswManager.Core.Inner;
 using PswManager.TestUtils;
 using Xunit;
 
@@ -12,7 +13,7 @@ namespace PswManager.ConsoleUI.Tests.Commands {
             dbHandler = new MemoryDBHandler();
             dbHandler.SetUpDefaultValues();
             var dbFactory = dbHandler.GetDBFactory();
-            editCommand = new EditCommand(dbFactory.GetDataEditor(), MockedObjects.GetEmptyCryptoAccount());
+            editCommand = new EditCommand(new AccountEditor(dbFactory.GetDataEditor(), MockedObjects.GetEmptyCryptoAccount()));
             getCommand = new GetCommand(dbFactory.GetDataReader(), MockedObjects.GetEmptyCryptoAccount());
         }
 
@@ -91,14 +92,8 @@ namespace PswManager.ConsoleUI.Tests.Commands {
                     ClassBuilder.Build<EditCommand>(new List < string > { newPassword, newName, newEmail, name })
                 };
 
-            var defValues = new DefaultValues(5);
-            string validName = defValues.GetValue(3, DefaultValues.TypeValue.Name);
-            string validName2 = defValues.GetValue(4, DefaultValues.TypeValue.Name);
 
             yield return NewObj(ErrorReader.GetRequiredError<EditCommand>("Name"), null, "someValue", "hrhr", "");
-            yield return NewObj(ErrorReader.GetError<EditCommand, VerifyAccountExistenceAttribute>("Name"), "fakeAccountName", null, "newPasshere", null);
-            yield return NewObj(ErrorReader.GetError<EditCommand, VerifyAccountExistenceAttribute>("NewName"), validName, validName2, null, null);
-            
         }
 
         [Theory]

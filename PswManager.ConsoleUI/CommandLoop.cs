@@ -40,7 +40,7 @@ namespace PswManager.ConsoleUI {
             collection.Add("add", new AddCommand(manager));
             collection.Add("get", new GetCommand(dataFactory.GetDataReader(), cryptoAccount));
             collection.Add("get-all", new GetAllCommand(dataFactory.GetDataReader(), cryptoAccount));
-            collection.Add("edit", new EditCommand(dataFactory.GetDataEditor(), cryptoAccount));
+            collection.Add("edit", new EditCommand(manager));
             collection.Add("delete", new DeleteCommand(manager, userInput));
 
             query = new CommandQuery(collection.Concat(extraCommands).ToDictionary(x => x.Key, x => x.Value));
