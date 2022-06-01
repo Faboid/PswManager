@@ -89,6 +89,44 @@ namespace PswManager.Tests.Database.Generic {
 
         }
 
+        [Theory]
+        [InlineData("   ")]
+        [InlineData("")]
+        [InlineData(null)]
+        public async Task CreateAccountFailure_InvalidPassword(string password) {
+
+            //arrange
+            var account = new AccountModel("veryvalidunusedName", password, "valid@email.com");
+
+            //act
+            var result = dataCreator.CreateAccount(account);
+            var resultAsync = await dataCreator.CreateAccountAsync(account);
+
+            //assert
+            Assert.False(result.Success);
+            Assert.False(resultAsync.Success);
+
+        }
+
+        [Theory]
+        [InlineData("   ")]
+        [InlineData("")]
+        [InlineData(null)]
+        public async Task CreateAccountFailure_InvalidEmail(string email) {
+
+            //arrange
+            var account = new AccountModel("validNamenongriurh", "somepass", email);
+
+            //act
+            var result = dataCreator.CreateAccount(account);
+            var resultAsync = await dataCreator.CreateAccountAsync(account);
+
+            //assert
+            Assert.False(result.Success);
+            Assert.False(resultAsync.Success);
+
+        }
+
         public void Dispose() {
             dbHandler.Dispose();
             GC.SuppressFinalize(this);

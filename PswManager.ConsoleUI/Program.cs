@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using PswManager.Core.UIConnection;
 using PswManager.Core.Cryptography;
 using PswManager.ConsoleUI;
 

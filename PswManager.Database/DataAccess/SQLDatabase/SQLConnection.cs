@@ -68,6 +68,14 @@ namespace PswManager.Database.DataAccess.SQLDatabase {
                 return CachedResults.InvalidNameResult;
             }
 
+            if(string.IsNullOrWhiteSpace(model.Password)) {
+                return CachedResults.MissingPasswordResult;
+            }
+
+            if(string.IsNullOrWhiteSpace(model.Email)) {
+                return CachedResults.MissingEmailResult;
+            }
+
             using var heldLock = locker.GetLock(model.Name, 50);
             if(heldLock.Obtained == false) {
                 return CachedResults.UsedElsewhereResult;
@@ -86,6 +94,14 @@ namespace PswManager.Database.DataAccess.SQLDatabase {
         public async Task<ConnectionResult> CreateAccountAsync(AccountModel model) {
             if(string.IsNullOrWhiteSpace(model.Name)) {
                 return CachedResults.InvalidNameResult;
+            }
+
+            if(string.IsNullOrWhiteSpace(model.Password)) {
+                return CachedResults.MissingPasswordResult;
+            }
+
+            if(string.IsNullOrWhiteSpace(model.Email)) {
+                return CachedResults.MissingEmailResult;
             }
 
             using var heldLock = await locker.GetLockAsync(model.Name, 50).ConfigureAwait(false);

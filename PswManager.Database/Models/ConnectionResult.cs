@@ -2,7 +2,9 @@
 
 namespace PswManager.Database.Models {
     public class ConnectionResult {
-
+        //todo - consider replacing the error message with a result enum
+        //doing that will allow the UI to create a custom context-aware message
+        //it's, after all, not the repository's job to come up with user-friendly messages
         public ConnectionResult(bool success) {
             Success = success;
         }
