@@ -1,15 +1,9 @@
-﻿using System;
+﻿using PswManager.Commands.Validation.Attributes;
 using System.Reflection;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using PswManager.Commands.Validation.Attributes;
-using PswManager.Commands.Unused.Parsing.Attributes;
 
-namespace PswManager.Tests.Attributes {
+namespace PswManager.ConsoleUI.Tests {
     public class AttributesUsageTests {
 
         public AttributesUsageTests(ITestOutputHelper output) {
@@ -26,43 +20,43 @@ namespace PswManager.Tests.Attributes {
                 .GetAllClasses()
                 .GetAllProperties()
                 .WhereIsNotString()
-                .WhereHasAttributes<ParseableKeyAttribute, RequiredAttribute>();
+                .WhereHasAttribute<RequiredAttribute>();
 
             var propsErrorLocations = propsWithFaultyUsage.Select(FormatMessage);
 
-            foreach(var error in propsErrorLocations) { 
+            foreach(var error in propsErrorLocations) {
                 output.WriteLine(error);
             }
 
             Assert.Empty(propsErrorLocations);
         }
 
-        private static string FormatMessage(PropertyInfo x) 
+        private static string FormatMessage(PropertyInfo x)
             => $"Property '{x.DeclaringType}.{x.Name}' has invalid type: '{x.PropertyType}'. The only allowed type when using this attribute is 'string'.";
 
     }
 
     internal static class AttributesUsageTestsHelper {
 
-        public static IEnumerable<Type> GetAllClasses() 
+        public static IEnumerable<Type> GetAllClasses()
             => AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes());
 
-        public static IEnumerable<PropertyInfo> GetAllProperties(this IEnumerable<Type> classes) 
+        public static IEnumerable<PropertyInfo> GetAllProperties(this IEnumerable<Type> classes)
             => classes.SelectMany(x => x.GetProperties());
 
         public static IEnumerable<Attribute> GetAttributes(this PropertyInfo properties)
             => properties.GetCustomAttributes();
 
-        public static IEnumerable<PropertyInfo> WhereIsNotString(this IEnumerable<PropertyInfo> properties) 
+        public static IEnumerable<PropertyInfo> WhereIsNotString(this IEnumerable<PropertyInfo> properties)
             => properties.Where(x => x.PropertyType != typeof(string));
 
-        public static IEnumerable<PropertyInfo> WhereHasAttributes<TAttribute1, TAttribute2>(this IEnumerable<PropertyInfo> properties) 
-            where TAttribute1 : Attribute where TAttribute2 : Attribute
-            => properties.Where(x => x.HasAttributes<TAttribute1, TAttribute2>());
+        public static IEnumerable<PropertyInfo> WhereHasAttribute<TAttribute1>(this IEnumerable<PropertyInfo> properties)
+            where TAttribute1 : Attribute
+            => properties.Where(x => x.HasAttribute<TAttribute1>());
 
-        public static bool HasAttributes<TAttribute1, TAttribute2>(this PropertyInfo properties) 
-            where TAttribute1 : Attribute where TAttribute2 : Attribute
-            => properties.GetCustomAttributes().Where(x => x is TAttribute1 or TAttribute2).Any();
+        public static bool HasAttribute<TAttribute1>(this PropertyInfo properties)
+            where TAttribute1 : Attribute
+            => properties.GetCustomAttributes().Any(x => x is TAttribute1);
 
     }
 }
