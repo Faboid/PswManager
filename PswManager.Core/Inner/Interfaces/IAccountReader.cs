@@ -10,8 +10,8 @@ namespace PswManager.Core.Inner.Interfaces {
         Task<Result<AccountModel>> ReadAccountAsync(string name);
 
         //todo - consider turning this into IQueryable<T>
-        Result<IEnumerable<Result<AccountModel>>> ReadAllAccounts();
-        Task<Result<IAsyncEnumerable<Result<AccountModel>>>> ReadAllAccountsAsync();
+        Result<IEnumerable<AccountResult>> ReadAllAccounts();
+        Task<Result<IAsyncEnumerable<AccountResult>>> ReadAllAccountsAsync();
 
     }
 }

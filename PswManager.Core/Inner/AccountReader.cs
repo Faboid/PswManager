@@ -40,18 +40,18 @@ namespace PswManager.Core.Inner {
             return await DecryptAsync(result);
         }
 
-        public Result<IEnumerable<Result<AccountModel>>> ReadAllAccounts() {
+        public Result<IEnumerable<AccountResult>> ReadAllAccounts() {
             var result = dataReader.GetAllAccounts();
             return result.Success switch {
-                true => new(result.Value.Select(Decrypt)),
+                true => new(result.Value),
                 false => new(result.ErrorMessage)
             };
         }
 
-        public async Task<Result<IAsyncEnumerable<Result<AccountModel>>>> ReadAllAccountsAsync() {
+        public async Task<Result<IAsyncEnumerable<AccountResult>>> ReadAllAccountsAsync() {
             var result = await dataReader.GetAllAccountsAsync();
             return result.Success switch {
-                true => new(result.Value.Select(DecryptAsync)),
+                true => new(result.Value),
                 false => new(result.ErrorMessage)
             };
         }
