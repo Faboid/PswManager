@@ -1,34 +1,32 @@
 ﻿using PswManager.Commands;
 using PswManager.Commands.AbstractCommands;
-using PswManager.Commands.Validation.Builders;
-using PswManager.Database.DataAccess.Interfaces;
 using System.Threading.Tasks;
 using PswManager.ConsoleUI.Commands.ArgsModels;
-using PswManager.ConsoleUI.Commands.Validation.ValidationTypes;
 using PswManager.Core;
+using PswManager.Core.Inner.Interfaces;
 
 namespace PswManager.ConsoleUI.Commands {
     public class DeleteCommand : BaseCommand<DeleteCommandArgs> {
 
-        private readonly IDataDeleter dataDeleter;
-        private readonly IUserInput userInput;
+        IUserInput userInput;
+        IAccountDeleter dataDeleter;
 
         private readonly CommandResult stoppedEarlyResult = new("The operation has been stopped.", false);
         private readonly CommandResult successResult = new("Account deleted successfully.", true);
 
-        public DeleteCommand(IDataDeleter dataDeleter, IUserInput userInput) {
-            this.dataDeleter = dataDeleter;
+        public DeleteCommand(IAccountDeleter deleter, IUserInput userInput) {
+            this.dataDeleter = deleter;
             this.userInput = userInput;
         }
 
         protected override CommandResult RunLogic(DeleteCommandArgs args) {
             if(StopEarlyQuestion()) { return stoppedEarlyResult; }
 
-            var cnnResult = dataDeleter.DeleteAccount(args.Name);
+            var result = dataDeleter.DeleteAccount(args.Name);
 
-            return cnnResult.Success switch {
+            return result.Success switch {
                 true => successResult,
-                false => new CommandResult($"There has been an error: {cnnResult.ErrorMessage}", false)
+                false => new CommandResult($"There has been an error: {result.ErrorMessage}", false)
             };
         }
 
@@ -46,9 +44,6 @@ namespace PswManager.ConsoleUI.Commands {
         public override string GetDescription() {
             return "This command deletes an account. Note that the deletion is final: it won't be possible to go back.";
         }
-
-        protected override AutoValidatorBuilder<DeleteCommandArgs> AddRules(AutoValidatorBuilder<DeleteCommandArgs> builder) => builder
-            .AddRule(new VerifyAccountExistenceRule(dataDeleter));
 
         private bool StopEarlyQuestion() {
             //if the user inputs yes, they are sure and want to keep going

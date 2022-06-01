@@ -5,6 +5,7 @@ using PswManager.ConsoleUI.Tests.Commands.Helper;
 using PswManager.ConsoleUI.Commands;
 using PswManager.ConsoleUI.Commands.Validation.Attributes;
 using PswManager.TestUtils;
+using PswManager.Core.Inner;
 
 namespace PswManager.ConsoleUI.Tests.Commands {
 
@@ -12,7 +13,7 @@ namespace PswManager.ConsoleUI.Tests.Commands {
 
         public DeleteCommandTests() {
             var dbFactory = new MemoryDBHandler(2).SetUpDefaultValues().GetDBFactory();
-            delCommand = new DeleteCommand(dbFactory.GetDataDeleter(), MockedObjects.GetDefaultAutoInput());
+            delCommand = new DeleteCommand(new AccountDeleter(dbFactory.GetDataDeleter()), MockedObjects.GetDefaultAutoInput());
             dataHelper = dbFactory.GetDataHelper();
         }
 
@@ -64,8 +65,7 @@ namespace PswManager.ConsoleUI.Tests.Commands {
 
             yield return NewObj(missingNameMessage, null);
             yield return NewObj(missingNameMessage, "");
-
-            yield return NewObj(ErrorReader.GetError<DeleteCommand, VerifyAccountExistenceAttribute>("Name"), "fakeAccountName");
+            //todo - yield return NewObj(missingNameMessage, "   ");
 
         }
 
