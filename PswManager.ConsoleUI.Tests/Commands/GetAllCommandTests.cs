@@ -9,7 +9,7 @@ namespace PswManager.ConsoleUI.Tests.Commands {
 
         public GetAllCommandTests() {
             var dbFactory = new MemoryDBHandler(numValues).SetUpDefaultValues().GetDBFactory();
-            getAllCommand = new GetAllCommand(dbFactory.GetDataReader(), MockedObjects.GetEmptyCryptoAccount());
+            getAllCommand = new GetAllCommand(new Core.Inner.AccountReader(dbFactory.GetDataReader(), MockedObjects.GetEmptyCryptoAccount()));
         }
 
         const int numValues = 5;

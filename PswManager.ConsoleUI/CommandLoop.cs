@@ -39,7 +39,7 @@ namespace PswManager.ConsoleUI {
             //basic crud commands
             collection.Add("add", new AddCommand(manager));
             collection.Add("get", new GetCommand(dataFactory.GetDataReader(), cryptoAccount));
-            collection.Add("get-all", new GetAllCommand(dataFactory.GetDataReader(), cryptoAccount));
+            collection.Add("get-all", new GetAllCommand(manager));
             collection.Add("edit", new EditCommand(manager));
             collection.Add("delete", new DeleteCommand(manager, userInput));
 

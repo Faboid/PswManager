@@ -1,22 +1,19 @@
 ﻿using PswManager.Commands;
 using PswManager.Commands.AbstractCommands;
 using PswManager.Commands.Validation.Builders;
-using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
 using PswManager.Utils;
-using PswManager.Core.Cryptography;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PswManager.ConsoleUI.Commands.Validation.ValidationTypes;
 using PswManager.ConsoleUI.Commands.ArgsModels;
+using PswManager.Core.Inner.Interfaces;
 
 namespace PswManager.ConsoleUI.Commands {
     public class GetAllCommand : BaseCommand<GetAllCommandArgs> {
 
-        readonly IDataReader dataReader;
-        readonly ICryptoAccount cryptoAccount;
         static readonly string[] validKeys = new string[] { "names", "passwords", "emails" };
         public const string InexistentKeyErrorMessage = "Invalid key(s) has been found. Valid keys: names, passwords, emails.";
         public const string DuplicateKeyErrorMessage = "Duplicate keys aren't allowed.";
@@ -46,13 +43,15 @@ namespace PswManager.ConsoleUI.Commands {
             public bool Emails { get; } = true;
         }
 
-        public GetAllCommand(IDataReader dataReader, ICryptoAccount cryptoAccount) {
+        readonly IAccountReader dataReader;
+
+
+        public GetAllCommand(IAccountReader dataReader) {
             this.dataReader = dataReader;
-            this.cryptoAccount = cryptoAccount;
         }
 
         protected override CommandResult RunLogic(GetAllCommandArgs arguments) {
-            var result = dataReader.GetAllAccounts();
+            var result = dataReader.ReadAllAccounts();
 
             if(!result.Success) {
                 return GetErrorResult(result.ErrorMessage);
@@ -69,7 +68,7 @@ namespace PswManager.ConsoleUI.Commands {
         }
 
         protected override async ValueTask<CommandResult> RunLogicAsync(GetAllCommandArgs args) {
-            var result = await dataReader.GetAllAccountsAsync().ConfigureAwait(false);
+            var result = await dataReader.ReadAllAccountsAsync().ConfigureAwait(false);
 
             if(!result.Success) {
                 return GetErrorResult(result.ErrorMessage);
@@ -107,17 +106,11 @@ namespace PswManager.ConsoleUI.Commands {
 
         private string Unwrap(AccountResult result, ValuesToGet toGet) {
             if(result.Success) {
-                var decrypted = Decrypt(result.Value);
-                var stringRepresenation = Take(decrypted, toGet);
+                var stringRepresenation = Take(result.Value, toGet);
                 return Merge(stringRepresenation);
             }
 
             return $"Error when getting {result.NameAccount}: {result.ErrorMessage ?? "Undefined"}";
-        }
-
-        private AccountModel Decrypt(AccountModel account) {
-            (account.Password, account.Email) = cryptoAccount.Decrypt(account.Password, account.Email);
-            return account;
         }
 
         private static IEnumerable<string> Take(AccountModel account, ValuesToGet toGet) {
