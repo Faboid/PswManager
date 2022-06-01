@@ -1,44 +1,38 @@
 ﻿using PswManager.Commands;
 using PswManager.Commands.AbstractCommands;
-using PswManager.Commands.Validation.Builders;
-using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
 using PswManager.Core.Cryptography;
 using System;
 using System.Threading.Tasks;
 using PswManager.ConsoleUI.Commands.ArgsModels;
-using PswManager.ConsoleUI.Commands.Validation.ValidationTypes;
+using PswManager.Core.Inner.Interfaces;
 
 namespace PswManager.ConsoleUI.Commands {
     public class GetCommand : BaseCommand<GetCommandArgs> {
 
-        private readonly IDataReader dataReader;
-        private readonly ICryptoAccount cryptoAccount;
+        private readonly IAccountReader dataReader;
 
-        public GetCommand(IDataReader dataReader, ICryptoAccount cryptoAccount) {
+        public GetCommand(IAccountReader dataReader) {
             this.dataReader = dataReader;
-            this.cryptoAccount = cryptoAccount;
         }
 
         protected override CommandResult RunLogic(GetCommandArgs arguments) {
-            ConnectionResult<AccountModel> result = dataReader.GetAccount(arguments.Name);
+            var result = dataReader.ReadAccount(arguments.Name);
 
             if(!result.Success) {
                 return FailureResult(result.ErrorMessage);
             }
 
-            (result.Value.Password, result.Value.Email) = cryptoAccount.Decrypt(result.Value.Password, result.Value.Email);
             return SuccessfulResult(result.Value);
         }
 
         protected override async ValueTask<CommandResult> RunLogicAsync(GetCommandArgs args) {
-            ConnectionResult<AccountModel> result = await dataReader.GetAccountAsync(args.Name).ConfigureAwait(false);
+            var result = await dataReader.ReadAccountAsync(args.Name).ConfigureAwait(false);
 
             if(!result.Success) {
                 return FailureResult(result.ErrorMessage);
             }
 
-            (result.Value.Password, result.Value.Email) = await Task.Run(() => cryptoAccount.Decrypt(result.Value.Password, result.Value.Email)).ConfigureAwait(false);
             return SuccessfulResult(result.Value);
         }
 
@@ -50,9 +44,6 @@ namespace PswManager.ConsoleUI.Commands {
         public override string GetDescription() {
             return "Gets the requested command from the saved ones.";
         }
-
-        protected override AutoValidatorBuilder<GetCommandArgs> AddRules(AutoValidatorBuilder<GetCommandArgs> builder) => builder
-            .AddRule(new VerifyAccountExistenceRule(dataReader));
 
     }
 }

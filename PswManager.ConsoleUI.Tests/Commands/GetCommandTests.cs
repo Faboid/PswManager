@@ -2,6 +2,7 @@
 using PswManager.ConsoleUI.Commands;
 using PswManager.ConsoleUI.Commands.Validation.Attributes;
 using PswManager.ConsoleUI.Tests.Commands.Helper;
+using PswManager.Core.Inner;
 using PswManager.TestUtils;
 using Xunit;
 
@@ -11,7 +12,7 @@ namespace PswManager.ConsoleUI.Tests.Commands {
 
         public GetCommandTests() {
             var dbFactory = new MemoryDBHandler(1).SetUpDefaultValues().GetDBFactory();
-            getCommand = new GetCommand(dbFactory.GetDataReader(), MockedObjects.GetEmptyCryptoAccount());
+            getCommand = new GetCommand(new AccountReader(dbFactory.GetDataReader(), MockedObjects.GetEmptyCryptoAccount()));
         }
 
         readonly GetCommand getCommand;
@@ -48,8 +49,8 @@ namespace PswManager.ConsoleUI.Tests.Commands {
 
             yield return NewObj(missingNameMessage, "");
             yield return NewObj(missingNameMessage, null);
-
-            yield return NewObj(ErrorReader.GetError<GetCommand, VerifyAccountExistenceAttribute>("Name"), "fakeAccountName");
+            //todo - yield return NewObj(missingNameMessage, "   ");
+            
 
         }
 

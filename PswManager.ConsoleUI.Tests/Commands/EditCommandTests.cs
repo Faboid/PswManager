@@ -14,7 +14,7 @@ namespace PswManager.ConsoleUI.Tests.Commands {
             dbHandler.SetUpDefaultValues();
             var dbFactory = dbHandler.GetDBFactory();
             editCommand = new EditCommand(new AccountEditor(dbFactory.GetDataEditor(), MockedObjects.GetEmptyCryptoAccount()));
-            getCommand = new GetCommand(dbFactory.GetDataReader(), MockedObjects.GetEmptyCryptoAccount());
+            getCommand = new GetCommand(new AccountReader(dbFactory.GetDataReader(), MockedObjects.GetEmptyCryptoAccount()));
         }
 
         readonly GetCommand getCommand;
