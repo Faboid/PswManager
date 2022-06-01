@@ -143,7 +143,7 @@ namespace PswManager.Tests.Database.Generic {
 
             //act
             var actual = await dataReader.GetAllAccountsAsync().ConfigureAwait(false);
-            List<AccountModel> values = await actual.Value.Select(x => x.Value).Take(num).ConfigureAwait(false);
+            List<AccountModel> values = await actual.Value.Select(x => x.Value).Take(num).ToList().ConfigureAwait(false);
             values.Sort((x, y) => x.Name.CompareTo(y.Name));
 
             //assert

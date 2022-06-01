@@ -7,19 +7,15 @@ using System.Threading.Tasks;
 namespace PswManager.Utils {
     public static class IAsyncEnumerableExtensions {
 
-        public static async Task<List<T>> Take<T>(this IAsyncEnumerable<T> enumerable, int count) {
-            List<T> list = new();
-
+        public static async IAsyncEnumerable<T> Take<T>(this IAsyncEnumerable<T> enumerable, int count) {
             int curr = 0;
             await foreach(var item in enumerable.ConfigureAwait(false)) {
                 if(curr >= count) {
                     break;
                 }
-                list.Add(item);
+                yield return item;
                 curr++;
             }
-
-            return list;
         }
 
         public static async Task<List<T>> ToList<T>(this IAsyncEnumerable<T> enumerable) {
