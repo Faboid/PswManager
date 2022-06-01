@@ -19,12 +19,12 @@ namespace PswManager.Core.Tests.Mocks {
             return new(true, AccountModelMocks.GenerateEncryptedFromName(name, cryptoAccount));
         }
 
-        public static ConnectionResult<IEnumerable<AccountResult>> GenerateInfiniteAccountList() {
-            return new(true, AccountModelMocks.GenerateMany().Select(x => new AccountResult(x.Name, x)));
+        public static ConnectionResult<IEnumerable<AccountResult>> GenerateInfiniteEncryptedAccountList(ICryptoAccount cryptoAccount) {
+            return new(true, AccountModelMocks.GenerateManyEncrypted(cryptoAccount).Select(x => new AccountResult(x.Name, x)));
         }
 
-        public static ConnectionResult<IAsyncEnumerable<AccountResult>> GenerateInfiniteAccountListAsync() {
-            return new(true, AccountModelMocks.GenerateManyAsync().Select(x => new AccountResult(x.Name, x)));
+        public static ConnectionResult<IAsyncEnumerable<AccountResult>> GenerateInfiniteEncryptedAccountListAsync(ICryptoAccount cryptoAccount) {
+            return new(true, AccountModelMocks.GenerateManyEncryptedAsync(cryptoAccount).Select(x => new AccountResult(x.Name, x)));
         }
 
     }

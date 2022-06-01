@@ -1,6 +1,7 @@
 ﻿using Moq;
 using PswManager.Core.Cryptography;
 using PswManager.Core.Inner;
+using PswManager.Core.Inner.Interfaces;
 using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
 using PswManager.Database.DataAccess.Interfaces;
@@ -28,22 +29,24 @@ namespace PswManager.Core.Tests.Inner {
 
             dataReaderMock
                 .Setup(x => x.GetAllAccounts())
-                .Returns(() => ConnectionResultMocks.GenerateInfiniteAccountList());
+                .Returns(() => ConnectionResultMocks.GenerateInfiniteEncryptedAccountList(cryptoAccount));
 
             dataReaderMock
                 .Setup(x => x.GetAllAccountsAsync())
-                .Returns(() => Task.FromResult(ConnectionResultMocks.GenerateInfiniteAccountListAsync()));
+                .Returns(() => Task.FromResult(ConnectionResultMocks.GenerateInfiniteEncryptedAccountListAsync(cryptoAccount)));
+
+            reader = new AccountReader(dataReaderMock.Object, cryptoAccount);
         }
 
         readonly Mock<IDataReader> dataReaderMock;
         readonly ICryptoAccount cryptoAccount;
+        readonly IAccountReader reader;
 
         [Theory]
         [InlineData("someName")]
         public void ReadAccountCallsDBCorrectly(string name) {
 
             //arrange
-            AccountReader reader = new(dataReaderMock.Object, cryptoAccount);
             AccountModel expected = cryptoAccount.Decrypt(AccountModelMocks.GenerateEncryptedFromName(name, cryptoAccount));
 
             //act
@@ -62,7 +65,6 @@ namespace PswManager.Core.Tests.Inner {
         public async Task ReadAccountCallsDBCorrectlyAsync(string name) {
 
             //arrange
-            AccountReader reader = new(dataReaderMock.Object, cryptoAccount);
             AccountModel expected = cryptoAccount.Decrypt(AccountModelMocks.GenerateEncryptedFromName(name, cryptoAccount));
 
             //act
@@ -82,9 +84,6 @@ namespace PswManager.Core.Tests.Inner {
         [InlineData("    ")]
         public async Task NoCallsIfInvalidName(string name) {
 
-            //arrange
-            AccountReader reader = new(dataReaderMock.Object, cryptoAccount);
-
             //act
             var result = reader.ReadAccount(name);
             var resultAsync = await reader.ReadAccountAsync(name);
@@ -98,9 +97,6 @@ namespace PswManager.Core.Tests.Inner {
 
         [Fact] //if it's iterated, it will deadlock
         public void GetAllAccountsIsNotIterated() {
-
-            //arrange
-            AccountReader reader = new(dataReaderMock.Object, cryptoAccount);
 
             //act
             var result = reader.ReadAllAccounts();
@@ -117,12 +113,9 @@ namespace PswManager.Core.Tests.Inner {
         [Fact] //if it's iterated, it will deadlock
         public async Task GetAllAccountsIsNotIteratedAsync() {
 
-            //arrange
-            AccountReader reader = new(dataReaderMock.Object, cryptoAccount);
-
             //act
             var result = await reader.ReadAllAccountsAsync();
-            var listValues = (await result.Value.Take(50)).ToList();
+            var listValues = await result.Value.Take(50).ToList();
 
             //assert
             Assert.True(result.Success);
@@ -131,6 +124,49 @@ namespace PswManager.Core.Tests.Inner {
             dataReaderMock.VerifyNoOtherCalls();
 
         }
+
+        [Fact]
+        public void ReadAllDecryptsCorrectly() {
+
+            //assert
+            var expected = ConnectionResultMocks
+                .GenerateInfiniteEncryptedAccountList(cryptoAccount)
+                .Value
+                .Take(10)
+                .Select(x => cryptoAccount.Decrypt(x.Value))
+                .ToList();
+
+            //act
+            var result = reader.ReadAllAccounts();
+            var ten = result.Value.Take(10).Select(x => x.Value).ToList();
+
+            //assert
+            Assert.True(result.Success);
+            Assert.True(Enumerable.Range(0, 10).All(x => AccountModelAsserts.AssertEqual(expected[x], ten[x])));
+
+        }
+
+        [Fact]
+        public async Task ReadAllDecryptsCorrectlyAsync() {
+
+            //assert
+            var expected = ConnectionResultMocks
+                .GenerateInfiniteEncryptedAccountList(cryptoAccount)
+                .Value
+                .Take(10)
+                .Select(x => cryptoAccount.Decrypt(x.Value))
+                .ToList();
+
+            //act
+            var result = await reader.ReadAllAccountsAsync().ConfigureAwait(false);
+            var ten = await result.Value.Take(10).Select(x => x.Value).ToList();
+
+            //assert
+            Assert.True(result.Success);
+            Assert.True(Enumerable.Range(0, 10).All(x => AccountModelAsserts.AssertEqual(expected[x], ten[x])));
+
+        }
+
 
     }
 }

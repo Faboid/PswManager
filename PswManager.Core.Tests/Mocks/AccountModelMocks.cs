@@ -17,20 +17,20 @@ namespace PswManager.Core.Tests.Mocks {
             return cryptoAccount.Encrypt(GenerateValidFromName(name));
         }
 
-        public static async IAsyncEnumerable<AccountModel> GenerateManyAsync(int returns = int.MaxValue) {
+        public static async IAsyncEnumerable<AccountModel> GenerateManyEncryptedAsync(ICryptoAccount cryptoAccount, int returns = int.MaxValue) {
 
-            foreach(var result in GenerateMany(returns)) {
+            foreach(var result in GenerateManyEncrypted(cryptoAccount, returns)) {
                 yield return await Task.FromResult(result); //kinda terrible, but it works(?)
             }
         }
 
-        public static IEnumerable<AccountModel> GenerateMany(int returns = int.MaxValue) {
+        public static IEnumerable<AccountModel> GenerateManyEncrypted(ICryptoAccount cryptoAccount, int returns = int.MaxValue) {
 
             Random random = new();
             char[] s = new string('0', 20).ToCharArray();
 
             while(returns-- > 0) {
-                yield return GenerateValidFromName(new string(s));
+                yield return GenerateEncryptedFromName(new string(s), cryptoAccount);
 
                 var val = random.Next(0, 20);
                 switch((int)s[val]) {
