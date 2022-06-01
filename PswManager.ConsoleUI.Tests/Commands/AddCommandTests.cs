@@ -3,8 +3,7 @@ using PswManager.Database.DataAccess.Interfaces;
 using Xunit;
 using PswManager.ConsoleUI.Tests.Commands.Helper;
 using PswManager.ConsoleUI.Commands;
-using PswManager.ConsoleUI.Commands.Validation.Attributes;
-using PswManager.TestUtils;
+using PswManager.Core.Inner;
 
 namespace PswManager.ConsoleUI.Tests.Commands {
 
@@ -12,7 +11,8 @@ namespace PswManager.ConsoleUI.Tests.Commands {
 
         public AddCommandTests() {
             var dbFactory = new MemoryDBHandler(1).SetUpDefaultValues().GetDBFactory();
-            addCommand = new AddCommand(dbFactory.GetDataCreator(), MockedObjects.GetEmptyCryptoAccount());
+            AccountCreator creator = new(dbFactory.GetDataCreator(), MockedObjects.GetEmptyCryptoAccount());
+            addCommand = new AddCommand(creator);
             dataHelper = dbFactory.GetDataHelper();
         }
 
@@ -70,7 +70,6 @@ namespace PswManager.ConsoleUI.Tests.Commands {
                     ClassBuilder.Build<AddCommand>(new List<string> { password, name, email}) 
                 };
 
-            string existingName = DefaultValues.StaticGetValue(0, DefaultValues.TypeValue.Name);
             string validName = "someRandomNonexistentAccountName";
 
             //check for empty/null values
@@ -78,8 +77,6 @@ namespace PswManager.ConsoleUI.Tests.Commands {
             yield return NewObj(ErrorReader.GetRequiredError<AddCommand>("Name"), null, "somepass", "email@here.com");
             yield return NewObj(ErrorReader.GetRequiredError<AddCommand>("Password"), validName, null, "email@here.com");
             yield return NewObj(ErrorReader.GetRequiredError<AddCommand>("Email"), validName, "rightuewih", "");
-
-            yield return NewObj(ErrorReader.GetError<AddCommand, VerifyAccountExistenceAttribute>("Name"), existingName, "somevalidPassword", "someValidEmail@email.com");
         }
 
         [Theory]

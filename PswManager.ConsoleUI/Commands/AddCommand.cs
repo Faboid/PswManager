@@ -1,32 +1,24 @@
 ﻿using PswManager.Commands;
-using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
-using PswManager.Core.Cryptography;
 using PswManager.Commands.AbstractCommands;
-using PswManager.Commands.Validation.Builders;
 using System.Threading.Tasks;
-using PswManager.ConsoleUI.Commands.Validation.ValidationTypes;
 using PswManager.ConsoleUI.Commands.ArgsModels;
+using PswManager.Core.Inner.Interfaces;
 
 namespace PswManager.ConsoleUI.Commands {
 
     public class AddCommand : BaseCommand<AddCommandArgs> {
 
-        private readonly IDataCreator dataCreator;
-        private readonly ICryptoAccount cryptoAccount;
+        private readonly IAccountCreator dataCreator;
         public const string AccountExistsErrorMessage = "The account you're trying to create exists already.";
 
-        public AddCommand(IDataCreator dataCreator, ICryptoAccount cryptoAccount) {
+        public AddCommand(IAccountCreator dataCreator) {
             this.dataCreator = dataCreator;
-            this.cryptoAccount = cryptoAccount;
         }
 
         protected override CommandResult RunLogic(AddCommandArgs obj) {
 
-            (obj.Password, obj.Email) = cryptoAccount.Encrypt(obj.Password, obj.Email);
-            var account = new AccountModel(obj.Name, obj.Password, obj.Email);
-            var result = dataCreator.CreateAccount(account);
-
+            var result = dataCreator.CreateAccount(new AccountModel(obj.Name, obj.Password, obj.Email));
             return result.Success switch {
                 true => new CommandResult("The account has been created successfully.", true),
                 false => new CommandResult($"There has been an error: {result.ErrorMessage}", false)
@@ -35,10 +27,7 @@ namespace PswManager.ConsoleUI.Commands {
 
         protected override async ValueTask<CommandResult> RunLogicAsync(AddCommandArgs obj) {
 
-            (obj.Password, obj.Email) = await Task.Run(() => cryptoAccount.Encrypt(obj.Password, obj.Email)).ConfigureAwait(false);
-            var account = new AccountModel(obj.Name, obj.Password, obj.Email);
-            var result = await dataCreator.CreateAccountAsync(account).ConfigureAwait(false);
-
+            var result = await dataCreator.CreateAccountAsync(new AccountModel(obj.Name, obj.Password, obj.Email));
             return result.Success switch {
                 true => new CommandResult("The account has been created successfully.", true),
                 false => new CommandResult($"There has been an error: {result.ErrorMessage}", false)
@@ -48,9 +37,6 @@ namespace PswManager.ConsoleUI.Commands {
         public override string GetDescription() {
             return "This command saves an account that can be later retrieved.";
         }
-
-        protected override AutoValidatorBuilder<AddCommandArgs> AddRules(AutoValidatorBuilder<AddCommandArgs> builder) => builder
-            .AddRule<VerifyAccountExistenceRule>(dataCreator);
 
     }
 }
