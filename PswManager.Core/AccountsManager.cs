@@ -10,6 +10,13 @@ using System.Threading.Tasks;
 namespace PswManager.Core {
     public class AccountsManager : IAccountDeleter, IAccountEditor, IAccountReader, IAccountCreator {
 
+        public AccountsManager(IDataFactory dbFactory, ICryptoAccount cryptoAccount) {
+            accountCreator = new AccountCreator(dbFactory.GetDataCreator(), cryptoAccount);
+            accountReader = new AccountReader(dbFactory.GetDataReader(), cryptoAccount);
+            accountEditor = new AccountEditor(dbFactory.GetDataEditor(), cryptoAccount);
+            accountDeleter = new AccountDeleter(dbFactory.GetDataDeleter());
+        }
+
         //todo - consider whether to use an additional enum
         public AccountsManager(DatabaseType dbType, ICryptoAccount cryptoAccount) {
             var dataFactory = new DataFactory(dbType);
