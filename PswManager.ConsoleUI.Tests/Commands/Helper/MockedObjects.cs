@@ -2,6 +2,7 @@
 using PswManager.Core.Cryptography;
 using Moq;
 using PswManager.Core;
+using PswManager.Database.Models;
 
 namespace PswManager.ConsoleUI.Tests.Commands.Helper {
     internal static class MockedObjects {
@@ -32,6 +33,8 @@ namespace PswManager.ConsoleUI.Tests.Commands.Helper {
             cryptoAccount.Setup(x => x.Decrypt(It.IsAny<(string, string)>())).Returns<(string, string)>(x => x);
             cryptoAccount.Setup(x => x.Encrypt(It.IsAny<string>(), It.IsAny<string>())).Returns<string, string>((pass, ema) => (pass, ema));
             cryptoAccount.Setup(x => x.Decrypt(It.IsAny<string>(), It.IsAny<string>())).Returns<string, string>((pass, ema) => (pass, ema));
+            cryptoAccount.Setup(x => x.Encrypt(It.IsAny<AccountModel>())).Returns<AccountModel>(x => x);
+            cryptoAccount.Setup(x => x.Decrypt(It.IsAny<AccountModel>())).Returns<AccountModel>(x => x);
 
             return cryptoAccount.Object;
         }
