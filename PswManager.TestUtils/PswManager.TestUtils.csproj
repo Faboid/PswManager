@@ -1,13 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PswManager.Database\PswManager.Database.csproj" />
-    <ProjectReference Include="..\PswManager.Encryption\PswManager.Encryption.csproj" />
-    <ProjectReference Include="..\PswManager.Utils\PswManager.Utils.csproj" />
   </ItemGroup>
 
 </Project>
