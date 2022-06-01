@@ -9,20 +9,20 @@ namespace PswManager.ConsoleUI.Commands {
     public class DeleteCommand : BaseCommand<DeleteCommandArgs> {
 
         IUserInput userInput;
-        IAccountDeleter dataDeleter;
+        IAccountDeleter accountDeleter;
 
         private readonly CommandResult stoppedEarlyResult = new("The operation has been stopped.", false);
         private readonly CommandResult successResult = new("Account deleted successfully.", true);
 
-        public DeleteCommand(IAccountDeleter deleter, IUserInput userInput) {
-            this.dataDeleter = deleter;
+        public DeleteCommand(IAccountDeleter accountDeleter, IUserInput userInput) {
+            this.accountDeleter = accountDeleter;
             this.userInput = userInput;
         }
 
         protected override CommandResult RunLogic(DeleteCommandArgs args) {
             if(StopEarlyQuestion()) { return stoppedEarlyResult; }
 
-            var result = dataDeleter.DeleteAccount(args.Name);
+            var result = accountDeleter.DeleteAccount(args.Name);
 
             return result.Success switch {
                 true => successResult,
@@ -33,7 +33,7 @@ namespace PswManager.ConsoleUI.Commands {
         protected override async ValueTask<CommandResult> RunLogicAsync(DeleteCommandArgs args) {
             if(StopEarlyQuestion()) { return stoppedEarlyResult; }
 
-            var cnnResult = await dataDeleter.DeleteAccountAsync(args.Name).ConfigureAwait(false);
+            var cnnResult = await accountDeleter.DeleteAccountAsync(args.Name).ConfigureAwait(false);
 
             return cnnResult.Success switch {
                 true => successResult,
