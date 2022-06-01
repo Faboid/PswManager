@@ -2,10 +2,10 @@
 using PswManager.Commands.AbstractCommands;
 using PswManager.Commands.Validation.Builders;
 using PswManager.Database.DataAccess.Interfaces;
-using PswManager.Core.UIConnection;
 using System.Threading.Tasks;
 using PswManager.ConsoleUI.Commands.ArgsModels;
 using PswManager.ConsoleUI.Commands.Validation.ValidationTypes;
+using PswManager.Core;
 
 namespace PswManager.ConsoleUI.Commands {
     public class DeleteCommand : BaseCommand<DeleteCommandArgs> {

@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using PswManager.Core.UIConnection;
 using PswManager.ConsoleUI.Commands;
+using PswManager.Core;
 
 namespace PswManager.ConsoleUI {
     //todo - this class is doing too much. Split it into multiple classes and use proper DI

@@ -1,7 +1,7 @@
 ﻿using PswManager.Encryption.Services;
 using PswManager.Core.Cryptography;
-using PswManager.Core.UIConnection;
 using Moq;
+using PswManager.Core;
 
 namespace PswManager.ConsoleUI.Tests.Commands.Helper {
     internal static class MockedObjects {

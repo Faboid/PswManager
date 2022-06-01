@@ -1,5 +1,4 @@
 ﻿using PswManager.Core.Inner.Interfaces;
-using PswManager.Core.UIConnection;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Utils.WrappingObjects;
 using System.Threading.Tasks;

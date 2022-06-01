@@ -1,6 +1,6 @@
 ﻿using PswManager.ConsoleUI;
 using PswManager.ConsoleUI.Attributes;
-using PswManager.Core.UIConnection;
+using PswManager.Core;
 using Xunit;
 
 namespace PswManager.Tests.Parsing {
