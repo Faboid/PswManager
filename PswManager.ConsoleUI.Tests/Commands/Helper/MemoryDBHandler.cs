@@ -1,8 +1,8 @@
 ﻿using PswManager.Database;
 using PswManager.Database.DataAccess;
 using PswManager.Database.Models;
+using PswManager.Extensions;
 using PswManager.TestUtils;
-using PswManager.Utils;
 
 namespace PswManager.ConsoleUI.Tests.Commands.Helper {
     internal class MemoryDBHandler {

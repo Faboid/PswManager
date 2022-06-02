@@ -3,6 +3,7 @@ using PswManager.Utils;
 using PswManager.Tests.Database.Generic;
 using PswManager.Tests.TestsHelpers;
 using System.IO;
+using PswManager.Extensions;
 
 namespace PswManager.Tests.Database.JsonConnectionTests.Helpers {
     internal class JsonDBHandler : ITestDBHandler {

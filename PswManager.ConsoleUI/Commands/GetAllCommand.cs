@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using PswManager.ConsoleUI.Commands.Validation.ValidationTypes;
 using PswManager.ConsoleUI.Commands.ArgsModels;
 using PswManager.Core.Inner.Interfaces;
+using PswManager.Extensions;
 
 namespace PswManager.ConsoleUI.Commands {
     public class GetAllCommand : BaseCommand<GetAllCommandArgs> {

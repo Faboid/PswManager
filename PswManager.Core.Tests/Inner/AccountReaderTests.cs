@@ -6,7 +6,7 @@ using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
-using PswManager.Utils;
+using PswManager.Extensions;
 using Xunit;
 
 namespace PswManager.Core.Tests.Inner {

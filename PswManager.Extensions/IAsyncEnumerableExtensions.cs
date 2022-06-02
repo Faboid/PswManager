@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PswManager.Utils {
+namespace PswManager.Extensions {
     public static class IAsyncEnumerableExtensions {
 
         public static async IAsyncEnumerable<T> Take<T>(this IAsyncEnumerable<T> enumerable, int count) {
@@ -26,7 +26,7 @@ namespace PswManager.Utils {
             return list;
         }
 
-        public static async IAsyncEnumerable<U> Select<T, U>(this IAsyncEnumerable<T> enumerable, Func<T, U> selector) { 
+        public static async IAsyncEnumerable<U> Select<T, U>(this IAsyncEnumerable<T> enumerable, Func<T, U> selector) {
             await foreach(var item in enumerable.ConfigureAwait(false)) {
                 yield return selector(item);
             }
@@ -38,7 +38,7 @@ namespace PswManager.Utils {
             }
         }
 
-        public static async Task<string> JoinStrings(this IAsyncEnumerable<string> enumerable, string separator) { 
+        public static async Task<string> JoinStrings(this IAsyncEnumerable<string> enumerable, string separator) {
             List<string> values = new();
             await foreach(var s in enumerable.ConfigureAwait(false)) {
                 values.Add(s);

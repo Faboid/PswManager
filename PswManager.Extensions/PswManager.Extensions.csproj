@@ -6,9 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-      <ProjectReference Include="..\PswManager.Extensions\PswManager.Extensions.csproj" />
-      <ProjectReference Include="..\PswManager.Utils\PswManager.Utils.csproj" />
-  </ItemGroup>
-
 </Project>

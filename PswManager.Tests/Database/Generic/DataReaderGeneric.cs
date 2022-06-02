@@ -1,6 +1,6 @@
 ﻿using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
-using PswManager.Utils;
+using PswManager.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

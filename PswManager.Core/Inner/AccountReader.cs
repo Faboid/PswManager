@@ -2,7 +2,7 @@
 using PswManager.Core.Inner.Interfaces;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
-using PswManager.Utils;
+using PswManager.Extensions;
 using PswManager.Utils.WrappingObjects;
 using System;
 using System.Collections.Generic;

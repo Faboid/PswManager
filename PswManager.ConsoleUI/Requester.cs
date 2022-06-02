@@ -1,10 +1,10 @@
-﻿using PswManager.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using PswManager.ConsoleUI.Attributes;
 using PswManager.Core;
+using PswManager.Extensions;
 
 namespace PswManager.ConsoleUI {
     public class Requester {

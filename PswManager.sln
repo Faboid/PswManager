@@ -28,7 +28,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.ConsoleUI.Tests"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.TestUtils", "PswManager.TestUtils\PswManager.TestUtils.csproj", "{4DA452E8-3234-4A17-8F3A-44629BBBBE74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManager.Utils.Tests", "PswManager.Utils.Tests\PswManager.Utils.Tests.csproj", "{A013A828-DEC8-457D-B9CA-C592C8D8F1B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Utils.Tests", "PswManager.Utils.Tests\PswManager.Utils.Tests.csproj", "{A013A828-DEC8-457D-B9CA-C592C8D8F1B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManager.Extensions", "PswManager.Extensions\PswManager.Extensions.csproj", "{6471EB91-7382-473A-8F9C-479F13740E03}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,6 +86,10 @@ Global
 		{A013A828-DEC8-457D-B9CA-C592C8D8F1B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A013A828-DEC8-457D-B9CA-C592C8D8F1B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A013A828-DEC8-457D-B9CA-C592C8D8F1B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6471EB91-7382-473A-8F9C-479F13740E03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6471EB91-7382-473A-8F9C-479F13740E03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6471EB91-7382-473A-8F9C-479F13740E03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6471EB91-7382-473A-8F9C-479F13740E03}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

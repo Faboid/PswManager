@@ -1,5 +1,5 @@
 ﻿using PswManager.Commands.Unused.Parsing.Helpers;
-using PswManager.Utils;
+using PswManager.Extensions;
 using System;
 using System.Linq;
 
