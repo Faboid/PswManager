@@ -29,6 +29,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.TestUtils", "PswManager.TestUtils\PswManager.TestUtils.csproj", "{4DA452E8-3234-4A17-8F3A-44629BBBBE74}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Utils.Tests", "PswManager.Utils.Tests\PswManager.Utils.Tests.csproj", "{A013A828-DEC8-457D-B9CA-C592C8D8F1B2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4DA452E8-3234-4A17-8F3A-44629BBBBE74} = {4DA452E8-3234-4A17-8F3A-44629BBBBE74}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManager.Extensions", "PswManager.Extensions\PswManager.Extensions.csproj", "{6471EB91-7382-473A-8F9C-479F13740E03}"
 EndProject

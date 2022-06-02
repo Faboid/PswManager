@@ -2,7 +2,7 @@
 using PswManager.Core.Inner.Interfaces;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
-using PswManager.Utils.WrappingObjects;
+using PswManager.Utils;
 using System.Threading.Tasks;
 
 namespace PswManager.Core.Inner {

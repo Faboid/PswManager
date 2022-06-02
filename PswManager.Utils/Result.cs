@@ -1,4 +1,4 @@
-﻿namespace PswManager.Utils.WrappingObjects; 
+﻿namespace PswManager.Utils;
 
 public class Result {
 

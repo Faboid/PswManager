@@ -1,5 +1,6 @@
 ﻿using PswManager.Database.Models;
 using PswManager.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,6 +9,7 @@ namespace PswManager.Tests.TestsHelpers {
     /// <summary>
     /// A class to standardize default values to insert in the tests database.
     /// </summary>
+    [Obsolete("Use the DefaultValues in PswManager.TestUtils instead.")]
     public class DefaultValues {
 
         public static string StaticGetValue(int position, TypeValue type) {

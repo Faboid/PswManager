@@ -1,7 +1,7 @@
-﻿using PswManager.Utils.WrappingObjects;
-using PswManager.Tests.Async.TestsHelpers;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Xunit;
+using PswManager.Utils;
+using PswManager.TestUtils;
 
 namespace PswManager.Tests.Async.Locks {
     public class RefCountTests {

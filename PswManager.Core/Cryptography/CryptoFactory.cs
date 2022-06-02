@@ -1,7 +1,7 @@
 ﻿using PswManager.Async.Locks;
 using PswManager.Encryption.Cryptography;
 using PswManager.Encryption.Services;
-using PswManager.Utils.WrappingObjects;
+using PswManager.Utils;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

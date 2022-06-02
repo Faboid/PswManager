@@ -1,5 +1,5 @@
 ﻿using System.Collections.Concurrent;
-using PswManager.Utils.WrappingObjects;
+using PswManager.Utils;
 
 namespace PswManager.Async.Locks {
     public class NamesLocker : IDisposable {

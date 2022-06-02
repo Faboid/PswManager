@@ -3,6 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace PswManager.Tests.Async.TestsHelpers {
+
+    [Obsolete("Use the OrderChecker in PswManager.TestUtils instead.")]
     internal class OrderChecker : IDisposable {
 
         public int CurrentOperation { get; private set; } = 0;

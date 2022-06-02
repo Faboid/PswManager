@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PswManager.Utils.WrappingObjects;
+namespace PswManager.Utils;
 
 public abstract class AbstractResult<TEnum> where TEnum : Enum {
 
@@ -52,7 +52,7 @@ public abstract class AbstractResult<TEnum, TValue> : AbstractResult<TEnum> wher
     /// </summary>
     /// <param name="result"></param>
     /// <exception cref="ArgumentException"></exception>
-    public AbstractResult(TEnum result) : base(result) { 
+    public AbstractResult(TEnum result) : base(result) {
         if(result.IsEqual(SuccessCode)) {
             throw new ArgumentException("The result given through the AbstractResult(TEnum) constructor cannot be successful. " +
                 "If you want to specify a 'type of success', use the AbstractResult(TValue, TEnum) constructor instead.");
