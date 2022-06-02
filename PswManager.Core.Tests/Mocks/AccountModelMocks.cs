@@ -26,19 +26,19 @@ namespace PswManager.Core.Tests.Mocks {
 
         public static IEnumerable<AccountModel> GenerateManyEncrypted(ICryptoAccount cryptoAccount, int returns = int.MaxValue) {
 
-            Random random = new();
             char[] s = new string('0', 20).ToCharArray();
+            int curr = 0;
 
             while(returns-- > 0) {
                 yield return GenerateEncryptedFromName(new string(s), cryptoAccount);
 
-                var val = random.Next(0, 20);
-                switch((int)s[val]) {
+                curr = (curr < 20)? curr++ : 0;
+                switch((int)s[curr]) {
                     case > 100:
-                        s[val] = '0';
+                        s[curr] = '0';
                         break;
                     default:
-                        s[val]++;
+                        s[curr]++;
                         break;
                 }
             }
