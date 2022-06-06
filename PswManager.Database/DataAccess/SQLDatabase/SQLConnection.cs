@@ -1,6 +1,8 @@
 ﻿using PswManager.Async.Locks;
+using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.SQLDatabase.SQLConnHelper;
 using PswManager.Database.Models;
+using PswManager.Utils;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -159,39 +161,39 @@ namespace PswManager.Database.DataAccess.SQLDatabase {
             return new ConnectionResult(result);
         }
 
-        public ConnectionResult<AccountModel> GetAccount(string name) {
+        public Option<AccountModel, ReaderErrorCode> GetAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return ReaderErrorCode.InvalidName;
             }
 
             using var heldLock = locker.GetLock(name, 50);
             if(heldLock.Obtained == false) {
-                return CachedResults.UsedElsewhereResult;
+                return ReaderErrorCode.UsedElsewhere;
             }
 
             return GetAccount_NoLock(name);
         }
 
-        public async ValueTask<ConnectionResult<AccountModel>> GetAccountAsync(string name) {
+        public async ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return ReaderErrorCode.InvalidName;
             }
 
             using var heldLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!heldLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return ReaderErrorCode.UsedElsewhere;
             }
 
             return await GetAccountAsync_NoLock(name).ConfigureAwait(false);
         }
 
-        private ConnectionResult<AccountModel> GetAccount_NoLock(string name) {
+        private Option<AccountModel, ReaderErrorCode> GetAccount_NoLock(string name) {
             using var cmd = queriesBuilder.GetAccountQuery(name);
             using var connection = cmd.Connection.GetConnection();
             using var reader = cmd.ExecuteReader();
 
             if(!reader.HasRows) {
-                return CachedResults.DoesNotExistResult;
+                return ReaderErrorCode.DoesNotExist;
             }
 
             reader.Read();
@@ -201,16 +203,16 @@ namespace PswManager.Database.DataAccess.SQLDatabase {
                 Email = reader.GetString(2)
             };
 
-            return new ConnectionResult<AccountModel>(true, model);
+            return model;
         }
 
-        private async Task<ConnectionResult<AccountModel>> GetAccountAsync_NoLock(string name) {
+        private async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync_NoLock(string name) {
             using var cmd = queriesBuilder.GetAccountQuery(name);
             await using var connection = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
             using var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false);
 
             if(!reader.HasRows) {
-                return CachedResults.DoesNotExistResult;
+                return ReaderErrorCode.DoesNotExist;
             }
 
             await reader.ReadAsync().ConfigureAwait(false);
@@ -220,7 +222,7 @@ namespace PswManager.Database.DataAccess.SQLDatabase {
                 Email = reader.GetString(2),
             };
 
-            return new(true, model);
+            return model;
         }
 
         public ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts() {
@@ -302,7 +304,8 @@ namespace PswManager.Database.DataAccess.SQLDatabase {
                     cmd.ExecuteNonQuery();
                 }
 
-                return GetAccount_NoLock(string.IsNullOrWhiteSpace(newModel.Name)? name : newModel.Name);
+                return GetAccount_NoLock(string.IsNullOrWhiteSpace(newModel.Name)? name : newModel.Name)
+                    .Match<ConnectionResult<AccountModel>>(some => new(true, some), error => new(false, error.ToString()), () => new(false));
 
             } finally {
                 newModelLock?.Dispose();
@@ -338,7 +341,8 @@ namespace PswManager.Database.DataAccess.SQLDatabase {
                     await cmd.ExecuteNonQueryAsync();
                 }
 
-                return await GetAccountAsync_NoLock(string.IsNullOrWhiteSpace(newModel.Name) ? name : newModel.Name);
+                return (await GetAccountAsync_NoLock(string.IsNullOrWhiteSpace(newModel.Name) ? name : newModel.Name))
+                    .Match<ConnectionResult<AccountModel>>(some => new(true, some), error => new(false, error.ToString()), () => new(false));
 
             } finally {
                 newModelLock?.Dispose();

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using PswManager.Async.Locks;
 using System;
+using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Utils;
 
 namespace PswManager.Database.DataAccess {
     /// <summary>
@@ -131,35 +133,35 @@ namespace PswManager.Database.DataAccess {
             return await DeleteAccountHookAsync(name).ConfigureAwait(false);
         }
 
-        public ConnectionResult<AccountModel> GetAccount(string name) {
+        public Option<AccountModel, ReaderErrorCode> GetAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return ReaderErrorCode.InvalidName;
             }
 
             using var ownedLock = Locker.GetLock(name, 50);
             if(!ownedLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return ReaderErrorCode.UsedElsewhere;
             }
 
             if(!AccountExistInternal(name)) {
-                return CachedResults.DoesNotExistResult;
+                return ReaderErrorCode.DoesNotExist;
             }
 
             return GetAccountHook(name);
         }
 
-        public async ValueTask<ConnectionResult<AccountModel>> GetAccountAsync(string name) { 
+        public async ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return ReaderErrorCode.InvalidName;
             }
 
             using var ownedLock = await Locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!ownedLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return ReaderErrorCode.UsedElsewhere;
             }
 
             if(!await AccountExistInternalAsync(name).ConfigureAwait(false)) {
-                return CachedResults.DoesNotExistResult;
+                return ReaderErrorCode.DoesNotExist;
             }
 
             return await GetAccountHookAsync(name).ConfigureAwait(false);
@@ -269,8 +271,8 @@ namespace PswManager.Database.DataAccess {
         protected abstract ValueTask<bool> AccountExistHookAsync(string name);
         protected abstract ConnectionResult CreateAccountHook(AccountModel model);
         protected abstract ValueTask<ConnectionResult> CreateAccountHookAsync(AccountModel model);
-        protected abstract ConnectionResult<AccountModel> GetAccountHook(string name);
-        protected abstract ValueTask<AccountResult> GetAccountHookAsync(string name);
+        protected abstract Option<AccountModel, ReaderErrorCode> GetAccountHook(string name);
+        protected abstract ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name);
         protected abstract ConnectionResult<IEnumerable<AccountResult>> GetAllAccountsHook();
         protected abstract Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsHookAsync();
         protected abstract ConnectionResult<AccountModel> UpdateAccountHook(string name, AccountModel newModel);

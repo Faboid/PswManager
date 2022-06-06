@@ -1,4 +1,5 @@
-﻿using PswManager.Database.Models;
+﻿using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Database.Models;
 using PswManager.Utils;
 using System.Collections.Generic;
 using System.IO;
@@ -62,24 +63,24 @@ namespace PswManager.Database.DataAccess.JsonDatabase {
             return ValueTask.FromResult(new ConnectionResult(true));
         }
 
-        protected override ConnectionResult<AccountModel> GetAccountHook(string name) {
+        protected override Option<AccountModel, ReaderErrorCode> GetAccountHook(string name) {
             var jsonString = File.ReadAllText(BuildFilePath(name));
             var model = JsonSerializer.Deserialize<AccountModel>(jsonString);
-
-            return new(true, model);
+            return model;
         }
 
-        protected override async ValueTask<AccountResult> GetAccountHookAsync(string name) {
+        protected override async ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name) {
             var path = BuildFilePath(name);
             using var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
             AccountModel model = await JsonSerializer.DeserializeAsync<AccountModel>(stream).ConfigureAwait(false);
-            return new(name, model);
+            return model;
         }
 
         protected override ConnectionResult<IEnumerable<AccountResult>> GetAllAccountsHook() {
             var accounts = Directory.GetFiles(directoryPath)
                 .Select(x => Path.GetFileNameWithoutExtension(x))
-                .Select(x => new AccountResult(x, GetAccountHook(x)));
+                .Select(x => new AccountResult(x, GetAccountHook(x).Or(null)))
+                .Where(x => x.Value != null); //todo - temporary until I implement options here
 
             return new(true, accounts);
         }
@@ -94,7 +95,10 @@ namespace PswManager.Database.DataAccess.JsonDatabase {
                 .Select(x => GetAccountHookAsync(x));
 
             foreach(var account in accounts) {
-                yield return await account.ConfigureAwait(false);
+                var acc = (await account.ConfigureAwait(false)).Or(null); //temporary until I implement options here
+                if(acc != null) {
+                    yield return new(acc.Name, acc); 
+                }
             }
         }
 
@@ -111,7 +115,8 @@ namespace PswManager.Database.DataAccess.JsonDatabase {
                 File.Delete(path);
             }
 
-            return GetAccountHook(model.Name);
+            return GetAccountHook(model.Name)
+                .Match<ConnectionResult<AccountModel>>(some => new(true, some), error => new(false, error.ToString()), () => new(false));
         }
 
         protected override async ValueTask<ConnectionResult<AccountModel>> UpdateAccountHookAsync(string name, AccountModel newModel) {
@@ -132,7 +137,8 @@ namespace PswManager.Database.DataAccess.JsonDatabase {
                 File.Delete(path);
             }
 
-            return await GetAccountHookAsync(model.Name).ConfigureAwait(false);
+            return (await GetAccountHookAsync(model.Name).ConfigureAwait(false))
+                .Match<ConnectionResult<AccountModel>>(some => new(true, some), error => new(false, error.ToString()), () => new(false));
         }
 
         private static void OverWriteOldModel(AccountModel oldAccount, AccountModel newAccount) {

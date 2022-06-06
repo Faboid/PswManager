@@ -2,6 +2,7 @@
 using PswManager.Core.Inner;
 using PswManager.Core.Inner.Interfaces;
 using PswManager.Database;
+using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
 using PswManager.Utils;
 using System.Collections.Generic;
@@ -46,11 +47,11 @@ namespace PswManager.Core {
             return accountCreator.CreateAccountAsync(model);
         }
 
-        public Result<AccountModel> ReadAccount(string name) {
+        public Option<AccountModel, ReaderErrorCode> ReadAccount(string name) {
             return accountReader.ReadAccount(name);
         }
 
-        public Task<Result<AccountModel>> ReadAccountAsync(string name) {
+        public Task<Option<AccountModel, ReaderErrorCode>> ReadAccountAsync(string name) {
             return accountReader.ReadAccountAsync(name);
         }
 

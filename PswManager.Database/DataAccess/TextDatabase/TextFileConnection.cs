@@ -1,6 +1,8 @@
 ﻿using PswManager.Async.Locks;
+using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.TextDatabase.TextFileConnHelper;
 using PswManager.Database.Models;
+using PswManager.Utils;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -139,40 +141,40 @@ namespace PswManager.Database.DataAccess.TextDatabase {
             return new(true);
         }
 
-        public ConnectionResult<AccountModel> GetAccount(string name) {
+        public Option<AccountModel, ReaderErrorCode> GetAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return ReaderErrorCode.InvalidName;
             }
 
             using var accLock = locker.GetLock(name, 50);
             if(!accLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return ReaderErrorCode.UsedElsewhere;
             }
 
             if(!fileSaver.Exists(name)) {
-                return CachedResults.DoesNotExistResult;
+                return ReaderErrorCode.DoesNotExist;
             }
 
             var account = fileSaver.Get(name);
-            return new(true, account);
+            return account;
         }
 
-        public async ValueTask<ConnectionResult<AccountModel>> GetAccountAsync(string name) {
+        public async ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return ReaderErrorCode.InvalidName;
             }
 
             using var accLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!accLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return ReaderErrorCode.UsedElsewhere;
             }
 
             if(!await fileSaver.ExistsAsync(name).ConfigureAwait(false)) {
-                return CachedResults.DoesNotExistResult;
+                return ReaderErrorCode.DoesNotExist;
             }
 
             var account = await fileSaver.GetAsync(name);
-            return new(true, account);
+            return account;
         }
 
         public ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts() {

@@ -4,9 +4,11 @@ using PswManager.Core.Inner;
 using PswManager.Core.Inner.Interfaces;
 using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
+using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
 using PswManager.Extensions;
+using PswManager.Utils;
 using Xunit;
 
 namespace PswManager.Core.Tests.Inner {
@@ -19,12 +21,12 @@ namespace PswManager.Core.Tests.Inner {
 
             dataReaderMock
                 .Setup(x => x.GetAccount(It.Is<string>(x => !string.IsNullOrWhiteSpace(x))))
-                .Returns<string>(x => ConnectionResultMocks.GenerateEncryptedSuccessFromName(x, cryptoAccount));
+                .Returns<string>(x => AccountModelMocks.GenerateEncryptedFromName(x, cryptoAccount));
 
             dataReaderMock
                 .Setup(x => x.GetAccountAsync(It.Is<string>(x => !string.IsNullOrWhiteSpace(x))))
                 .Returns<string>(x => 
-                    ValueTask.FromResult(ConnectionResultMocks.GenerateEncryptedSuccessFromName(x, cryptoAccount))
+                    ValueTask.FromResult<Option<AccountModel, ReaderErrorCode>>(AccountModelMocks.GenerateEncryptedFromName(x, cryptoAccount))
                 );
 
             dataReaderMock
@@ -50,11 +52,11 @@ namespace PswManager.Core.Tests.Inner {
             AccountModel expected = cryptoAccount.Decrypt(AccountModelMocks.GenerateEncryptedFromName(name, cryptoAccount));
 
             //act
-            var result = reader.ReadAccount(name);
+            var option = reader.ReadAccount(name);
 
             //assert
-            Assert.True(result.Success);
-            AccountModelAsserts.AssertEqual(expected, result.Value);
+            Assert.True(option.Match(some => true, error => false, () => false));
+            AccountModelAsserts.AssertEqual(expected, option.Or(null));
             dataReaderMock.Verify(x => x.GetAccount(It.Is<string>(x => x == name)));
             dataReaderMock.VerifyNoOtherCalls();
 
@@ -68,11 +70,11 @@ namespace PswManager.Core.Tests.Inner {
             AccountModel expected = cryptoAccount.Decrypt(AccountModelMocks.GenerateEncryptedFromName(name, cryptoAccount));
 
             //act
-            var result = await reader.ReadAccountAsync(name);
+            var option = await reader.ReadAccountAsync(name);
 
             //assert
-            Assert.True(result.Success);
-            AccountModelAsserts.AssertEqual(expected, result.Value);
+            Assert.True(option.Match(some => true, error => false, () => false));
+            AccountModelAsserts.AssertEqual(expected, option.Or(null));
             dataReaderMock.Verify(x => x.GetAccountAsync(It.Is<string>(x => x == name)));
             dataReaderMock.VerifyNoOtherCalls();
 
@@ -85,12 +87,12 @@ namespace PswManager.Core.Tests.Inner {
         public async Task NoCallsIfInvalidName(string name) {
 
             //act
-            var result = reader.ReadAccount(name);
-            var resultAsync = await reader.ReadAccountAsync(name);
+            var option = reader.ReadAccount(name);
+            var optionAsync = await reader.ReadAccountAsync(name);
 
             //assert
-            Assert.False(result.Success);
-            Assert.False(resultAsync.Success);
+            Assert.False(option.Match(some => true, error => false, () => false));
+            Assert.False(optionAsync.Match(some => true, error => false, () => false));
             dataReaderMock.VerifyNoOtherCalls();
 
         }

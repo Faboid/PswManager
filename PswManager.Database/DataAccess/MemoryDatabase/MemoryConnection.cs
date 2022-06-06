@@ -1,4 +1,6 @@
-﻿using PswManager.Database.Models;
+﻿using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Database.Models;
+using PswManager.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,12 +38,12 @@ namespace PswManager.Database.DataAccess.MemoryDatabase {
             return ValueTask.FromResult(new ConnectionResult(true));
         }
 
-        protected override ConnectionResult<AccountModel> GetAccountHook(string name) {
-            return new ConnectionResult<AccountModel>(true, accounts[name]);
+        protected override Option<AccountModel, ReaderErrorCode> GetAccountHook(string name) {
+            return accounts[name];
         }
 
-        protected override ValueTask<AccountResult> GetAccountHookAsync(string name) {
-            return ValueTask.FromResult(new AccountResult(name, accounts[name]));
+        protected override ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name) {
+            return ValueTask.FromResult<Option<AccountModel, ReaderErrorCode>>(accounts[name]);
         }
 
         protected override ConnectionResult<IEnumerable<AccountResult>> GetAllAccountsHook() {

@@ -33,8 +33,8 @@ namespace PswManager.Tests.Database.Generic {
             var actual = dataReader.GetAccount(expected.Name);
 
             //assert
-            Assert.True(actual.Success);
-            AccountEqual(expected, actual.Value);
+            Assert.True(actual.Match(some => true, error => false, () => false));
+            AccountEqual(expected, actual.Or(null));
 
         }
 
@@ -48,8 +48,8 @@ namespace PswManager.Tests.Database.Generic {
             var actual = await dataReader.GetAccountAsync(expected.Name);
 
             //assert
-            Assert.True(actual.Success);
-            AccountEqual(expected, actual.Value);
+            Assert.True(actual.Match(some => true, error => false, () => false));
+            AccountEqual(expected, actual.Or(null));
 
         }
 
