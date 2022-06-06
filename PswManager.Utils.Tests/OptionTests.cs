@@ -44,6 +44,38 @@ namespace PswManager.Utils.Tests {
 
         }
 
+        [Fact]
+        public async Task BindAsyncMixAndMatches() {
+
+            //arrange
+            Option<int, string> option = new(5);
+            string errorMessage = "Can't be zero.";
+
+            //act
+            var firstOption = await option.BindAsync(x => Task.FromResult(new Option<int, string>(x - 5)));
+            var firstRes = firstOption.Or(100);
+            var none = await option.BindAsync(x => Task.FromResult(new Option<int, string>()));
+            var noneTwo = await none.BindAsync(x => Task.FromResult(new Option<bool, string>(true)));
+            var error = await firstOption.BindAsync(x => {
+                if(x == 0) {
+                    return Task.FromResult(new Option<int, string>(errorMessage));
+                }
+
+                OrderChecker.Never();
+                throw new Exception();
+            });
+
+            //assert
+
+            Assert.Equal(0, firstRes);
+            Assert.Equal(20, none.Or(20));
+            Assert.IsType<None<int, string>>(GetUnderlyingOption(none));
+            Assert.IsType<None<bool, string>>(GetUnderlyingOption(noneTwo));
+            Assert.Equal(50, error.Or(50));
+            Assert.IsType<Error<int, string>>(GetUnderlyingOption(error));
+
+        }
+
         public static IEnumerable<object[]> SomeData() {
             static object[] NewObj(int expected, Option<int, string> option) => new object[] { expected, option };
 
