@@ -1,9 +1,7 @@
-﻿using System.Threading.Tasks;
-using Xunit;
-using PswManager.Utils;
+﻿using Xunit;
 using PswManager.TestUtils;
 
-namespace PswManager.Tests.Async.Locks {
+namespace PswManager.Utils.Tests {
     public class RefCountTests {
 
         [Fact]
