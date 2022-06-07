@@ -108,6 +108,7 @@ namespace PswManager.Utils.Tests {
 
             //assert
             Assert.Equal(expected, result);
+            Assert.IsType<Some<int, string>>(GetUnderlyingOption(option));
 
         }
 
