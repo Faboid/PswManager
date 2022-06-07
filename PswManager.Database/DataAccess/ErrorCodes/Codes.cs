@@ -6,6 +6,7 @@ public enum CreatorErrorCode {
     MissingPassword,
     MissingEmail,
     AccountExistsAlready,
+    UsedElsewhere,
 }
 
 public enum ReaderErrorCode {
