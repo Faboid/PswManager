@@ -65,60 +65,52 @@ namespace PswManager.Database.DataAccess.SQLDatabase {
             return await reader.ReadAsync().ConfigureAwait(false);
         }
 
-        public ConnectionResult CreateAccount(AccountModel model) {
-            if(string.IsNullOrWhiteSpace(model.Name)) {
-                return CachedResults.InvalidNameResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Password)) {
-                return CachedResults.MissingPasswordResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Email)) {
-                return CachedResults.MissingEmailResult;
+        public Option<CreatorErrorCode> CreateAccount(AccountModel model) {
+            if(!model.IsAllValid(out var errorCode)) {
+                return errorCode.ToCreatorErrorCode();
             }
 
             using var heldLock = locker.GetLock(model.Name, 50);
             if(heldLock.Obtained == false) {
-                return CachedResults.UsedElsewhereResult;
+                return CreatorErrorCode.UsedElsewhere;
             }
 
             if(AccountExist_NoLock(model.Name)) {
-                return CachedResults.CreateAccountAlreadyExistsResult;
+                return CreatorErrorCode.AccountExistsAlready;
             }
 
             using var cmd = queriesBuilder.CreateAccountQuery(model);
             using var cnn = cmd.Connection.GetConnection();
             var result = cmd.ExecuteNonQuery() == 1;
-            return new ConnectionResult(result);
+
+            return result switch {
+                true => Option.None<CreatorErrorCode>(),
+                false => CreatorErrorCode.Undefined,
+            };
         }
 
-        public async Task<ConnectionResult> CreateAccountAsync(AccountModel model) {
-            if(string.IsNullOrWhiteSpace(model.Name)) {
-                return CachedResults.InvalidNameResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Password)) {
-                return CachedResults.MissingPasswordResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Email)) {
-                return CachedResults.MissingEmailResult;
+        public async Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model) {
+            if(!model.IsAllValid(out var errorCode)) {
+                return errorCode.ToCreatorErrorCode();
             }
 
             using var heldLock = await locker.GetLockAsync(model.Name, 50).ConfigureAwait(false);
             if(heldLock.Obtained == false) {
-                return CachedResults.UsedElsewhereResult;
+                return CreatorErrorCode.UsedElsewhere;
             }
 
             if(await AccountExistAsync_NoLock(model.Name).ConfigureAwait(false)) {
-                return CachedResults.CreateAccountAlreadyExistsResult;
+                return CreatorErrorCode.AccountExistsAlready;
             }
 
             using var cmd = queriesBuilder.CreateAccountQuery(model);
             await using var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
             var result = await cmd.ExecuteNonQueryAsync().ConfigureAwait(false) == 1;
-            return new ConnectionResult(result);
+
+            return result switch {
+                true => Option.None<CreatorErrorCode>(),
+                false => CreatorErrorCode.Undefined,
+            };
         }
 
         public ConnectionResult DeleteAccount(string name) {

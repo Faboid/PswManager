@@ -48,51 +48,35 @@ namespace PswManager.Database.DataAccess {
             return await AccountExistInternalAsync(name).ConfigureAwait(false);
         }
 
-        public ConnectionResult CreateAccount(AccountModel model) {
-            if(string.IsNullOrWhiteSpace(model.Name)) {
-                return CachedResults.InvalidNameResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Password)) {
-                return CachedResults.MissingPasswordResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Email)) {
-                return CachedResults.MissingEmailResult;
+        public Option<CreatorErrorCode> CreateAccount(AccountModel model) {
+            if(!model.IsAllValid(out var errorCode)) {
+                return errorCode.ToCreatorErrorCode();
             }
 
             using var ownLock = Locker.GetLock(model.Name, 50);
             if(!ownLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return CreatorErrorCode.UsedElsewhere;
             }
 
             if(AccountExistInternal(model.Name)) {
-                return CachedResults.CreateAccountAlreadyExistsResult;
+                return CreatorErrorCode.AccountExistsAlready;
             }
 
             return CreateAccountHook(model);
         }
 
-        public async Task<ConnectionResult> CreateAccountAsync(AccountModel model) {
-            if(string.IsNullOrWhiteSpace(model.Name)) {
-                return CachedResults.InvalidNameResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Password)) {
-                return CachedResults.MissingPasswordResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Email)) {
-                return CachedResults.MissingEmailResult;
+        public async Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model) {
+            if(!model.IsAllValid(out var errorCode)) {
+                return errorCode.ToCreatorErrorCode();
             }
 
             using var ownedLock = await Locker.GetLockAsync(model.Name, 50).ConfigureAwait(false);
             if(!ownedLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return CreatorErrorCode.UsedElsewhere;
             }
 
             if(await AccountExistInternalAsync(model.Name).ConfigureAwait(false)) {
-                return CachedResults.CreateAccountAlreadyExistsResult;
+                return CreatorErrorCode.AccountExistsAlready;
             }
 
             return await CreateAccountHookAsync(model).ConfigureAwait(false);
@@ -269,8 +253,8 @@ namespace PswManager.Database.DataAccess {
 
         protected abstract bool AccountExistHook(string name);
         protected abstract ValueTask<bool> AccountExistHookAsync(string name);
-        protected abstract ConnectionResult CreateAccountHook(AccountModel model);
-        protected abstract ValueTask<ConnectionResult> CreateAccountHookAsync(AccountModel model);
+        protected abstract Option<CreatorErrorCode> CreateAccountHook(AccountModel model);
+        protected abstract ValueTask<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model);
         protected abstract Option<AccountModel, ReaderErrorCode> GetAccountHook(string name);
         protected abstract ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name);
         protected abstract ConnectionResult<IEnumerable<AccountResult>> GetAllAccountsHook();

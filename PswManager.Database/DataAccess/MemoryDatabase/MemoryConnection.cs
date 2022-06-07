@@ -18,14 +18,14 @@ namespace PswManager.Database.DataAccess.MemoryDatabase {
             return ValueTask.FromResult(accounts.ContainsKey(name));
         }
 
-        protected override ConnectionResult CreateAccountHook(AccountModel model) {
+        protected override Option<CreatorErrorCode> CreateAccountHook(AccountModel model) {
             accounts.Add(model.Name, model);
-            return new ConnectionResult(true);
+            return Option.None<CreatorErrorCode>();
         }
 
-        protected override ValueTask<ConnectionResult> CreateAccountHookAsync(AccountModel model) {
+        protected override ValueTask<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model) {
             accounts.Add(model.Name, model);
-            return ValueTask.FromResult(new ConnectionResult(true));
+            return ValueTask.FromResult(Option.None<CreatorErrorCode>());
         }
 
         protected override ConnectionResult DeleteAccountHook(string name) {

@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\PswManager.Commands\PswManager.Commands.csproj" />
     <ProjectReference Include="..\PswManager.Core\PswManager.Core.csproj" />
+    <Using Include="PswManager.Utils"/>
   </ItemGroup>
 
 </Project>

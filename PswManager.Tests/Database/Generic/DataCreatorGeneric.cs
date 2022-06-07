@@ -1,6 +1,8 @@
-﻿using PswManager.Database.DataAccess.Interfaces;
+﻿using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
 using PswManager.Tests.TestsHelpers;
+using PswManager.Utils;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -30,7 +32,7 @@ namespace PswManager.Tests.Database.Generic {
 
             //assert
             Assert.False(exist);
-            Assert.True(result.Success);
+            Assert.True(OptionToSuccess(result));
             Assert.True(dataCreator.AccountExist(account.Name));
 
         }
@@ -47,7 +49,7 @@ namespace PswManager.Tests.Database.Generic {
 
             //assert
             Assert.False(exist);
-            Assert.True(result.Success);
+            Assert.True(OptionToSuccess(result));
             Assert.True(await dataCreator.AccountExistAsync(account.Name).ConfigureAwait(false));
 
         }
@@ -65,8 +67,8 @@ namespace PswManager.Tests.Database.Generic {
 
             //assert
             Assert.True(exist);
-            Assert.False(result.Success);
-            Assert.False(resultAsync.Success);
+            Assert.False(OptionToSuccess(result));
+            Assert.False(OptionToSuccess(resultAsync));
 
         }
 
@@ -84,8 +86,8 @@ namespace PswManager.Tests.Database.Generic {
             var resultAsync = await dataCreator.CreateAccountAsync(account);
 
             //assert
-            Assert.False(result.Success);
-            Assert.False(resultAsync.Success);
+            Assert.False(OptionToSuccess(result));
+            Assert.False(OptionToSuccess(resultAsync));
 
         }
 
@@ -103,8 +105,8 @@ namespace PswManager.Tests.Database.Generic {
             var resultAsync = await dataCreator.CreateAccountAsync(account);
 
             //assert
-            Assert.False(result.Success);
-            Assert.False(resultAsync.Success);
+            Assert.False(OptionToSuccess(result));
+            Assert.False(OptionToSuccess(resultAsync));
 
         }
 
@@ -122,10 +124,12 @@ namespace PswManager.Tests.Database.Generic {
             var resultAsync = await dataCreator.CreateAccountAsync(account);
 
             //assert
-            Assert.False(result.Success);
-            Assert.False(resultAsync.Success);
+            Assert.False(OptionToSuccess(result));
+            Assert.False(OptionToSuccess(resultAsync));
 
         }
+
+        private static bool OptionToSuccess(Option<CreatorErrorCode> option) => option.Match(error => false, () => true);
 
         public void Dispose() {
             dbHandler.Dispose();

@@ -35,19 +35,19 @@ namespace PswManager.Database.DataAccess.JsonDatabase {
             return await Task.Run(() => File.Exists(BuildFilePath(name))).ConfigureAwait(false);
         }
 
-        protected override ConnectionResult CreateAccountHook(AccountModel model) {
+        protected override Option<CreatorErrorCode> CreateAccountHook(AccountModel model) {
             var path = BuildFilePath(model.Name);
             var jsonString = JsonSerializer.Serialize(model);
             File.WriteAllText(path, jsonString);
 
-            return new ConnectionResult(true);
+            return Option.None<CreatorErrorCode>();
         }
 
-        protected async override ValueTask<ConnectionResult> CreateAccountHookAsync(AccountModel model) {
+        protected async override ValueTask<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model) {
             var path = BuildFilePath(model.Name);
             using var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write);
             await JsonSerializer.SerializeAsync(stream, model).ConfigureAwait(false);
-            return new ConnectionResult(true);
+            return Option.None<CreatorErrorCode>();
         }
 
         protected override ConnectionResult DeleteAccountHook(string name) {

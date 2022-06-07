@@ -53,56 +53,40 @@ namespace PswManager.Database.DataAccess.TextDatabase {
             return await fileSaver.ExistsAsync(name).ConfigureAwait(false);
         }
 
-        public ConnectionResult CreateAccount(AccountModel model) {
-            if(string.IsNullOrWhiteSpace(model.Name)) {
-                return CachedResults.InvalidNameResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Password)) {
-                return CachedResults.MissingPasswordResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Email)) {
-                return CachedResults.MissingEmailResult;
+        public Option<CreatorErrorCode> CreateAccount(AccountModel model) {
+            if(!model.IsAllValid(out var errorCode)) {
+                return errorCode.ToCreatorErrorCode();
             }
 
             using var accLock = locker.GetLock(model.Name, 50);
             if(!accLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return CreatorErrorCode.UsedElsewhere; 
             }
 
             if(fileSaver.Exists(model.Name)) {
-                return CachedResults.CreateAccountAlreadyExistsResult;
+                return CreatorErrorCode.AccountExistsAlready;
             }
 
             fileSaver.Create(model);
-            return new(true);
+            return Option.None<CreatorErrorCode>();
         }
 
-        public async Task<ConnectionResult> CreateAccountAsync(AccountModel model) {
-            if(string.IsNullOrWhiteSpace(model.Name)) {
-                return CachedResults.InvalidNameResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Password)) {
-                return CachedResults.MissingPasswordResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Email)) {
-                return CachedResults.MissingEmailResult;
+        public async Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model) {
+            if(!model.IsAllValid(out var errorCode)) {
+                return errorCode.ToCreatorErrorCode();
             }
 
             using var accLock = await locker.GetLockAsync(model.Name, 50).ConfigureAwait(false);
             if(!accLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return CreatorErrorCode.UsedElsewhere;
             }
 
             if(await fileSaver.ExistsAsync(model.Name).ConfigureAwait(false)) {
-                return CachedResults.CreateAccountAlreadyExistsResult;
+                return CreatorErrorCode.AccountExistsAlready;
             }
 
             await fileSaver.CreateAsync(model).ConfigureAwait(false);
-            return new(true);
+            return Option.None<CreatorErrorCode>();
         }
 
         public ConnectionResult DeleteAccount(string name) {

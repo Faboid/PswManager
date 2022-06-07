@@ -1,11 +1,5 @@
-﻿using PswManager.Database.DataAccess.Interfaces;
-using PswManager.Database.Models;
+﻿using PswManager.Database.Models;
 using PswManager.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PswManager.Core.Inner {
     internal static class AccountExtensions {
@@ -36,5 +30,31 @@ namespace PswManager.Core.Inner {
 
         }
 
+        public static ValidationResult IsAnyValueNullOrEmpty(this AccountModel account) {
+
+            if(string.IsNullOrWhiteSpace(account.Name)) {
+                return ValidationResult.MissingName;
+            }
+
+            if(string.IsNullOrWhiteSpace(account.Password)) {
+                return ValidationResult.MissingPassword;
+            }
+
+            if(string.IsNullOrWhiteSpace(account.Email)) {
+                return ValidationResult.MissingEmail;
+            }
+
+            return ValidationResult.Success;
+        }
+
     }
+
+    public enum ValidationResult {
+        Undefined,
+        Success,
+        MissingName,
+        MissingPassword,
+        MissingEmail
+    }
+
 }

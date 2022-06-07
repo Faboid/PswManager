@@ -39,11 +39,11 @@ namespace PswManager.Core {
         readonly IAccountEditor accountEditor;
         readonly IAccountDeleter accountDeleter;
 
-        public Result CreateAccount(AccountModel model) {
+        public Option<CreatorErrorCode> CreateAccount(AccountModel model) {
             return accountCreator.CreateAccount(model);
         }
 
-        public Task<Result> CreateAccountAsync(AccountModel model) {
+        public Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model) {
             return accountCreator.CreateAccountAsync(model);
         }
 

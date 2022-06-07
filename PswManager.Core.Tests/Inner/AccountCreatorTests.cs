@@ -3,8 +3,10 @@ using PswManager.Core.Cryptography;
 using PswManager.Core.Inner;
 using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
+using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
+using PswManager.Utils;
 using Xunit;
 
 namespace PswManager.Core.Tests.Inner {
@@ -16,10 +18,10 @@ namespace PswManager.Core.Tests.Inner {
             dataCreatorMock = new Mock<IDataCreator>();
             dataCreatorMock
                 .Setup(x => x.CreateAccount(It.IsAny<AccountModel>()))
-                .Returns<AccountModel>(ConnectionResultMocks.SuccessIfAllValuesAreNotEmpty);
+                .Returns<AccountModel>(OptionMocks.ValidateValues);
             dataCreatorMock
                 .Setup(x => x.CreateAccountAsync(It.IsAny<AccountModel>()))
-                .Returns<AccountModel>(x => Task.FromResult((ConnectionResult)ConnectionResultMocks.SuccessIfAllValuesAreNotEmpty(x)));
+                .Returns<AccountModel>(x => Task.FromResult(OptionMocks.ValidateValues(x)));
         }
 
         //since the purpose of this class is encrypting the password & email,
@@ -40,7 +42,7 @@ namespace PswManager.Core.Tests.Inner {
             var result = creator.CreateAccount(input);
 
             //assert
-            Assert.True(result.Success);
+            Assert.True(OptionToSuccess(result));
             dataCreatorMock.Verify(x => x.CreateAccount(It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))));
             dataCreatorMock.VerifyNoOtherCalls();
 
@@ -57,7 +59,7 @@ namespace PswManager.Core.Tests.Inner {
             var result = await creator.CreateAccountAsync(input);
 
             //assert
-            Assert.True(result.Success);
+            Assert.True(OptionToSuccess(result));
             dataCreatorMock.Verify(x => x.CreateAccountAsync(It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))));
             dataCreatorMock.VerifyNoOtherCalls();
 
@@ -78,11 +80,13 @@ namespace PswManager.Core.Tests.Inner {
             var resultAsync = await creator.CreateAccountAsync(input);
 
             //assert
-            Assert.False(result.Success);
-            Assert.False(resultAsync.Success);
+            Assert.False(OptionToSuccess(result));
+            Assert.False(OptionToSuccess(resultAsync));
             dataCreatorMock.VerifyNoOtherCalls();
 
         }
+
+        private static bool OptionToSuccess(Option<CreatorErrorCode> option) => option.Match(error => false, () => true);
 
         private (AccountCreator creator, AccountModel input, AccountModel expected) ArrangeTest(string name, string password, string email) {
             var creator = new AccountCreator(dataCreatorMock.Object, cryptoAccount);
