@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 [assembly:InternalsVisibleTo("PswManager.Utils.Tests")]
 namespace PswManager.Utils;
 
-//The code for these classes has been derived from https://dev.to/ntreu14/let-s-implement-an-option-type-in-c-1ibn
-
 public static class Option {
 
     public static Option<TValue> Some<TValue>(TValue value) => new(value);
