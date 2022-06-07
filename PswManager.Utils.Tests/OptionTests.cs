@@ -7,7 +7,7 @@ namespace PswManager.Utils.Tests {
 
         private static IOption<TValue, TError> GetUnderlyingOption<TValue, TError>(Option<TValue, TError> option) {
             var flags = BindingFlags.NonPublic | BindingFlags.Instance;
-            var field = option.GetType().GetField("option", flags);
+            var field = option.GetType().GetField("_option", flags);
             var output = field!.GetValue(option);
             return (IOption<TValue, TError>)output!;
         }

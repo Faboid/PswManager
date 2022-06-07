@@ -26,38 +26,33 @@ public static class Option {
 
 public struct Option<TValue, TError> {
 
-    private readonly IOption<TValue, TError> option = new None<TValue, TError>();
+    private IOption<TValue, TError> GetOption => _option ?? new None<TValue, TError>();
+    private readonly IOption<TValue, TError> _option;
 
     public Option(TValue value) {
-        option = (value != null)? 
+        _option = (value != null)? 
             new Some<TValue, TError>(value) :
             new None<TValue, TError>();
     }
 
     public Option(TError error) {
-        option = (error != null)? 
+        _option = (error != null)? 
             new Error<TValue, TError>(error) :
             new None<TValue, TError>();
     }
 
     public Option() {
-        option = new None<TValue, TError>();
+        _option = new None<TValue, TError>();
     }
 
     private Option(IOption<TValue, TError> option) {
-        this.option = option;
+        _option = option;
     }
 
-    public T Match<T>(Func<TValue, T> some, Func<TError, T> error, Func<T> none) 
-        => (option != null) ? option.Match(some, error, none) : none.Invoke();
-
-    public Option<T, TError> Bind<T>(Func<TValue, Option<T, TError>> func) 
-        => option?.Bind(func) ?? new None<T, TError>();
-
-    public async Task<Option<T, TError>> BindAsync<T>(Func<TValue, Task<Option<T, TError>>> func) 
-        => (option != null)? await option.BindAsync(func).ConfigureAwait(false) : new None<T, TError>();
-
-    public TValue Or(TValue def) => option.Or(def);
+    public T Match<T>(Func<TValue, T> some, Func<TError, T> error, Func<T> none) => GetOption.Match(some, error, none);
+    public Option<T, TError> Bind<T>(Func<TValue, Option<T, TError>> func) => GetOption.Bind(func);
+    public async Task<Option<T, TError>> BindAsync<T>(Func<TValue, Task<Option<T, TError>>> func) => await GetOption.BindAsync(func).ConfigureAwait(false);
+    public TValue Or(TValue def) => GetOption.Or(def);
 
     //static constructors
     public static Option<TValue, TError> Some(TValue value) => new(value);
