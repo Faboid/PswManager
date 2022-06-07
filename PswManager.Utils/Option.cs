@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PswManager.Utils.Options;
+using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -7,20 +8,50 @@ namespace PswManager.Utils;
 
 //The code for these classes has been derived from https://dev.to/ntreu14/let-s-implement-an-option-type-in-c-1ibn
 
-internal interface IOption<TValue, TError> {
-
-    T Match<T>(Func<TValue, T> some, Func<TError, T> error, Func<T> none);
-    Option<T, TError> Bind<T>(Func<TValue, Option<T, TError>> func);
-    Task<Option<T, TError>> BindAsync<T>(Func<TValue, Task<Option<T, TError>>> func);
-    TValue Or(TValue def);
-
-}
-
 public static class Option {
+
+    public static Option<TValue> Some<TValue>(TValue value) => new(value);
+    public static Option<TValue> None<TValue>() => new();
 
     public static Option<TValue, TError> Some<TValue, TError>(TValue value) => new(value);
     public static Option<TValue, TError> Error<TValue, TError>(TError error) => new(error);
     public static Option<TValue, TError> None<TValue, TError>() => new();
+
+}
+
+public struct Option<TValue> {
+
+    private IOption<TValue> GetOption => _option ?? new None<TValue>();
+    private readonly IOption<TValue> _option;
+
+    public Option(TValue value) {
+        _option = (value != null) ?
+            new Some<TValue>(value) :
+            new None<TValue>();
+    }
+
+    public Option() {
+        _option = new None<TValue>();
+    }
+
+    private Option(IOption<TValue> option) {
+        _option = option;
+    }
+
+    public T Match<T>(Func<TValue, T> some, Func<T> none) => GetOption.Match(some, none);
+    public Option<T> Bind<T>(Func<TValue, Option<T>> func) => GetOption.Bind(func);
+    public async Task<Option<T>> BindAsync<T>(Func<TValue, Task<Option<T>>> func) => await GetOption.BindAsync(func).ConfigureAwait(false);
+    public TValue Or(TValue def) => GetOption.Or(def);
+
+    //static constructors
+    public static Option<TValue> Some(TValue value) => new(value);
+    public static Option<TValue> None() => new();
+
+    //implicit operators
+    public static implicit operator Option<TValue>(Some<TValue> some) => new(some);
+    public static implicit operator Option<TValue>(None<TValue> none) => new(none);
+    public static implicit operator Option<TValue>(TValue value) => new(value);
+    //default implicits to None<>
 
 }
 
@@ -66,52 +97,5 @@ public struct Option<TValue, TError> {
     public static implicit operator Option<TValue, TError>(TValue value) => new(value);
     public static implicit operator Option<TValue, TError>(TError error) => new(error);
     //default implicits to None<>
-
-}
-
-public struct Some<TValue, TError> : IOption<TValue, TError> {
-
-    private readonly TValue value;
-
-    public Some(TValue value) {
-        this.value = value;
-    }
-
-    public T Match<T>(Func<TValue, T> some, Func<TError, T> error, Func<T> none) => some.Invoke(value);
-    public Option<T, TError> Bind<T>(Func<TValue, Option<T, TError>> func) => func.Invoke(value);
-    public async Task<Option<T, TError>> BindAsync<T>(Func<TValue, Task<Option<T, TError>>> func) => await func.Invoke(value);
-    public TValue Or(TValue def) => value;
-
-
-    public static implicit operator Some<TValue, TError>(TValue value) => new(value);
-
-}
-
-public struct Error<TValue, TError> : IOption<TValue, TError> {
-
-    private readonly TError err;
-
-    public Error(TError error) {
-        err = error;
-    }
-
-    public T Match<T>(Func<TValue, T> some, Func<TError, T> error, Func<T> none) => error.Invoke(err);
-    public Option<T, TError> Bind<T>(Func<TValue, Option<T, TError>> func) => new Error<T, TError>(err);
-    public Task<Option<T, TError>> BindAsync<T>(Func<TValue, Task<Option<T, TError>>> func) => Task.FromResult<Option<T, TError>>(new Error<T, TError>(err));
-    public TValue Or(TValue def) => def;
-
-
-    public static implicit operator Error<TValue, TError>(TError error) => new(error);
-
-}
-
-public struct None<TValue, TError> : IOption<TValue, TError> {
-
-    public None() { }
-
-    public T Match<T>(Func<TValue, T> some, Func<TError, T> error, Func<T> none) => none.Invoke();
-    public Option<T, TError> Bind<T>(Func<TValue, Option<T, TError>> func) => new None<T, TError>();
-    public Task<Option<T, TError>> BindAsync<T>(Func<TValue, Task<Option<T, TError>>> func) => Task.FromResult<Option<T, TError>>(new None<T, TError>());
-    public TValue Or(TValue def) => def;
 
 }

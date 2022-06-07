@@ -1,9 +1,10 @@
 ﻿using PswManager.TestUtils;
+using PswManager.Utils.Options;
 using System.Reflection;
 using Xunit;
 
 namespace PswManager.Utils.Tests {
-    public class OptionTests {
+    public class OptionValueErrorNoneTests {
 
         private static IOption<TValue, TError> GetUnderlyingOption<TValue, TError>(Option<TValue, TError> option) {
             var flags = BindingFlags.NonPublic | BindingFlags.Instance;
