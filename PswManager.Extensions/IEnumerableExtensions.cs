@@ -19,5 +19,11 @@ namespace PswManager.Extensions {
             return string.Join(separator, enumeration);
         }
 
+        public static async IAsyncEnumerable<T> AsAsyncEnumerable<T>(this IEnumerable<Task<T>> enumerable) {
+            foreach(var value in enumerable) {
+                yield return await value.ConfigureAwait(false);
+            }
+        }
+
     }
 }
