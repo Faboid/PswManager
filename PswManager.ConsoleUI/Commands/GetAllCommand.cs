@@ -2,7 +2,6 @@
 using PswManager.Commands.AbstractCommands;
 using PswManager.Commands.Validation.Builders;
 using PswManager.Database.Models;
-using PswManager.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +10,7 @@ using PswManager.ConsoleUI.Commands.Validation.ValidationTypes;
 using PswManager.ConsoleUI.Commands.ArgsModels;
 using PswManager.Core.Inner.Interfaces;
 using PswManager.Extensions;
+using PswManager.Database.DataAccess.ErrorCodes;
 
 namespace PswManager.ConsoleUI.Commands {
     public class GetAllCommand : BaseCommand<GetAllCommandArgs> {
@@ -19,14 +19,23 @@ namespace PswManager.ConsoleUI.Commands {
         public const string InexistentKeyErrorMessage = "Invalid key(s) has been found. Valid keys: names, passwords, emails.";
         public const string DuplicateKeyErrorMessage = "Duplicate keys aren't allowed.";
 
-        private static CommandResult GetErrorResult(string error) => new($"There has been an error: {error}", false);
-        private CommandResult GetAllAccountsValuesResult(IEnumerable<AccountResult> accounts)
-            => new("The list has been retrieved.", true, string.Join(Environment.NewLine, accounts.Select(Unwrap)));
-        private async Task<CommandResult> GetAllAccountsValuesResultAsync(IAsyncEnumerable<AccountResult> accounts)
-            => new("The list has been retrieved.", true, await accounts.Select(Unwrap).JoinStrings(Environment.NewLine).ConfigureAwait(false));
-        private static CommandResult GetStringEnumResult(IEnumerable<string> accounts)
+        private static IEnumerable<string> GetAllAccountsAsStrings(IEnumerable<NamedAccountOption> accounts, ValuesToGet toGet) => accounts.AsParallel().Select(x => x.Match(
+                some => Unwrap(some, toGet),
+                error => SingleErrorToMessage(error.Name, error.ErrorCode),
+                () => $"There has been an error retrieving an unknown account."
+            )
+        );
+
+        private static IAsyncEnumerable<string> GetAllAccountsAsStringsAsync(IAsyncEnumerable<NamedAccountOption> accounts, ValuesToGet toGet) => accounts.Select(x => x.Match(
+                some => Task.Run(() => Unwrap(some, toGet)),
+                error => SingleErrorToMessage(error.Name, error.ErrorCode).AsTask(),
+                () => $"There has been an error retrieving an unknown account.".AsTask()
+            )
+        );
+
+        private static CommandResult StringListToResult(IEnumerable<string> accounts)
             => new("The list has been retrieved.", true, string.Join(Environment.NewLine, accounts));
-        private static async Task<CommandResult> GetStringEnumResultAsync(IAsyncEnumerable<string> accounts)
+        private static async Task<CommandResult> StringListToResultAsync(IAsyncEnumerable<string> accounts)
             => new("The list has been retrieved.", true, await accounts.JoinStrings(Environment.NewLine).ConfigureAwait(false));
         //todo - consider adding overload for CommandResult to give it the possibility of keeping an IEnumerable.
         //it would allow returning without enumerating everything; which would be quite expensive when dealing with
@@ -37,6 +46,13 @@ namespace PswManager.ConsoleUI.Commands {
                 Names = args.SplitKeys().Contains(validKeys[0]);
                 Passwords = args.SplitKeys().Contains(validKeys[1]);
                 Emails = args.SplitKeys().Contains(validKeys[2]);
+
+                //if they are all false, the user didn't input any constraint. Therefore, they should all be taken.
+                if(!Names && !Passwords && !Emails) {
+                    Names = true;
+                    Passwords = true;
+                    Emails = true;
+                }
             }
 
             public bool Names { get; } = true;
@@ -52,36 +68,24 @@ namespace PswManager.ConsoleUI.Commands {
         }
 
         protected override CommandResult RunLogic(GetAllCommandArgs arguments) {
-            var result = dataReader.ReadAllAccounts();
-
-            if(!result.Success) {
-                return GetErrorResult(result.ErrorMessage);
-            }
-
-            if(string.IsNullOrWhiteSpace(arguments.Keys)) {
-                return GetAllAccountsValuesResult(result.Value);
-            }
-
             var toGet = new ValuesToGet(arguments);
-            var accounts = UnwrapAll(result.Value, toGet);
 
-            return GetStringEnumResult(accounts);
+            return dataReader.ReadAllAccounts()
+                .Bind<IEnumerable<string>>(x => new(GetAllAccountsAsStrings(x, toGet)))
+                .Match(StringListToResult, AllErrorToResult, NoneToResult);
         }
 
         protected override async ValueTask<CommandResult> RunLogicAsync(GetAllCommandArgs args) {
-            var result = await dataReader.ReadAllAccountsAsync().ConfigureAwait(false);
-
-            if(!result.Success) {
-                return GetErrorResult(result.ErrorMessage);
-            }
-
-            if(string.IsNullOrWhiteSpace(args.Keys)) {
-                return await GetAllAccountsValuesResultAsync(result.Value);
-            }
-
             var toGet = new ValuesToGet(args);
-            var accounts = UnwrapAll(result.Value, toGet);
-            return await GetStringEnumResultAsync(accounts);
+
+            var option = await dataReader.ReadAllAccountsAsync().ConfigureAwait(false);
+            return await option
+                .Bind<IAsyncEnumerable<string>>(x => new(GetAllAccountsAsStringsAsync(x, toGet)))
+                .Match(
+                    StringListToResultAsync, 
+                    error => AllErrorToResult(error).AsTask(), 
+                    () => NoneToResult().AsTask()
+                );
         }
 
         public override string GetDescription() {
@@ -92,26 +96,29 @@ namespace PswManager.ConsoleUI.Commands {
             .AddRule<ValidValuesRule>()
             .AddRule<NoDuplicateValuesRule>();
 
-        private IEnumerable<string> UnwrapAll(IEnumerable<AccountResult> accounts, ValuesToGet toGet) {
-            return accounts.AsParallel().Select(x => Unwrap(x, toGet));
+        private static CommandResult NoneToResult() {
+            return new("The get-all query has failed for an unknown reason.", false);
         }
 
-        //as this is cpu-bound work, there is not much that can be done to make it async beside wrapping it in a Task.Run().
-        private IAsyncEnumerable<string> UnwrapAll(IAsyncEnumerable<AccountResult> accounts, ValuesToGet toGet) {
-            return accounts.Select(x => Task.Run(() => Unwrap(x, toGet)));
+        private static CommandResult AllErrorToResult(ReaderAllErrorCode errorCode) {
+            var errorMessage = "There has been an error when trying to get all accounts:" + errorCode switch {
+                ReaderAllErrorCode.SomeUsedElsewhere => "Some values are being used elsewhere.",
+                _ => "The query has failed for an unknown reason.",
+            };
+
+            return new(errorMessage, false);
         }
 
-        private string Unwrap(AccountResult account) {
-            return Unwrap(account, new());
-        }
+        private static string SingleErrorToMessage(string name, ReaderErrorCode errorCode) => errorCode switch {
+            ReaderErrorCode.InvalidName => "Some query has received an invalid name.", //this should never happen, but I'll leave it here just in case
+            ReaderErrorCode.UsedElsewhere => $"The account {name} is being used elsewhere, so its values cannot be accessed.",
+            ReaderErrorCode.DoesNotExist => $"The account {name} doesn't exist anymore. It might've been deleted.",
+            _ => $"There has been an unknown error when trying to get the account {name}."
+        };
 
-        private string Unwrap(AccountResult result, ValuesToGet toGet) {
-            if(result.Success) {
-                var stringRepresenation = Take(result.Value, toGet);
-                return Merge(stringRepresenation);
-            }
-
-            return $"Error when getting {result.NameAccount}: {result.ErrorMessage ?? "Undefined"}";
+        private static string Unwrap(AccountModel result, ValuesToGet toGet) {
+            var stringRepresenation = Take(result, toGet);
+            return Merge(stringRepresenation);
         }
 
         private static IEnumerable<string> Take(AccountModel account, ValuesToGet toGet) {

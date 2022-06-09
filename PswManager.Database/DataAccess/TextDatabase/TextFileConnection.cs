@@ -2,6 +2,7 @@
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.TextDatabase.TextFileConnHelper;
 using PswManager.Database.Models;
+using PswManager.Extensions;
 using PswManager.Utils;
 using System;
 using System.Collections.Generic;
@@ -161,14 +162,14 @@ namespace PswManager.Database.DataAccess.TextDatabase {
             return account;
         }
 
-        public ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts() {
+        public Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccounts() {
             var accounts = fileSaver.GetAll(locker);
-            return new(true, accounts);
+            return new(accounts);
         }
 
-        public Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsAsync() { 
+        public Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsAsync() { 
             var accounts = fileSaver.GetAllAsync(locker);
-            return Task.FromResult(new ConnectionResult<IAsyncEnumerable<AccountResult>>(true, accounts));
+            return Option.Some<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>(accounts).AsTask();
         }
 
         public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {

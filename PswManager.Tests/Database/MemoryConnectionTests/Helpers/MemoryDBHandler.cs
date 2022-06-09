@@ -26,8 +26,8 @@ namespace PswManager.Tests.Database.MemoryConnectionTests.Helpers {
 
         public ITestDBHandler SetUpDefaultValues() {
             //reset database
-            dbConnection.GetAllAccounts().Value
-                .Select(x => x.Value)
+            dbConnection.GetAllAccounts().Match(some => some, error => throw new System.Exception(), () => throw new System.Exception())
+                .Select(x => x.Or(null) ?? throw new System.Exception())
                 .ForEach(x => dbConnection.DeleteAccount(x.Name));
 
             Enumerable.Range(0, numValues).ForEach(x => {

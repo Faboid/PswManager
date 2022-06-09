@@ -46,24 +46,30 @@ namespace PswManager.Database.DataAccess.MemoryDatabase {
             return ValueTask.FromResult<Option<AccountModel, ReaderErrorCode>>(accounts[name]);
         }
 
-        protected override ConnectionResult<IEnumerable<AccountResult>> GetAllAccountsHook() {
+        protected override Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccountsHook() {
             var list = accounts
                 .Values
-                .Select(x => new AccountResult(x.Name, x));
+                .Select(x => (NamedAccountOption)x);
 
-            return new(true, list);
+            return new(list);
         }
 
-        protected override Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsHookAsync() {
+        protected override Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync() {
             //fake async as it's just reading a list
-            async IAsyncEnumerable<AccountResult> GetAccounts() {
-                var list = GetAllAccountsHook().Value;
-                foreach(var account in list) {
-                    yield return await Task.FromResult(account).ConfigureAwait(false);
-                }
+            Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAccounts() {
+                return GetAllAccountsHook()
+                    .Bind(
+                        x => Option.Some<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>(ToAsyncEnumerable(x))
+                    );
             }
 
-            return Task.FromResult(new ConnectionResult<IAsyncEnumerable<AccountResult>>(true, GetAccounts()));
+            return Task.FromResult(GetAccounts());
+        }
+
+        private static async IAsyncEnumerable<NamedAccountOption> ToAsyncEnumerable(IEnumerable<NamedAccountOption> enumerable) {
+            foreach(var item in enumerable) {
+                yield return await Task.FromResult(item);
+            }
         }
 
         protected override ConnectionResult<AccountModel> UpdateAccountHook(string name, AccountModel newModel) {

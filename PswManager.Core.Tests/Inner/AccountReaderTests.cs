@@ -31,11 +31,11 @@ namespace PswManager.Core.Tests.Inner {
 
             dataReaderMock
                 .Setup(x => x.GetAllAccounts())
-                .Returns(() => ConnectionResultMocks.GenerateInfiniteEncryptedAccountList(cryptoAccount));
+                .Returns(() => OptionMocks.GenerateInfiniteEncryptedAccountList(cryptoAccount));
 
             dataReaderMock
                 .Setup(x => x.GetAllAccountsAsync())
-                .Returns(() => Task.FromResult(ConnectionResultMocks.GenerateInfiniteEncryptedAccountListAsync(cryptoAccount)));
+                .Returns(() => Task.FromResult(OptionMocks.GenerateInfiniteEncryptedAccountListAsync(cryptoAccount)));
 
             reader = new AccountReader(dataReaderMock.Object, cryptoAccount);
         }
@@ -101,12 +101,12 @@ namespace PswManager.Core.Tests.Inner {
         public void GetAllAccountsIsNotIterated() {
 
             //act
-            var result = reader.ReadAllAccounts();
-            var listValues = result.Value.Take(50).ToList();
+            var option = reader.ReadAllAccounts();
+            var listValues = option.Or(null).Take(50).ToList();
 
             //assert
-            Assert.True(result.Success);
-            Assert.True(listValues.Count == 50 && listValues.All(x => x != null));
+            Assert.True(option.Match(some => true, error => false, () => false));
+            Assert.True(listValues.Count == 50 && listValues.All(x => x.Match(some => true, error => false, () => false)));
             dataReaderMock.Verify(x => x.GetAllAccounts());
             dataReaderMock.VerifyNoOtherCalls();
 
@@ -116,12 +116,12 @@ namespace PswManager.Core.Tests.Inner {
         public async Task GetAllAccountsIsNotIteratedAsync() {
 
             //act
-            var result = await reader.ReadAllAccountsAsync();
-            var listValues = await result.Value.Take(50).ToList();
+            var option = await reader.ReadAllAccountsAsync();
+            var listValues = await option.Or(null).Take(50).ToList().ConfigureAwait(false);
 
             //assert
-            Assert.True(result.Success);
-            Assert.True(listValues.Count == 50 && listValues.All(x => x != null));
+            Assert.True(option.Match(some => true, error => false, () => false));
+            Assert.True(listValues.Count == 50 && listValues.All(x => x.Match(some => true, error => false, () => false)));
             dataReaderMock.Verify(x => x.GetAllAccountsAsync());
             dataReaderMock.VerifyNoOtherCalls();
 
@@ -140,10 +140,10 @@ namespace PswManager.Core.Tests.Inner {
 
             //act
             var result = reader.ReadAllAccounts();
-            var ten = result.Value.Take(10).Select(x => x.Value).ToList();
+            var ten = result.Or(null).Take(10).Select(x => x.Or(null)).ToList();
 
             //assert
-            Assert.True(result.Success);
+            Assert.True(result.Match(some => true, error => false, () => false));
             Assert.True(Enumerable.Range(0, 10).All(x => AccountModelAsserts.AssertEqual(expected[x], ten[x])));
 
         }
@@ -161,10 +161,10 @@ namespace PswManager.Core.Tests.Inner {
 
             //act
             var result = await reader.ReadAllAccountsAsync().ConfigureAwait(false);
-            var ten = await result.Value.Take(10).Select(x => x.Value).ToList();
+            var ten = await result.Or(null).Take(10).Select(x => x.Or(null)).ToList();
 
             //assert
-            Assert.True(result.Success);
+            Assert.True(result.Match(some => true, error => false, () => false));
             Assert.True(Enumerable.Range(0, 10).All(x => AccountModelAsserts.AssertEqual(expected[x], ten[x])));
 
         }

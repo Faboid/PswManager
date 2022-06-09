@@ -76,29 +76,34 @@ namespace PswManager.Database.DataAccess.JsonDatabase {
             return model;
         }
 
-        protected override ConnectionResult<IEnumerable<AccountResult>> GetAllAccountsHook() {
+        protected override Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccountsHook() {
             var accounts = Directory.GetFiles(directoryPath)
                 .Select(x => Path.GetFileNameWithoutExtension(x))
-                .Select(x => new AccountResult(x, GetAccountHook(x).Or(null)))
-                .Where(x => x.Value != null); //todo - temporary until I implement options here
+                .Select(x => GetAccountHook(x).Match(
+                    some => some, 
+                    error => (x, error), 
+                    () => NamedAccountOption.None())
+                );
 
-            return new(true, accounts);
+            return new(accounts);
         }
 
-        protected override Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsHookAsync() {
-            return Task.FromResult(new ConnectionResult<IAsyncEnumerable<AccountResult>>(true, GetAccountsAsync()));
+        protected override Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync() {
+            return Task.FromResult<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>>(new(GetAccountsAsync()));
         }
 
-        private async IAsyncEnumerable<AccountResult> GetAccountsAsync() {
+        private async IAsyncEnumerable<NamedAccountOption> GetAccountsAsync() {
             var accounts = Directory.GetFiles(directoryPath)
                 .Select(x => Path.GetFileNameWithoutExtension(x))
-                .Select(x => GetAccountHookAsync(x));
+                .Select(x => (x, GetAccountHookAsync(x)));
 
             foreach(var account in accounts) {
-                var acc = (await account.ConfigureAwait(false)).Or(null); //temporary until I implement options here
-                if(acc != null) {
-                    yield return new(acc.Name, acc); 
-                }
+
+                yield return (await account.Item2).Match(
+                    some => some,
+                    error => (account.x, error),
+                    () => NamedAccountOption.None()
+                );
             }
         }
 

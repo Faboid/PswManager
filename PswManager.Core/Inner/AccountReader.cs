@@ -3,11 +3,8 @@ using PswManager.Core.Inner.Interfaces;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
-using PswManager.Extensions;
 using PswManager.Utils;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PswManager.Core.Inner {
@@ -39,41 +36,28 @@ namespace PswManager.Core.Inner {
             return await result.BindAsync(x => Task.Run<Option<AccountModel, ReaderErrorCode>>(() => cryptoAccount.Decrypt(x)));
         }
 
-        public Result<IEnumerable<AccountResult>> ReadAllAccounts() {
-            var result = dataReader.GetAllAccounts();
-            return result.Success switch {
-                true => new(result.Value.Select(x => Decrypt(x))),
-                false => new(result.ErrorMessage)
-            };
+        public Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> ReadAllAccounts() {
+            return dataReader
+                .GetAllAccounts()
+                .Bind<IEnumerable<NamedAccountOption>>(x => new(DecryptAll(x)));
         }
 
-        public async Task<Result<IAsyncEnumerable<AccountResult>>> ReadAllAccountsAsync() {
-            var result = await dataReader.GetAllAccountsAsync();
-            return result.Success switch {
-                true => new(result.Value.Select(DecryptAsync)),
-                false => new(result.ErrorMessage)
-            };
+        public async Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> ReadAllAccountsAsync() {
+            return (await dataReader.GetAllAccountsAsync())
+                .Bind<IAsyncEnumerable<NamedAccountOption>>(x => new(DecryptAllAsync(x)));
         }
 
-        /// <summary>
-        /// If <paramref name="result"/>.Success is:<br/>
-        /// <br/><see langword="true"/>: Decrypts the account model and returns a successful result.
-        /// <br/><see langword="false"/> Returns a failure result with <paramref name="result"/>.ErrorMessage.
-        /// </summary>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        private AccountResult Decrypt(AccountResult result) => result.Success switch {
-            true => new(result.NameAccount, cryptoAccount.Decrypt(result.Value)),
-            false => result
-        };
+        private IEnumerable<NamedAccountOption> DecryptAll(IEnumerable<NamedAccountOption> enumerable) {
+            foreach(var option in enumerable) {
+                yield return option.Bind<AccountModel>(x => cryptoAccount.Decrypt(x));
+            }
+        }
 
-        /// <summary>
-        /// <see cref="Task.Run{AccountModel}(Func{AccountModel})"/> wrapper of <see cref="Decrypt(AccountResult)"/>.
-        /// </summary>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        private Task<AccountResult> DecryptAsync(AccountResult result)
-            => Task.Run(() => Decrypt(result));
+        private async IAsyncEnumerable<NamedAccountOption> DecryptAllAsync(IAsyncEnumerable<NamedAccountOption> enumerable) {
+            await foreach(var option in enumerable) {
+                yield return await option.BindAsync<AccountModel>(async x => await Task.Run(() => cryptoAccount.Decrypt(x)).ConfigureAwait(false));
+            }
+        }
 
     }
 }

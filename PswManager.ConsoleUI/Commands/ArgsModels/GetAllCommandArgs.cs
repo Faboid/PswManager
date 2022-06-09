@@ -5,8 +5,6 @@ using PswManager.ConsoleUI.Commands.Validation.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PswManager.ConsoleUI.Commands.ArgsModels {
     public class GetAllCommandArgs : ICommandInput {
@@ -18,7 +16,7 @@ namespace PswManager.ConsoleUI.Commands.ArgsModels {
             "Properly put a single space between the keys, if you require multiple.")]
         public string Keys { get; private set; }
 
-        public IEnumerable<string> SplitKeys() => Keys.Split(' ').Where(x => !string.IsNullOrWhiteSpace(x));
+        public IEnumerable<string> SplitKeys() => Keys?.Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)) ?? Array.Empty<string>();
 
     }
 }

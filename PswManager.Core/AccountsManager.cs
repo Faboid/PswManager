@@ -55,11 +55,11 @@ namespace PswManager.Core {
             return accountReader.ReadAccountAsync(name);
         }
 
-        public Result<IEnumerable<AccountResult>> ReadAllAccounts() {
+        public Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> ReadAllAccounts() {
             return accountReader.ReadAllAccounts();
         }
 
-        public Task<Result<IAsyncEnumerable<AccountResult>>> ReadAllAccountsAsync() {
+        public Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> ReadAllAccountsAsync() {
             return accountReader.ReadAllAccountsAsync();
         }
 

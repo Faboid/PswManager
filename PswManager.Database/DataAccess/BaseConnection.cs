@@ -151,19 +151,19 @@ namespace PswManager.Database.DataAccess {
             return await GetAccountHookAsync(name).ConfigureAwait(false);
         }
 
-        public ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts() {
+        public Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccounts() {
             using var mainLock = Locker.GetAllLocks(10000);
             if(mainLock.Obtained == false) {
-                return CachedResults.SomeAccountUsedElsewhereResult;
+                return ReaderAllErrorCode.SomeUsedElsewhere;
             }
 
             return GetAllAccountsHook();
         }
 
-        public async Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsAsync() {
+        public async Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsAsync() {
             using var mainLock = await Locker.GetAllLocksAsync(10000).ConfigureAwait(false);
             if(mainLock.Obtained == false) {
-                return CachedResults.SomeAccountUsedElsewhereResultAsync;
+                return ReaderAllErrorCode.SomeUsedElsewhere;
             }
 
             return await GetAllAccountsHookAsync().ConfigureAwait(false);
@@ -257,8 +257,8 @@ namespace PswManager.Database.DataAccess {
         protected abstract ValueTask<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model);
         protected abstract Option<AccountModel, ReaderErrorCode> GetAccountHook(string name);
         protected abstract ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name);
-        protected abstract ConnectionResult<IEnumerable<AccountResult>> GetAllAccountsHook();
-        protected abstract Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsHookAsync();
+        protected abstract Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccountsHook();
+        protected abstract Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync();
         protected abstract ConnectionResult<AccountModel> UpdateAccountHook(string name, AccountModel newModel);
         protected abstract ValueTask<ConnectionResult<AccountModel>> UpdateAccountHookAsync(string name, AccountModel newModel);
         protected abstract ConnectionResult DeleteAccountHook(string name);

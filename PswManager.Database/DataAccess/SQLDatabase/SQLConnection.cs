@@ -217,25 +217,25 @@ namespace PswManager.Database.DataAccess.SQLDatabase {
             return model;
         }
 
-        public ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts() {
+        public Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccounts() {
             using var mainLock = locker.GetAllLocks(10000);
             if(mainLock.Obtained == false) {
-                return CachedResults.SomeAccountUsedElsewhereResult;
+                return ReaderAllErrorCode.SomeUsedElsewhere;
             }
 
-            return new (true, GetAccounts());
+            return new(GetAccounts());
         }
 
-        public async Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsAsync() {
+        public async Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsAsync() {
             using var mainLock = await locker.GetAllLocksAsync(10000).ConfigureAwait(false);
             if(mainLock.Obtained == false) {
-                return CachedResults.SomeAccountUsedElsewhereResultAsync;
+                return ReaderAllErrorCode.SomeUsedElsewhere;
             }
 
-            return new(true, GetAccountsAsync());
+            return new(GetAccountsAsync());
         }
 
-        private IEnumerable<AccountResult> GetAccounts() {
+        private IEnumerable<NamedAccountOption> GetAccounts() {
             using var cmd = queriesBuilder.GetAllAccountsQuery();
             using var cnn = cmd.Connection.GetConnection();
 
@@ -247,11 +247,11 @@ namespace PswManager.Database.DataAccess.SQLDatabase {
                     Email = reader.GetString(2)
                 };
 
-                yield return new(model.Name, model);
+                yield return model;
             }
         }
 
-        private async IAsyncEnumerable<AccountResult> GetAccountsAsync() {
+        private async IAsyncEnumerable<NamedAccountOption> GetAccountsAsync() {
             using var cmd = queriesBuilder.GetAllAccountsQuery();
             await using var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
 
@@ -263,7 +263,7 @@ namespace PswManager.Database.DataAccess.SQLDatabase {
                     Email = reader.GetString(2)
                 };
 
-                yield return new(model.Name, model);
+                yield return model;
             }
         }
 

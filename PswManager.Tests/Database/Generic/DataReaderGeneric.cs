@@ -1,6 +1,7 @@
 ﻿using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
 using PswManager.Extensions;
+using PswManager.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,13 +62,13 @@ namespace PswManager.Tests.Database.Generic {
 
             //act
             var actual = dataReader.GetAllAccounts();
-            var values = actual.Value
-                .Select(x => x.Value)
+            var values = actual.Or(null)
+                .Select(x => x.Or(null))
                 .OrderBy(x => x.Name)
                 .ToList();
 
             //assert
-            Assert.True(actual.Success);
+            Assert.True(MatchToBool(actual));
             Assert.Equal(expectedAccounts.Count, values.Count);
 
             Enumerable
@@ -86,14 +87,14 @@ namespace PswManager.Tests.Database.Generic {
             //act
             var actual = await dataReader.GetAllAccountsAsync().ConfigureAwait(false);
             List<AccountModel> values = await actual
-                .Value
-                .Select(x => x.Value)
+                .Or(null)
+                .Select(x => x.Or(null))
                 .ToList()
                 .ConfigureAwait(false);
             values.Sort((x, y) => x.Name.CompareTo(y.Name));
 
             //assert
-            Assert.True(actual.Success);
+            Assert.True(MatchToBool(actual));
             Assert.Equal(expectedAccounts.Count, values.Count);
 
             Enumerable
@@ -115,14 +116,15 @@ namespace PswManager.Tests.Database.Generic {
             //act
             var actual = dataReader.GetAllAccounts();
             var values = actual
-                .Value
-                .Select(x => x.Value)
+                .Or(null)
+                .Select(x => x.Or(null))
+                .Where(x => x != null)
                 .OrderBy(x => x.Name)
                 .Take(num)
                 .ToList();
 
             //assert
-            Assert.True(actual.Success);
+            Assert.True(MatchToBool(actual));
             Assert.Equal(expectedAccounts.Count, values.Count);
 
             Enumerable
@@ -143,11 +145,11 @@ namespace PswManager.Tests.Database.Generic {
 
             //act
             var actual = await dataReader.GetAllAccountsAsync().ConfigureAwait(false);
-            List<AccountModel> values = await actual.Value.Select(x => x.Value).Take(num).ToList().ConfigureAwait(false);
+            List<AccountModel> values = await actual.Or(null).Select(x => x.Or(null)).Take(num).ToList().ConfigureAwait(false);
             values.Sort((x, y) => x.Name.CompareTo(y.Name));
 
             //assert
-            Assert.True(actual.Success);
+            Assert.True(MatchToBool(actual));
             Assert.Equal(expectedAccounts.Count, values.Count);
 
             Enumerable
@@ -157,6 +159,8 @@ namespace PswManager.Tests.Database.Generic {
                 });
 
         }
+
+        private static bool MatchToBool<TValue, TError>(Option<TValue, TError> option) => option.Match(some => true, error => false, () => false);
 
         private static void AccountEqual(AccountModel expected, AccountModel actual) {
             Assert.Equal(expected.Name, actual.Name);
