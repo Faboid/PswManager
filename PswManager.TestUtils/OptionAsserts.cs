@@ -6,12 +6,12 @@ namespace PswManager.TestUtils;
 public static class OptionAsserts {
 
     public static void Is<TSome>(this Option<TSome> option, OptionResult expected) {
-        var actual = option.Match(error => OptionResult.Some, () => OptionResult.None);
+        var actual = option.Result();
         Assert(expected, actual);
     }
 
     public static void Is<TSome, TError>(this Option<TSome, TError> option, OptionResult expected) {
-        var actual = option.Match(some => OptionResult.Some, error => OptionResult.Error, () => OptionResult.None);
+        var actual = option.Result();
         Assert(expected, actual);
     }
 
