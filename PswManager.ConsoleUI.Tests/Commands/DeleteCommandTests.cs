@@ -3,7 +3,6 @@ using PswManager.Database.DataAccess.Interfaces;
 using Xunit;
 using PswManager.ConsoleUI.Tests.Commands.Helper;
 using PswManager.ConsoleUI.Commands;
-using PswManager.ConsoleUI.Commands.Validation.Attributes;
 using PswManager.TestUtils;
 using PswManager.Core.Inner;
 

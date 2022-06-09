@@ -1,5 +1,6 @@
 ﻿using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
+using PswManager.Extensions;
 using PswManager.Utils;
 using System.Collections.Generic;
 using System.IO;
@@ -50,17 +51,17 @@ namespace PswManager.Database.DataAccess.JsonDatabase {
             return Option.None<CreatorErrorCode>();
         }
 
-        protected override ConnectionResult DeleteAccountHook(string name) {
+        protected override Option<DeleterErrorCode> DeleteAccountHook(string name) {
             File.Delete(BuildFilePath(name));
 
-            return new ConnectionResult(true);
+            return Option.None<DeleterErrorCode>();
         }
 
-        protected override ValueTask<ConnectionResult> DeleteAccountHookAsync(string name) {
+        protected override ValueTask<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name) {
             //there's no overload, and it's expected to be quick anyway, so I've left it to be synchronous
             //might decide to wrap it in a Task.Run()
             File.Delete(BuildFilePath(name));
-            return ValueTask.FromResult(new ConnectionResult(true));
+            return Option.None<DeleterErrorCode>().AsValueTask();
         }
 
         protected override Option<AccountModel, ReaderErrorCode> GetAccountHook(string name) {

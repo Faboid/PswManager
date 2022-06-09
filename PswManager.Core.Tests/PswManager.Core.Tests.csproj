@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PswManager.Core\PswManager.Core.csproj" />
+    <ProjectReference Include="..\PswManager.TestUtils\PswManager.TestUtils.csproj" />
   </ItemGroup>
 
 </Project>

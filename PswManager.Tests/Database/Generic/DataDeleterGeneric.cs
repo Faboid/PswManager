@@ -1,4 +1,6 @@
 ﻿using PswManager.Database.DataAccess.Interfaces;
+using PswManager.TestUtils;
+using PswManager.Utils.Options;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -28,7 +30,7 @@ namespace PswManager.Tests.Database.Generic {
 
             //assert
             Assert.True(exists);
-            Assert.True(result.Success);
+            result.Is(OptionResult.None);
             Assert.False(dataDeleter.AccountExist(name));
         
         }
@@ -46,7 +48,7 @@ namespace PswManager.Tests.Database.Generic {
 
             //assert
             Assert.True(exists);
-            Assert.True(result.Success);
+            result.Is(OptionResult.None);
             Assert.False(await dataDeleter.AccountExistAsync(name).ConfigureAwait(false));
 
         }
@@ -65,8 +67,8 @@ namespace PswManager.Tests.Database.Generic {
 
             //assert
             Assert.False(exists);
-            Assert.False(result.Success);
-            Assert.False(resultAsync.Success);
+            result.Is(OptionResult.Some);
+            resultAsync.Is(OptionResult.Some);
 
         }
 

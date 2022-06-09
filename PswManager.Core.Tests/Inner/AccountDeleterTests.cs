@@ -1,7 +1,11 @@
 ﻿using Moq;
 using PswManager.Core.Inner;
+using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
-using PswManager.Database.Models;
+using PswManager.Extensions;
+using PswManager.TestUtils;
+using PswManager.Utils;
+using PswManager.Utils.Options;
 using Xunit;
 
 namespace PswManager.Core.Tests.Inner {
@@ -13,11 +17,11 @@ namespace PswManager.Core.Tests.Inner {
 
             dataDeleterMock
                 .Setup(x => x.DeleteAccount(It.IsAny<string>()))
-                .Returns<string>(x => new ConnectionResult(!string.IsNullOrWhiteSpace(x)));
+                .Returns<string>(x => string.IsNullOrWhiteSpace(x)? DeleterErrorCode.InvalidName : Option.None<DeleterErrorCode>());
 
             dataDeleterMock
                 .Setup(x => x.DeleteAccountAsync(It.IsAny<string>()))
-                .Returns<string>(x => ValueTask.FromResult(new ConnectionResult(!string.IsNullOrWhiteSpace(x))));
+                .Returns<string>(x => (string.IsNullOrWhiteSpace(x)? DeleterErrorCode.InvalidName : Option.None<DeleterErrorCode>()).AsValueTask());
         }
 
         readonly Mock<IDataDeleter> dataDeleterMock;
@@ -33,7 +37,7 @@ namespace PswManager.Core.Tests.Inner {
             var result = deleter.DeleteAccount(name);
 
             //assert
-            Assert.True(result.Success);
+            result.Is(OptionResult.None);
             dataDeleterMock.Verify(x => x.DeleteAccount(It.Is<string>(x => x == name)));
             dataDeleterMock.VerifyNoOtherCalls();
 
@@ -50,7 +54,7 @@ namespace PswManager.Core.Tests.Inner {
             var result = await deleter.DeleteAccountAsync(name);
 
             //assert
-            Assert.True(result.Success);
+            result.Is(OptionResult.None);
             dataDeleterMock.Verify(x => x.DeleteAccountAsync(It.Is<string>(x => x == name)));
             dataDeleterMock.VerifyNoOtherCalls();
 
@@ -70,8 +74,8 @@ namespace PswManager.Core.Tests.Inner {
             var resultAsync = await creator.DeleteAccountAsync(name);
 
             //assert
-            Assert.False(result.Success);
-            Assert.False(resultAsync.Success);
+            result.Is(OptionResult.Some);
+            resultAsync.Is(OptionResult.Some);
             dataDeleterMock.VerifyNoOtherCalls();
 
         }

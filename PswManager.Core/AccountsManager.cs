@@ -71,11 +71,11 @@ namespace PswManager.Core {
             return accountEditor.UpdateAccountAsync(name, newValues);
         }
 
-        public Result DeleteAccount(string name) {
+        public Option<DeleterErrorCode> DeleteAccount(string name) {
             return accountDeleter.DeleteAccount(name);
         }
 
-        public Task<Result> DeleteAccountAsync(string name) {
+        public Task<Option<DeleterErrorCode>> DeleteAccountAsync(string name) {
             return accountDeleter.DeleteAccountAsync(name);
         }
     }

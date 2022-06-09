@@ -28,6 +28,9 @@ public enum AccountExistsErrorCode {
 
 public enum DeleterErrorCode {
     Undefined,
+    InvalidName,
+    UsedElsewhere,
+    DoesNotExist,
 }
 
 public enum EditorErrorCode {

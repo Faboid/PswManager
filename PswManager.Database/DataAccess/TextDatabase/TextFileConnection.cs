@@ -90,40 +90,40 @@ namespace PswManager.Database.DataAccess.TextDatabase {
             return Option.None<CreatorErrorCode>();
         }
 
-        public ConnectionResult DeleteAccount(string name) {
+        public Option<DeleterErrorCode> DeleteAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return DeleterErrorCode.InvalidName;
             }
 
             using var accLock = locker.GetLock(name, 50);
             if(!accLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return DeleterErrorCode.UsedElsewhere;
             }
 
             if(!fileSaver.Exists(name)) {
-                return CachedResults.DoesNotExistResult;
+                return DeleterErrorCode.DoesNotExist;
             }
 
             fileSaver.Delete(name);
-            return new(true);
+            return Option.None<DeleterErrorCode>();
         }
 
-        public async ValueTask<ConnectionResult> DeleteAccountAsync(string name) { 
+        public async ValueTask<Option<DeleterErrorCode>> DeleteAccountAsync(string name) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return DeleterErrorCode.InvalidName;
             }
 
             using var heldLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!heldLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return DeleterErrorCode.UsedElsewhere;
             }
 
             if(!await fileSaver.ExistsAsync(name).ConfigureAwait(false)) {
-                return CachedResults.DoesNotExistResult;
+                return DeleterErrorCode.DoesNotExist;
             }
 
             await fileSaver.DeleteAsync(name);
-            return new(true);
+            return Option.None<DeleterErrorCode>();
         }
 
         public Option<AccountModel, ReaderErrorCode> GetAccount(string name) {

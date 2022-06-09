@@ -3,10 +3,10 @@ using PswManager.Core.Cryptography;
 using PswManager.Core.Inner;
 using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
-using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
-using PswManager.Utils;
+using PswManager.TestUtils;
+using PswManager.Utils.Options;
 using Xunit;
 
 namespace PswManager.Core.Tests.Inner {
@@ -42,7 +42,7 @@ namespace PswManager.Core.Tests.Inner {
             var result = creator.CreateAccount(input);
 
             //assert
-            Assert.True(OptionToSuccess(result));
+            result.Is(OptionResult.None);
             dataCreatorMock.Verify(x => x.CreateAccount(It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))));
             dataCreatorMock.VerifyNoOtherCalls();
 
@@ -59,7 +59,7 @@ namespace PswManager.Core.Tests.Inner {
             var result = await creator.CreateAccountAsync(input);
 
             //assert
-            Assert.True(OptionToSuccess(result));
+            result.Is(OptionResult.None);
             dataCreatorMock.Verify(x => x.CreateAccountAsync(It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))));
             dataCreatorMock.VerifyNoOtherCalls();
 
@@ -80,13 +80,11 @@ namespace PswManager.Core.Tests.Inner {
             var resultAsync = await creator.CreateAccountAsync(input);
 
             //assert
-            Assert.False(OptionToSuccess(result));
-            Assert.False(OptionToSuccess(resultAsync));
+            result.Is(OptionResult.Some);
+            resultAsync.Is(OptionResult.Some);
             dataCreatorMock.VerifyNoOtherCalls();
 
         }
-
-        private static bool OptionToSuccess(Option<CreatorErrorCode> option) => option.Match(error => false, () => true);
 
         private (AccountCreator creator, AccountModel input, AccountModel expected) ArrangeTest(string name, string password, string email) {
             var creator = new AccountCreator(dataCreatorMock.Object, cryptoAccount);

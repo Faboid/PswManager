@@ -1,5 +1,6 @@
 ﻿using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
+using PswManager.Extensions;
 using PswManager.Utils;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,14 +29,13 @@ namespace PswManager.Database.DataAccess.MemoryDatabase {
             return ValueTask.FromResult(Option.None<CreatorErrorCode>());
         }
 
-        protected override ConnectionResult DeleteAccountHook(string name) {
+        protected override Option<DeleterErrorCode> DeleteAccountHook(string name) {
             accounts.Remove(name);
-            return new ConnectionResult(true);
+            return Option.None<DeleterErrorCode>();
         }
 
-        protected override ValueTask<ConnectionResult> DeleteAccountHookAsync(string name) {
-            accounts.Remove(name);
-            return ValueTask.FromResult(new ConnectionResult(true));
+        protected override ValueTask<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name) {
+            return DeleteAccountHook(name).AsValueTask();
         }
 
         protected override Option<AccountModel, ReaderErrorCode> GetAccountHook(string name) {

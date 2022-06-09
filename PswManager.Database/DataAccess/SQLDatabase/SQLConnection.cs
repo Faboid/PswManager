@@ -113,44 +113,45 @@ namespace PswManager.Database.DataAccess.SQLDatabase {
             };
         }
 
-        public ConnectionResult DeleteAccount(string name) {
+        public Option<DeleterErrorCode> DeleteAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return DeleterErrorCode.InvalidName;
             }
 
             using var heldLock = locker.GetLock(name, 50);
             if(heldLock.Obtained == false) {
-                return CachedResults.UsedElsewhereResult;
+                return DeleterErrorCode.UsedElsewhere;
             }
 
             if(!AccountExist_NoLock(name)) {
-                return CachedResults.DoesNotExistResult;
+                return DeleterErrorCode.DoesNotExist;
             }
 
             using var cmd = queriesBuilder.DeleteAccountQuery(name);
             using var cnn = cmd.Connection.GetConnection();
             var result = cmd.ExecuteNonQuery() == 1;
-            return new ConnectionResult(result);
+            return (result) ? Option.None<DeleterErrorCode>() : DeleterErrorCode.Undefined;
         }
 
-        public async ValueTask<ConnectionResult> DeleteAccountAsync(string name) { 
+        public async ValueTask<Option<DeleterErrorCode>> DeleteAccountAsync(string name) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return DeleterErrorCode.InvalidName;
+                ;
             }
 
             using var heldLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!heldLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return DeleterErrorCode.UsedElsewhere;
             }
 
             if(!await AccountExistAsync_NoLock(name).ConfigureAwait(false)) {
-                return CachedResults.DoesNotExistResult;
+                return DeleterErrorCode.DoesNotExist;
             }
 
             using var cmd = queriesBuilder.DeleteAccountQuery(name);
             await using var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
             var result = await cmd.ExecuteNonQueryAsync() == 1;
-            return new ConnectionResult(result);
+            return (result)? Option.None<DeleterErrorCode>() : DeleterErrorCode.Undefined;
         }
 
         public Option<AccountModel, ReaderErrorCode> GetAccount(string name) {

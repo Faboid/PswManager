@@ -1,4 +1,5 @@
 ﻿using PswManager.Core.Inner.Interfaces;
+using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Utils;
 using System.Threading.Tasks;
@@ -20,32 +21,22 @@ namespace PswManager.Core.Inner {
         //the name is checked already by the repo's code,
         //and the returning result is pretty much the same
 
-        public Result DeleteAccount(string name) {
+        public Option<DeleterErrorCode> DeleteAccount(string name) {
 
             if(string.IsNullOrWhiteSpace(name)) {
-                return nullOrWhiteSpaceNameResult;
+                return DeleterErrorCode.InvalidName;
             }
 
-            var cnnResult = dataDeleter.DeleteAccount(name);
-
-            return cnnResult.Success switch {
-                true => successResult,
-                false => new($"There has been an error: {cnnResult.ErrorMessage}")
-            };
+            return dataDeleter.DeleteAccount(name);
         }
 
-        public async Task<Result> DeleteAccountAsync(string name) {
+        public async Task<Option<DeleterErrorCode>> DeleteAccountAsync(string name) {
 
             if(string.IsNullOrWhiteSpace(name)) {
-                return nullOrWhiteSpaceNameResult;
+                return DeleterErrorCode.InvalidName;
             }
 
-            var cnnResult = await dataDeleter.DeleteAccountAsync(name).ConfigureAwait(false);
-
-            return cnnResult.Success switch {
-                true => successResult,
-                false => new($"There has been an error: {cnnResult.ErrorMessage}")
-            };
+            return await dataDeleter.DeleteAccountAsync(name).ConfigureAwait(false);
         }
 
     }

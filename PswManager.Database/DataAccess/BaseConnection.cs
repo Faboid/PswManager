@@ -83,35 +83,35 @@ namespace PswManager.Database.DataAccess {
         }
 
 
-        public ConnectionResult DeleteAccount(string name) {
+        public Option<DeleterErrorCode> DeleteAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return DeleterErrorCode.InvalidName;
             }
 
             using var ownedLock = Locker.GetLock(name, 50);
             if(!ownedLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return DeleterErrorCode.UsedElsewhere;
             }
 
             if(!AccountExistInternal(name)) {
-                return CachedResults.DoesNotExistResult;
+                return DeleterErrorCode.DoesNotExist;
             }
 
             return DeleteAccountHook(name);
         }
 
-        public async ValueTask<ConnectionResult> DeleteAccountAsync(string name) { 
+        public async ValueTask<Option<DeleterErrorCode>> DeleteAccountAsync(string name) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return DeleterErrorCode.InvalidName;
             }
 
             using var ownedLock = await Locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!ownedLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return DeleterErrorCode.UsedElsewhere;
             }
 
             if(!await AccountExistInternalAsync(name).ConfigureAwait(false)) {
-                return CachedResults.DoesNotExistResult;
+                return DeleterErrorCode.DoesNotExist;
             }
 
             return await DeleteAccountHookAsync(name).ConfigureAwait(false);
@@ -261,8 +261,8 @@ namespace PswManager.Database.DataAccess {
         protected abstract Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync();
         protected abstract ConnectionResult<AccountModel> UpdateAccountHook(string name, AccountModel newModel);
         protected abstract ValueTask<ConnectionResult<AccountModel>> UpdateAccountHookAsync(string name, AccountModel newModel);
-        protected abstract ConnectionResult DeleteAccountHook(string name);
-        protected abstract ValueTask<ConnectionResult> DeleteAccountHookAsync(string name);
+        protected abstract Option<DeleterErrorCode> DeleteAccountHook(string name);
+        protected abstract ValueTask<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name);
 
     }
 }
