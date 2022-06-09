@@ -35,12 +35,19 @@ namespace PswManager.Utils.Tests {
             });
 
             //assert
-
+            
+            option.Is(OptionResult.Some);
+            firstOption.Is(OptionResult.Some);
+            none.Is(OptionResult.None);
+            noneTwo.Is(OptionResult.None);
+            error.Is(OptionResult.Error);
+            
             Assert.Equal(0, firstRes);
             Assert.Equal(20, none.Or(20));
+            Assert.Equal(50, error.Or(50));
+
             Assert.IsType<None<int, string>>(GetUnderlyingOption(none));
             Assert.IsType<None<bool, string>>(GetUnderlyingOption(noneTwo));
-            Assert.Equal(50, error.Or(50));
             Assert.IsType<Error<int, string>>(GetUnderlyingOption(error));
 
         }
@@ -68,11 +75,18 @@ namespace PswManager.Utils.Tests {
 
             //assert
 
+            option.Is(OptionResult.Some);
+            firstOption.Is(OptionResult.Some);
+            none.Is(OptionResult.None);
+            noneTwo.Is(OptionResult.None);
+            error.Is(OptionResult.Error);
+
             Assert.Equal(0, firstRes);
             Assert.Equal(20, none.Or(20));
+            Assert.Equal(50, error.Or(50));
+
             Assert.IsType<None<int, string>>(GetUnderlyingOption(none));
             Assert.IsType<None<bool, string>>(GetUnderlyingOption(noneTwo));
-            Assert.Equal(50, error.Or(50));
             Assert.IsType<Error<int, string>>(GetUnderlyingOption(error));
 
         }
@@ -108,6 +122,7 @@ namespace PswManager.Utils.Tests {
 
             //assert
             Assert.Equal(expected, result);
+            option.Is(OptionResult.Some);
             Assert.IsType<Some<int, string>>(GetUnderlyingOption(option));
 
         }
@@ -143,6 +158,7 @@ namespace PswManager.Utils.Tests {
 
             //assert
             Assert.Equal(errorMessage, result);
+            option.Is(OptionResult.Error);
             Assert.IsType<Error<bool, string>>(GetUnderlyingOption(bind));
 
         }
@@ -188,6 +204,7 @@ namespace PswManager.Utils.Tests {
 
             //assert
             Assert.True(result);
+            option.Is(OptionResult.None);
             Assert.IsType<None<int, bool?>>(GetUnderlyingOption(bind));
 
         }

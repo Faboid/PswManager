@@ -36,6 +36,7 @@ public struct Option<TValue> {
         _option = option;
     }
 
+    public OptionResult Result() => GetOption.Result();
     public T Match<T>(Func<TValue, T> some, Func<T> none) => GetOption.Match(some, none);
     public Option<T> Bind<T>(Func<TValue, Option<T>> func) => GetOption.Bind(func);
     public async Task<Option<T>> BindAsync<T>(Func<TValue, Task<Option<T>>> func) => await GetOption.BindAsync(func).ConfigureAwait(false);
@@ -78,6 +79,7 @@ public struct Option<TValue, TError> {
         _option = option;
     }
 
+    public OptionResult Result() => GetOption.Result();
     public T Match<T>(Func<TValue, T> some, Func<TError, T> error, Func<T> none) => GetOption.Match(some, error, none);
     public Option<T, TError> Bind<T>(Func<TValue, Option<T, TError>> func) => GetOption.Bind(func);
     public async Task<Option<T, TError>> BindAsync<T>(Func<TValue, Task<Option<T, TError>>> func) => await GetOption.BindAsync(func).ConfigureAwait(false);

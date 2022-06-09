@@ -26,8 +26,14 @@ namespace PswManager.Utils.Tests {
             var noneTwo = none.Bind(x => new Option<bool>(true));
 
             //assert
+            option.Is(OptionResult.Some);
+            firstOption.Is(OptionResult.Some);
+            none.Is(OptionResult.None);
+            noneTwo.Is(OptionResult.None);
+
             Assert.Equal(0, firstRes);
             Assert.Equal(20, none.Or(20));
+
             Assert.IsType<None<int>>(GetUnderlyingOption(none));
             Assert.IsType<None<bool>>(GetUnderlyingOption(noneTwo));
 
@@ -46,8 +52,14 @@ namespace PswManager.Utils.Tests {
             var noneTwo = await none.BindAsync(x => Task.FromResult(new Option<bool>(true)));
 
             //assert
+            option.Is(OptionResult.Some);
+            firstOption.Is(OptionResult.Some);
+            none.Is(OptionResult.None);
+            noneTwo.Is(OptionResult.None);
+
             Assert.Equal(0, firstRes);
             Assert.Equal(20, none.Or(20));
+
             Assert.IsType<None<int>>(GetUnderlyingOption(none));
             Assert.IsType<None<bool>>(GetUnderlyingOption(noneTwo));
 
@@ -83,6 +95,7 @@ namespace PswManager.Utils.Tests {
 
             //assert
             Assert.Equal(expected, result);
+            option.Is(OptionResult.Some);
             Assert.IsType<Some<int>>(GetUnderlyingOption(option));
 
         }
@@ -124,6 +137,7 @@ namespace PswManager.Utils.Tests {
 
             //assert
             Assert.True(result);
+            option.Is(OptionResult.None);
             Assert.IsType<None<int>>(GetUnderlyingOption(bind));
 
         }
