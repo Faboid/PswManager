@@ -16,6 +16,11 @@ public enum ReaderErrorCode {
     DoesNotExist,
 }
 
+public enum ReaderAllErrorCode {
+    Undefined,
+    SomeUsedElsewhere,
+}
+
 //to implement
 public enum AccountExistsErrorCode {
     Undefined,
