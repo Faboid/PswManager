@@ -25,9 +25,9 @@ namespace PswManager.Tests.Database.Generic {
 
             //arrange
             AccountModel expected = new(
-                dbHandler.GetDefaultValues().GetValue(1, TestsHelpers.DefaultValues.TypeValue.Name),
-                dbHandler.GetDefaultValues().GetValue(1, TestsHelpers.DefaultValues.TypeValue.Password),
-                dbHandler.GetDefaultValues().GetValue(1, TestsHelpers.DefaultValues.TypeValue.Email)
+                dbHandler.GetDefaultValues().GetValue(1, DefaultValues.TypeValue.Name),
+                dbHandler.GetDefaultValues().GetValue(1, DefaultValues.TypeValue.Password),
+                dbHandler.GetDefaultValues().GetValue(1, DefaultValues.TypeValue.Email)
                 );
 
             //act

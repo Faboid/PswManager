@@ -1,7 +1,6 @@
 ﻿using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
-using PswManager.Tests.TestsHelpers;
 using PswManager.Utils;
 using System;
 using System.Threading.Tasks;

@@ -2,7 +2,6 @@
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Utils;
 using PswManager.Tests.Database.Generic;
-using PswManager.Tests.TestsHelpers;
 using System;
 using System.IO;
 

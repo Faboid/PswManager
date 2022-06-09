@@ -1,5 +1,4 @@
 ﻿using PswManager.Database.DataAccess.Interfaces;
-using PswManager.TestUtils;
 using PswManager.Utils.Options;
 using System;
 using System.Threading.Tasks;
@@ -21,7 +20,7 @@ namespace PswManager.Tests.Database.Generic {
         public void DeleteAccountCorrectly() {
 
             //arrange
-            string name = dbHandler.GetDefaultValues().GetValue(0, TestsHelpers.DefaultValues.TypeValue.Name);
+            string name = dbHandler.GetDefaultValues().GetValue(0, DefaultValues.TypeValue.Name);
             bool exists;
 
             //act
@@ -39,7 +38,7 @@ namespace PswManager.Tests.Database.Generic {
         public async Task DeleteAccountCorrectlyAsynchronously() {
 
             //arrange
-            string name = dbHandler.GetDefaultValues().GetValue(0, TestsHelpers.DefaultValues.TypeValue.Name);
+            string name = dbHandler.GetDefaultValues().GetValue(0, DefaultValues.TypeValue.Name);
             bool exists;
 
             //act

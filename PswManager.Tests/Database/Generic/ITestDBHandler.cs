@@ -1,5 +1,4 @@
 ﻿using PswManager.Database;
-using PswManager.Tests.TestsHelpers;
 using System;
 
 namespace PswManager.Tests.Database.Generic {
