@@ -1,6 +1,7 @@
-﻿using PswManager.Database.DataAccess.Interfaces;
+﻿using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
-using PswManager.Tests.TestsHelpers;
+using PswManager.Utils.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,9 +12,11 @@ namespace PswManager.Tests.Database.Generic {
         public DataEditorGeneric(ITestDBHandler dbHandler) {
             this.dbHandler = dbHandler.SetUpDefaultValues();
             dataEditor = dbHandler.GetDBFactory().GetDataEditor();
+            dataReader = dbHandler.GetDBFactory().GetDataReader();
         }
 
         readonly IDataEditor dataEditor;
+        readonly IDataReader dataReader;
         readonly ITestDBHandler dbHandler;
         readonly static protected int numValues = 6;
 
@@ -62,10 +65,12 @@ namespace PswManager.Tests.Database.Generic {
 
             //act
             var actual = dataEditor.UpdateAccount(name, newAccount);
+            var updated = dataReader.GetAccount(string.IsNullOrWhiteSpace(newAccount.Name) ? name : newAccount.Name);
 
             //assert
-            Assert.True(actual.Success);
-            AssertAccountEqual(expected, actual.Value);
+            actual.Is(OptionResult.None);
+            Assert.NotNull(updated.Or(null));
+            AssertAccountEqual(expected, updated.Or(null));
 
         }
 
@@ -82,11 +87,13 @@ namespace PswManager.Tests.Database.Generic {
             }
 
             //act
-            var actual = await dataEditor.UpdateAccountAsync(name, newAccount).ConfigureAwait(false);
+            var option = await dataEditor.UpdateAccountAsync(name, newAccount).ConfigureAwait(false);
+            var updated = await dataReader.GetAccountAsync(string.IsNullOrWhiteSpace(newAccount.Name) ? name : newAccount.Name).ConfigureAwait(false);
 
             //assert
-            Assert.True(actual.Success);
-            AssertAccountEqual(expected, actual.Value);
+            option.Is(OptionResult.None);
+            Assert.NotNull(updated.Or(null));
+            AssertAccountEqual(expected, updated.Or(null));
 
         }
 
@@ -104,8 +111,11 @@ namespace PswManager.Tests.Database.Generic {
 
             //assert
             Assert.False(exist);
-            Assert.False(result.Success);
-            Assert.False(resultAsync.Success);
+            result.Is(OptionResult.Some);
+            resultAsync.Is(OptionResult.Some);
+
+            Assert.Equal(EditorErrorCode.DoesNotExist, result.Or(default));
+            Assert.Equal(EditorErrorCode.DoesNotExist, resultAsync.Or(default));
 
         }
 
@@ -126,8 +136,12 @@ namespace PswManager.Tests.Database.Generic {
             //assert
             Assert.True(currExists);
             Assert.True(newExists);
-            Assert.False(result.Success);
-            Assert.False(resultAsync.Success);
+
+            result.Is(OptionResult.Some);
+            resultAsync.Is(OptionResult.Some);
+
+            Assert.Equal(EditorErrorCode.NewNameExistsAlready, result.Or(default));
+            Assert.Equal(EditorErrorCode.NewNameExistsAlready, resultAsync.Or(default));
 
         }
 

@@ -108,7 +108,7 @@ namespace PswManager.Database.DataAccess.JsonDatabase {
             }
         }
 
-        protected override ConnectionResult<AccountModel> UpdateAccountHook(string name, AccountModel newModel) {
+        protected override Option<EditorErrorCode> UpdateAccountHook(string name, AccountModel newModel) {
             var path = BuildFilePath(name);
             var jsonString = File.ReadAllText(path);
             var model = JsonSerializer.Deserialize<AccountModel>(jsonString);
@@ -121,11 +121,10 @@ namespace PswManager.Database.DataAccess.JsonDatabase {
                 File.Delete(path);
             }
 
-            return GetAccountHook(model.Name)
-                .Match<ConnectionResult<AccountModel>>(some => new(true, some), error => new(false, error.ToString()), () => new(false));
+            return Option.None<EditorErrorCode>();
         }
 
-        protected override async ValueTask<ConnectionResult<AccountModel>> UpdateAccountHookAsync(string name, AccountModel newModel) {
+        protected override async ValueTask<Option<EditorErrorCode>> UpdateAccountHookAsync(string name, AccountModel newModel) {
             var path = BuildFilePath(name);
             AccountModel model;
             using(var readStream = new FileStream(path, FileMode.Open)) {
@@ -143,8 +142,7 @@ namespace PswManager.Database.DataAccess.JsonDatabase {
                 File.Delete(path);
             }
 
-            return (await GetAccountHookAsync(model.Name).ConfigureAwait(false))
-                .Match<ConnectionResult<AccountModel>>(some => new(true, some), error => new(false, error.ToString()), () => new(false));
+            return Option.None<EditorErrorCode>();
         }
 
         private static void OverWriteOldModel(AccountModel oldAccount, AccountModel newAccount) {

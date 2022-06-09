@@ -169,18 +169,18 @@ namespace PswManager.Database.DataAccess {
             return await GetAllAccountsHookAsync().ConfigureAwait(false);
         }
 
-        public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {
+        public Option<EditorErrorCode> UpdateAccount(string name, AccountModel newModel) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return EditorErrorCode.InvalidName;
             }
 
             using var oldModelLock = Locker.GetLock(name, 50);
             if(!oldModelLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return EditorErrorCode.UsedElsewhere;
             }
 
             if(!AccountExistInternal(name)) {
-                return CachedResults.DoesNotExistResult;
+                return EditorErrorCode.DoesNotExist;
             }
 
             NamesLocker.Lock newModelLock = null;
@@ -188,10 +188,10 @@ namespace PswManager.Database.DataAccess {
                 if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
                     newModelLock = Locker.GetLock(newModel.Name, 50);
                     if(!newModelLock.Obtained) {
-                        return CachedResults.UsedElsewhereResult;
+                        return EditorErrorCode.NewNameUsedElsewhere;
                     }
                     if(AccountExistInternal(newModel.Name)) {
-                        return new(false, "There is already an account with that name.");
+                        return EditorErrorCode.NewNameExistsAlready;
                     }
                 }
             
@@ -203,18 +203,18 @@ namespace PswManager.Database.DataAccess {
             }
         }
 
-        public async ValueTask<ConnectionResult<AccountModel>> UpdateAccountAsync(string name, AccountModel newModel) { 
+        public async ValueTask<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newModel) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return EditorErrorCode.InvalidName;
             }
 
             using var oldModelLock = await Locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!oldModelLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return EditorErrorCode.UsedElsewhere;
             }
 
             if(!await AccountExistInternalAsync(name).ConfigureAwait(false)) {
-                return CachedResults.DoesNotExistResult;
+                return EditorErrorCode.DoesNotExist;
             }
 
             NamesLocker.Lock newModelLock = null;
@@ -222,10 +222,10 @@ namespace PswManager.Database.DataAccess {
                 if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
                     newModelLock = await Locker.GetLockAsync(newModel.Name, 50).ConfigureAwait(false);
                     if(!newModelLock.Obtained) {
-                        return CachedResults.UsedElsewhereResult;
+                        return EditorErrorCode.NewNameUsedElsewhere;
                     }
                     if(await AccountExistInternalAsync(newModel.Name)) {
-                        return new(false, "There is already an account with that name.");
+                        return EditorErrorCode.NewNameExistsAlready;
                     }
                 }
 
@@ -259,8 +259,8 @@ namespace PswManager.Database.DataAccess {
         protected abstract ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name);
         protected abstract Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccountsHook();
         protected abstract Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync();
-        protected abstract ConnectionResult<AccountModel> UpdateAccountHook(string name, AccountModel newModel);
-        protected abstract ValueTask<ConnectionResult<AccountModel>> UpdateAccountHookAsync(string name, AccountModel newModel);
+        protected abstract Option<EditorErrorCode> UpdateAccountHook(string name, AccountModel newModel);
+        protected abstract ValueTask<Option<EditorErrorCode>> UpdateAccountHookAsync(string name, AccountModel newModel);
         protected abstract Option<DeleterErrorCode> DeleteAccountHook(string name);
         protected abstract ValueTask<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name);
 

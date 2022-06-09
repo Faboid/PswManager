@@ -72,7 +72,7 @@ namespace PswManager.Database.DataAccess.MemoryDatabase {
             }
         }
 
-        protected override ConnectionResult<AccountModel> UpdateAccountHook(string name, AccountModel newModel) {
+        protected override Option<EditorErrorCode> UpdateAccountHook(string name, AccountModel newModel) {
             var account = accounts[name];
 
             if(!string.IsNullOrWhiteSpace(newModel.Password)) {
@@ -88,12 +88,11 @@ namespace PswManager.Database.DataAccess.MemoryDatabase {
                 accounts.Add(newModel.Name, account);
             }
 
-            return new(true, account);
+            return Option.None<EditorErrorCode>();
         }
 
-        protected override ValueTask<ConnectionResult<AccountModel>> UpdateAccountHookAsync(string name, AccountModel newModel) {
-            var result = UpdateAccountHook(name, newModel);
-            return ValueTask.FromResult(result);
+        protected override ValueTask<Option<EditorErrorCode>> UpdateAccountHookAsync(string name, AccountModel newModel) {
+            return UpdateAccountHook(name, newModel).AsValueTask();
         }
 
     }

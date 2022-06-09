@@ -268,27 +268,30 @@ namespace PswManager.Database.DataAccess.SQLDatabase {
             }
         }
 
-        public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {
+        public Option<EditorErrorCode> UpdateAccount(string name, AccountModel newModel) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return EditorErrorCode.InvalidName;
             }
 
             using var nameLock = locker.GetLock(name);
             if(nameLock.Obtained == false) {
-                return CachedResults.UsedElsewhereResult;
+                return EditorErrorCode.UsedElsewhere;
             }
 
             if(!AccountExist_NoLock(name)) {
-                return CachedResults.DoesNotExistResult;
+                return EditorErrorCode.DoesNotExist;
             }
 
             NamesLocker.Lock newModelLock = null;
             try {
                 if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
                     newModelLock = locker.GetLock(newModel.Name);
+                    if(newModelLock.Obtained == false) {
+                        return EditorErrorCode.NewNameUsedElsewhere;
+                    }
 
                     if(AccountExist_NoLock(newModel.Name)) {
-                        return CachedResults.NewAccountNameExistsAlreadyResult;
+                        return EditorErrorCode.NewNameExistsAlready;
                     }
                 }
 
@@ -297,35 +300,37 @@ namespace PswManager.Database.DataAccess.SQLDatabase {
                     cmd.ExecuteNonQuery();
                 }
 
-                return GetAccount_NoLock(string.IsNullOrWhiteSpace(newModel.Name)? name : newModel.Name)
-                    .Match<ConnectionResult<AccountModel>>(some => new(true, some), error => new(false, error.ToString()), () => new(false));
+                return Option.None<EditorErrorCode>();
 
             } finally {
                 newModelLock?.Dispose();
             }
         }
 
-        public async ValueTask<ConnectionResult<AccountModel>> UpdateAccountAsync(string name, AccountModel newModel) {
+        public async ValueTask<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newModel) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return EditorErrorCode.InvalidName;
             }
 
             using var nameLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!nameLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return EditorErrorCode.UsedElsewhere;
             }
 
             if(!await AccountExistAsync_NoLock(name).ConfigureAwait(false)) {
-                return CachedResults.DoesNotExistResult;
+                return EditorErrorCode.DoesNotExist;
             }
 
             NamesLocker.Lock newModelLock = null;
             try {
                 if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
                     newModelLock = await locker.GetLockAsync(newModel.Name, 50).ConfigureAwait(false);
+                    if(newModelLock.Obtained == false) {
+                        return EditorErrorCode.NewNameUsedElsewhere;
+                    }
 
                     if(await AccountExistAsync_NoLock(newModel.Name).ConfigureAwait(false)) {
-                        return CachedResults.NewAccountNameExistsAlreadyResult;
+                        return EditorErrorCode.NewNameExistsAlready;
                     }
                 }
 
@@ -334,8 +339,7 @@ namespace PswManager.Database.DataAccess.SQLDatabase {
                     await cmd.ExecuteNonQueryAsync();
                 }
 
-                return (await GetAccountAsync_NoLock(string.IsNullOrWhiteSpace(newModel.Name) ? name : newModel.Name))
-                    .Match<ConnectionResult<AccountModel>>(some => new(true, some), error => new(false, error.ToString()), () => new(false));
+                return Option.None<EditorErrorCode>();
 
             } finally {
                 newModelLock?.Dispose();

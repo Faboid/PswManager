@@ -124,7 +124,7 @@ namespace PswManager.Database.DataAccess.TextDatabase.TextFileConnHelper {
                 .AsAsyncEnumerable();
         }
 
-        public AccountModel Update(string name, AccountModel newModel) {
+        public void Update(string name, AccountModel newModel) {
             var path = BuildFilePath(name);
             var values = File.ReadAllLines(path);
             OverWriteModel(values, newModel);
@@ -134,11 +134,9 @@ namespace PswManager.Database.DataAccess.TextDatabase.TextFileConnHelper {
             if(path != newPath) {
                 File.Delete(path);
             }
-
-            return Get(values[0]);
         }
 
-        public async Task<AccountModel> UpdateAsync(string name, AccountModel newModel) {
+        public async Task UpdateAsync(string name, AccountModel newModel) {
             var path = BuildFilePath(name);
             var values = await File.ReadAllLinesAsync(path);
             OverWriteModel(values, newModel);
@@ -148,8 +146,6 @@ namespace PswManager.Database.DataAccess.TextDatabase.TextFileConnHelper {
             if(path != newPath) {
                 File.Delete(path);
             }
-
-            return await GetAsync(values[0]);
         }
 
         private static void OverWriteModel(string[] oldAccount, AccountModel newAccount) {

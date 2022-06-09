@@ -172,18 +172,18 @@ namespace PswManager.Database.DataAccess.TextDatabase {
             return Option.Some<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>(accounts).AsTask();
         }
 
-        public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {
+        public Option<EditorErrorCode> UpdateAccount(string name, AccountModel newModel) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return EditorErrorCode.InvalidName;
             }
 
             using var nameLock = locker.GetLock(name, 50);
             if(!nameLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return EditorErrorCode.UsedElsewhere;
             }
 
             if(!fileSaver.Exists(name)) {
-                return CachedResults.DoesNotExistResult;
+                return EditorErrorCode.DoesNotExist;
             }
 
             NamesLocker.Lock newModelLock = null;
@@ -191,15 +191,15 @@ namespace PswManager.Database.DataAccess.TextDatabase {
                 if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
                     newModelLock = locker.GetLock(newModel.Name, 50);
                     if(!newModelLock.Obtained) {
-                        return CachedResults.UsedElsewhereResult;
+                        return EditorErrorCode.NewNameUsedElsewhere;
                     }
                     if(fileSaver.Exists(newModel.Name)) {
-                        return new(false, $"There is already an account called {newModel.Name}.");
+                        return EditorErrorCode.NewNameExistsAlready;
                     }
                 }
 
-                var newValues = fileSaver.Update(name, newModel);
-                return new(true, newValues);
+                fileSaver.Update(name, newModel);
+                return Option.None<EditorErrorCode>();
 
             } finally {
                 newModelLock?.Dispose();
@@ -207,18 +207,18 @@ namespace PswManager.Database.DataAccess.TextDatabase {
 
         }
 
-        public async ValueTask<ConnectionResult<AccountModel>> UpdateAccountAsync(string name, AccountModel newModel) { 
+        public async ValueTask<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newModel) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return EditorErrorCode.InvalidName;
             }
 
             using var nameLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!nameLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return EditorErrorCode.UsedElsewhere;
             }
 
             if(!await fileSaver.ExistsAsync(name)) {
-                return CachedResults.DoesNotExistResult;
+                return EditorErrorCode.DoesNotExist;
             }
 
             NamesLocker.Lock newModelLock = null;
@@ -226,15 +226,15 @@ namespace PswManager.Database.DataAccess.TextDatabase {
                 if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
                     newModelLock = await locker.GetLockAsync(newModel.Name, 50).ConfigureAwait(false);
                     if(!newModelLock.Obtained) {
-                        return CachedResults.UsedElsewhereResult;
+                        return EditorErrorCode.NewNameUsedElsewhere;
                     }
                     if(await fileSaver.ExistsAsync(newModel.Name)) {
-                        return new(false, $"There is already an account named {newModel.Name}.");
+                        return EditorErrorCode.NewNameExistsAlready;
                     }
                 }
 
-                var newValues = await fileSaver.UpdateAsync(name, newModel).ConfigureAwait(false);
-                return new(true, newValues);
+                await fileSaver.UpdateAsync(name, newModel).ConfigureAwait(false);
+                return Option.None<EditorErrorCode>();
 
             } finally {
                 newModelLock?.Dispose();

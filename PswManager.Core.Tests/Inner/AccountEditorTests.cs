@@ -3,8 +3,13 @@ using PswManager.Core.Cryptography;
 using PswManager.Core.Inner;
 using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
+using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
+using PswManager.Extensions;
+using PswManager.TestUtils;
+using PswManager.Utils;
+using PswManager.Utils.Options;
 using Xunit;
 
 namespace PswManager.Core.Tests.Inner {
@@ -16,11 +21,11 @@ namespace PswManager.Core.Tests.Inner {
             dataEditorMock = new Mock<IDataEditor>();
             dataEditorMock
                 .Setup(x => x.UpdateAccount(It.IsAny<string>(), It.IsAny<AccountModel>()))
-                .Returns<string, AccountModel>((x, y) => new(!string.IsNullOrWhiteSpace(x)));
+                .Returns<string, AccountModel>((x, y) => string.IsNullOrWhiteSpace(x)? EditorErrorCode.InvalidName : Option.None<EditorErrorCode>());
 
             dataEditorMock
                 .Setup(x => x.UpdateAccountAsync(It.IsAny<string>(), It.IsAny<AccountModel>()))
-                .Returns<string, AccountModel>((x, y) => ValueTask.FromResult<ConnectionResult<AccountModel>>(new(!string.IsNullOrWhiteSpace(x))));
+                .Returns<string, AccountModel>((x, y) => (string.IsNullOrWhiteSpace(x) ? EditorErrorCode.InvalidName : Option.None<EditorErrorCode>()).AsValueTask());
         }
 
         readonly Mock<IDataEditor> dataEditorMock;
@@ -34,10 +39,10 @@ namespace PswManager.Core.Tests.Inner {
             var (editor, input, expected) = ArrangeTest(newName, password, email);
 
             //act
-            var result = editor.UpdateAccount(name, input);
+            var option = editor.UpdateAccount(name, input);
 
             //assert
-            Assert.True(result.Success);
+            option.Is(OptionResult.None);
             dataEditorMock.Verify(x => x.UpdateAccount(
                     It.Is<string>(x => x == name),
                     It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))
@@ -55,10 +60,10 @@ namespace PswManager.Core.Tests.Inner {
             var (editor, input, expected) = ArrangeTest(newName, password, email);
 
             //act
-            var result = await editor.UpdateAccountAsync(name, input);
+            var option = await editor.UpdateAccountAsync(name, input);
 
             //assert
-            Assert.True(result.Success);
+            option.Is(OptionResult.None);
             dataEditorMock.Verify(x => x.UpdateAccountAsync(
                     It.Is<string>(x => x == name),
                     It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))
@@ -78,12 +83,12 @@ namespace PswManager.Core.Tests.Inner {
             AccountEditor editor = new(dataEditorMock.Object, cryptoAccount);
 
             //act
-            var result = editor.UpdateAccount(name, input);
-            var resultAsync = await editor.UpdateAccountAsync(name, input);
+            var option = editor.UpdateAccount(name, input);
+            var optionAsync = await editor.UpdateAccountAsync(name, input);
 
             //assert
-            Assert.False(result.Success);
-            Assert.False(resultAsync.Success);
+            option.Is(OptionResult.Some);
+            optionAsync.Is(OptionResult.Some);
             dataEditorMock.VerifyNoOtherCalls();
 
         }
