@@ -1,9 +1,7 @@
 ﻿using PswManager.Async.Locks;
-using PswManager.Tests.Async.TestsHelpers;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace PswManager.Tests.Async.Locks {
+namespace PswManager.Async.Tests.Locks {
     public class NamesLockerTests {
 
         //todo - this test is a mess. Fix it

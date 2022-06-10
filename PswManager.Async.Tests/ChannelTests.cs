@@ -1,9 +1,6 @@
-﻿using PswManager.Async;
-using PswManager.Tests.Async.TestsHelpers;
-using System.Threading.Tasks;
-using Xunit;
+﻿using Xunit;
 
-namespace PswManager.Tests.Async {
+namespace PswManager.Async.Tests {
     public class ChannelTests {
 
         [Fact]
@@ -28,7 +25,7 @@ namespace PswManager.Tests.Async {
 
             //assert
             Assert.Equal(expected, actual);
-            
+
             //try to dispose several times to see if it errors out
             channel.Dispose();
             channel.Dispose();

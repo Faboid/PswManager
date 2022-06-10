@@ -1,11 +1,7 @@
 ﻿using PswManager.Async.Locks;
-using PswManager.Tests.Async.TestsHelpers;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace PswManager.Tests.Async.Locks {
+namespace PswManager.Async.Tests.Locks {
     public class LockerTests {
 
         [Fact]
@@ -21,7 +17,7 @@ namespace PswManager.Tests.Async.Locks {
 
             //act
             orderChecker.Done(1);
-            
+
             using(var lock1 = locker.GetLock()) {
                 firstLockResult = lock1.Obtained;
 
@@ -84,7 +80,7 @@ namespace PswManager.Tests.Async.Locks {
             Locker locker = new();
             CancellationTokenSource cts = new();
             cts.Cancel();
-            
+
             //assert
             Assert.Throws<OperationCanceledException>(() => locker.GetLock(10, cts.Token));
             await Assert.ThrowsAsync<TaskCanceledException>(async () => await locker.GetLockAsync(10, cts.Token));
@@ -99,7 +95,7 @@ namespace PswManager.Tests.Async.Locks {
 
             //act
             var gainedLock = await locker.GetLockAsync(10);
-            
+
             //locks that will never be gained
             var lockTask1 = locker.GetLockAsync(1000);
             var lockTask2 = locker.GetLockAsync(1000);
@@ -117,7 +113,7 @@ namespace PswManager.Tests.Async.Locks {
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await lockTask2);
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await lockTask3);
             await Assert.ThrowsAsync<ObjectDisposedException>(async () => await lockTask4);
-            
+
             //disposal of locks afterwards should not cause errors
             gainedLock.Dispose();
 

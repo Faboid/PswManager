@@ -1,10 +1,6 @@
-﻿using PswManager.Async;
-using PswManager.Tests.Async.TestsHelpers;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
+﻿using Xunit;
 
-namespace PswManager.Tests.Async {
+namespace PswManager.Async.Tests {
     public class AsyncLazyTests {
 
         [Fact]
