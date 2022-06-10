@@ -1,12 +1,10 @@
-﻿using System;
-using PswManager.Core.Cryptography;
-using PswManager.Encryption.Cryptography;
-using System.IO;
+﻿using PswManager.Encryption.Cryptography;
 using PswManager.Utils;
 using Xunit;
 using PswManager.Encryption.Services;
+using PswManager.Core.Cryptography;
 
-namespace PswManager.Tests.Cryptography {
+namespace PswManager.Core.Tests.Cryptography {
     public class TokenTests : IDisposable {
 
         public TokenTests() {
@@ -15,8 +13,8 @@ namespace PswManager.Tests.Cryptography {
             _token.VerifyToken();
         }
 
-        static CryptoService GetService(Key password) => new (password, "test.1");
-        static Key GetPassword => new ("password".ToCharArray());
+        static CryptoService GetService(Key password) => new(password, "test.1");
+        static Key GetPassword => new("password".ToCharArray());
         static string GetPath => Path.Combine(PathsBuilder.GetDataDirectory, "GenericTokenTestsPath.txt");
 
         readonly Token _token;

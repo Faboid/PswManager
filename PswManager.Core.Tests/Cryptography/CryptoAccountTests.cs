@@ -1,12 +1,10 @@
 ﻿using PswManager.Encryption.Cryptography;
 using PswManager.Encryption.Services;
 using PswManager.Core.Cryptography;
-using PswManager.Tests.Async.TestsHelpers;
-using System;
-using System.Threading.Tasks;
 using Xunit;
+using PswManager.TestUtils;
 
-namespace PswManager.Tests.Cryptography {
+namespace PswManager.Core.Tests.Cryptography {
     public class CryptoAccountTests {
 
         public CryptoAccountTests() {
