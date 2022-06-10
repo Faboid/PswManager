@@ -1,4 +1,7 @@
-﻿using PswManager.Database.Models;
+﻿using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Database.Models;
+using PswManager.Extensions;
+using PswManager.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,63 +11,68 @@ namespace PswManager.Database.DataAccess.MemoryDatabase {
 
         readonly Dictionary<string, AccountModel> accounts = new();
 
-        protected override bool AccountExistHook(string name) {
-            return accounts.ContainsKey(name);
+        protected override AccountExistsStatus AccountExistHook(string name) {
+            return accounts.ContainsKey(name) ? AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
         }
 
-        protected override ValueTask<bool> AccountExistHookAsync(string name) {
-            return ValueTask.FromResult(accounts.ContainsKey(name));
+        protected override ValueTask<AccountExistsStatus> AccountExistHookAsync(string name) {
+            return ValueTask.FromResult(accounts.ContainsKey(name) ? AccountExistsStatus.Exist : AccountExistsStatus.NotExist);
         }
 
-        protected override ConnectionResult CreateAccountHook(AccountModel model) {
+        protected override Option<CreatorErrorCode> CreateAccountHook(AccountModel model) {
             accounts.Add(model.Name, model);
-            return new ConnectionResult(true);
+            return Option.None<CreatorErrorCode>();
         }
 
-        protected override ValueTask<ConnectionResult> CreateAccountHookAsync(AccountModel model) {
+        protected override ValueTask<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model) {
             accounts.Add(model.Name, model);
-            return ValueTask.FromResult(new ConnectionResult(true));
+            return ValueTask.FromResult(Option.None<CreatorErrorCode>());
         }
 
-        protected override ConnectionResult DeleteAccountHook(string name) {
+        protected override Option<DeleterErrorCode> DeleteAccountHook(string name) {
             accounts.Remove(name);
-            return new ConnectionResult(true);
+            return Option.None<DeleterErrorCode>();
         }
 
-        protected override ValueTask<ConnectionResult> DeleteAccountHookAsync(string name) {
-            accounts.Remove(name);
-            return ValueTask.FromResult(new ConnectionResult(true));
+        protected override ValueTask<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name) {
+            return DeleteAccountHook(name).AsValueTask();
         }
 
-        protected override ConnectionResult<AccountModel> GetAccountHook(string name) {
-            return new ConnectionResult<AccountModel>(true, accounts[name]);
+        protected override Option<AccountModel, ReaderErrorCode> GetAccountHook(string name) {
+            return accounts[name];
         }
 
-        protected override ValueTask<AccountResult> GetAccountHookAsync(string name) {
-            return ValueTask.FromResult(new AccountResult(name, accounts[name]));
+        protected override ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name) {
+            return ValueTask.FromResult<Option<AccountModel, ReaderErrorCode>>(accounts[name]);
         }
 
-        protected override ConnectionResult<IEnumerable<AccountResult>> GetAllAccountsHook() {
+        protected override Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccountsHook() {
             var list = accounts
                 .Values
-                .Select(x => new AccountResult(x.Name, x));
+                .Select(x => (NamedAccountOption)x);
 
-            return new(true, list);
+            return new(list);
         }
 
-        protected override Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsHookAsync() {
+        protected override Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync() {
             //fake async as it's just reading a list
-            async IAsyncEnumerable<AccountResult> GetAccounts() {
-                var list = GetAllAccountsHook().Value;
-                foreach(var account in list) {
-                    yield return await Task.FromResult(account).ConfigureAwait(false);
-                }
+            Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAccounts() {
+                return GetAllAccountsHook()
+                    .Bind(
+                        x => Option.Some<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>(ToAsyncEnumerable(x))
+                    );
             }
 
-            return Task.FromResult(new ConnectionResult<IAsyncEnumerable<AccountResult>>(true, GetAccounts()));
+            return Task.FromResult(GetAccounts());
         }
 
-        protected override ConnectionResult<AccountModel> UpdateAccountHook(string name, AccountModel newModel) {
+        private static async IAsyncEnumerable<NamedAccountOption> ToAsyncEnumerable(IEnumerable<NamedAccountOption> enumerable) {
+            foreach(var item in enumerable) {
+                yield return await Task.FromResult(item);
+            }
+        }
+
+        protected override Option<EditorErrorCode> UpdateAccountHook(string name, AccountModel newModel) {
             var account = accounts[name];
 
             if(!string.IsNullOrWhiteSpace(newModel.Password)) {
@@ -80,12 +88,11 @@ namespace PswManager.Database.DataAccess.MemoryDatabase {
                 accounts.Add(newModel.Name, account);
             }
 
-            return new(true, account);
+            return Option.None<EditorErrorCode>();
         }
 
-        protected override ValueTask<ConnectionResult<AccountModel>> UpdateAccountHookAsync(string name, AccountModel newModel) {
-            var result = UpdateAccountHook(name, newModel);
-            return ValueTask.FromResult(result);
+        protected override ValueTask<Option<EditorErrorCode>> UpdateAccountHookAsync(string name, AccountModel newModel) {
+            return UpdateAccountHook(name, newModel).AsValueTask();
         }
 
     }

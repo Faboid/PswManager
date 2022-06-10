@@ -1,12 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using PswManager.Utils;
+using PswManager.Database.DataAccess.ErrorCodes;
+using System.Threading.Tasks;
 
 namespace PswManager.Database.DataAccess.Interfaces {
     public interface IDataHelper {
-        //todo - decide whether to turn these into connection results
 
-        bool AccountExist(string name);
-
-        ValueTask<bool> AccountExistAsync(string name);
+        //todo - consider whether to leave it as enum-only or to use Option<bool, AccountExistsErrorCode> with a less comprehensive code set
+        AccountExistsStatus AccountExist(string name);
+        ValueTask<AccountExistsStatus> AccountExistAsync(string name);
 
     }
 }

@@ -1,5 +1,7 @@
 ﻿using PswManager.Async.Locks;
+using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
+using PswManager.Extensions;
 using PswManager.Utils;
 using System;
 using System.Collections.Generic;
@@ -80,52 +82,49 @@ namespace PswManager.Database.DataAccess.TextDatabase.TextFileConnHelper {
             return AccountSerializer.Deserialize(serialized);
         }
 
-        public IEnumerable<AccountResult> GetAll(NamesLocker locker) {
+        public IEnumerable<NamedAccountOption> GetAll(NamesLocker locker) {
             return Directory.GetFiles(directoryPath)
                 .AsParallel()
-                .Select(x => {
+                .Select<string, NamedAccountOption>(x => {
                     var name = Path.GetFileNameWithoutExtension(x);
                     using var nameLock = locker.GetLock(name, 5000);
                     if(!nameLock.Obtained) {
-                        return new(name, $"The account {name} is being used elsewhere.");
+                        return (name, ReaderErrorCode.UsedElsewhere);
                     }
 
                     //checks if the account has been deleted while waiting
                     if(!Exists(name)) {
-                        return new(name, $"The account {name} has been deleted or edited.");
+                        return (name, ReaderErrorCode.DoesNotExist);
                     }
 
                     var values = File.ReadAllLines(x);
                     var account = AccountSerializer.Deserialize(values);
-                    return new AccountResult(name, account);
+                    return account;
                 });
         }
 
-        public async IAsyncEnumerable<AccountResult> GetAllAsync(NamesLocker locker) {
-            var tasks = Directory.GetFiles(directoryPath)
-                .Select(async x => {
+        public IAsyncEnumerable<NamedAccountOption> GetAllAsync(NamesLocker locker) {
+            return Directory.GetFiles(directoryPath)
+                .Select<string, Task<NamedAccountOption>>(async x => {
                     var name = Path.GetFileNameWithoutExtension(x);
                     using var nameLock = await locker.GetLockAsync(name, 5000).ConfigureAwait(false);
                     if(!nameLock.Obtained) {
-                        return new(name, $"The account {name} is being used elsewhere.");
+                        return (name, ReaderErrorCode.UsedElsewhere);
                     }
 
                     //checks if the account has been deleted while waiting
                     if(!await ExistsAsync(name).ConfigureAwait(false)) {
-                        return new(name, $"The account {name} has been deleted or edited.");
+                        return (name, ReaderErrorCode.DoesNotExist);
                     }
 
                     var values = await File.ReadAllLinesAsync(x).ConfigureAwait(false);
                     var account = AccountSerializer.Deserialize(values);
-                    return new AccountResult(name, account);
-                });
-
-            foreach(var task in tasks) {
-                yield return await task.ConfigureAwait(false);
-            }
+                    return account;
+                })
+                .AsAsyncEnumerable();
         }
 
-        public AccountModel Update(string name, AccountModel newModel) {
+        public void Update(string name, AccountModel newModel) {
             var path = BuildFilePath(name);
             var values = File.ReadAllLines(path);
             OverWriteModel(values, newModel);
@@ -135,11 +134,9 @@ namespace PswManager.Database.DataAccess.TextDatabase.TextFileConnHelper {
             if(path != newPath) {
                 File.Delete(path);
             }
-
-            return Get(values[0]);
         }
 
-        public async Task<AccountModel> UpdateAsync(string name, AccountModel newModel) {
+        public async Task UpdateAsync(string name, AccountModel newModel) {
             var path = BuildFilePath(name);
             var values = await File.ReadAllLinesAsync(path);
             OverWriteModel(values, newModel);
@@ -149,8 +146,6 @@ namespace PswManager.Database.DataAccess.TextDatabase.TextFileConnHelper {
             if(path != newPath) {
                 File.Delete(path);
             }
-
-            return await GetAsync(values[0]);
         }
 
         private static void OverWriteModel(string[] oldAccount, AccountModel newAccount) {

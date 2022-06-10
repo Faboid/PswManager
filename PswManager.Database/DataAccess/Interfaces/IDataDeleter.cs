@@ -1,12 +1,12 @@
-﻿using PswManager.Database.Models;
+﻿using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Utils;
 using System.Threading.Tasks;
 
 namespace PswManager.Database.DataAccess.Interfaces {
     public interface IDataDeleter : IDataHelper {
     
-        ConnectionResult DeleteAccount(string name);
-
-        ValueTask<ConnectionResult> DeleteAccountAsync(string name);
+        Option<DeleterErrorCode> DeleteAccount(string name);
+        ValueTask<Option<DeleterErrorCode>> DeleteAccountAsync(string name);
 
     }
 }

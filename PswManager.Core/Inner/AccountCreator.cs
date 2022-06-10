@@ -1,8 +1,9 @@
 ﻿using PswManager.Core.Cryptography;
 using PswManager.Core.Inner.Interfaces;
+using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
-using PswManager.Utils.WrappingObjects;
+using PswManager.Utils;
 using System.Threading.Tasks;
 
 namespace PswManager.Core.Inner {
@@ -16,36 +17,38 @@ namespace PswManager.Core.Inner {
         readonly IDataCreator dataCreator;
         readonly ICryptoAccount cryptoAccount;
 
-        public Result CreateAccount(AccountModel model) {
+        public Option<CreatorErrorCode> CreateAccount(AccountModel model) {
 
-            if(model.IsAnyValueNullOrEmpty(out var failResult)) {
-                return failResult;
+            var validationResult = model.IsAnyValueNullOrEmpty();
+            if(validationResult != ValidationResult.Success) {
+                return validationResult switch {
+                    ValidationResult.MissingName => CreatorErrorCode.InvalidName,
+                    ValidationResult.MissingPassword => CreatorErrorCode.MissingPassword,
+                    ValidationResult.MissingEmail => CreatorErrorCode.MissingEmail,
+                    _ => CreatorErrorCode.Undefined,
+                };
             }
 
             (model.Password, model.Email) = cryptoAccount.Encrypt(model.Password, model.Email);
             var account = new AccountModel(model.Name, model.Password, model.Email);
-            var result = dataCreator.CreateAccount(account);
-            return ConnectionResultToResult(result);
+            return dataCreator.CreateAccount(account);
         }
 
-        public async Task<Result> CreateAccountAsync(AccountModel model) {
+        public async Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model) {
 
-            if(model.IsAnyValueNullOrEmpty(out var failResult)) {
-                return failResult;
+            var validationResult = model.IsAnyValueNullOrEmpty();
+            if(validationResult != ValidationResult.Success) {
+                return validationResult switch {
+                    ValidationResult.MissingName => CreatorErrorCode.InvalidName,
+                    ValidationResult.MissingPassword => CreatorErrorCode.MissingPassword,
+                    ValidationResult.MissingEmail => CreatorErrorCode.MissingEmail,
+                    _ => CreatorErrorCode.Undefined,
+                };
             }
 
             (model.Password, model.Email) = await Task.Run(() => cryptoAccount.Encrypt(model.Password, model.Email)).ConfigureAwait(false);
             var account = new AccountModel(model.Name, model.Password, model.Email);
-            var result = await dataCreator.CreateAccountAsync(account).ConfigureAwait(false);
-            return ConnectionResultToResult(result);
-        }
-
-        //might want to create either an extension or an implicit conversion
-        private static Result ConnectionResultToResult(ConnectionResult connResult) {
-            return connResult.Success switch {
-                true => new Result(true),
-                false => new Result(connResult.ErrorMessage)
-            };
+            return await dataCreator.CreateAccountAsync(account).ConfigureAwait(false);
         }
 
     }

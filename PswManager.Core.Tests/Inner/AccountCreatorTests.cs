@@ -5,6 +5,8 @@ using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
+using PswManager.TestUtils;
+using PswManager.Utils.Options;
 using Xunit;
 
 namespace PswManager.Core.Tests.Inner {
@@ -16,10 +18,10 @@ namespace PswManager.Core.Tests.Inner {
             dataCreatorMock = new Mock<IDataCreator>();
             dataCreatorMock
                 .Setup(x => x.CreateAccount(It.IsAny<AccountModel>()))
-                .Returns<AccountModel>(ConnectionResultMocks.SuccessIfAllValuesAreNotEmpty);
+                .Returns<AccountModel>(OptionMocks.ValidateValues);
             dataCreatorMock
                 .Setup(x => x.CreateAccountAsync(It.IsAny<AccountModel>()))
-                .Returns<AccountModel>(x => Task.FromResult((ConnectionResult)ConnectionResultMocks.SuccessIfAllValuesAreNotEmpty(x)));
+                .Returns<AccountModel>(x => Task.FromResult(OptionMocks.ValidateValues(x)));
         }
 
         //since the purpose of this class is encrypting the password & email,
@@ -40,7 +42,7 @@ namespace PswManager.Core.Tests.Inner {
             var result = creator.CreateAccount(input);
 
             //assert
-            Assert.True(result.Success);
+            result.Is(OptionResult.None);
             dataCreatorMock.Verify(x => x.CreateAccount(It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))));
             dataCreatorMock.VerifyNoOtherCalls();
 
@@ -57,7 +59,7 @@ namespace PswManager.Core.Tests.Inner {
             var result = await creator.CreateAccountAsync(input);
 
             //assert
-            Assert.True(result.Success);
+            result.Is(OptionResult.None);
             dataCreatorMock.Verify(x => x.CreateAccountAsync(It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))));
             dataCreatorMock.VerifyNoOtherCalls();
 
@@ -78,8 +80,8 @@ namespace PswManager.Core.Tests.Inner {
             var resultAsync = await creator.CreateAccountAsync(input);
 
             //assert
-            Assert.False(result.Success);
-            Assert.False(resultAsync.Success);
+            result.Is(OptionResult.Some);
+            resultAsync.Is(OptionResult.Some);
             dataCreatorMock.VerifyNoOtherCalls();
 
         }

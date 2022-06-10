@@ -1,11 +1,13 @@
-﻿using PswManager.Database.Models;
+﻿using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Database.Models;
+using PswManager.Utils;
 using System.Threading.Tasks;
 
 namespace PswManager.Database.DataAccess.Interfaces {
     public interface IDataCreator : IDataHelper {
 
-        ConnectionResult CreateAccount(AccountModel model);
-        Task<ConnectionResult> CreateAccountAsync(AccountModel model);
+        Option<CreatorErrorCode> CreateAccount(AccountModel model);
+        Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model);
 
     }
 }

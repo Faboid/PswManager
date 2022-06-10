@@ -1,4 +1,6 @@
-﻿using PswManager.Database.Models;
+﻿using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Database.Models;
+using PswManager.Extensions;
 using PswManager.Utils;
 using System.Collections.Generic;
 using System.IO;
@@ -21,8 +23,9 @@ namespace PswManager.Database.DataAccess.JsonDatabase {
         readonly string directoryPath;
         private string BuildFilePath(string name) => Path.Combine(directoryPath, $"{name}.json");
 
-        protected override bool AccountExistHook(string name) {
-            return File.Exists(BuildFilePath(name));
+        protected override AccountExistsStatus AccountExistHook(string name) {
+            return File.Exists(BuildFilePath(name)) ? 
+                AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
         }
 
         /// <summary>
@@ -30,75 +33,84 @@ namespace PswManager.Database.DataAccess.JsonDatabase {
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        protected override async ValueTask<bool> AccountExistHookAsync(string name) {
-            return await Task.Run(() => File.Exists(BuildFilePath(name))).ConfigureAwait(false);
+        protected override async ValueTask<AccountExistsStatus> AccountExistHookAsync(string name) {
+            return await Task.Run(() => File.Exists(BuildFilePath(name))).ConfigureAwait(false) ?
+                AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
         }
 
-        protected override ConnectionResult CreateAccountHook(AccountModel model) {
+        protected override Option<CreatorErrorCode> CreateAccountHook(AccountModel model) {
             var path = BuildFilePath(model.Name);
             var jsonString = JsonSerializer.Serialize(model);
             File.WriteAllText(path, jsonString);
 
-            return new ConnectionResult(true);
+            return Option.None<CreatorErrorCode>();
         }
 
-        protected async override ValueTask<ConnectionResult> CreateAccountHookAsync(AccountModel model) {
+        protected async override ValueTask<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model) {
             var path = BuildFilePath(model.Name);
             using var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write);
             await JsonSerializer.SerializeAsync(stream, model).ConfigureAwait(false);
-            return new ConnectionResult(true);
+            return Option.None<CreatorErrorCode>();
         }
 
-        protected override ConnectionResult DeleteAccountHook(string name) {
+        protected override Option<DeleterErrorCode> DeleteAccountHook(string name) {
             File.Delete(BuildFilePath(name));
 
-            return new ConnectionResult(true);
+            return Option.None<DeleterErrorCode>();
         }
 
-        protected override ValueTask<ConnectionResult> DeleteAccountHookAsync(string name) {
+        protected override ValueTask<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name) {
             //there's no overload, and it's expected to be quick anyway, so I've left it to be synchronous
             //might decide to wrap it in a Task.Run()
             File.Delete(BuildFilePath(name));
-            return ValueTask.FromResult(new ConnectionResult(true));
+            return Option.None<DeleterErrorCode>().AsValueTask();
         }
 
-        protected override ConnectionResult<AccountModel> GetAccountHook(string name) {
+        protected override Option<AccountModel, ReaderErrorCode> GetAccountHook(string name) {
             var jsonString = File.ReadAllText(BuildFilePath(name));
             var model = JsonSerializer.Deserialize<AccountModel>(jsonString);
-
-            return new(true, model);
+            return model;
         }
 
-        protected override async ValueTask<AccountResult> GetAccountHookAsync(string name) {
+        protected override async ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name) {
             var path = BuildFilePath(name);
             using var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
             AccountModel model = await JsonSerializer.DeserializeAsync<AccountModel>(stream).ConfigureAwait(false);
-            return new(name, model);
+            return model;
         }
 
-        protected override ConnectionResult<IEnumerable<AccountResult>> GetAllAccountsHook() {
+        protected override Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccountsHook() {
             var accounts = Directory.GetFiles(directoryPath)
                 .Select(x => Path.GetFileNameWithoutExtension(x))
-                .Select(x => new AccountResult(x, GetAccountHook(x)));
+                .Select(x => GetAccountHook(x).Match(
+                    some => some, 
+                    error => (x, error), 
+                    () => NamedAccountOption.None())
+                );
 
-            return new(true, accounts);
+            return new(accounts);
         }
 
-        protected override Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsHookAsync() {
-            return Task.FromResult(new ConnectionResult<IAsyncEnumerable<AccountResult>>(true, GetAccountsAsync()));
+        protected override Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync() {
+            return Task.FromResult<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>>(new(GetAccountsAsync()));
         }
 
-        private async IAsyncEnumerable<AccountResult> GetAccountsAsync() {
+        private async IAsyncEnumerable<NamedAccountOption> GetAccountsAsync() {
             var accounts = Directory.GetFiles(directoryPath)
                 .Select(x => Path.GetFileNameWithoutExtension(x))
-                .Select(x => GetAccountHookAsync(x));
+                .Select(x => (x, GetAccountHookAsync(x)));
 
             foreach(var account in accounts) {
-                yield return await account.ConfigureAwait(false);
+
+                yield return (await account.Item2).Match(
+                    some => some,
+                    error => (account.x, error),
+                    () => NamedAccountOption.None()
+                );
             }
         }
 
-        protected override ConnectionResult<AccountModel> UpdateAccountHook(string name, AccountModel newModel) {
+        protected override Option<EditorErrorCode> UpdateAccountHook(string name, AccountModel newModel) {
             var path = BuildFilePath(name);
             var jsonString = File.ReadAllText(path);
             var model = JsonSerializer.Deserialize<AccountModel>(jsonString);
@@ -111,10 +123,10 @@ namespace PswManager.Database.DataAccess.JsonDatabase {
                 File.Delete(path);
             }
 
-            return GetAccountHook(model.Name);
+            return Option.None<EditorErrorCode>();
         }
 
-        protected override async ValueTask<ConnectionResult<AccountModel>> UpdateAccountHookAsync(string name, AccountModel newModel) {
+        protected override async ValueTask<Option<EditorErrorCode>> UpdateAccountHookAsync(string name, AccountModel newModel) {
             var path = BuildFilePath(name);
             AccountModel model;
             using(var readStream = new FileStream(path, FileMode.Open)) {
@@ -132,7 +144,7 @@ namespace PswManager.Database.DataAccess.JsonDatabase {
                 File.Delete(path);
             }
 
-            return await GetAccountHookAsync(model.Name).ConfigureAwait(false);
+            return Option.None<EditorErrorCode>();
         }
 
         private static void OverWriteOldModel(AccountModel oldAccount, AccountModel newAccount) {

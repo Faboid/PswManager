@@ -1,11 +1,12 @@
-﻿using PswManager.Utils.WrappingObjects;
+﻿using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Utils;
 using System.Threading.Tasks;
 
 namespace PswManager.Core.Inner.Interfaces {
     public interface IAccountDeleter {
 
-        Result DeleteAccount(string name);
-        Task<Result> DeleteAccountAsync(string name);
+        Option<DeleterErrorCode> DeleteAccount(string name);
+        Task<Option<DeleterErrorCode>> DeleteAccountAsync(string name);
 
     }
 }

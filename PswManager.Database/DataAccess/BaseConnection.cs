@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using PswManager.Async.Locks;
 using System;
+using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Utils;
 
 namespace PswManager.Database.DataAccess {
     /// <summary>
@@ -21,180 +23,165 @@ namespace PswManager.Database.DataAccess {
         //todo - implement IDisposable to clean up NamesLocker
         private readonly NamesLocker Locker = new();
 
-        public bool AccountExist(string name) {
+        public AccountExistsStatus AccountExist(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return false;
+                return AccountExistsStatus.InvalidName;
             }
 
             using var ownedLock = Locker.GetLock(name, 10000);
             if(ownedLock.Obtained == false) {
-                throw new TimeoutException($"The lock in {nameof(AccountExist)} has failed to lock for over ten seconds.");
+                return AccountExistsStatus.UsedElsewhere;
             }
+
             return AccountExistInternal(name);
         }
 
-        public async ValueTask<bool> AccountExistAsync(string name) {
+        public async ValueTask<AccountExistsStatus> AccountExistAsync(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return false;
+                return AccountExistsStatus.InvalidName;
             }
 
             using var ownedLock = await Locker.GetLockAsync(name, 10000).ConfigureAwait(false);
             if(!ownedLock.Obtained) {
-                throw new TimeoutException($"The lock in {nameof(AccountExistAsync)} has failed to lock for over ten seconds.");
+                return AccountExistsStatus.UsedElsewhere;
             }
 
             return await AccountExistInternalAsync(name).ConfigureAwait(false);
         }
 
-        public ConnectionResult CreateAccount(AccountModel model) {
-            if(string.IsNullOrWhiteSpace(model.Name)) {
-                return CachedResults.InvalidNameResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Password)) {
-                return CachedResults.MissingPasswordResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Email)) {
-                return CachedResults.MissingEmailResult;
+        public Option<CreatorErrorCode> CreateAccount(AccountModel model) {
+            if(!model.IsAllValid(out var errorCode)) {
+                return errorCode.ToCreatorErrorCode();
             }
 
             using var ownLock = Locker.GetLock(model.Name, 50);
             if(!ownLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return CreatorErrorCode.UsedElsewhere;
             }
 
-            if(AccountExistInternal(model.Name)) {
-                return CachedResults.CreateAccountAlreadyExistsResult;
+            if(AccountExistInternal(model.Name) != AccountExistsStatus.NotExist) {
+                return CreatorErrorCode.AccountExistsAlready;
             }
 
             return CreateAccountHook(model);
         }
 
-        public async Task<ConnectionResult> CreateAccountAsync(AccountModel model) {
-            if(string.IsNullOrWhiteSpace(model.Name)) {
-                return CachedResults.InvalidNameResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Password)) {
-                return CachedResults.MissingPasswordResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Email)) {
-                return CachedResults.MissingEmailResult;
+        public async Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model) {
+            if(!model.IsAllValid(out var errorCode)) {
+                return errorCode.ToCreatorErrorCode();
             }
 
             using var ownedLock = await Locker.GetLockAsync(model.Name, 50).ConfigureAwait(false);
             if(!ownedLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return CreatorErrorCode.UsedElsewhere;
             }
 
-            if(await AccountExistInternalAsync(model.Name).ConfigureAwait(false)) {
-                return CachedResults.CreateAccountAlreadyExistsResult;
+            if(await AccountExistInternalAsync(model.Name).ConfigureAwait(false) != AccountExistsStatus.NotExist) {
+                return CreatorErrorCode.AccountExistsAlready;
             }
 
             return await CreateAccountHookAsync(model).ConfigureAwait(false);
         }
 
 
-        public ConnectionResult DeleteAccount(string name) {
+        public Option<DeleterErrorCode> DeleteAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return DeleterErrorCode.InvalidName;
             }
 
             using var ownedLock = Locker.GetLock(name, 50);
             if(!ownedLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return DeleterErrorCode.UsedElsewhere;
             }
 
-            if(!AccountExistInternal(name)) {
-                return CachedResults.DoesNotExistResult;
+            if(AccountExistInternal(name) == AccountExistsStatus.NotExist) {
+                return DeleterErrorCode.DoesNotExist;
             }
 
             return DeleteAccountHook(name);
         }
 
-        public async ValueTask<ConnectionResult> DeleteAccountAsync(string name) { 
+        public async ValueTask<Option<DeleterErrorCode>> DeleteAccountAsync(string name) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return DeleterErrorCode.InvalidName;
             }
 
             using var ownedLock = await Locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!ownedLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return DeleterErrorCode.UsedElsewhere;
             }
 
-            if(!await AccountExistInternalAsync(name).ConfigureAwait(false)) {
-                return CachedResults.DoesNotExistResult;
+            if(await AccountExistInternalAsync(name).ConfigureAwait(false) == AccountExistsStatus.NotExist) {
+                return DeleterErrorCode.DoesNotExist;
             }
 
             return await DeleteAccountHookAsync(name).ConfigureAwait(false);
         }
 
-        public ConnectionResult<AccountModel> GetAccount(string name) {
+        public Option<AccountModel, ReaderErrorCode> GetAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return ReaderErrorCode.InvalidName;
             }
 
             using var ownedLock = Locker.GetLock(name, 50);
             if(!ownedLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return ReaderErrorCode.UsedElsewhere;
             }
 
-            if(!AccountExistInternal(name)) {
-                return CachedResults.DoesNotExistResult;
+            if(AccountExistInternal(name) == AccountExistsStatus.NotExist) {
+                return ReaderErrorCode.DoesNotExist;
             }
 
             return GetAccountHook(name);
         }
 
-        public async ValueTask<ConnectionResult<AccountModel>> GetAccountAsync(string name) { 
+        public async ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return ReaderErrorCode.InvalidName;
             }
 
             using var ownedLock = await Locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!ownedLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return ReaderErrorCode.UsedElsewhere;
             }
 
-            if(!await AccountExistInternalAsync(name).ConfigureAwait(false)) {
-                return CachedResults.DoesNotExistResult;
+            if(await AccountExistInternalAsync(name).ConfigureAwait(false) == AccountExistsStatus.NotExist) {
+                return ReaderErrorCode.DoesNotExist;
             }
 
             return await GetAccountHookAsync(name).ConfigureAwait(false);
         }
 
-        public ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts() {
+        public Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccounts() {
             using var mainLock = Locker.GetAllLocks(10000);
             if(mainLock.Obtained == false) {
-                return CachedResults.SomeAccountUsedElsewhereResult;
+                return ReaderAllErrorCode.SomeUsedElsewhere;
             }
 
             return GetAllAccountsHook();
         }
 
-        public async Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsAsync() {
+        public async Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsAsync() {
             using var mainLock = await Locker.GetAllLocksAsync(10000).ConfigureAwait(false);
             if(mainLock.Obtained == false) {
-                return CachedResults.SomeAccountUsedElsewhereResultAsync;
+                return ReaderAllErrorCode.SomeUsedElsewhere;
             }
 
             return await GetAllAccountsHookAsync().ConfigureAwait(false);
         }
 
-        public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {
+        public Option<EditorErrorCode> UpdateAccount(string name, AccountModel newModel) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return EditorErrorCode.InvalidName;
             }
 
             using var oldModelLock = Locker.GetLock(name, 50);
             if(!oldModelLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return EditorErrorCode.UsedElsewhere;
             }
 
-            if(!AccountExistInternal(name)) {
-                return CachedResults.DoesNotExistResult;
+            if(AccountExistInternal(name) == AccountExistsStatus.NotExist) {
+                return EditorErrorCode.DoesNotExist;
             }
 
             NamesLocker.Lock newModelLock = null;
@@ -202,10 +189,11 @@ namespace PswManager.Database.DataAccess {
                 if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
                     newModelLock = Locker.GetLock(newModel.Name, 50);
                     if(!newModelLock.Obtained) {
-                        return CachedResults.UsedElsewhereResult;
+                        return EditorErrorCode.NewNameUsedElsewhere;
                     }
-                    if(AccountExistInternal(newModel.Name)) {
-                        return new(false, "There is already an account with that name.");
+                    if(AccountExistInternal(newModel.Name) != AccountExistsStatus.NotExist) {
+
+                        return EditorErrorCode.NewNameExistsAlready;
                     }
                 }
             
@@ -217,18 +205,18 @@ namespace PswManager.Database.DataAccess {
             }
         }
 
-        public async ValueTask<ConnectionResult<AccountModel>> UpdateAccountAsync(string name, AccountModel newModel) { 
+        public async ValueTask<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newModel) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return EditorErrorCode.InvalidName;
             }
 
             using var oldModelLock = await Locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!oldModelLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return EditorErrorCode.UsedElsewhere;
             }
 
-            if(!await AccountExistInternalAsync(name).ConfigureAwait(false)) {
-                return CachedResults.DoesNotExistResult;
+            if(await AccountExistInternalAsync(name).ConfigureAwait(false) == AccountExistsStatus.NotExist) {
+                return EditorErrorCode.DoesNotExist;
             }
 
             NamesLocker.Lock newModelLock = null;
@@ -236,10 +224,10 @@ namespace PswManager.Database.DataAccess {
                 if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
                     newModelLock = await Locker.GetLockAsync(newModel.Name, 50).ConfigureAwait(false);
                     if(!newModelLock.Obtained) {
-                        return CachedResults.UsedElsewhereResult;
+                        return EditorErrorCode.NewNameUsedElsewhere;
                     }
-                    if(await AccountExistInternalAsync(newModel.Name)) {
-                        return new(false, "There is already an account with that name.");
+                    if(await AccountExistInternalAsync(newModel.Name) != AccountExistsStatus.NotExist) {
+                        return EditorErrorCode.NewNameExistsAlready;
                     }
                 }
 
@@ -249,34 +237,34 @@ namespace PswManager.Database.DataAccess {
             }
         }
 
-        private bool AccountExistInternal(string name) {
+        private AccountExistsStatus AccountExistInternal(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return false;
+                return AccountExistsStatus.InvalidName;
             }
 
             return AccountExistHook(name);
         }
 
-        private async ValueTask<bool> AccountExistInternalAsync(string name) {
+        private async ValueTask<AccountExistsStatus> AccountExistInternalAsync(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return false;
+                return AccountExistsStatus.InvalidName;
             }
 
             return await AccountExistHookAsync(name).ConfigureAwait(false);
         }
 
-        protected abstract bool AccountExistHook(string name);
-        protected abstract ValueTask<bool> AccountExistHookAsync(string name);
-        protected abstract ConnectionResult CreateAccountHook(AccountModel model);
-        protected abstract ValueTask<ConnectionResult> CreateAccountHookAsync(AccountModel model);
-        protected abstract ConnectionResult<AccountModel> GetAccountHook(string name);
-        protected abstract ValueTask<AccountResult> GetAccountHookAsync(string name);
-        protected abstract ConnectionResult<IEnumerable<AccountResult>> GetAllAccountsHook();
-        protected abstract Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsHookAsync();
-        protected abstract ConnectionResult<AccountModel> UpdateAccountHook(string name, AccountModel newModel);
-        protected abstract ValueTask<ConnectionResult<AccountModel>> UpdateAccountHookAsync(string name, AccountModel newModel);
-        protected abstract ConnectionResult DeleteAccountHook(string name);
-        protected abstract ValueTask<ConnectionResult> DeleteAccountHookAsync(string name);
+        protected abstract AccountExistsStatus AccountExistHook(string name);
+        protected abstract ValueTask<AccountExistsStatus> AccountExistHookAsync(string name);
+        protected abstract Option<CreatorErrorCode> CreateAccountHook(AccountModel model);
+        protected abstract ValueTask<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model);
+        protected abstract Option<AccountModel, ReaderErrorCode> GetAccountHook(string name);
+        protected abstract ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name);
+        protected abstract Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccountsHook();
+        protected abstract Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync();
+        protected abstract Option<EditorErrorCode> UpdateAccountHook(string name, AccountModel newModel);
+        protected abstract ValueTask<Option<EditorErrorCode>> UpdateAccountHookAsync(string name, AccountModel newModel);
+        protected abstract Option<DeleterErrorCode> DeleteAccountHook(string name);
+        protected abstract ValueTask<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name);
 
     }
 }

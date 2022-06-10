@@ -1,6 +1,6 @@
 ﻿using PswManager.Core.Cryptography;
 using PswManager.Database.Models;
-using PswManager.Utils;
+using PswManager.Extensions;
 
 namespace PswManager.Core.Tests.Mocks {
     internal static class AccountModelMocks {

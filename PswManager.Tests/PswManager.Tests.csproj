@@ -20,6 +20,7 @@
     <ProjectReference Include="..\PswManager.Database\PswManager.Database.csproj" />
     <ProjectReference Include="..\PswManager.Encryption\PswManager.Encryption.csproj" />
     <ProjectReference Include="..\PswManager.Core\PswManager.Core.csproj" />
+    <ProjectReference Include="..\PswManager.TestUtils\PswManager.TestUtils.csproj" />
   </ItemGroup>
 
 </Project>

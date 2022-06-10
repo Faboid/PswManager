@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using PswManager.Utils;
 using PswManager.Commands.Validation.Validators;
+using PswManager.Extensions;
 
 [assembly: InternalsVisibleTo("PswManager.Tests")]
 namespace PswManager.Commands.Validation.Builders {

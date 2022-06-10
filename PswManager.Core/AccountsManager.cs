@@ -2,8 +2,9 @@
 using PswManager.Core.Inner;
 using PswManager.Core.Inner.Interfaces;
 using PswManager.Database;
+using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
-using PswManager.Utils.WrappingObjects;
+using PswManager.Utils;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -38,43 +39,43 @@ namespace PswManager.Core {
         readonly IAccountEditor accountEditor;
         readonly IAccountDeleter accountDeleter;
 
-        public Result CreateAccount(AccountModel model) {
+        public Option<CreatorErrorCode> CreateAccount(AccountModel model) {
             return accountCreator.CreateAccount(model);
         }
 
-        public Task<Result> CreateAccountAsync(AccountModel model) {
+        public Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model) {
             return accountCreator.CreateAccountAsync(model);
         }
 
-        public Result<AccountModel> ReadAccount(string name) {
+        public Option<AccountModel, ReaderErrorCode> ReadAccount(string name) {
             return accountReader.ReadAccount(name);
         }
 
-        public Task<Result<AccountModel>> ReadAccountAsync(string name) {
+        public Task<Option<AccountModel, ReaderErrorCode>> ReadAccountAsync(string name) {
             return accountReader.ReadAccountAsync(name);
         }
 
-        public Result<IEnumerable<AccountResult>> ReadAllAccounts() {
+        public Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> ReadAllAccounts() {
             return accountReader.ReadAllAccounts();
         }
 
-        public Task<Result<IAsyncEnumerable<AccountResult>>> ReadAllAccountsAsync() {
+        public Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> ReadAllAccountsAsync() {
             return accountReader.ReadAllAccountsAsync();
         }
 
-        public Result UpdateAccount(string name, AccountModel newValues) {
+        public Option<EditorErrorCode> UpdateAccount(string name, AccountModel newValues) {
             return accountEditor.UpdateAccount(name, newValues);
         }
 
-        public Task<Result> UpdateAccountAsync(string name, AccountModel newValues) {
+        public Task<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newValues) {
             return accountEditor.UpdateAccountAsync(name, newValues);
         }
 
-        public Result DeleteAccount(string name) {
+        public Option<DeleterErrorCode> DeleteAccount(string name) {
             return accountDeleter.DeleteAccount(name);
         }
 
-        public Task<Result> DeleteAccountAsync(string name) {
+        public Task<Option<DeleterErrorCode>> DeleteAccountAsync(string name) {
             return accountDeleter.DeleteAccountAsync(name);
         }
     }

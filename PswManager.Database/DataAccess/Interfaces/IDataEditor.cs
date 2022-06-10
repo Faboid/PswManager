@@ -1,12 +1,13 @@
-﻿using PswManager.Database.Models;
+﻿using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Database.Models;
+using PswManager.Utils;
 using System.Threading.Tasks;
 
-namespace PswManager.Database.DataAccess.Interfaces {
-    public interface IDataEditor : IDataHelper {
+namespace PswManager.Database.DataAccess.Interfaces; 
 
-        ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel);
+public interface IDataEditor : IDataHelper {
 
-        ValueTask<ConnectionResult<AccountModel>> UpdateAccountAsync(string name, AccountModel newModel);
+    Option<EditorErrorCode> UpdateAccount(string name, AccountModel newModel);
+    ValueTask<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newModel);
 
-    }
 }

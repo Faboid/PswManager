@@ -1,11 +1,11 @@
 ﻿using PswManager.Encryption.Services;
-using PswManager.Utils;
 using PswManager.Tests.Async.TestsHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using PswManager.Extensions;
 
 namespace PswManager.Tests.Encryption {
     public class KeyGeneratorServiceTests {

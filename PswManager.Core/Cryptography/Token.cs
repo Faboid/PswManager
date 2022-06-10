@@ -5,7 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
-[assembly:InternalsVisibleTo("PswManager.Tests")]
+[assembly:InternalsVisibleTo("PswManager.Core.Tests")]
 namespace PswManager.Core.Cryptography {
     internal class Token {
 

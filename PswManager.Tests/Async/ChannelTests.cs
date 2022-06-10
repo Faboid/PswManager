@@ -1,7 +1,5 @@
 ﻿using PswManager.Async;
 using PswManager.Tests.Async.TestsHelpers;
-using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Xunit;
 

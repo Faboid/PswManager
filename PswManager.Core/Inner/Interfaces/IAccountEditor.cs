@@ -1,12 +1,13 @@
-﻿using PswManager.Database.Models;
-using PswManager.Utils.WrappingObjects;
+﻿using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Database.Models;
+using PswManager.Utils;
 using System.Threading.Tasks;
 
 namespace PswManager.Core.Inner.Interfaces {
     public interface IAccountEditor {
 
-        Result UpdateAccount(string name, AccountModel newValues);
-        Task<Result> UpdateAccountAsync(string name, AccountModel newValues);
+        Option<EditorErrorCode> UpdateAccount(string name, AccountModel newValues);
+        Task<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newValues);
 
     }
 }

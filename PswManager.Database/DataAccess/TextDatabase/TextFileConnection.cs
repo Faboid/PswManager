@@ -1,6 +1,9 @@
 ﻿using PswManager.Async.Locks;
+using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.TextDatabase.TextFileConnHelper;
 using PswManager.Database.Models;
+using PswManager.Extensions;
+using PswManager.Utils;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -25,178 +28,163 @@ namespace PswManager.Database.DataAccess.TextDatabase {
         /// <param name="name"></param>
         /// <returns></returns>
         /// <exception cref="TimeoutException"></exception>
-        public bool AccountExist(string name) {
+        public AccountExistsStatus AccountExist(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return false;
+                return AccountExistsStatus.InvalidName;
             }
 
             using var accLock = locker.GetLock(name, 5000);
             if(!accLock.Obtained) {
-                throw new TimeoutException($"The account {name} is being used elsewhere.");
+                return AccountExistsStatus.UsedElsewhere;
             }
 
-            return fileSaver.Exists(name);
+            return fileSaver.Exists(name)? AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
         }
 
-        public async ValueTask<bool> AccountExistAsync(string name) { 
+        public async ValueTask<AccountExistsStatus> AccountExistAsync(string name) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return false;
+                return AccountExistsStatus.InvalidName;
             }
 
             using var accLock = await locker.GetLockAsync(name, 5000).ConfigureAwait(false);
             if(!accLock.Obtained) {
-                throw new TimeoutException($"The account {name} is being used elsewhere.");
+                return AccountExistsStatus.UsedElsewhere;
             }
 
-            return await fileSaver.ExistsAsync(name).ConfigureAwait(false);
+            return await fileSaver.ExistsAsync(name).ConfigureAwait(false) ?
+                AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
         }
 
-        public ConnectionResult CreateAccount(AccountModel model) {
-            if(string.IsNullOrWhiteSpace(model.Name)) {
-                return CachedResults.InvalidNameResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Password)) {
-                return CachedResults.MissingPasswordResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Email)) {
-                return CachedResults.MissingEmailResult;
+        public Option<CreatorErrorCode> CreateAccount(AccountModel model) {
+            if(!model.IsAllValid(out var errorCode)) {
+                return errorCode.ToCreatorErrorCode();
             }
 
             using var accLock = locker.GetLock(model.Name, 50);
             if(!accLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return CreatorErrorCode.UsedElsewhere; 
             }
 
             if(fileSaver.Exists(model.Name)) {
-                return CachedResults.CreateAccountAlreadyExistsResult;
+                return CreatorErrorCode.AccountExistsAlready;
             }
 
             fileSaver.Create(model);
-            return new(true);
+            return Option.None<CreatorErrorCode>();
         }
 
-        public async Task<ConnectionResult> CreateAccountAsync(AccountModel model) {
-            if(string.IsNullOrWhiteSpace(model.Name)) {
-                return CachedResults.InvalidNameResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Password)) {
-                return CachedResults.MissingPasswordResult;
-            }
-
-            if(string.IsNullOrWhiteSpace(model.Email)) {
-                return CachedResults.MissingEmailResult;
+        public async Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model) {
+            if(!model.IsAllValid(out var errorCode)) {
+                return errorCode.ToCreatorErrorCode();
             }
 
             using var accLock = await locker.GetLockAsync(model.Name, 50).ConfigureAwait(false);
             if(!accLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return CreatorErrorCode.UsedElsewhere;
             }
 
             if(await fileSaver.ExistsAsync(model.Name).ConfigureAwait(false)) {
-                return CachedResults.CreateAccountAlreadyExistsResult;
+                return CreatorErrorCode.AccountExistsAlready;
             }
 
             await fileSaver.CreateAsync(model).ConfigureAwait(false);
-            return new(true);
+            return Option.None<CreatorErrorCode>();
         }
 
-        public ConnectionResult DeleteAccount(string name) {
+        public Option<DeleterErrorCode> DeleteAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return DeleterErrorCode.InvalidName;
             }
 
             using var accLock = locker.GetLock(name, 50);
             if(!accLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return DeleterErrorCode.UsedElsewhere;
             }
 
             if(!fileSaver.Exists(name)) {
-                return CachedResults.DoesNotExistResult;
+                return DeleterErrorCode.DoesNotExist;
             }
 
             fileSaver.Delete(name);
-            return new(true);
+            return Option.None<DeleterErrorCode>();
         }
 
-        public async ValueTask<ConnectionResult> DeleteAccountAsync(string name) { 
+        public async ValueTask<Option<DeleterErrorCode>> DeleteAccountAsync(string name) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return DeleterErrorCode.InvalidName;
             }
 
             using var heldLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!heldLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return DeleterErrorCode.UsedElsewhere;
             }
 
             if(!await fileSaver.ExistsAsync(name).ConfigureAwait(false)) {
-                return CachedResults.DoesNotExistResult;
+                return DeleterErrorCode.DoesNotExist;
             }
 
             await fileSaver.DeleteAsync(name);
-            return new(true);
+            return Option.None<DeleterErrorCode>();
         }
 
-        public ConnectionResult<AccountModel> GetAccount(string name) {
+        public Option<AccountModel, ReaderErrorCode> GetAccount(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return ReaderErrorCode.InvalidName;
             }
 
             using var accLock = locker.GetLock(name, 50);
             if(!accLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return ReaderErrorCode.UsedElsewhere;
             }
 
             if(!fileSaver.Exists(name)) {
-                return CachedResults.DoesNotExistResult;
+                return ReaderErrorCode.DoesNotExist;
             }
 
             var account = fileSaver.Get(name);
-            return new(true, account);
+            return account;
         }
 
-        public async ValueTask<ConnectionResult<AccountModel>> GetAccountAsync(string name) {
+        public async ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return ReaderErrorCode.InvalidName;
             }
 
             using var accLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!accLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return ReaderErrorCode.UsedElsewhere;
             }
 
             if(!await fileSaver.ExistsAsync(name).ConfigureAwait(false)) {
-                return CachedResults.DoesNotExistResult;
+                return ReaderErrorCode.DoesNotExist;
             }
 
             var account = await fileSaver.GetAsync(name);
-            return new(true, account);
+            return account;
         }
 
-        public ConnectionResult<IEnumerable<AccountResult>> GetAllAccounts() {
+        public Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccounts() {
             var accounts = fileSaver.GetAll(locker);
-            return new(true, accounts);
+            return new(accounts);
         }
 
-        public Task<ConnectionResult<IAsyncEnumerable<AccountResult>>> GetAllAccountsAsync() { 
+        public Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsAsync() { 
             var accounts = fileSaver.GetAllAsync(locker);
-            return Task.FromResult(new ConnectionResult<IAsyncEnumerable<AccountResult>>(true, accounts));
+            return Option.Some<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>(accounts).AsTask();
         }
 
-        public ConnectionResult<AccountModel> UpdateAccount(string name, AccountModel newModel) {
+        public Option<EditorErrorCode> UpdateAccount(string name, AccountModel newModel) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return EditorErrorCode.InvalidName;
             }
 
             using var nameLock = locker.GetLock(name, 50);
             if(!nameLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return EditorErrorCode.UsedElsewhere;
             }
 
             if(!fileSaver.Exists(name)) {
-                return CachedResults.DoesNotExistResult;
+                return EditorErrorCode.DoesNotExist;
             }
 
             NamesLocker.Lock newModelLock = null;
@@ -204,15 +192,15 @@ namespace PswManager.Database.DataAccess.TextDatabase {
                 if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
                     newModelLock = locker.GetLock(newModel.Name, 50);
                     if(!newModelLock.Obtained) {
-                        return CachedResults.UsedElsewhereResult;
+                        return EditorErrorCode.NewNameUsedElsewhere;
                     }
                     if(fileSaver.Exists(newModel.Name)) {
-                        return new(false, $"There is already an account called {newModel.Name}.");
+                        return EditorErrorCode.NewNameExistsAlready;
                     }
                 }
 
-                var newValues = fileSaver.Update(name, newModel);
-                return new(true, newValues);
+                fileSaver.Update(name, newModel);
+                return Option.None<EditorErrorCode>();
 
             } finally {
                 newModelLock?.Dispose();
@@ -220,18 +208,18 @@ namespace PswManager.Database.DataAccess.TextDatabase {
 
         }
 
-        public async ValueTask<ConnectionResult<AccountModel>> UpdateAccountAsync(string name, AccountModel newModel) { 
+        public async ValueTask<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newModel) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return CachedResults.InvalidNameResult;
+                return EditorErrorCode.InvalidName;
             }
 
             using var nameLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
             if(!nameLock.Obtained) {
-                return CachedResults.UsedElsewhereResult;
+                return EditorErrorCode.UsedElsewhere;
             }
 
             if(!await fileSaver.ExistsAsync(name)) {
-                return CachedResults.DoesNotExistResult;
+                return EditorErrorCode.DoesNotExist;
             }
 
             NamesLocker.Lock newModelLock = null;
@@ -239,15 +227,15 @@ namespace PswManager.Database.DataAccess.TextDatabase {
                 if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
                     newModelLock = await locker.GetLockAsync(newModel.Name, 50).ConfigureAwait(false);
                     if(!newModelLock.Obtained) {
-                        return CachedResults.UsedElsewhereResult;
+                        return EditorErrorCode.NewNameUsedElsewhere;
                     }
                     if(await fileSaver.ExistsAsync(newModel.Name)) {
-                        return new(false, $"There is already an account named {newModel.Name}.");
+                        return EditorErrorCode.NewNameExistsAlready;
                     }
                 }
 
-                var newValues = await fileSaver.UpdateAsync(name, newModel).ConfigureAwait(false);
-                return new(true, newValues);
+                await fileSaver.UpdateAsync(name, newModel).ConfigureAwait(false);
+                return Option.None<EditorErrorCode>();
 
             } finally {
                 newModelLock?.Dispose();

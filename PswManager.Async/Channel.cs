@@ -1,5 +1,5 @@
 ﻿using PswManager.Async.Locks;
-using PswManager.Utils;
+using PswManager.Extensions;
 using System.Collections.Concurrent;
 
 namespace PswManager.Async {
