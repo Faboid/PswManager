@@ -8,7 +8,7 @@ using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly:InternalsVisibleTo("PswManager.Tests")]
+[assembly:InternalsVisibleTo("PswManager.Database.Tests")]
 namespace PswManager.Database {
 
     public enum DatabaseType {
