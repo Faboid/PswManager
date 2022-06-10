@@ -1,15 +1,13 @@
-﻿using PswManager.Commands;
-using PswManager.Commands.Unused.Parsing;
+﻿using PswManager.Commands.Unused.Parsing;
 using PswManager.Commands.Unused.Parsing.Attributes;
-using System.Collections.Generic;
 using Xunit;
 
-namespace PswManager.Tests.Parsing {
+namespace PswManager.Commands.Tests.Unused.Parsing {
     public class ParserTests {
 
         [Fact]
         public void ParseSuccessfully() {
-            
+
             //arrange
             IParser parser = Parser.CreateInstance();
 

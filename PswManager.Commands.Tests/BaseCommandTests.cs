@@ -1,8 +1,7 @@
-﻿using PswManager.Commands;
-using PswManager.Commands.AbstractCommands;
+﻿using PswManager.Commands.AbstractCommands;
 using Xunit;
 
-namespace PswManager.ConsoleUI.Tests.Commands {
+namespace PswManager.Commands.Tests {
     public class BaseCommandTests {
 
         readonly MockedChildrenCommand command = new MockedChildrenCommand();

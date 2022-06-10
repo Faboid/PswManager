@@ -2,10 +2,9 @@
 using PswManager.Commands.Validation.Builders;
 using PswManager.Commands.Validation.Models;
 using PswManager.Commands.Validation.Validators;
-using System;
 using Xunit;
 
-namespace PswManager.Tests.Validation {
+namespace PswManager.Commands.Tests.Unused.Validation {
 
     public class AutoValidationTests {
 

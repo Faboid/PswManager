@@ -10,8 +10,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.ConsoleUI", "Psw
 		{EDC2911F-7A40-4BD5-9999-17CB72517BDB} = {EDC2911F-7A40-4BD5-9999-17CB72517BDB}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Tests", "PswManager.Tests\PswManager.Tests.csproj", "{C4C2C729-7344-4172-AF50-CD1C2FF97522}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Commands", "PswManager.Commands\PswManager.Commands.csproj", "{EDC2911F-7A40-4BD5-9999-17CB72517BDB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Database", "PswManager.Database\PswManager.Database.csproj", "{5472D15F-056E-492A-B7D8-472357A94E39}"
@@ -43,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManager.Async.Tests", "P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManager.Encryption.Tests", "PswManager.Encryption.Tests\PswManager.Encryption.Tests.csproj", "{F0DEFE64-2EE4-4A9D-9702-D4C5809BD731}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManager.Commands.Tests", "PswManager.Commands.Tests\PswManager.Commands.Tests.csproj", "{6C2374C6-A002-4016-97BD-3740CAE2CE49}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,10 +57,6 @@ Global
 		{E0FC07AF-04D3-41FA-8E3A-F53939B52ABC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0FC07AF-04D3-41FA-8E3A-F53939B52ABC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0FC07AF-04D3-41FA-8E3A-F53939B52ABC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C4C2C729-7344-4172-AF50-CD1C2FF97522}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C4C2C729-7344-4172-AF50-CD1C2FF97522}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C4C2C729-7344-4172-AF50-CD1C2FF97522}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C4C2C729-7344-4172-AF50-CD1C2FF97522}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EDC2911F-7A40-4BD5-9999-17CB72517BDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EDC2911F-7A40-4BD5-9999-17CB72517BDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EDC2911F-7A40-4BD5-9999-17CB72517BDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -117,6 +113,10 @@ Global
 		{F0DEFE64-2EE4-4A9D-9702-D4C5809BD731}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0DEFE64-2EE4-4A9D-9702-D4C5809BD731}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0DEFE64-2EE4-4A9D-9702-D4C5809BD731}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C2374C6-A002-4016-97BD-3740CAE2CE49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C2374C6-A002-4016-97BD-3740CAE2CE49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C2374C6-A002-4016-97BD-3740CAE2CE49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C2374C6-A002-4016-97BD-3740CAE2CE49}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

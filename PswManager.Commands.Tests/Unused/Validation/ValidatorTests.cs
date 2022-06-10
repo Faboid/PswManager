@@ -2,11 +2,9 @@
 using PswManager.Commands.Validation.Builders;
 using PswManager.Commands.Validation.Models;
 using PswManager.Commands.Validation.Validators;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
-namespace PswManager.Tests.Validation {
+namespace PswManager.Commands.Tests.Unused.Validation {
     public class ValidatorTests {
 
         public ValidatorTests() {
@@ -133,8 +131,7 @@ namespace PswManager.Tests.Validation {
                 if(obj.Age > 13) {
                     return true;
                 }
-            }
-            catch {
+            } catch {
 
                 return false;
             }

@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using PswManager.Commands.Validation.Validators;
 using PswManager.Extensions;
 
-[assembly: InternalsVisibleTo("PswManager.Tests")]
+[assembly: InternalsVisibleTo("PswManager.Commands.Tests")]
 namespace PswManager.Commands.Validation.Builders {
 
     public class AutoValidatorBuilder<TObj> {
