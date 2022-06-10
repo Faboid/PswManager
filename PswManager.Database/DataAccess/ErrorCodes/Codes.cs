@@ -21,9 +21,27 @@ public enum ReaderAllErrorCode {
     SomeUsedElsewhere,
 }
 
-//to implement
-public enum AccountExistsErrorCode {
+public enum AccountExistsStatus {
+    /// <summary>
+    /// An unknown error has occurred.
+    /// </summary>
     Undefined,
+    /// <summary>
+    /// The account has been found and it exists.
+    /// </summary>
+    Exist,
+    /// <summary>
+    /// The account hasn't been found.
+    /// </summary>
+    NotExist,
+    /// <summary>
+    /// The given name is invalid.
+    /// </summary>
+    InvalidName,
+    /// <summary>
+    /// This account is being used elsewhere, so it's not possible to verify it's existence.
+    /// </summary>
+    UsedElsewhere,
 }
 
 public enum DeleterErrorCode {

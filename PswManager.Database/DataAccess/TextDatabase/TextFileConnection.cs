@@ -28,30 +28,31 @@ namespace PswManager.Database.DataAccess.TextDatabase {
         /// <param name="name"></param>
         /// <returns></returns>
         /// <exception cref="TimeoutException"></exception>
-        public bool AccountExist(string name) {
+        public AccountExistsStatus AccountExist(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return false;
+                return AccountExistsStatus.InvalidName;
             }
 
             using var accLock = locker.GetLock(name, 5000);
             if(!accLock.Obtained) {
-                throw new TimeoutException($"The account {name} is being used elsewhere.");
+                return AccountExistsStatus.UsedElsewhere;
             }
 
-            return fileSaver.Exists(name);
+            return fileSaver.Exists(name)? AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
         }
 
-        public async ValueTask<bool> AccountExistAsync(string name) { 
+        public async ValueTask<AccountExistsStatus> AccountExistAsync(string name) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return false;
+                return AccountExistsStatus.InvalidName;
             }
 
             using var accLock = await locker.GetLockAsync(name, 5000).ConfigureAwait(false);
             if(!accLock.Obtained) {
-                throw new TimeoutException($"The account {name} is being used elsewhere.");
+                return AccountExistsStatus.UsedElsewhere;
             }
 
-            return await fileSaver.ExistsAsync(name).ConfigureAwait(false);
+            return await fileSaver.ExistsAsync(name).ConfigureAwait(false) ?
+                AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
         }
 
         public Option<CreatorErrorCode> CreateAccount(AccountModel model) {

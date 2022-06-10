@@ -4,6 +4,7 @@ using Xunit;
 using PswManager.ConsoleUI.Tests.Commands.Helper;
 using PswManager.ConsoleUI.Commands;
 using PswManager.Core.Inner;
+using PswManager.Database.DataAccess.ErrorCodes;
 
 namespace PswManager.ConsoleUI.Tests.Commands {
 
@@ -27,17 +28,16 @@ namespace PswManager.ConsoleUI.Tests.Commands {
 
             //arrange
             var obj = ClassBuilder.Build<AddCommand>(new List<string> { password, name, email});
-            bool exists;
             CommandResult result;
 
             //act
-            exists = dataHelper.AccountExist(name);
+            var exists = dataHelper.AccountExist(name);
             result = addCommand.Run(obj);
 
             //assert
-            Assert.False(exists);
+            Assert.Equal(AccountExistsStatus.NotExist, exists);
             Assert.True(result.Success);
-            Assert.True(dataHelper.AccountExist(name));
+            Assert.Equal(AccountExistsStatus.Exist, dataHelper.AccountExist(name));
 
         }
 
@@ -49,17 +49,16 @@ namespace PswManager.ConsoleUI.Tests.Commands {
 
             //arrange
             var obj = ClassBuilder.Build<AddCommand>(new List<string> { password, name, email });
-            bool exists;
             CommandResult result;
 
             //act
-            exists = await dataHelper.AccountExistAsync(name).ConfigureAwait(false);
+            var exists = await dataHelper.AccountExistAsync(name).ConfigureAwait(false);
             result = await addCommand.RunAsync(obj).ConfigureAwait(false);
 
             //assert
-            Assert.False(exists);
+            Assert.Equal(AccountExistsStatus.NotExist, exists);
             Assert.True(result.Success);
-            Assert.True(await dataHelper.AccountExistAsync(name).ConfigureAwait(false));
+            Assert.Equal(AccountExistsStatus.Exist, await dataHelper.AccountExistAsync(name).ConfigureAwait(false));
 
         }
 

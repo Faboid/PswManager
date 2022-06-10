@@ -11,12 +11,12 @@ namespace PswManager.Database.DataAccess.MemoryDatabase {
 
         readonly Dictionary<string, AccountModel> accounts = new();
 
-        protected override bool AccountExistHook(string name) {
-            return accounts.ContainsKey(name);
+        protected override AccountExistsStatus AccountExistHook(string name) {
+            return accounts.ContainsKey(name) ? AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
         }
 
-        protected override ValueTask<bool> AccountExistHookAsync(string name) {
-            return ValueTask.FromResult(accounts.ContainsKey(name));
+        protected override ValueTask<AccountExistsStatus> AccountExistHookAsync(string name) {
+            return ValueTask.FromResult(accounts.ContainsKey(name) ? AccountExistsStatus.Exist : AccountExistsStatus.NotExist);
         }
 
         protected override Option<CreatorErrorCode> CreateAccountHook(AccountModel model) {

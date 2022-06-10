@@ -5,6 +5,7 @@ using PswManager.ConsoleUI.Tests.Commands.Helper;
 using PswManager.ConsoleUI.Commands;
 using PswManager.TestUtils;
 using PswManager.Core.Inner;
+using PswManager.Database.DataAccess.ErrorCodes;
 
 namespace PswManager.ConsoleUI.Tests.Commands {
 
@@ -27,12 +28,12 @@ namespace PswManager.ConsoleUI.Tests.Commands {
             var obj = ClassBuilder.Build<DeleteCommand>(new List<string> { name });
 
             //act
-            bool exist = dataHelper.AccountExist(name);
+            var exist = dataHelper.AccountExist(name);
             delCommand.Run(obj);
 
             //assert
-            Assert.True(exist);
-            Assert.False(dataHelper.AccountExist(name));
+            Assert.Equal(AccountExistsStatus.Exist, exist);
+            Assert.Equal(AccountExistsStatus.NotExist, dataHelper.AccountExist(name));
 
         }
 
@@ -44,12 +45,12 @@ namespace PswManager.ConsoleUI.Tests.Commands {
             var obj = ClassBuilder.Build<DeleteCommand>(new List<string> { name });
 
             //act
-            bool exist = await dataHelper.AccountExistAsync(name).ConfigureAwait(false);
+            var exist = await dataHelper.AccountExistAsync(name).ConfigureAwait(false);
             await delCommand.RunAsync(obj).ConfigureAwait(false);
 
             //assert
-            Assert.True(exist);
-            Assert.False(await dataHelper.AccountExistAsync(name).ConfigureAwait(false));
+            Assert.Equal(AccountExistsStatus.Exist, exist);
+            Assert.Equal(AccountExistsStatus.NotExist, await dataHelper.AccountExistAsync(name).ConfigureAwait(false));
 
         }
 

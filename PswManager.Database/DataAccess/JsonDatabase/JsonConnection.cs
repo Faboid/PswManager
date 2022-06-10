@@ -23,8 +23,9 @@ namespace PswManager.Database.DataAccess.JsonDatabase {
         readonly string directoryPath;
         private string BuildFilePath(string name) => Path.Combine(directoryPath, $"{name}.json");
 
-        protected override bool AccountExistHook(string name) {
-            return File.Exists(BuildFilePath(name));
+        protected override AccountExistsStatus AccountExistHook(string name) {
+            return File.Exists(BuildFilePath(name)) ? 
+                AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
         }
 
         /// <summary>
@@ -32,8 +33,9 @@ namespace PswManager.Database.DataAccess.JsonDatabase {
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        protected override async ValueTask<bool> AccountExistHookAsync(string name) {
-            return await Task.Run(() => File.Exists(BuildFilePath(name))).ConfigureAwait(false);
+        protected override async ValueTask<AccountExistsStatus> AccountExistHookAsync(string name) {
+            return await Task.Run(() => File.Exists(BuildFilePath(name))).ConfigureAwait(false) ?
+                AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
         }
 
         protected override Option<CreatorErrorCode> CreateAccountHook(AccountModel model) {

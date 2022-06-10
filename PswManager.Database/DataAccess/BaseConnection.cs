@@ -23,26 +23,27 @@ namespace PswManager.Database.DataAccess {
         //todo - implement IDisposable to clean up NamesLocker
         private readonly NamesLocker Locker = new();
 
-        public bool AccountExist(string name) {
+        public AccountExistsStatus AccountExist(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return false;
+                return AccountExistsStatus.InvalidName;
             }
 
             using var ownedLock = Locker.GetLock(name, 10000);
             if(ownedLock.Obtained == false) {
-                throw new TimeoutException($"The lock in {nameof(AccountExist)} has failed to lock for over ten seconds.");
+                return AccountExistsStatus.UsedElsewhere;
             }
+
             return AccountExistInternal(name);
         }
 
-        public async ValueTask<bool> AccountExistAsync(string name) {
+        public async ValueTask<AccountExistsStatus> AccountExistAsync(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return false;
+                return AccountExistsStatus.InvalidName;
             }
 
             using var ownedLock = await Locker.GetLockAsync(name, 10000).ConfigureAwait(false);
             if(!ownedLock.Obtained) {
-                throw new TimeoutException($"The lock in {nameof(AccountExistAsync)} has failed to lock for over ten seconds.");
+                return AccountExistsStatus.UsedElsewhere;
             }
 
             return await AccountExistInternalAsync(name).ConfigureAwait(false);
@@ -58,7 +59,7 @@ namespace PswManager.Database.DataAccess {
                 return CreatorErrorCode.UsedElsewhere;
             }
 
-            if(AccountExistInternal(model.Name)) {
+            if(AccountExistInternal(model.Name) != AccountExistsStatus.NotExist) {
                 return CreatorErrorCode.AccountExistsAlready;
             }
 
@@ -75,7 +76,7 @@ namespace PswManager.Database.DataAccess {
                 return CreatorErrorCode.UsedElsewhere;
             }
 
-            if(await AccountExistInternalAsync(model.Name).ConfigureAwait(false)) {
+            if(await AccountExistInternalAsync(model.Name).ConfigureAwait(false) != AccountExistsStatus.NotExist) {
                 return CreatorErrorCode.AccountExistsAlready;
             }
 
@@ -93,7 +94,7 @@ namespace PswManager.Database.DataAccess {
                 return DeleterErrorCode.UsedElsewhere;
             }
 
-            if(!AccountExistInternal(name)) {
+            if(AccountExistInternal(name) == AccountExistsStatus.NotExist) {
                 return DeleterErrorCode.DoesNotExist;
             }
 
@@ -110,7 +111,7 @@ namespace PswManager.Database.DataAccess {
                 return DeleterErrorCode.UsedElsewhere;
             }
 
-            if(!await AccountExistInternalAsync(name).ConfigureAwait(false)) {
+            if(await AccountExistInternalAsync(name).ConfigureAwait(false) == AccountExistsStatus.NotExist) {
                 return DeleterErrorCode.DoesNotExist;
             }
 
@@ -127,7 +128,7 @@ namespace PswManager.Database.DataAccess {
                 return ReaderErrorCode.UsedElsewhere;
             }
 
-            if(!AccountExistInternal(name)) {
+            if(AccountExistInternal(name) == AccountExistsStatus.NotExist) {
                 return ReaderErrorCode.DoesNotExist;
             }
 
@@ -144,7 +145,7 @@ namespace PswManager.Database.DataAccess {
                 return ReaderErrorCode.UsedElsewhere;
             }
 
-            if(!await AccountExistInternalAsync(name).ConfigureAwait(false)) {
+            if(await AccountExistInternalAsync(name).ConfigureAwait(false) == AccountExistsStatus.NotExist) {
                 return ReaderErrorCode.DoesNotExist;
             }
 
@@ -179,7 +180,7 @@ namespace PswManager.Database.DataAccess {
                 return EditorErrorCode.UsedElsewhere;
             }
 
-            if(!AccountExistInternal(name)) {
+            if(AccountExistInternal(name) == AccountExistsStatus.NotExist) {
                 return EditorErrorCode.DoesNotExist;
             }
 
@@ -190,7 +191,8 @@ namespace PswManager.Database.DataAccess {
                     if(!newModelLock.Obtained) {
                         return EditorErrorCode.NewNameUsedElsewhere;
                     }
-                    if(AccountExistInternal(newModel.Name)) {
+                    if(AccountExistInternal(newModel.Name) != AccountExistsStatus.NotExist) {
+
                         return EditorErrorCode.NewNameExistsAlready;
                     }
                 }
@@ -213,7 +215,7 @@ namespace PswManager.Database.DataAccess {
                 return EditorErrorCode.UsedElsewhere;
             }
 
-            if(!await AccountExistInternalAsync(name).ConfigureAwait(false)) {
+            if(await AccountExistInternalAsync(name).ConfigureAwait(false) == AccountExistsStatus.NotExist) {
                 return EditorErrorCode.DoesNotExist;
             }
 
@@ -224,7 +226,7 @@ namespace PswManager.Database.DataAccess {
                     if(!newModelLock.Obtained) {
                         return EditorErrorCode.NewNameUsedElsewhere;
                     }
-                    if(await AccountExistInternalAsync(newModel.Name)) {
+                    if(await AccountExistInternalAsync(newModel.Name) != AccountExistsStatus.NotExist) {
                         return EditorErrorCode.NewNameExistsAlready;
                     }
                 }
@@ -235,24 +237,24 @@ namespace PswManager.Database.DataAccess {
             }
         }
 
-        private bool AccountExistInternal(string name) {
+        private AccountExistsStatus AccountExistInternal(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return false;
+                return AccountExistsStatus.InvalidName;
             }
 
             return AccountExistHook(name);
         }
 
-        private async ValueTask<bool> AccountExistInternalAsync(string name) {
+        private async ValueTask<AccountExistsStatus> AccountExistInternalAsync(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return false;
+                return AccountExistsStatus.InvalidName;
             }
 
             return await AccountExistHookAsync(name).ConfigureAwait(false);
         }
 
-        protected abstract bool AccountExistHook(string name);
-        protected abstract ValueTask<bool> AccountExistHookAsync(string name);
+        protected abstract AccountExistsStatus AccountExistHook(string name);
+        protected abstract ValueTask<AccountExistsStatus> AccountExistHookAsync(string name);
         protected abstract Option<CreatorErrorCode> CreateAccountHook(AccountModel model);
         protected abstract ValueTask<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model);
         protected abstract Option<AccountModel, ReaderErrorCode> GetAccountHook(string name);

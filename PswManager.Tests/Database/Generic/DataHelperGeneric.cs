@@ -1,4 +1,5 @@
-﻿using PswManager.Database.DataAccess.Interfaces;
+﻿using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Database.DataAccess.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -17,28 +18,28 @@ namespace PswManager.Tests.Database.Generic {
         protected static readonly int numValues = 1;
 
         public static IEnumerable<object[]> AccountExistTestsData() {
-            static object[] NewObj(string name, bool shouldExist) => new object[] { name, shouldExist };
+            static object[] NewObj(string name, AccountExistsStatus expected) => new object[] { name, expected };
 
-            yield return NewObj(DefaultValues.StaticGetValue(0, DefaultValues.TypeValue.Name), true);
-            yield return NewObj("rtoehognrkljnwigurehvbonolbneughwonko", false);
-            yield return NewObj("", false);
-            yield return NewObj("   ", false);
-            yield return NewObj(null, false);
-
-        }
-
-        [Theory]
-        [MemberData(nameof(AccountExistTestsData))]
-        public void AccountExist(string name, bool shouldExist) {
-
-            Assert.True(dataHelper.AccountExist(name) == shouldExist);
+            yield return NewObj(DefaultValues.StaticGetValue(0, DefaultValues.TypeValue.Name), AccountExistsStatus.Exist);
+            yield return NewObj("rtoehognrkljnwigurehvbonolbneughwonko", AccountExistsStatus.NotExist);
+            yield return NewObj("", AccountExistsStatus.InvalidName);
+            yield return NewObj("   ", AccountExistsStatus.InvalidName);
+            yield return NewObj(null, AccountExistsStatus.InvalidName);
 
         }
 
         [Theory]
         [MemberData(nameof(AccountExistTestsData))]
-        public async Task AccountExistsAsync(string name, bool shouldExist) {
-            Assert.True(await dataHelper.AccountExistAsync(name) == shouldExist);
+        public void AccountExist(string name, AccountExistsStatus expected) {
+
+            Assert.Equal(expected, dataHelper.AccountExist(name));
+        }
+
+        [Theory]
+        [MemberData(nameof(AccountExistTestsData))]
+        public async Task AccountExistsAsync(string name, AccountExistsStatus expected) {
+            
+            Assert.Equal(expected, await dataHelper.AccountExistAsync(name));
         }
 
         public void Dispose() {

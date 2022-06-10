@@ -3,7 +3,6 @@ using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.SQLDatabase.SQLConnHelper;
 using PswManager.Database.Models;
 using PswManager.Utils;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -21,17 +20,18 @@ namespace PswManager.Database.DataAccess.SQLDatabase {
             queriesBuilder = new QueriesBuilder(database.GetConnection());
         }
 
-        public bool AccountExist(string name) {
+        public AccountExistsStatus AccountExist(string name) {
             if(string.IsNullOrWhiteSpace(name)) {
-                return false;
+                return AccountExistsStatus.InvalidName;
             }
 
             using var heldLock = locker.GetLock(name, 10000);
             if(!heldLock.Obtained) {
-                throw new TimeoutException("The lock to check the account's existence has failed to be taken for ten seconds.");
+                return AccountExistsStatus.UsedElsewhere;
             }
 
-            return AccountExist_NoLock(name);
+            return AccountExist_NoLock(name) ? 
+                AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
         }
 
         private bool AccountExist_NoLock(string name) {
@@ -41,17 +41,18 @@ namespace PswManager.Database.DataAccess.SQLDatabase {
             return reader.Read();
         }
 
-        public async ValueTask<bool> AccountExistAsync(string name) { 
+        public async ValueTask<AccountExistsStatus> AccountExistAsync(string name) { 
             if(string.IsNullOrWhiteSpace(name)) {
-                return false;
+                return AccountExistsStatus.InvalidName;
             }
 
             using var heldLock = await locker.GetLockAsync(name, 10000);
             if(!heldLock.Obtained) {
-                throw new TimeoutException("The lock to check the account's existence has failed to be taken for ten seconds.");
+                return AccountExistsStatus.UsedElsewhere;
             }
 
-            return await AccountExistAsync_NoLock(name).ConfigureAwait(false);
+            return await AccountExistAsync_NoLock(name).ConfigureAwait(false) ? 
+                AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
         }
 
         private async ValueTask<bool> AccountExistAsync_NoLock(string name) {

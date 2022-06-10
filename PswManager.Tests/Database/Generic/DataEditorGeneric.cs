@@ -110,7 +110,7 @@ namespace PswManager.Tests.Database.Generic {
             var resultAsync = await dataEditor.UpdateAccountAsync(inexistantName, model);
 
             //assert
-            Assert.False(exist);
+            Assert.Equal(AccountExistsStatus.NotExist, exist);
             result.Is(OptionResult.Some);
             resultAsync.Is(OptionResult.Some);
 
@@ -134,8 +134,8 @@ namespace PswManager.Tests.Database.Generic {
             var resultAsync = await dataEditor.UpdateAccountAsync(currentName, newModel).ConfigureAwait(false);
 
             //assert
-            Assert.True(currExists);
-            Assert.True(newExists);
+            Assert.Equal(AccountExistsStatus.Exist, currExists);
+            Assert.Equal(AccountExistsStatus.Exist, newExists);
 
             result.Is(OptionResult.Some);
             resultAsync.Is(OptionResult.Some);

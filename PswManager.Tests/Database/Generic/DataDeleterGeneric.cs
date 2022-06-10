@@ -1,4 +1,5 @@
-﻿using PswManager.Database.DataAccess.Interfaces;
+﻿using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Utils.Options;
 using System;
 using System.Threading.Tasks;
@@ -21,16 +22,15 @@ namespace PswManager.Tests.Database.Generic {
 
             //arrange
             string name = dbHandler.GetDefaultValues().GetValue(0, DefaultValues.TypeValue.Name);
-            bool exists;
 
             //act
-            exists = dataDeleter.AccountExist(name);
+            var exists = dataDeleter.AccountExist(name);
             var result = dataDeleter.DeleteAccount(name);
 
             //assert
-            Assert.True(exists);
+            Assert.Equal(AccountExistsStatus.Exist, exists);
             result.Is(OptionResult.None);
-            Assert.False(dataDeleter.AccountExist(name));
+            Assert.Equal(AccountExistsStatus.NotExist, dataDeleter.AccountExist(name));
         
         }
 
@@ -39,16 +39,15 @@ namespace PswManager.Tests.Database.Generic {
 
             //arrange
             string name = dbHandler.GetDefaultValues().GetValue(0, DefaultValues.TypeValue.Name);
-            bool exists;
 
             //act
-            exists = await dataDeleter.AccountExistAsync(name).ConfigureAwait(false);
+            var exists = await dataDeleter.AccountExistAsync(name).ConfigureAwait(false);
             var result = await dataDeleter.DeleteAccountAsync(name).ConfigureAwait(false);
 
             //assert
-            Assert.True(exists);
+            Assert.Equal(AccountExistsStatus.Exist, exists);
             result.Is(OptionResult.None);
-            Assert.False(await dataDeleter.AccountExistAsync(name).ConfigureAwait(false));
+            Assert.Equal(AccountExistsStatus.NotExist, await dataDeleter.AccountExistAsync(name).ConfigureAwait(false));
 
         }
 
@@ -57,15 +56,14 @@ namespace PswManager.Tests.Database.Generic {
 
             //arrange
             string name = "gerobhipubihtsiyhrti";
-            bool exists;
 
             //act
-            exists = dataDeleter.AccountExist(name);
+            var exists = dataDeleter.AccountExist(name);
             var result = dataDeleter.DeleteAccount(name);
             var resultAsync = await dataDeleter.DeleteAccountAsync(name).ConfigureAwait(false);
 
             //assert
-            Assert.False(exists);
+            Assert.Equal(AccountExistsStatus.NotExist, exists);
             result.Is(OptionResult.Some);
             resultAsync.Is(OptionResult.Some);
 
