@@ -1,9 +1,7 @@
 ﻿using PswManager.Encryption.Random;
-using System;
-using System.Linq;
 using Xunit;
 
-namespace PswManager.Tests.Encryption {
+namespace PswManager.Encryption.Tests {
     public class SaltRandomTests {
 
         [Fact]

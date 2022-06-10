@@ -1,10 +1,9 @@
 ﻿using PswManager.Encryption.Cryptography;
 using PswManager.Encryption.Services;
-using System.Linq;
 using System.Reflection;
 using Xunit;
 
-namespace PswManager.Tests.Encryption {
+namespace PswManager.Encryption.Tests {
     public class CryptoServiceTests {
 
         [Fact]
@@ -37,7 +36,7 @@ namespace PswManager.Tests.Encryption {
             string password = "rithwydif£ghg\"ytirhs%";
             using var crypto = new CryptoService(new Key(password.ToCharArray()), "test.1");
             string valueToTest = "test/ng this r@ndom value!";
-            
+
             //act
             var encryptedValue = crypto.Encrypt(valueToTest);
 

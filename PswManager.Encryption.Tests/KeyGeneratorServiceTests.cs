@@ -1,12 +1,8 @@
 ﻿using PswManager.Encryption.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
 using PswManager.Extensions;
+using Xunit;
 
-namespace PswManager.Tests.Encryption {
+namespace PswManager.Encryption.Tests {
     public class KeyGeneratorServiceTests {
 
         [Fact]

@@ -1,8 +1,7 @@
 ﻿using PswManager.Encryption.Random;
 using Xunit;
-using System;
 
-namespace PswManager.Tests.Encryption {
+namespace PswManager.Encryption.Tests {
     public class IntRangeTests {
 
         [Theory]

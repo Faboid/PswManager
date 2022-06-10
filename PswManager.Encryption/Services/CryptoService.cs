@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 
-[assembly: InternalsVisibleTo("PswManager.Tests")]
+[assembly: InternalsVisibleTo("PswManager.Encryption.Tests")]
 [assembly: InternalsVisibleTo("PswManager.Core.Tests")]
 namespace PswManager.Encryption.Services {
     public class CryptoService : ICryptoService, IDisposable {
