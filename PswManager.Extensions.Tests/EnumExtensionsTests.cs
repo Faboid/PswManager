@@ -1,7 +1,6 @@
-﻿using PswManager.Utils;
-using Xunit;
+﻿using Xunit;
 
-namespace PswManager.Tests.Utils {
+namespace PswManager.Extensions.Tests {
     public class EnumExtensionsTests {
 
         [Theory]
