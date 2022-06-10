@@ -9,17 +9,9 @@ namespace PswManager.Core.Inner {
 
         private readonly IDataDeleter dataDeleter;
 
-        private readonly Result nullOrWhiteSpaceNameResult = new("The name must be assigned.");
-        private readonly Result successResult = new(true);
-
         public AccountDeleter(IDataDeleter dataDeleter) {
             this.dataDeleter = dataDeleter;
         }
-
-        //todo - consider removing name validation logic
-        //why? because it's hindering readability.
-        //the name is checked already by the repo's code,
-        //and the returning result is pretty much the same
 
         public Option<DeleterErrorCode> DeleteAccount(string name) {
 
