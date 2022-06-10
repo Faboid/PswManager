@@ -15,7 +15,7 @@ namespace PswManager.Database.Tests.Generic {
         protected static readonly int numValues = 1;
 
         public static IEnumerable<object[]> AccountExistTestsData() {
-            static object[] NewObj(string name, AccountExistsStatus expected) => new object[] { name, expected };
+            static object[] NewObj(string? name, AccountExistsStatus expected) => new object[] { name!, expected };
 
             yield return NewObj(DefaultValues.StaticGetValue(0, DefaultValues.TypeValue.Name), AccountExistsStatus.Exist);
             yield return NewObj("rtoehognrkljnwigurehvbonolbneughwonko", AccountExistsStatus.NotExist);
@@ -27,14 +27,14 @@ namespace PswManager.Database.Tests.Generic {
 
         [Theory]
         [MemberData(nameof(AccountExistTestsData))]
-        public void AccountExist(string name, AccountExistsStatus expected) {
+        public void AccountExist(string? name, AccountExistsStatus expected) {
 
             Assert.Equal(expected, dataHelper.AccountExist(name));
         }
 
         [Theory]
         [MemberData(nameof(AccountExistTestsData))]
-        public async Task AccountExistsAsync(string name, AccountExistsStatus expected) {
+        public async Task AccountExistsAsync(string? name, AccountExistsStatus expected) {
 
             Assert.Equal(expected, await dataHelper.AccountExistAsync(name));
         }

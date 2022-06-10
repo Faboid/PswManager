@@ -49,6 +49,25 @@ namespace PswManager.Database.Tests.Generic {
 
         }
 
+        [Theory]
+        [InlineData("")]
+        [InlineData("   ")]
+        [InlineData(null)]
+        public async Task DeleteFailure_InvalidName(string name) {
+
+            //act
+            var result = dataDeleter.DeleteAccount(name);
+            var resultAsync = await dataDeleter.DeleteAccountAsync(name).ConfigureAwait(false);
+
+            //assert
+            result.Is(OptionResult.Some);
+            resultAsync.Is(OptionResult.Some);
+
+            Assert.Equal(DeleterErrorCode.InvalidName, result.Or(default));
+            Assert.Equal(DeleterErrorCode.InvalidName, resultAsync.Or(default));
+
+        }
+
         [Fact]
         public async Task DeleteFailure_NonExistentName() {
 
@@ -64,6 +83,10 @@ namespace PswManager.Database.Tests.Generic {
             Assert.Equal(AccountExistsStatus.NotExist, exists);
             result.Is(OptionResult.Some);
             resultAsync.Is(OptionResult.Some);
+
+
+            Assert.Equal(DeleterErrorCode.DoesNotExist, result.Or(default));
+            Assert.Equal(DeleterErrorCode.DoesNotExist, resultAsync.Or(default));
 
         }
 

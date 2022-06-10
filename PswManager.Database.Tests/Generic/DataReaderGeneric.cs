@@ -1,7 +1,9 @@
-﻿using PswManager.Database.DataAccess.Interfaces;
+﻿using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
 using PswManager.Extensions;
 using PswManager.Utils;
+using PswManager.Utils.Options;
 using Xunit;
 
 namespace PswManager.Database.Tests.Generic {
@@ -30,7 +32,7 @@ namespace PswManager.Database.Tests.Generic {
             var actual = dataReader.GetAccount(expected.Name);
 
             //assert
-            Assert.True(actual.Match(some => true, error => false, () => false));
+            actual.Is(OptionResult.Some);
             AccountEqual(expected, actual.Or(null));
 
         }
@@ -45,8 +47,48 @@ namespace PswManager.Database.Tests.Generic {
             var actual = await dataReader.GetAccountAsync(expected.Name);
 
             //assert
-            Assert.True(actual.Match(some => true, error => false, () => false));
+            actual.Is(OptionResult.Some);
             AccountEqual(expected, actual.Or(null));
+
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData("   ")]
+        [InlineData(null)]
+        public async Task GetFailure_InvalidName(string name) {
+
+            //act
+            var result = dataReader.GetAccount(name);
+            var resultAsync = await dataReader.GetAccountAsync(name).ConfigureAwait(false);
+
+            //assert
+            result.Is(OptionResult.Error);
+            resultAsync.Is(OptionResult.Error);
+
+            Assert.Equal(ReaderErrorCode.InvalidName, GetError(result));
+            Assert.Equal(ReaderErrorCode.InvalidName, GetError(resultAsync));
+
+        }
+
+        [Fact]
+        public async Task GetFailure_NonExistentName() {
+
+            //arrange
+            string name = "gerobhipubihtsiyhrti";
+
+            //act
+            var exists = dataReader.AccountExist(name);
+            var result = dataReader.GetAccount(name);
+            var resultAsync = await dataReader.GetAccountAsync(name).ConfigureAwait(false);
+
+            //assert
+            Assert.Equal(AccountExistsStatus.NotExist, exists);
+            result.Is(OptionResult.Error);
+            resultAsync.Is(OptionResult.Error);
+
+            Assert.Equal(ReaderErrorCode.DoesNotExist, GetError(result));
+            Assert.Equal(ReaderErrorCode.DoesNotExist, GetError(resultAsync));
 
         }
 
@@ -157,6 +199,9 @@ namespace PswManager.Database.Tests.Generic {
         }
 
         private static bool MatchToBool<TValue, TError>(Option<TValue, TError> option) => option.Match(some => true, error => false, () => false);
+
+        private static ReaderErrorCode GetError(Option<AccountModel, ReaderErrorCode> option) 
+            => option.Match(some => throw new Exception("Option should not be Some."), error => error, () => throw new Exception("Option should not be None."));
 
         private static void AccountEqual(AccountModel expected, AccountModel actual) {
             Assert.Equal(expected.Name, actual.Name);

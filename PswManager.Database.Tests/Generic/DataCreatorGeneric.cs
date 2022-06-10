@@ -67,6 +67,10 @@ namespace PswManager.Database.Tests.Generic {
             Assert.False(OptionToSuccess(result));
             Assert.False(OptionToSuccess(resultAsync));
 
+
+            Assert.Equal(CreatorErrorCode.AccountExistsAlready, result.Or(default));
+            Assert.Equal(CreatorErrorCode.AccountExistsAlready, resultAsync.Or(default));
+
         }
 
         [Theory]
@@ -85,6 +89,10 @@ namespace PswManager.Database.Tests.Generic {
             //assert
             Assert.False(OptionToSuccess(result));
             Assert.False(OptionToSuccess(resultAsync));
+
+
+            Assert.Equal(CreatorErrorCode.InvalidName, result.Or(default));
+            Assert.Equal(CreatorErrorCode.InvalidName, resultAsync.Or(default));
 
         }
 
@@ -105,6 +113,9 @@ namespace PswManager.Database.Tests.Generic {
             Assert.False(OptionToSuccess(result));
             Assert.False(OptionToSuccess(resultAsync));
 
+            Assert.Equal(CreatorErrorCode.MissingPassword, result.Or(default));
+            Assert.Equal(CreatorErrorCode.MissingPassword, resultAsync.Or(default));
+
         }
 
         [Theory]
@@ -123,6 +134,10 @@ namespace PswManager.Database.Tests.Generic {
             //assert
             Assert.False(OptionToSuccess(result));
             Assert.False(OptionToSuccess(resultAsync));
+
+
+            Assert.Equal(CreatorErrorCode.MissingEmail, result.Or(default));
+            Assert.Equal(CreatorErrorCode.MissingEmail, resultAsync.Or(default));
 
         }
 
