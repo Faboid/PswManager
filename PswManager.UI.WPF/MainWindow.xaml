@@ -111,9 +111,6 @@
                 <DataTemplate DataType="{x:Type vms:SettingsViewModel}">
                     <views:SettingsView/>
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vms:AccountsListingViewModel}">
-                    <views:AccountsListingView/>
-                </DataTemplate>
                 <DataTemplate DataType="{x:Type vms:LoginViewModel}">
                     <views:LoginView/>
                 </DataTemplate>
