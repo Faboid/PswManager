@@ -1,6 +1,6 @@
 ﻿using Moq;
-using PswManager.Core.Cryptography;
 using PswManager.Core.Inner;
+using PswManager.Core.Services;
 using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
 using PswManager.Database.DataAccess.ErrorCodes;
@@ -12,11 +12,11 @@ using PswManager.Utils;
 using PswManager.Utils.Options;
 using Xunit;
 
-namespace PswManager.Core.Tests.Inner; 
+namespace PswManager.Core.Tests.Inner;
 public class AccountEditorTests {
 
     public AccountEditorTests() {
-        cryptoAccount = new CryptoAccount(ICryptoServiceMocks.GetReverseCryptor().Object, ICryptoServiceMocks.GetSummingCryptor().Object);
+        cryptoAccount = new CryptoAccountService(ICryptoServiceMocks.GetReverseCryptor().Object, ICryptoServiceMocks.GetSummingCryptor().Object);
 
         dataEditorMock = new Mock<IDataEditor>();
         dataEditorMock
@@ -29,7 +29,7 @@ public class AccountEditorTests {
     }
 
     readonly Mock<IDataEditor> dataEditorMock;
-    readonly ICryptoAccount cryptoAccount;
+    readonly ICryptoAccountService cryptoAccount;
 
     [Theory]
     [InlineData("accName", "noEncrypt", "password", "email")]

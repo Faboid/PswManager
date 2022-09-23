@@ -1,6 +1,6 @@
 ﻿using Moq;
-using PswManager.Core.Cryptography;
 using PswManager.Core.Inner;
+using PswManager.Core.Services;
 using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
 using PswManager.Database.DataAccess.Interfaces;
@@ -9,11 +9,11 @@ using PswManager.TestUtils;
 using PswManager.Utils.Options;
 using Xunit;
 
-namespace PswManager.Core.Tests.Inner; 
+namespace PswManager.Core.Tests.Inner;
 public class AccountCreatorTests {
 
     public AccountCreatorTests() {
-        cryptoAccount = new CryptoAccount(ICryptoServiceMocks.GetReverseCryptor().Object, ICryptoServiceMocks.GetSummingCryptor().Object);
+        cryptoAccount = new CryptoAccountService(ICryptoServiceMocks.GetReverseCryptor().Object, ICryptoServiceMocks.GetSummingCryptor().Object);
 
         dataCreatorMock = new Mock<IDataCreator>();
         dataCreatorMock
@@ -29,7 +29,7 @@ public class AccountCreatorTests {
     readonly Mock<IDataCreator> dataCreatorMock;
 
     //a single version to produce consistent results
-    readonly ICryptoAccount cryptoAccount;
+    readonly ICryptoAccountService cryptoAccount;
 
     [Theory]
     [InlineData("nameHere", "passPass", "emaema")]

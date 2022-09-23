@@ -1,4 +1,4 @@
-﻿namespace PswManager.Core; 
+﻿namespace PswManager.Core;
 public interface IUserInput {
 
     bool YesOrNo(string question);

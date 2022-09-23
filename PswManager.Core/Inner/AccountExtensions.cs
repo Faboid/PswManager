@@ -1,6 +1,6 @@
 ﻿using PswManager.Database.Models;
 
-namespace PswManager.Core.Inner; 
+namespace PswManager.Core.Inner;
 internal static class AccountExtensions {
 
     public static ValidationResult IsAnyValueNullOrEmpty(this AccountModel account) {

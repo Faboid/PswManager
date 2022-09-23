@@ -1,6 +1,6 @@
-﻿using PswManager.Core.Cryptography;
-using PswManager.Core.Inner;
+﻿using PswManager.Core.Inner;
 using PswManager.Core.Inner.Interfaces;
+using PswManager.Core.Services;
 using PswManager.Database;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
@@ -8,10 +8,10 @@ using PswManager.Utils;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PswManager.Core; 
+namespace PswManager.Core;
 public class AccountsManager : IAccountDeleter, IAccountEditor, IAccountReader, IAccountCreator {
 
-    public AccountsManager(IDataFactory dbFactory, ICryptoAccount cryptoAccount) {
+    public AccountsManager(IDataFactory dbFactory, ICryptoAccountService cryptoAccount) {
         accountCreator = new AccountCreator(dbFactory.GetDataCreator(), cryptoAccount);
         accountReader = new AccountReader(dbFactory.GetDataReader(), cryptoAccount);
         accountEditor = new AccountEditor(dbFactory.GetDataEditor(), cryptoAccount);
@@ -19,7 +19,7 @@ public class AccountsManager : IAccountDeleter, IAccountEditor, IAccountReader, 
     }
 
     //todo - consider whether to use an additional enum
-    public AccountsManager(DatabaseType dbType, ICryptoAccount cryptoAccount) {
+    public AccountsManager(DatabaseType dbType, ICryptoAccountService cryptoAccount) {
         var dataFactory = new DataFactory(dbType);
         accountCreator = new AccountCreator(dataFactory.GetDataCreator(), cryptoAccount);
         accountReader = new AccountReader(dataFactory.GetDataReader(), cryptoAccount);

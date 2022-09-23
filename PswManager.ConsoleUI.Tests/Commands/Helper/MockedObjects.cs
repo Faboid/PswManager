@@ -1,10 +1,10 @@
 ﻿using PswManager.Encryption.Services;
-using PswManager.Core.Cryptography;
 using Moq;
 using PswManager.Core;
 using PswManager.Database.Models;
+using PswManager.Core.Services;
 
-namespace PswManager.ConsoleUI.Tests.Commands.Helper; 
+namespace PswManager.ConsoleUI.Tests.Commands.Helper;
 internal static class MockedObjects {
 
     /// <summary>
@@ -23,10 +23,10 @@ internal static class MockedObjects {
     /// Gets an ICryptoAccount that doesn't encrypt—it will return the same values that are given to it.
     /// </summary>
     /// <returns></returns>
-    public static ICryptoAccount GetEmptyCryptoAccount() {
+    public static ICryptoAccountService GetEmptyCryptoAccount() {
         var cryptoString = GetEmptyCryptoString();
 
-        var cryptoAccount = new Mock<ICryptoAccount>();
+        var cryptoAccount = new Mock<ICryptoAccountService>();
         cryptoAccount.Setup(x => x.GetPassCryptoService()).Returns(cryptoString);
         cryptoAccount.Setup(x => x.GetEmaCryptoService()).Returns(cryptoString);
         cryptoAccount.Setup(x => x.Encrypt(It.IsAny<(string, string)>())).Returns<(string, string)>(x => x);

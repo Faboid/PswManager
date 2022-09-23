@@ -1,7 +1,7 @@
 ﻿using Moq;
-using PswManager.Core.Cryptography;
 using PswManager.Core.Inner;
 using PswManager.Core.Inner.Interfaces;
+using PswManager.Core.Services;
 using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
 using PswManager.Database.DataAccess.ErrorCodes;
@@ -11,11 +11,11 @@ using PswManager.Extensions;
 using PswManager.Utils;
 using Xunit;
 
-namespace PswManager.Core.Tests.Inner; 
+namespace PswManager.Core.Tests.Inner;
 public class AccountReaderTests {
 
     public AccountReaderTests() {
-        cryptoAccount = new CryptoAccount(ICryptoServiceMocks.GetReverseCryptor().Object, ICryptoServiceMocks.GetSummingCryptor().Object);
+        cryptoAccount = new CryptoAccountService(ICryptoServiceMocks.GetReverseCryptor().Object, ICryptoServiceMocks.GetSummingCryptor().Object);
 
         dataReaderMock = new();
 
@@ -41,7 +41,7 @@ public class AccountReaderTests {
     }
 
     readonly Mock<IDataReader> dataReaderMock;
-    readonly ICryptoAccount cryptoAccount;
+    readonly ICryptoAccountService cryptoAccount;
     readonly IAccountReader reader;
 
     [Theory]

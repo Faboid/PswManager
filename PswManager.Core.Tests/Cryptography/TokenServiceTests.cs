@@ -2,83 +2,56 @@
 using PswManager.Utils;
 using Xunit;
 using PswManager.Encryption.Services;
-using PswManager.Core.Cryptography;
+using PswManager.Core.Services;
+using System.IO.Abstractions;
+using System.IO.Abstractions.TestingHelpers;
 
 namespace PswManager.Core.Tests.Cryptography; 
-public class TokenServiceTests : IDisposable {
+public class TokenServiceTests {
 
     public TokenServiceTests() {
-        CryptoService crypto = GetService(GetPassword);
-        _token = new TokenService(crypto, GetPath);
-        _token.VerifyToken();
+        var fileSystem = new MockFileSystem();
+        _fileInfoFactory = new MockFileInfoFactory(fileSystem);
+        fileSystem.Directory.CreateDirectory(PathsBuilder.GetDataDirectory);
+        _fileInfo = _fileInfoFactory.FromFileName(GetPath);
+        _sut = new TokenService(_fileInfo, _token);
     }
 
-    static CryptoService GetService(Key password) => new(password, "test.1");
+    static ICryptoService CreateCryptoService(Key password) => new CryptoService(password, "test.1");
     static Key GetPassword => new("password".ToCharArray());
     static string GetPath => Path.Combine(PathsBuilder.GetDataDirectory, "GenericTokenTestsPath.txt");
 
-    readonly TokenService _token;
+    private readonly string _token = "SomeToken";
+    private readonly IFileInfoFactory _fileInfoFactory;
+    private readonly IFileInfo _fileInfo;
+    private readonly ICryptoService _cryptoService = CreateCryptoService(GetPassword);
+    private readonly ITokenService _sut;
 
     [Fact]
-    public void SetUpCorrectly() {
+    public void IsSet_FalseBefore_TrueAfter() {
 
-        //arrange
-        string path = Path.Combine(PathsBuilder.GetDataDirectory, "SetUpCorrectlyToken.txt");
-        var token = new TokenService(GetService(GetPassword), path);
+        var before = _sut.IsSet();
+        _sut.SetToken(_cryptoService);
+        var after = _sut.IsSet();
 
-        try {
-
-            bool beforeExists = File.Exists(path);
-            bool beforeIsSetUp = token.IsTokenSetUp();
-            bool success = token.VerifyToken();
-            bool afterIsSetUp = token.IsTokenSetUp();
-            bool afterExists = File.Exists(path);
-
-            Assert.False(beforeExists);
-            Assert.False(beforeIsSetUp);
-            Assert.True(success);
-            Assert.True(afterIsSetUp);
-            Assert.True(afterExists);
-
-        } finally {
-            File.Delete(path);
-        }
-    }
-
-    [Fact]
-    public void RecognizeWrongPassword() {
-
-        //arrange
-        var wrongKey = new Key("wrongPass".ToCharArray());
-        var token = new TokenService(GetService(wrongKey), GetPath);
-
-        //act
-        var exists = token.IsTokenSetUp();
-        var result = token.VerifyToken();
-
-        //assert
-        Assert.True(exists);
-        Assert.False(result);
+        Assert.False(before);
+        Assert.True(after);
 
     }
 
     [Fact]
-    public void RecognizeCorrectPassword() {
+    public void SetsTokenAndVerify() {
 
-        //arrange
-        var token = new TokenService(GetService(GetPassword), GetPath);
+        var beforeSettingResult = _sut.VerifyToken(_cryptoService);
+        var newCrypto = CreateCryptoService(new("SomePassword".ToCharArray()));
+        _sut.SetToken(newCrypto);
+        var wrongResult = _sut.VerifyToken(_cryptoService);
+        var correctResult = _sut.VerifyToken(newCrypto);
 
-        //act
-        var result = token.VerifyToken();
-
-        //assert
-        Assert.True(result);
+        Assert.Equal(ITokenService.TokenResult.Missing, beforeSettingResult);
+        Assert.Equal(ITokenService.TokenResult.Failure, wrongResult);
+        Assert.Equal(ITokenService.TokenResult.Success, correctResult);
 
     }
-
-
-    public void Dispose() {
-        File.Delete(TokenService.GetDefaultPath());
-        GC.SuppressFinalize(this);
-    }
+    
 }

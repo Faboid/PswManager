@@ -1,10 +1,10 @@
-﻿using PswManager.Core.Cryptography;
+﻿using PswManager.Core.Services;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
 using PswManager.Extensions;
 using PswManager.Utils;
 
-namespace PswManager.Core.Tests.Mocks; 
+namespace PswManager.Core.Tests.Mocks;
 internal class OptionMocks {
 
     public static Option<CreatorErrorCode> ValidateValues(AccountModel model) {
@@ -16,11 +16,11 @@ internal class OptionMocks {
         return Option.None<CreatorErrorCode>();
     }
 
-    public static Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GenerateInfiniteEncryptedAccountList(ICryptoAccount cryptoAccount) {
+    public static Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GenerateInfiniteEncryptedAccountList(ICryptoAccountService cryptoAccount) {
         return new(AccountModelMocks.GenerateManyEncrypted(cryptoAccount).Select<AccountModel, NamedAccountOption>(x => x));
     }
 
-    public static Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode> GenerateInfiniteEncryptedAccountListAsync(ICryptoAccount cryptoAccount) {
+    public static Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode> GenerateInfiniteEncryptedAccountListAsync(ICryptoAccountService cryptoAccount) {
         return new(AccountModelMocks.GenerateManyEncryptedAsync(cryptoAccount).Select<AccountModel, NamedAccountOption>(x => x));
     }
 
