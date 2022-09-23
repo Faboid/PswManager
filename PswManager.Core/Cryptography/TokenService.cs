@@ -7,23 +7,23 @@ using System.Security.Cryptography;
 
 [assembly:InternalsVisibleTo("PswManager.Core.Tests")]
 namespace PswManager.Core.Cryptography; 
-internal class Token {
+internal class TokenService {
 
     private readonly ICryptoService cryptoService;
     private readonly string tokenPath;
     private const string plainText = "This is the correct password.";
 
-    public Token(char[] password) : this(new Key(password)) { }
+    public TokenService(char[] password) : this(new Key(password)) { }
 
-    public Token(char[] password, string customPath) : this(new Key(password), customPath) { }
+    public TokenService(char[] password, string customPath) : this(new Key(password), customPath) { }
 
-    public Token(Key key) : this(key, GetDefaultPath()) { }
+    public TokenService(Key key) : this(key, GetDefaultPath()) { }
 
-    public Token(Key key, string customPath) : this(new CryptoService(key), customPath) { }
+    public TokenService(Key key, string customPath) : this(new CryptoService(key), customPath) { }
 
-    internal Token(ICryptoService cryptoService) : this(cryptoService, GetDefaultPath()) { }
+    internal TokenService(ICryptoService cryptoService) : this(cryptoService, GetDefaultPath()) { }
 
-    internal Token(ICryptoService cryptoService, string customPath) {
+    internal TokenService(ICryptoService cryptoService, string customPath) {
         tokenPath = customPath;
         this.cryptoService = cryptoService;
     }

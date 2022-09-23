@@ -5,11 +5,11 @@ using PswManager.Encryption.Services;
 using PswManager.Core.Cryptography;
 
 namespace PswManager.Core.Tests.Cryptography; 
-public class TokenTests : IDisposable {
+public class TokenServiceTests : IDisposable {
 
-    public TokenTests() {
+    public TokenServiceTests() {
         CryptoService crypto = GetService(GetPassword);
-        _token = new Token(crypto, GetPath);
+        _token = new TokenService(crypto, GetPath);
         _token.VerifyToken();
     }
 
@@ -17,14 +17,14 @@ public class TokenTests : IDisposable {
     static Key GetPassword => new("password".ToCharArray());
     static string GetPath => Path.Combine(PathsBuilder.GetDataDirectory, "GenericTokenTestsPath.txt");
 
-    readonly Token _token;
+    readonly TokenService _token;
 
     [Fact]
     public void SetUpCorrectly() {
 
         //arrange
         string path = Path.Combine(PathsBuilder.GetDataDirectory, "SetUpCorrectlyToken.txt");
-        var token = new Token(GetService(GetPassword), path);
+        var token = new TokenService(GetService(GetPassword), path);
 
         try {
 
@@ -50,7 +50,7 @@ public class TokenTests : IDisposable {
 
         //arrange
         var wrongKey = new Key("wrongPass".ToCharArray());
-        var token = new Token(GetService(wrongKey), GetPath);
+        var token = new TokenService(GetService(wrongKey), GetPath);
 
         //act
         var exists = token.IsTokenSetUp();
@@ -66,7 +66,7 @@ public class TokenTests : IDisposable {
     public void RecognizeCorrectPassword() {
 
         //arrange
-        var token = new Token(GetService(GetPassword), GetPath);
+        var token = new TokenService(GetService(GetPassword), GetPath);
 
         //act
         var result = token.VerifyToken();
@@ -78,7 +78,7 @@ public class TokenTests : IDisposable {
 
 
     public void Dispose() {
-        File.Delete(Token.GetDefaultPath());
+        File.Delete(TokenService.GetDefaultPath());
         GC.SuppressFinalize(this);
     }
 }

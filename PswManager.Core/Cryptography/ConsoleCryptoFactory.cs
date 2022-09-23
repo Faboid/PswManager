@@ -7,10 +7,10 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace PswManager.Core.Cryptography; 
-public class CryptoFactory {
+public class ConsoleCryptoFactory {
     //todo - split/organize this class
     //todo - properly test this class
-    public CryptoFactory(IUserInput userInput) {
+    public ConsoleCryptoFactory(IUserInput userInput) {
         this.userInput = userInput;
     }
 
@@ -38,7 +38,7 @@ public class CryptoFactory {
     }
 
     private Task<ICryptoAccount> RequestPasswords() =>
-        Token.IsTokenSetUp(Token.GetDefaultPath()) switch {
+        TokenService.IsTokenSetUp(TokenService.GetDefaultPath()) switch {
             true => LogIn(),
             false => SignUp()
         };
@@ -49,7 +49,7 @@ public class CryptoFactory {
         userInput.SendMessage("Please insert the master key.");
         userInput.SendMessage("Suggestion: use an easy-to-remember, long password like a passphrase.");
 
-        Token token;
+        TokenService token;
         KeyGeneratorService generator = null;
         do {
             //if the generator was assigned in a previous loop,
@@ -69,7 +69,7 @@ public class CryptoFactory {
             userInput.SendMessage("The given password is valid.");
             userInput.SendMessage("Creating a token to validate the password in the future...");
 
-            token = new Token(await generator.GenerateKeyAsync().ConfigureAwait(false));
+            token = new TokenService(await generator.GenerateKeyAsync().ConfigureAwait(false));
 
         } while(!token.VerifyToken());
 
@@ -88,7 +88,7 @@ public class CryptoFactory {
             generator = new KeyGeneratorService(password);
 
             userInput.SendMessage("Verifying password...");
-            var token = new Token(await generator.GenerateKeyAsync().ConfigureAwait(false));
+            var token = new TokenService(await generator.GenerateKeyAsync().ConfigureAwait(false));
             
             //if the password is correct, exit
             if(token.VerifyToken()) {
