@@ -1,118 +1,117 @@
-﻿namespace PswManager.Async.Locks {
-    public class Locker : IDisposable {
+﻿namespace PswManager.Async.Locks; 
+public class Locker : IDisposable {
 
-        public Locker() : this(1) { }
+    public Locker() : this(1) { }
 
-        public Locker(int concurrentEntry) {
-            semaphore = new(concurrentEntry, concurrentEntry);
+    public Locker(int concurrentEntry) {
+        semaphore = new(concurrentEntry, concurrentEntry);
+    }
+
+    private readonly SemaphoreSlim semaphore;
+    private bool isDisposed = false;
+
+    private void ThrowIfDisposed() {
+        if(isDisposed) {
+            throw new ObjectDisposedException(nameof(Locker));
+        }
+    }
+
+    public Lock GetLock() {
+        semaphore.Wait();
+        ThrowIfDisposed();
+        return new(true, this);
+    }
+
+    public Lock GetLock(int millisecondsTimeout) {
+        bool result = semaphore.Wait(millisecondsTimeout);
+        
+        ThrowIfDisposed();
+        return new(result, this);
+    }
+
+    public Lock GetLock(int millisecondsTimeout, CancellationToken cancellationToken) {
+        bool result = semaphore.Wait(millisecondsTimeout, cancellationToken);
+
+        ThrowIfDisposed();
+        return new(result, this);
+    }
+
+    public async Task<Lock> GetLockAsync() {
+        await semaphore.WaitAsync().ConfigureAwait(false);
+        ThrowIfDisposed();
+        return new(true, this);
+    }
+
+    public async Task<Lock> GetLockAsync(int millisecondsTimeout) {
+        bool result = await semaphore.WaitAsync(millisecondsTimeout).ConfigureAwait(false);
+        ThrowIfDisposed();
+        return new(result, this);
+    }
+
+    public async Task<Lock> GetLockAsync(CancellationToken cancellationToken) {
+        await semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+        ThrowIfDisposed();
+        return new(true, this);
+    }
+
+    public async Task<Lock> GetLockAsync(int millisecondsTimeout, CancellationToken cancellationToken) {
+        bool result = await semaphore.WaitAsync(millisecondsTimeout, cancellationToken).ConfigureAwait(false);
+        ThrowIfDisposed();
+        return new(result, this);
+    }
+
+    private void Unlock() {
+
+        //even if it's disposed, Unlock() should be a valid call
+        if(isDisposed) {
+            return;
         }
 
-        private readonly SemaphoreSlim semaphore;
-        private bool isDisposed = false;
+        semaphore.Release();
+    }
 
-        private void ThrowIfDisposed() {
-            if(isDisposed) {
-                throw new ObjectDisposedException(nameof(Locker));
-            }
+    private void ReleaseAll() {
+        while(semaphore.CurrentCount < 1) {
+            semaphore.Release();
         }
+    }
 
-        public Lock GetLock() {
-            semaphore.Wait();
-            ThrowIfDisposed();
-            return new(true, this);
-        }
-
-        public Lock GetLock(int millisecondsTimeout) {
-            bool result = semaphore.Wait(millisecondsTimeout);
-            
-            ThrowIfDisposed();
-            return new(result, this);
-        }
-
-        public Lock GetLock(int millisecondsTimeout, CancellationToken cancellationToken) {
-            bool result = semaphore.Wait(millisecondsTimeout, cancellationToken);
-
-            ThrowIfDisposed();
-            return new(result, this);
-        }
-
-        public async Task<Lock> GetLockAsync() {
-            await semaphore.WaitAsync().ConfigureAwait(false);
-            ThrowIfDisposed();
-            return new(true, this);
-        }
-
-        public async Task<Lock> GetLockAsync(int millisecondsTimeout) {
-            bool result = await semaphore.WaitAsync(millisecondsTimeout).ConfigureAwait(false);
-            ThrowIfDisposed();
-            return new(result, this);
-        }
-
-        public async Task<Lock> GetLockAsync(CancellationToken cancellationToken) {
-            await semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
-            ThrowIfDisposed();
-            return new(true, this);
-        }
-
-        public async Task<Lock> GetLockAsync(int millisecondsTimeout, CancellationToken cancellationToken) {
-            bool result = await semaphore.WaitAsync(millisecondsTimeout, cancellationToken).ConfigureAwait(false);
-            ThrowIfDisposed();
-            return new(result, this);
-        }
-
-        private void Unlock() {
-
-            //even if it's disposed, Unlock() should be a valid call
+    public void Dispose() {
+        lock(semaphore) {
             if(isDisposed) {
                 return;
             }
 
-            semaphore.Release();
+            isDisposed = true;
+            ReleaseAll();
+            semaphore.Dispose();
+            GC.SuppressFinalize(this);
         }
+    }
 
-        private void ReleaseAll() {
-            while(semaphore.CurrentCount < 1) {
-                semaphore.Release();
-            }
+    public struct Lock : IDisposable {
+
+        private readonly Locker locker;
+        private bool isDisposed = false;
+
+        public readonly bool Obtained { get; init; }
+
+        internal Lock(bool obtained, Locker locker) {
+            this.locker = locker;
+            Obtained = obtained;
         }
 
         public void Dispose() {
-            lock(semaphore) {
-                if(isDisposed) {
-                    return;
-                }
+            if(isDisposed) {
+                throw new ObjectDisposedException(nameof(Lock));
+            }
 
-                isDisposed = true;
-                ReleaseAll();
-                semaphore.Dispose();
-                GC.SuppressFinalize(this);
+            isDisposed = true;
+            if(Obtained) {
+                locker.Unlock();
             }
         }
-
-        public struct Lock : IDisposable {
-
-            private readonly Locker locker;
-            private bool isDisposed = false;
-
-            public readonly bool Obtained { get; init; }
-
-            internal Lock(bool obtained, Locker locker) {
-                this.locker = locker;
-                Obtained = obtained;
-            }
-
-            public void Dispose() {
-                if(isDisposed) {
-                    throw new ObjectDisposedException(nameof(Lock));
-                }
-
-                isDisposed = true;
-                if(Obtained) {
-                    locker.Unlock();
-                }
-            }
-        }
-
     }
 
 }
+

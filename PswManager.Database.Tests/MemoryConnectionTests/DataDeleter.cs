@@ -1,11 +1,9 @@
 ﻿using PswManager.Database.Tests.Generic;
 using PswManager.Database.Tests.MemoryConnectionTests.Helpers;
 
-namespace PswManager.Database.Tests.MemoryConnectionTests {
+namespace PswManager.Database.Tests.MemoryConnectionTests; 
+public class DataDeleter : DataDeleterGeneric {
 
-    public class DataDeleter : DataDeleterGeneric {
+    public DataDeleter() : base(new MemoryDBHandler(numValues)) { }
 
-        public DataDeleter() : base(new MemoryDBHandler(numValues)) { }
-
-    }
 }

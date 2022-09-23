@@ -8,77 +8,76 @@ using PswManager.Utils;
 using PswManager.Utils.Options;
 using Xunit;
 
-namespace PswManager.Core.Tests.Inner {
-    public class AccountDeleterTests {
+namespace PswManager.Core.Tests.Inner; 
+public class AccountDeleterTests {
 
-        public AccountDeleterTests() {
+    public AccountDeleterTests() {
 
-            dataDeleterMock = new();
+        dataDeleterMock = new();
 
-            dataDeleterMock
-                .Setup(x => x.DeleteAccount(It.IsAny<string>()))
-                .Returns<string>(x => string.IsNullOrWhiteSpace(x)? DeleterErrorCode.InvalidName : Option.None<DeleterErrorCode>());
+        dataDeleterMock
+            .Setup(x => x.DeleteAccount(It.IsAny<string>()))
+            .Returns<string>(x => string.IsNullOrWhiteSpace(x)? DeleterErrorCode.InvalidName : Option.None<DeleterErrorCode>());
 
-            dataDeleterMock
-                .Setup(x => x.DeleteAccountAsync(It.IsAny<string>()))
-                .Returns<string>(x => (string.IsNullOrWhiteSpace(x)? DeleterErrorCode.InvalidName : Option.None<DeleterErrorCode>()).AsValueTask());
-        }
+        dataDeleterMock
+            .Setup(x => x.DeleteAccountAsync(It.IsAny<string>()))
+            .Returns<string>(x => (string.IsNullOrWhiteSpace(x)? DeleterErrorCode.InvalidName : Option.None<DeleterErrorCode>()).AsValueTask());
+    }
 
-        readonly Mock<IDataDeleter> dataDeleterMock;
+    readonly Mock<IDataDeleter> dataDeleterMock;
 
-        [Theory]
-        [InlineData("someName")]
-        public void DeleteAccountCallsDBCorrectly(string name) {
+    [Theory]
+    [InlineData("someName")]
+    public void DeleteAccountCallsDBCorrectly(string name) {
 
-            //arrange
-            AccountDeleter deleter = new(dataDeleterMock.Object);
+        //arrange
+        AccountDeleter deleter = new(dataDeleterMock.Object);
 
-            //act
-            var result = deleter.DeleteAccount(name);
+        //act
+        var result = deleter.DeleteAccount(name);
 
-            //assert
-            result.Is(OptionResult.None);
-            dataDeleterMock.Verify(x => x.DeleteAccount(It.Is<string>(x => x == name)));
-            dataDeleterMock.VerifyNoOtherCalls();
-
-        }
-
-        [Theory]
-        [InlineData("someName")]
-        public async Task DeleteAccountAsyncCallsDBCorrectly(string name) {
-
-            //arrange
-            AccountDeleter deleter = new(dataDeleterMock.Object);
-
-            //act
-            var result = await deleter.DeleteAccountAsync(name);
-
-            //assert
-            result.Is(OptionResult.None);
-            dataDeleterMock.Verify(x => x.DeleteAccountAsync(It.Is<string>(x => x == name)));
-            dataDeleterMock.VerifyNoOtherCalls();
-
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("    ")]
-        public async Task NoCallsIfInvalidName(string name) {
-
-            //arrange
-            AccountDeleter creator = new(dataDeleterMock.Object);
-
-            //act
-            var result = creator.DeleteAccount(name);
-            var resultAsync = await creator.DeleteAccountAsync(name);
-
-            //assert
-            result.Is(OptionResult.Some);
-            resultAsync.Is(OptionResult.Some);
-            dataDeleterMock.VerifyNoOtherCalls();
-
-        }
+        //assert
+        result.Is(OptionResult.None);
+        dataDeleterMock.Verify(x => x.DeleteAccount(It.Is<string>(x => x == name)));
+        dataDeleterMock.VerifyNoOtherCalls();
 
     }
+
+    [Theory]
+    [InlineData("someName")]
+    public async Task DeleteAccountAsyncCallsDBCorrectly(string name) {
+
+        //arrange
+        AccountDeleter deleter = new(dataDeleterMock.Object);
+
+        //act
+        var result = await deleter.DeleteAccountAsync(name);
+
+        //assert
+        result.Is(OptionResult.None);
+        dataDeleterMock.Verify(x => x.DeleteAccountAsync(It.Is<string>(x => x == name)));
+        dataDeleterMock.VerifyNoOtherCalls();
+
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("    ")]
+    public async Task NoCallsIfInvalidName(string name) {
+
+        //arrange
+        AccountDeleter creator = new(dataDeleterMock.Object);
+
+        //act
+        var result = creator.DeleteAccount(name);
+        var resultAsync = await creator.DeleteAccountAsync(name);
+
+        //assert
+        result.Is(OptionResult.Some);
+        resultAsync.Is(OptionResult.Some);
+        dataDeleterMock.VerifyNoOtherCalls();
+
+    }
+
 }

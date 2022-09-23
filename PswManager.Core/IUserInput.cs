@@ -1,14 +1,13 @@
-﻿namespace PswManager.Core {
-    public interface IUserInput {
+﻿namespace PswManager.Core; 
+public interface IUserInput {
 
-        bool YesOrNo(string question);
+    bool YesOrNo(string question);
 
-        void SendMessage(string message);
+    void SendMessage(string message);
 
-        string RequestAnswer(string message);
+    string RequestAnswer(string message);
 
-        string RequestAnswer();
+    string RequestAnswer();
 
-        char[] RequestPassword();
-    }
+    char[] RequestPassword();
 }
