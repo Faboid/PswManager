@@ -99,7 +99,27 @@
             >
 
             <DockPanel.Resources>
-                
+                <DataTemplate DataType="{x:Type vms:AccountsListingViewModel}">
+                    <views:AccountsListingView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vms:CreateAccountViewModel}">
+                    <views:CreateAccountView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vms:EditAccountViewModel}">
+                    <views:EditAccountView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vms:SettingsViewModel}">
+                    <views:SettingsView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vms:AccountsListingViewModel}">
+                    <views:AccountsListingView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vms:LoginViewModel}">
+                    <views:LoginView/>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type vms:FirstTimeLoginViewModel}">
+                    <views:FirstTimeLoginView/>
+                </DataTemplate>
             </DockPanel.Resources>
 
             <ContentControl 
