@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using PswManager.UI.WPF.HostBuilders;
+using PswManager.UI.WPF.Services;
 using Serilog;
 using System.Windows;
 
@@ -19,13 +22,18 @@ public partial class App : Application {
 					.WriteTo.File("Log.txt", rollingInterval: RollingInterval.Hour); //todo - put a centralized path
 
 			})
-			.ConfigureServices(services => {
-
-			}).Build();
+			.AddUIComponents()
+			.AddStores()
+			.AddMainWindow()
+			.Build();
 	}
 
 	protected override void OnStartup(StartupEventArgs e) {
 		_host.Start();
+
+		MainWindow = _host.Services.GetRequiredService<MainWindow>();
+		MainWindow.Show();
+
 		base.OnStartup(e);
 	}
 }
