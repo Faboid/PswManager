@@ -24,7 +24,7 @@ public class AccountModelFactoryTests {
 
 		var encryptedModel = _sut.CreateEncryptedAccount(encryptedValues.Name, encryptedValues.Password, encryptedValues.Email);
 
-		Assert.True(encryptedModel.IsEncypted);
+		Assert.True(encryptedModel.IsEncrypted);
 		Assert.False(encryptedModel.IsPlainText);
 		Assert.Equal(encryptedValues.Name, encryptedModel.Name);
 		Assert.Equal(encryptedValues.Password, encryptedModel.Password);
@@ -39,7 +39,7 @@ public class AccountModelFactoryTests {
 		var values = GetDefault();
 		var model = _sut.CreateDecryptedAccount(values.Name, values.Password, values.Email);
 
-        Assert.False(model.IsEncypted);
+        Assert.False(model.IsEncrypted);
         Assert.True(model.IsPlainText);
         Assert.Equal(values.Name, model.Name);
         Assert.Equal(values.Password, model.Password);
