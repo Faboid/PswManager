@@ -1,9 +1,9 @@
-using PswManager.Database.Models;
+using PswManager.Core.AccountModels;
 
 namespace PswManager.Core.Validators;
 
 public class AccountValidator : IAccountValidator {
-    public AccountValid IsAccountValid(AccountModel account) {
+    public AccountValid IsAccountValid(IAccountModel account) {
         
         var nameResult = IsNameValid(account);
         if(nameResult != NameValid.Valid) {
@@ -32,7 +32,7 @@ public class AccountValidator : IAccountValidator {
         return AccountValid.Valid;
     }
 
-    public EmailValid IsEmailValid(AccountModel account) {
+    public EmailValid IsEmailValid(IAccountModel account) {
         
         if(string.IsNullOrWhiteSpace(account.Email)) {
             return EmailValid.EmptyOrNull;
@@ -41,7 +41,7 @@ public class AccountValidator : IAccountValidator {
         return EmailValid.Valid;
     }
 
-    public NameValid IsNameValid(AccountModel account) {
+    public NameValid IsNameValid(IAccountModel account) {
         
         if(string.IsNullOrWhiteSpace(account.Name)) {
             return NameValid.EmptyOrNull;
@@ -50,7 +50,7 @@ public class AccountValidator : IAccountValidator {
         return NameValid.Valid;
     }
 
-    public PasswordValid IsPasswordValid(AccountModel account) {
+    public PasswordValid IsPasswordValid(IAccountModel account) {
         
         if(string.IsNullOrWhiteSpace(account.Password)) {
             return PasswordValid.EmptyOrNull;
