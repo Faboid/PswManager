@@ -1,18 +1,18 @@
-﻿using PswManager.Core.Cryptography;
-using PswManager.Core.Inner.Interfaces;
+﻿using PswManager.Core.Inner.Interfaces;
+using PswManager.Core.Services;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
 using PswManager.Utils;
 using System.Threading.Tasks;
 
-namespace PswManager.Core.Inner; 
+namespace PswManager.Core.Inner;
 public class AccountEditor : IAccountEditor {
 
     private readonly IDataEditor dataEditor;
-    private readonly ICryptoAccount cryptoAccount;
+    private readonly ICryptoAccountService cryptoAccount;
 
-    public AccountEditor(IDataEditor dataEditor, ICryptoAccount cryptoAccount) {
+    public AccountEditor(IDataEditor dataEditor, ICryptoAccountService cryptoAccount) {
         this.dataEditor = dataEditor;
         this.cryptoAccount = cryptoAccount;
     }

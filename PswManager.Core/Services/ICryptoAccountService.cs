@@ -1,8 +1,8 @@
 ﻿using PswManager.Database.Models;
 using PswManager.Encryption.Services;
 
-namespace PswManager.Core.Cryptography; 
-public interface ICryptoAccount {
+namespace PswManager.Core.Services;
+public interface ICryptoAccountService {
 
     public ICryptoService GetPassCryptoService();
     public ICryptoService GetEmaCryptoService();

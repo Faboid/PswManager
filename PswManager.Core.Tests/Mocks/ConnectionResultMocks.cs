@@ -1,8 +1,8 @@
-﻿using PswManager.Core.Cryptography;
+﻿using PswManager.Core.Services;
 using PswManager.Database.Models;
 using PswManager.Extensions;
 
-namespace PswManager.Core.Tests.Mocks; 
+namespace PswManager.Core.Tests.Mocks;
 internal static class ConnectionResultMocks {
 
     public static ConnectionResult<AccountModel> SuccessIfAllValuesAreNotEmpty(AccountModel model) {
@@ -15,15 +15,15 @@ internal static class ConnectionResultMocks {
         return new(!isAnyNullOrEmpty.Any(x => x), model);
     }
 
-    public static ConnectionResult<AccountModel> GenerateEncryptedSuccessFromName(string name, ICryptoAccount cryptoAccount) {
+    public static ConnectionResult<AccountModel> GenerateEncryptedSuccessFromName(string name, ICryptoAccountService cryptoAccount) {
         return new(true, AccountModelMocks.GenerateEncryptedFromName(name, cryptoAccount));
     }
 
-    public static ConnectionResult<IEnumerable<AccountResult>> GenerateInfiniteEncryptedAccountList(ICryptoAccount cryptoAccount) {
+    public static ConnectionResult<IEnumerable<AccountResult>> GenerateInfiniteEncryptedAccountList(ICryptoAccountService cryptoAccount) {
         return new(true, AccountModelMocks.GenerateManyEncrypted(cryptoAccount).Select(x => new AccountResult(x.Name, x)));
     }
 
-    public static ConnectionResult<IAsyncEnumerable<AccountResult>> GenerateInfiniteEncryptedAccountListAsync(ICryptoAccount cryptoAccount) {
+    public static ConnectionResult<IAsyncEnumerable<AccountResult>> GenerateInfiniteEncryptedAccountListAsync(ICryptoAccountService cryptoAccount) {
         return new(true, AccountModelMocks.GenerateManyEncryptedAsync(cryptoAccount).Select(x => new AccountResult(x.Name, x)));
     }
 

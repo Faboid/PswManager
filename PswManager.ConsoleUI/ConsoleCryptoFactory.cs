@@ -1,4 +1,5 @@
 ﻿using PswManager.Async.Locks;
+using PswManager.Core.Services;
 using PswManager.Encryption.Cryptography;
 using PswManager.Encryption.Services;
 using PswManager.Utils;
@@ -6,29 +7,31 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PswManager.Core.Cryptography; 
-public class CryptoFactory {
+namespace PswManager.Core.Cryptography;
+public class ConsoleCryptoFactory {
     //todo - split/organize this class
     //todo - properly test this class
-    public CryptoFactory(IUserInput userInput) {
+    public ConsoleCryptoFactory(IUserInput userInput, ITokenService tokenService) {
         this.userInput = userInput;
+        _tokenService = tokenService;
     }
 
     private readonly IUserInput userInput;
+    private readonly ITokenService _tokenService;
 
-    public async Task<ICryptoAccount> AskUserPasswordsAsync() {
+    public async Task<ICryptoAccountService> AskUserPasswordsAsync() {
 #if DEBUG
         if(userInput.YesOrNo("You are currently in DEBUG mode. Do you want to use pre-made, fixed passwords?")) {
-            return new CryptoAccount("gheerwiahgkth".ToCharArray(), "ewrgrthrer".ToCharArray());
+            return new CryptoAccountService("gheerwiahgkth".ToCharArray(), "ewrgrthrer".ToCharArray());
         }
 #endif
         return await RequestPasswords().ConfigureAwait(false);
     }
 
-    public ICryptoAccount AskUserPasswords() {
+    public ICryptoAccountService AskUserPasswords() {
 #if DEBUG
         if(userInput.YesOrNo("You are currently in DEBUG mode. Do you want to use pre-made, fixed passwords?")) {
-            return new CryptoAccount("gheerwiahgkth".ToCharArray(), "ewrgrthrer".ToCharArray());
+            return new CryptoAccountService("gheerwiahgkth".ToCharArray(), "ewrgrthrer".ToCharArray());
         }
 #endif
         //to stop the async methods from propagating to main,
@@ -37,48 +40,39 @@ public class CryptoFactory {
             .GetAwaiter().GetResult();
     }
 
-    private Task<ICryptoAccount> RequestPasswords() =>
-        Token.IsTokenSetUp(Token.GetDefaultPath()) switch {
+    private Task<ICryptoAccountService> RequestPasswords() =>
+        _tokenService.IsSet() switch {
             true => LogIn(),
             false => SignUp()
         };
 
-    private async Task<ICryptoAccount> SignUp() {
+    private async Task<ICryptoAccountService> SignUp() {
         userInput.SendMessage("First time set up initiated.");
 
         userInput.SendMessage("Please insert the master key.");
         userInput.SendMessage("Suggestion: use an easy-to-remember, long password like a passphrase.");
 
-        Token token;
         KeyGeneratorService generator = null;
+        char[] password;
         do {
-            //if the generator was assigned in a previous loop,
-            //it's surely using a wrong password,
-            //and thus it's best to clean it up
-            if(generator != null) {
-                await generator.DisposeAsync().ConfigureAwait(false);
-            }
+            userInput.SendMessage("Please insert the master key:");
+            password = userInput.RequestPassword();
+        } while(!ValidatePassword(password));
 
-            char[] password;
-            do {
-                userInput.SendMessage("Please insert the master key:");
-                password = userInput.RequestPassword();
-            } while(!ValidatePassword(password));
+        generator = new KeyGeneratorService(password);
+        userInput.SendMessage("The given password is valid.");
+        userInput.SendMessage("Creating a token to validate the password in the future...");
 
-            generator = new KeyGeneratorService(password);
-            userInput.SendMessage("The given password is valid.");
-            userInput.SendMessage("Creating a token to validate the password in the future...");
-
-            token = new Token(await generator.GenerateKeyAsync().ConfigureAwait(false));
-
-        } while(!token.VerifyToken());
+        var key = await generator.GenerateKeyAsync().ConfigureAwait(false);
+        var cryptoService = new CryptoService(key);
+        _tokenService.SetToken(cryptoService);
 
         userInput.SendMessage("Completing first time set up... this might take a few seconds.");
 
         return CreateCryptoAccountAsync(generator);
     }
 
-    private async Task<ICryptoAccount> LogIn() {
+    private async Task<ICryptoAccountService> LogIn() {
 
         KeyGeneratorService generator;
         while(true) {
@@ -88,10 +82,11 @@ public class CryptoFactory {
             generator = new KeyGeneratorService(password);
 
             userInput.SendMessage("Verifying password...");
-            var token = new Token(await generator.GenerateKeyAsync().ConfigureAwait(false));
+            var key = await generator.GenerateKeyAsync().ConfigureAwait(false);
+            var cryptoService = new CryptoService(key);
             
             //if the password is correct, exit
-            if(token.VerifyToken()) {
+            if(_tokenService.VerifyToken(cryptoService) == ITokenService.TokenResult.Success) {
                 break;
             }
 
@@ -108,9 +103,9 @@ public class CryptoFactory {
         return CreateCryptoAccountAsync(generator);
     }
 
-    private static ICryptoAccount CreateCryptoAccountAsync(KeyGeneratorService generator) {
+    private static ICryptoAccountService CreateCryptoAccountAsync(KeyGeneratorService generator) {
         var lockerReference = new RefCount<Locker>(new());
-        return new CryptoAccount(GenerateKeyAndDisposeGenerator(generator, lockerReference), GenerateKeyAndDisposeGenerator(generator, lockerReference));
+        return new CryptoAccountService(GenerateKeyAndDisposeGenerator(generator, lockerReference), GenerateKeyAndDisposeGenerator(generator, lockerReference));
     }
 
     private static async Task<Key> GenerateKeyAndDisposeGenerator(KeyGeneratorService generator, RefCount<Locker> lockerRef) {
