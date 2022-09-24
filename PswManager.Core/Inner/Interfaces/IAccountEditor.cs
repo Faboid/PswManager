@@ -3,7 +3,7 @@ using PswManager.Database.Models;
 using PswManager.Utils;
 using System.Threading.Tasks;
 
-namespace PswManager.Core.Inner.Interfaces; 
+namespace PswManager.Core.Inner.Interfaces;
 public interface IAccountEditor {
 
     Option<EditorErrorCode> UpdateAccount(string name, AccountModel newValues);

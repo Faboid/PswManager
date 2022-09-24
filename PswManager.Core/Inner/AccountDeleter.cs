@@ -4,7 +4,7 @@ using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Utils;
 using System.Threading.Tasks;
 
-namespace PswManager.Core.Inner; 
+namespace PswManager.Core.Inner;
 public class AccountDeleter : IAccountDeleter {
 
     private readonly IDataDeleter dataDeleter;

@@ -3,19 +3,20 @@ using PswManager.Database.Models;
 using PswManager.Encryption.Cryptography;
 using PswManager.Encryption.Services;
 using System;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PswManager.Core.Cryptography; 
-public class CryptoAccount : ICryptoAccount {
+namespace PswManager.Core.Services;
+public class CryptoAccountService : ICryptoAccountService {
 
-    public CryptoAccount(char[] passPassword, char[] emaPassword) {
+    public CryptoAccountService(char[] passPassword, char[] emaPassword) {
         PassCryptoString = new CryptoService(passPassword);
         EmaCryptoString = new CryptoService(emaPassword);
     }
 
-    public CryptoAccount(Key passKey, Key emaKey) {
-        if(Enumerable.SequenceEqual(passKey.Get(), emaKey.Get())) {
+    public CryptoAccountService(Key passKey, Key emaKey) {
+        if(passKey.Get().SequenceEqual(emaKey.Get())) {
             throw new ArgumentException("The given keys must be different.");
         }
 
@@ -23,17 +24,17 @@ public class CryptoAccount : ICryptoAccount {
         EmaCryptoString = new CryptoService(emaKey);
     }
 
-    public CryptoAccount(ICryptoService passCryptoString, ICryptoService emaCryptoString) {
+    public CryptoAccountService(ICryptoService passCryptoString, ICryptoService emaCryptoString) {
         PassCryptoString = new(passCryptoString);
         EmaCryptoString = new(emaCryptoString);
     }
 
-    public CryptoAccount(Task<Key> passKeyTask, Task<Key> emaKeyTask) : this (
+    public CryptoAccountService(Task<Key> passKeyTask, Task<Key> emaKeyTask) : this(
         passKeyTask.ContinueWith(async x => new CryptoService(await x) as ICryptoService).Unwrap(),
         emaKeyTask.ContinueWith(async x => new CryptoService(await x) as ICryptoService).Unwrap()
     ) { }
 
-    public CryptoAccount(Task<ICryptoService> passKeyTask, Task<ICryptoService> emaKeyTask) {
+    public CryptoAccountService(Task<ICryptoService> passKeyTask, Task<ICryptoService> emaKeyTask) {
         PassCryptoString = new(() => passKeyTask);
         EmaCryptoString = new(() => emaKeyTask);
     }
@@ -46,7 +47,6 @@ public class CryptoAccount : ICryptoAccount {
     public Task<ICryptoService> GetPassCryptoServiceAsync() => EmaCryptoString.Value;
     public Task<ICryptoService> GetEmaCryptoServiceAsync() => PassCryptoString.Value;
 
-
     public (string encryptedPassword, string encryptedEmail) Encrypt(string password, string email) {
         return (GetPassCryptoService().Encrypt(password), GetEmaCryptoService().Encrypt(email));
     }
@@ -54,8 +54,9 @@ public class CryptoAccount : ICryptoAccount {
     public (string decryptedPassword, string decryptedEmail) Decrypt(string encryptedPassword, string encryptedEmail) {
         return (GetPassCryptoService().Decrypt(encryptedPassword), GetEmaCryptoService().Decrypt(encryptedEmail));
     }
-
+    
     public (string encryptedPassword, string encryptedEmail) Encrypt((string password, string email) values) => Encrypt(values.password, values.email);
+
     public (string decryptedPassword, string decryptedEmail) Decrypt((string encryptedPassword, string encryptedEmail) values) => Decrypt(values.encryptedPassword, values.encryptedEmail);
 
     //todo - unit test these two methods

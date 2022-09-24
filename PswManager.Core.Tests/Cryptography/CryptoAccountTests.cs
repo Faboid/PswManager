@@ -1,21 +1,21 @@
 ﻿using PswManager.Encryption.Cryptography;
 using PswManager.Encryption.Services;
-using PswManager.Core.Cryptography;
 using Xunit;
 using PswManager.TestUtils;
+using PswManager.Core.Services;
 
-namespace PswManager.Core.Tests.Cryptography; 
+namespace PswManager.Core.Tests.Cryptography;
 public class CryptoAccountTests {
 
     public CryptoAccountTests() {
         var passCryptoService = new CryptoService(passPassword, "test.1");
         var emaCryptoService = new CryptoService(emaPassword, "test.2");
-        cryptoAccount = new CryptoAccount(passCryptoService, emaCryptoService);
+        cryptoAccount = new CryptoAccountService(passCryptoService, emaCryptoService);
     }
 
     readonly char[] passPassword = "ehfgirghriew".ToCharArray();
     readonly char[] emaPassword = "euh%£@#[YY**§".ToCharArray();
-    readonly CryptoAccount cryptoAccount;
+    readonly CryptoAccountService cryptoAccount;
 
     [Fact]
     public void EncryptAndDecryptCorrectly() {
@@ -74,7 +74,7 @@ public class CryptoAccountTests {
         var emaKey = new Key("TestHere".ToCharArray());
 
         //act & assert
-        Assert.Throws<ArgumentException>(() => new CryptoAccount(passKey, emaKey));
+        Assert.Throws<ArgumentException>(() => new CryptoAccountService(passKey, emaKey));
 
     }
 
@@ -90,7 +90,7 @@ public class CryptoAccountTests {
         }
 
         //act
-        var account = new CryptoAccount(GetKeyAsync(1, orderChecker), GetKeyAsync(2, orderChecker));
+        var account = new CryptoAccountService(GetKeyAsync(1, orderChecker), GetKeyAsync(2, orderChecker));
         var passTask = account.GetPassCryptoServiceAsync();
         var emaTask = account.GetEmaCryptoServiceAsync();
         bool isPassWaiting = !passTask.IsCompleted;
