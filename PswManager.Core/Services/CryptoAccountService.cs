@@ -3,6 +3,7 @@ using PswManager.Database.Models;
 using PswManager.Encryption.Cryptography;
 using PswManager.Encryption.Services;
 using System;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -46,7 +47,6 @@ public class CryptoAccountService : ICryptoAccountService {
     public Task<ICryptoService> GetPassCryptoServiceAsync() => EmaCryptoString.Value;
     public Task<ICryptoService> GetEmaCryptoServiceAsync() => PassCryptoString.Value;
 
-
     public (string encryptedPassword, string encryptedEmail) Encrypt(string password, string email) {
         return (GetPassCryptoService().Encrypt(password), GetEmaCryptoService().Encrypt(email));
     }
@@ -54,8 +54,9 @@ public class CryptoAccountService : ICryptoAccountService {
     public (string decryptedPassword, string decryptedEmail) Decrypt(string encryptedPassword, string encryptedEmail) {
         return (GetPassCryptoService().Decrypt(encryptedPassword), GetEmaCryptoService().Decrypt(encryptedEmail));
     }
-
+    
     public (string encryptedPassword, string encryptedEmail) Encrypt((string password, string email) values) => Encrypt(values.password, values.email);
+
     public (string decryptedPassword, string decryptedEmail) Decrypt((string encryptedPassword, string encryptedEmail) values) => Decrypt(values.encryptedPassword, values.encryptedEmail);
 
     //todo - unit test these two methods
