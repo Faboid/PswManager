@@ -16,7 +16,9 @@ public struct Error<TValue, TError> : IOption<TValue, TError> {
     public Option<T, TError> Bind<T>(Func<TValue, Option<T, TError>> func) => new Error<T, TError>(err);
     public Task<Option<T, TError>> BindAsync<T>(Func<TValue, Task<Option<T, TError>>> func) => Task.FromResult<Option<T, TError>>(new Error<T, TError>(err));
     public TValue Or(TValue def) => def;
-
+    public TValue OrDefault() => default;
+    public TError OrError(TError def) => err;
+    public TError OrDefaultError() => err;
 
     public static implicit operator Error<TValue, TError>(TError error) => new(error);
 

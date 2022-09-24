@@ -10,7 +10,9 @@ internal interface IOption<TValue, TError> {
     Option<T, TError> Bind<T>(Func<TValue, Option<T, TError>> func);
     Task<Option<T, TError>> BindAsync<T>(Func<TValue, Task<Option<T, TError>>> func);
     TValue Or(TValue def);
-
+    TValue OrDefault();
+    TError OrError(TError def);
+    TError OrDefaultError();
 }
 
 internal interface IOption<TValue> {
@@ -20,6 +22,7 @@ internal interface IOption<TValue> {
     Option<T> Bind<T>(Func<TValue, Option<T>> func);
     Task<Option<T>> BindAsync<T>(Func<TValue, Task<Option<T>>> func);
     TValue Or(TValue def);
+    TValue OrDefault();
 
 }
 
