@@ -6,7 +6,7 @@ using PswManager.Core.Services;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 
-namespace PswManager.Core.Tests.Cryptography; 
+namespace PswManager.Core.Tests.ServicesTests;
 public class TokenServiceTests {
 
     public TokenServiceTests() {
@@ -53,5 +53,5 @@ public class TokenServiceTests {
         Assert.Equal(ITokenService.TokenResult.Success, correctResult);
 
     }
-    
+
 }
