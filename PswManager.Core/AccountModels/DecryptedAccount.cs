@@ -18,7 +18,7 @@ public class DecryptedAccount : IAccountModel {
 	public string Password { get; private set; }
 	public string Email { get; private set; }
 
-	public bool IsEncypted => false;
+	public bool IsEncrypted => false;
 	public bool IsPlainText => true;
 
 	public DecryptedAccount GetDecryptedAccount() => this;

@@ -25,7 +25,7 @@ public interface IAccountModel {
 	/// <summary>
 	/// Whether this model's values are encrypted.
 	/// </summary>
-	bool IsEncypted { get; }
+	bool IsEncrypted { get; }
 
 	/// <summary>
 	/// Whether this model's values are not encrypted.

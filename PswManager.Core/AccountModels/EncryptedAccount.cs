@@ -29,7 +29,7 @@ public class EncryptedAccount : IAccountModel {
 	/// </summary>
 	public string Email { get; private set; }
 
-	public bool IsEncypted => true;
+	public bool IsEncrypted => true;
 	public bool IsPlainText => false;
 
 	public DecryptedAccount GetDecryptedAccount()
