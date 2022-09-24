@@ -1,7 +1,7 @@
 ﻿using PswManager.Core.Services;
 namespace PswManager.Core.AccountModels;
 
-public class AccountModelFactory {
+public class AccountModelFactory : IAccountModelFactory {
 
 	private readonly ICryptoAccountService _cryptoAccountService;
 
