@@ -8,9 +8,7 @@ namespace PswManager.Core.Tests.AccountModelsTests;
 public class AccountModelFactoryTests {
 
 	public AccountModelFactoryTests() {
-		var passCryptoService = ICryptoServiceMocks.GetSummingCryptor().Object;
-		var emaCryptoService = ICryptoServiceMocks.GetReverseCryptor().Object;
-        _cryptoAccountService = new CryptoAccountService(emaCryptoService, passCryptoService);
+		_cryptoAccountService = ICryptoAccountMocks.GetReversedAndSummingCryptor();
         _sut = new AccountModelFactory(_cryptoAccountService);
 	}
 
@@ -48,6 +46,6 @@ public class AccountModelFactoryTests {
 
     }
 
-	private static AccountModel GetDefault() => new ("SomeName", "SomePassword", "Email@Sup.com");
+	private static AccountModel GetDefault() => AccountModelMocks.GenerateValidFromName("SomeName");
 
 }
