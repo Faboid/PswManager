@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PswManager.Core;
-public class AccountsManager : IAccountDeleter, IAccountEditor, IAccountReader, IAccountCreator {
+public class AccountsManager : IAccountsManager {
 
     public AccountsManager(IDataFactory dbFactory, ICryptoAccountService cryptoAccount) {
         accountCreator = new AccountCreator(dbFactory.GetDataCreator(), cryptoAccount);
