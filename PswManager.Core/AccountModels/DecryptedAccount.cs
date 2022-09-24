@@ -1,4 +1,5 @@
 ﻿using PswManager.Core.Services;
+using PswManager.Database.Models;
 using System.Threading.Tasks;
 
 namespace PswManager.Core.AccountModels;
@@ -14,9 +15,9 @@ public class DecryptedAccount : IAccountModel {
 		Email = email;
 	}
 
-	public string Name { get; private set; }
-	public string Password { get; private set; }
-	public string Email { get; private set; }
+	public string Name { get; init; }
+	public string Password { get; init; }
+	public string Email { get; init; }
 
 	public bool IsEncrypted => false;
 	public bool IsPlainText => true;
@@ -26,4 +27,5 @@ public class DecryptedAccount : IAccountModel {
 	public EncryptedAccount GetEncryptedAccount()
 		=> new(Name, _cryptoAccountService.GetPassCryptoService().Encrypt(Password), _cryptoAccountService.GetEmaCryptoService().Encrypt(Email), _cryptoAccountService);
 	public Task<EncryptedAccount> GetEncryptedAccountAsync() => Task.Run(GetEncryptedAccount);
+	public AccountModel GetUnderlyingModel() => new(Name, Password, Email);
 }
