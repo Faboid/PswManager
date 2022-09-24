@@ -1,7 +1,6 @@
 ﻿using PswManager.Core.Services;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
-using PswManager.Extensions;
 using PswManager.Utils;
 
 namespace PswManager.Core.Tests.Mocks;

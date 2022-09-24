@@ -7,7 +7,6 @@ using PswManager.Core.Tests.Mocks;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
-using PswManager.Extensions;
 using PswManager.Utils;
 using Xunit;
 
@@ -117,7 +116,7 @@ public class AccountReaderTests {
 
         //act
         var option = await reader.ReadAllAccountsAsync();
-        var listValues = await option.Or(null).Take(50).ToList().ConfigureAwait(false);
+        var listValues = await option.Or(null).Take(50).ToListAsync().ConfigureAwait(false);
 
         //assert
         Assert.True(option.Match(some => true, error => false, () => false));
@@ -161,7 +160,7 @@ public class AccountReaderTests {
 
         //act
         var result = await reader.ReadAllAccountsAsync().ConfigureAwait(false);
-        var ten = await result.Or(null).Take(10).Select(x => x.Or(null)).ToList();
+        var ten = await result.Or(null).Take(10).Select(x => x.Or(null)).ToListAsync();
 
         //assert
         Assert.True(result.Match(some => true, error => false, () => false));

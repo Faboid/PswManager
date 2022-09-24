@@ -1,6 +1,5 @@
 ﻿using PswManager.Core.Services;
 using PswManager.Database.Models;
-using PswManager.Extensions;
 
 namespace PswManager.Core.Tests.Mocks;
 internal static class ConnectionResultMocks {
