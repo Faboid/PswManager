@@ -93,6 +93,23 @@ public class AccountEditorTests {
 
     }
 
+    [Fact]
+    public async Task MethodCallsArePure() {
+
+        //arrange
+        var expected = new AccountModel("SomeName", "SomePassword", "SomeEmail");
+        var actual = new AccountModel(expected.Name, expected.Password, expected.Email);
+        var sut = new AccountEditor(dataEditorMock.Object, cryptoAccount);
+
+        //act
+        _ = sut.UpdateAccount(actual.Name, actual);
+        _ = await sut.UpdateAccountAsync(actual.Name, actual);
+
+        //assert
+        AccountModelAsserts.AssertEqual(expected, actual);
+
+    }
+
     private (AccountEditor editor, AccountModel input, AccountModel expected) ArrangeTest(string name, string password, string email) {
         var editor = new AccountEditor(dataEditorMock.Object, cryptoAccount);
         var input = new AccountModel(name, password, email);

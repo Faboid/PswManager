@@ -4,6 +4,7 @@ using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
 using PswManager.Utils;
+using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 
 namespace PswManager.Core.Inner;
@@ -23,8 +24,8 @@ public class AccountEditor : IAccountEditor {
             return EditorErrorCode.InvalidName;
         }
 
-        EncryptModel(newValues);
-        return dataEditor.UpdateAccount(name, newValues);
+        var encryptedModel = EncryptModel(newValues);
+        return dataEditor.UpdateAccount(name, encryptedModel);
     }
 
     public async Task<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newValues) {
@@ -33,17 +34,20 @@ public class AccountEditor : IAccountEditor {
             return EditorErrorCode.InvalidName;
         }
 
-        await Task.Run(() => EncryptModel(newValues)).ConfigureAwait(false);
-        return await dataEditor.UpdateAccountAsync(name, newValues).ConfigureAwait(false);
+        var encryptedModel = await Task.Run(() => EncryptModel(newValues)).ConfigureAwait(false);
+        return await dataEditor.UpdateAccountAsync(name, encryptedModel).ConfigureAwait(false);
     }
 
-    private void EncryptModel(AccountModel args) {
-        if(!string.IsNullOrWhiteSpace(args.Password)) {
-            args.Password = cryptoAccount.GetPassCryptoService().Encrypt(args.Password);
+    [Pure]
+    private AccountModel EncryptModel(AccountModel args) {
+        var output = new AccountModel(args.Name, args.Password, args.Email);
+        if(!string.IsNullOrWhiteSpace(output.Password)) {
+            output.Password = cryptoAccount.GetPassCryptoService().Encrypt(output.Password);
         }
-        if(!string.IsNullOrWhiteSpace(args.Email)) {
-            args.Email = cryptoAccount.GetEmaCryptoService().Encrypt(args.Email);
+        if(!string.IsNullOrWhiteSpace(output.Email)) {
+            output.Email = cryptoAccount.GetEmaCryptoService().Encrypt(output.Email);
         }
+        return output;
     }
 
 }

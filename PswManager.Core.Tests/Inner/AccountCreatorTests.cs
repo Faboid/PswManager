@@ -86,6 +86,23 @@ public class AccountCreatorTests {
 
     }
 
+    [Fact]
+    public async Task MethodCallsArePure() {
+
+        //arrange
+        var expected = new AccountModel("SomeName", "SomePassword", "SomeEmail");
+        var actual = new AccountModel(expected.Name, expected.Password, expected.Email);
+        var sut = new AccountCreator(dataCreatorMock.Object, cryptoAccount);
+
+        //act
+        _ = sut.CreateAccount(actual);
+        _ = await sut.CreateAccountAsync(actual);
+
+        //assert
+        AccountModelAsserts.AssertEqual(expected, actual);
+
+    }
+
     private (AccountCreator creator, AccountModel input, AccountModel expected) ArrangeTest(string name, string password, string email) {
         var creator = new AccountCreator(dataCreatorMock.Object, cryptoAccount);
         var input = new AccountModel(name, password, email);
