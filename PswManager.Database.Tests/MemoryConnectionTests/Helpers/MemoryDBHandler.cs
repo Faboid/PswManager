@@ -24,7 +24,7 @@ internal class MemoryDBHandler : ITestDBHandler {
         //reset database
         dbConnection.GetAllAccounts().Match(some => some, error => throw new Exception(), () => throw new Exception())
             .Select(x => x.Or(null) ?? throw new Exception())
-            .ForEach(x => dbConnection.DeleteAccount(x.Name));
+            .ForEach(x => dbConnection.DeleteAccountAsync(x.Name).GetAwaiter().GetResult());
 
         Enumerable.Range(0, numValues).ForEach(x => {
             var name = defaultValues.GetValue(x, DefaultValues.TypeValue.Name);

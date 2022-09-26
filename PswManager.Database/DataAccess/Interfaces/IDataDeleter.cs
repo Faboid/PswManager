@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 namespace PswManager.Database.DataAccess.Interfaces; 
 public interface IDataDeleter : IDataHelper {
 
-    Option<DeleterErrorCode> DeleteAccount(string name);
-    ValueTask<Option<DeleterErrorCode>> DeleteAccountAsync(string name);
+    Task<Option<DeleterErrorCode>> DeleteAccountAsync(string name);
 
 }

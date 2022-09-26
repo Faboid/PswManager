@@ -90,27 +90,7 @@ internal class SQLConnection : IDataConnection {
         };
     }
 
-    public Option<DeleterErrorCode> DeleteAccount(string name) {
-        if(string.IsNullOrWhiteSpace(name)) {
-            return DeleterErrorCode.InvalidName;
-        }
-
-        using var heldLock = locker.GetLock(name, 50);
-        if(heldLock.Obtained == false) {
-            return DeleterErrorCode.UsedElsewhere;
-        }
-
-        if(!AccountExist_NoLock(name)) {
-            return DeleterErrorCode.DoesNotExist;
-        }
-
-        using var cmd = queriesBuilder.DeleteAccountQuery(name);
-        using var cnn = cmd.Connection.GetConnection();
-        var result = cmd.ExecuteNonQuery() == 1;
-        return (result) ? Option.None<DeleterErrorCode>() : DeleterErrorCode.Undefined;
-    }
-
-    public async ValueTask<Option<DeleterErrorCode>> DeleteAccountAsync(string name) { 
+    public async Task<Option<DeleterErrorCode>> DeleteAccountAsync(string name) { 
         if(string.IsNullOrWhiteSpace(name)) {
             return DeleterErrorCode.InvalidName;
             ;

@@ -73,25 +73,7 @@ public class TextFileConnection : IDataConnection {
         return Option.None<CreatorErrorCode>();
     }
 
-    public Option<DeleterErrorCode> DeleteAccount(string name) {
-        if(string.IsNullOrWhiteSpace(name)) {
-            return DeleterErrorCode.InvalidName;
-        }
-
-        using var accLock = locker.GetLock(name, 50);
-        if(!accLock.Obtained) {
-            return DeleterErrorCode.UsedElsewhere;
-        }
-
-        if(!fileSaver.Exists(name)) {
-            return DeleterErrorCode.DoesNotExist;
-        }
-
-        fileSaver.Delete(name);
-        return Option.None<DeleterErrorCode>();
-    }
-
-    public async ValueTask<Option<DeleterErrorCode>> DeleteAccountAsync(string name) { 
+    public async Task<Option<DeleterErrorCode>> DeleteAccountAsync(string name) { 
         if(string.IsNullOrWhiteSpace(name)) {
             return DeleterErrorCode.InvalidName;
         }

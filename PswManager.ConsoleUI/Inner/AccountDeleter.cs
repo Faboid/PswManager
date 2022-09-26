@@ -18,7 +18,7 @@ public class AccountDeleter : IAccountDeleter {
             return DeleterErrorCode.InvalidName;
         }
 
-        return dataDeleter.DeleteAccount(name);
+        return dataDeleter.DeleteAccountAsync(name).GetAwaiter().GetResult();
     }
 
     public async Task<Option<DeleterErrorCode>> DeleteAccountAsync(string name) {

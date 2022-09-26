@@ -45,17 +45,9 @@ internal class JsonConnection : BaseConnection {
         return Option.None<CreatorErrorCode>();
     }
 
-    protected override Option<DeleterErrorCode> DeleteAccountHook(string name) {
+    protected override Task<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name) {
         File.Delete(BuildFilePath(name));
-
-        return Option.None<DeleterErrorCode>();
-    }
-
-    protected override ValueTask<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name) {
-        //there's no overload, and it's expected to be quick anyway, so I've left it to be synchronous
-        //might decide to wrap it in a Task.Run()
-        File.Delete(BuildFilePath(name));
-        return Option.None<DeleterErrorCode>().AsValueTask();
+        return Option.None<DeleterErrorCode>().AsTask();
     }
 
     protected override Option<AccountModel, ReaderErrorCode> GetAccountHook(string name) {

@@ -16,23 +16,6 @@ public abstract class DataDeleterGeneric : IDisposable {
     static protected readonly int numValues = 1;
 
     [Fact]
-    public void DeleteAccountCorrectly() {
-
-        //arrange
-        string name = dbHandler.GetDefaultValues().GetValue(0, DefaultValues.TypeValue.Name);
-
-        //act
-        var exists = dataDeleter.AccountExist(name);
-        var result = dataDeleter.DeleteAccount(name);
-
-        //assert
-        Assert.Equal(AccountExistsStatus.Exist, exists);
-        result.Is(OptionResult.None);
-        Assert.Equal(AccountExistsStatus.NotExist, dataDeleter.AccountExist(name));
-
-    }
-
-    [Fact]
     public async Task DeleteAccountCorrectlyAsynchronously() {
 
         //arrange
@@ -56,15 +39,12 @@ public abstract class DataDeleterGeneric : IDisposable {
     public async Task DeleteFailure_InvalidName(string name) {
 
         //act
-        var result = dataDeleter.DeleteAccount(name);
-        var resultAsync = await dataDeleter.DeleteAccountAsync(name).ConfigureAwait(false);
+        var result = await dataDeleter.DeleteAccountAsync(name).ConfigureAwait(false);
 
         //assert
         result.Is(OptionResult.Some);
-        resultAsync.Is(OptionResult.Some);
 
         Assert.Equal(DeleterErrorCode.InvalidName, result.Or(default));
-        Assert.Equal(DeleterErrorCode.InvalidName, resultAsync.Or(default));
 
     }
 
@@ -76,17 +56,14 @@ public abstract class DataDeleterGeneric : IDisposable {
 
         //act
         var exists = dataDeleter.AccountExist(name);
-        var result = dataDeleter.DeleteAccount(name);
-        var resultAsync = await dataDeleter.DeleteAccountAsync(name).ConfigureAwait(false);
+        var result = await dataDeleter.DeleteAccountAsync(name).ConfigureAwait(false);
 
         //assert
         Assert.Equal(AccountExistsStatus.NotExist, exists);
         result.Is(OptionResult.Some);
-        resultAsync.Is(OptionResult.Some);
 
 
         Assert.Equal(DeleterErrorCode.DoesNotExist, result.Or(default));
-        Assert.Equal(DeleterErrorCode.DoesNotExist, resultAsync.Or(default));
 
     }
 

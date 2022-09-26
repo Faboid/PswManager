@@ -24,13 +24,9 @@ internal class MemoryConnection : BaseConnection {
         return ValueTask.FromResult(Option.None<CreatorErrorCode>());
     }
 
-    protected override Option<DeleterErrorCode> DeleteAccountHook(string name) {
+    protected override Task<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name) {
         accounts.Remove(name);
-        return Option.None<DeleterErrorCode>();
-    }
-
-    protected override ValueTask<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name) {
-        return DeleteAccountHook(name).AsValueTask();
+        return Option.None<DeleterErrorCode>().AsTask();
     }
 
     protected override Option<AccountModel, ReaderErrorCode> GetAccountHook(string name) {

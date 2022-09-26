@@ -65,25 +65,7 @@ internal abstract class BaseConnection : IDataConnection {
         return await CreateAccountHookAsync(model).ConfigureAwait(false);
     }
 
-
-    public Option<DeleterErrorCode> DeleteAccount(string name) {
-        if(string.IsNullOrWhiteSpace(name)) {
-            return DeleterErrorCode.InvalidName;
-        }
-
-        using var ownedLock = Locker.GetLock(name, 50);
-        if(!ownedLock.Obtained) {
-            return DeleterErrorCode.UsedElsewhere;
-        }
-
-        if(AccountExistInternal(name) == AccountExistsStatus.NotExist) {
-            return DeleterErrorCode.DoesNotExist;
-        }
-
-        return DeleteAccountHook(name);
-    }
-
-    public async ValueTask<Option<DeleterErrorCode>> DeleteAccountAsync(string name) { 
+    public async Task<Option<DeleterErrorCode>> DeleteAccountAsync(string name) { 
         if(string.IsNullOrWhiteSpace(name)) {
             return DeleterErrorCode.InvalidName;
         }
@@ -244,7 +226,6 @@ internal abstract class BaseConnection : IDataConnection {
     protected abstract Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync();
     protected abstract Option<EditorErrorCode> UpdateAccountHook(string name, AccountModel newModel);
     protected abstract ValueTask<Option<EditorErrorCode>> UpdateAccountHookAsync(string name, AccountModel newModel);
-    protected abstract Option<DeleterErrorCode> DeleteAccountHook(string name);
-    protected abstract ValueTask<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name);
+    protected abstract Task<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name);
 
 }

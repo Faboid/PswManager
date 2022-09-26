@@ -29,6 +29,23 @@ public class AccountCreatorTests {
 
     [Theory]
     [InlineData("asyncName", "newpass", "ema@here.com")]
+    public void AccountObjectGotEncrypted(string name, string password, string email) {
+
+        //arrange
+        var (creator, input, expected) = ArrangeTest(name, password, email);
+
+        //act
+        var result = creator.CreateAccount(input);
+
+        //assert
+        result.Is(OptionResult.None);
+        dataCreatorMock.Verify(x => x.CreateAccountAsync(It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))));
+        dataCreatorMock.VerifyNoOtherCalls();
+
+    }
+
+    [Theory]
+    [InlineData("asyncName", "newpass", "ema@here.com")]
     public async Task AccountObjectGotEncryptedAsync(string name, string password, string email) {
 
         //arrange
@@ -55,10 +72,12 @@ public class AccountCreatorTests {
         AccountCreator creator = new(dataCreatorMock.Object, cryptoAccount);
 
         //act
-        var actual = await creator.CreateAccountAsync(input);
+        var actual = creator.CreateAccount(input);
+        var actualAsync = await creator.CreateAccountAsync(input);
 
         //assert
         actual.Is(OptionResult.Some);
+        actualAsync.Is(OptionResult.Some);
         dataCreatorMock.VerifyNoOtherCalls();
 
     }
