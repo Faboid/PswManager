@@ -7,11 +7,11 @@ using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
 using PswManager.Utils;
 
-namespace PswManager.Core.Tests.AccountTests;
+namespace PswManager.Core.Tests;
 
-public class EditAccountTests {
+public class AccountTests {
 
-    public EditAccountTests() {
+    public AccountTests() {
         _cryptoAccountService = ICryptoAccountMocks.GetReversedAndSummingCryptor();
         _accountModelFactory = new AccountModelFactory(_cryptoAccountService);
     }
@@ -19,6 +19,25 @@ public class EditAccountTests {
     private readonly IAccountModelFactory _accountModelFactory;
     private readonly ICryptoAccountService _cryptoAccountService;
 
+    [Fact]
+    public async Task EditingAfterDeletingReturns_DoesNotExist() {
+
+        var sut = new Account(_accountModelFactory.CreateEncryptedAccount(GetGeneric()), Mock.Of<IDataConnection>(), Mock.Of<IAccountValidator>());
+        await sut.DeleteAccountAsync();
+        var actual = await sut.EditAccountAsync(_accountModelFactory.CreateEncryptedAccount(GetGeneric()));
+        Assert.Equal(EditAccountResult.DoesNotExist, actual);
+
+    }
+
+    [Fact]
+    public async Task DeleteAccountCallsConnection() {
+
+        var connectionMock = new Mock<IDataConnection>();
+        var sut = new Account(_accountModelFactory.CreateEncryptedAccount(GetGeneric()), connectionMock.Object, Mock.Of<IAccountValidator>());
+        await sut.DeleteAccountAsync();
+        connectionMock.Verify(x => x.DeleteAccountAsync(sut.Name));
+
+    }
 
     [Theory]
     [InlineData(AccountValid.Unknown, EditAccountResult.Unknown)]
@@ -61,7 +80,7 @@ public class EditAccountTests {
         var connectionMock = new Mock<IDataConnection>();
         connectionMock.Setup(x => x.UpdateAccountAsync(expected.Name, It.IsAny<AccountModel>())).Returns(() => ValueTask.FromResult(Option.None<EditorErrorCode>()));
 
-        var sut = new Account(_accountModelFactory.CreateEncryptedAccount(new("AName", "APassword","AnEmail")), connectionMock.Object, new AccountValidator());
+        var sut = new Account(_accountModelFactory.CreateEncryptedAccount(new("AName", "APassword", "AnEmail")), connectionMock.Object, new AccountValidator());
 
         var actual = await sut.EditAccountAsync(decryptedModel);
 
