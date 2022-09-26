@@ -13,18 +13,18 @@ namespace PswManager.Core;
 
 public class AccountFactory : IAccountFactory {
 
-    private readonly ILogger<AccountFactory> _logger;
-    private readonly ILoggerFactory _loggerFactory;
+    private readonly ILogger<AccountFactory>? _logger;
+    private readonly ILoggerFactory? _loggerFactory;
     private readonly IDataConnection _connection;
     private readonly IAccountValidator _accountValidator;
     private readonly IAccountModelFactory _accountModelFactory;
     private readonly Locker _locker = new();
 
-    public AccountFactory(ILoggerFactory loggerFactory, IDataConnection connection, IAccountValidator accountValidator, IAccountModelFactory accountModelFactory) {
+    public AccountFactory(IDataConnection connection, IAccountValidator accountValidator, IAccountModelFactory accountModelFactory, ILoggerFactory? loggerFactory = null) {
         _loggerFactory = loggerFactory;
         _connection = connection;
         _accountValidator = accountValidator;
-        _logger = loggerFactory.CreateLogger<AccountFactory>();
+        _logger = loggerFactory?.CreateLogger<AccountFactory>();
         _accountModelFactory = accountModelFactory;
     }
 
@@ -42,10 +42,10 @@ public class AccountFactory : IAccountFactory {
         var encryptedTask = model.GetEncryptedAccountAsync().ConfigureAwait(false);
         using var locker = await _locker.GetLockAsync();
         var encrypted = await encryptedTask;
-        _logger.LogInformation("Beginning creation of a new account: {Name}", encrypted.Name);
+        _logger?.LogInformation("Beginning creation of a new account: {Name}", encrypted.Name);
         var result = await _connection.CreateAccountAsync(encrypted.GetUnderlyingModel()).ConfigureAwait(false);
         if(result.Result() == Utils.Options.OptionResult.Some) {
-            _logger.LogInformation("Creation of new account {Name} has failed with error {ErrorCode}", encrypted.Name, result.Or(0));
+            _logger?.LogInformation("Creation of new account {Name} has failed with error {ErrorCode}", encrypted.Name, result.Or(0));
             return result.Or(0) switch {
                 CreatorErrorCode.InvalidName => CreateAccountErrorCode.NameEmptyOrNull,
                 CreatorErrorCode.MissingPassword => CreateAccountErrorCode.PasswordEmptyOrNull,
@@ -56,7 +56,7 @@ public class AccountFactory : IAccountFactory {
             };
         }
 
-        _logger.LogInformation("A new account, {Name}, has been created successfully.", encrypted.Name);
+        _logger?.LogInformation("A new account, {Name}, has been created successfully.", encrypted.Name);
         var account = NewAccount(encrypted);
         return account;
     }
@@ -65,7 +65,7 @@ public class AccountFactory : IAccountFactory {
         var option = await _connection.GetAllAccountsAsync();
 
         if(option.Result() != Utils.Options.OptionResult.Some) {
-            _logger.LogError("_connection.GetAllAccountsAsync has returned {Result}", option.Result());
+            _logger?.LogError("_connection.GetAllAccountsAsync has returned {Result}", option.Result());
             return Option.None<IAsyncEnumerable<IAccount>>();
             //todo - remove the optional return of the DB GetAll
         }
