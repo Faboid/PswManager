@@ -4,7 +4,6 @@ using PswManager.Core.Services;
 using PswManager.Database;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
-using PswManager.Utils;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

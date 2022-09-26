@@ -1,5 +1,4 @@
-﻿using Moq;
-using PswManager.Core.Inner;
+﻿using PswManager.Core.Inner;
 using PswManager.Core.Inner.Interfaces;
 using PswManager.Core.Services;
 using PswManager.Core.Tests.Asserts;
@@ -8,7 +7,6 @@ using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
 using PswManager.Utils;
-using Xunit;
 
 namespace PswManager.Core.Tests.Inner;
 public class AccountReaderTests {

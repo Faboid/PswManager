@@ -3,7 +3,6 @@ using PswManager.Core;
 using PswManager.Core.Services;
 using PswManager.Encryption.Cryptography;
 using PswManager.Encryption.Services;
-using PswManager.Utils;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

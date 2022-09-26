@@ -1,12 +1,11 @@
 ﻿using PswManager.Commands;
 using PswManager.ConsoleUI.Commands;
-using PswManager.ConsoleUI.Commands.Validation.Attributes;
 using PswManager.ConsoleUI.Tests.Commands.Helper;
 using PswManager.Core.Inner;
 using PswManager.TestUtils;
 using Xunit;
 
-namespace PswManager.ConsoleUI.Tests.Commands; 
+namespace PswManager.ConsoleUI.Tests.Commands;
 public class EditCommandTests {
 
     public EditCommandTests() {

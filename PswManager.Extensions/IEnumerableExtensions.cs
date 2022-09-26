@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace PswManager.Extensions; 
+﻿namespace PswManager.Extensions;
 public static class IEnumerableExtensions {
 
     public static IEnumerable<T> ForEach<T>(this IEnumerable<T> enumeration, Action<T> action) {

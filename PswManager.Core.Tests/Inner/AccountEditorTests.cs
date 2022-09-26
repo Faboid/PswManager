@@ -1,5 +1,4 @@
-﻿using Moq;
-using PswManager.Core.Inner;
+﻿using PswManager.Core.Inner;
 using PswManager.Core.Services;
 using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
@@ -10,7 +9,6 @@ using PswManager.Extensions;
 using PswManager.TestUtils;
 using PswManager.Utils;
 using PswManager.Utils.Options;
-using Xunit;
 
 namespace PswManager.Core.Tests.Inner;
 public class AccountEditorTests {

@@ -1,6 +1,5 @@
 ﻿using PswManager.Encryption.Cryptography;
 using PswManager.Utils;
-using Xunit;
 using PswManager.Encryption.Services;
 using PswManager.Core.Services;
 using System.IO.Abstractions;

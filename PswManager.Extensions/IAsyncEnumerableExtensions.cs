@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PswManager.Extensions; 
+﻿namespace PswManager.Extensions;
 public static class IAsyncEnumerableExtensions {
 
     public static async IAsyncEnumerable<T> Take<T>(this IAsyncEnumerable<T> enumerable, int count) {

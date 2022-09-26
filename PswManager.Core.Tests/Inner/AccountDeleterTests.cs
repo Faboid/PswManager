@@ -1,14 +1,12 @@
-﻿using Moq;
-using PswManager.Core.Inner;
+﻿using PswManager.Core.Inner;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Extensions;
 using PswManager.TestUtils;
 using PswManager.Utils;
 using PswManager.Utils.Options;
-using Xunit;
 
-namespace PswManager.Core.Tests.Inner; 
+namespace PswManager.Core.Tests.Inner;
 public class AccountDeleterTests {
 
     public AccountDeleterTests() {

@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PswManager.Async.Locks;
-using System;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Utils;
 
-namespace PswManager.Database.DataAccess; 
+namespace PswManager.Database.DataAccess;
 /// <summary>
 /// A skeleton to build databases connections upon without worrying about validation and locking. <br/>
 /// It implements standard validation checks—child classes need only think how to implement the query logic—and

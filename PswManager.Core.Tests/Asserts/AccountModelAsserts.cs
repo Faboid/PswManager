@@ -1,8 +1,7 @@
 ﻿using PswManager.Core.AccountModels;
 using PswManager.Database.Models;
-using Xunit;
 
-namespace PswManager.Core.Tests.Asserts; 
+namespace PswManager.Core.Tests.Asserts;
 internal class AccountModelAsserts {
 
     public static bool AssertEqual(AccountModel expected, AccountModel actual) {
