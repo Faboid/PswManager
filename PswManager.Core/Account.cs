@@ -10,7 +10,7 @@ namespace PswManager.Core;
 
 internal class Account : IAccount {
 
-    private readonly ILogger<Account> _logger;
+    private readonly ILogger<Account>? _logger;
     private readonly IDataConnection _connection;
     private readonly IAccountValidator _accountValidator;
     private readonly Locker _locker = new();
@@ -21,7 +21,7 @@ internal class Account : IAccount {
     public string EncryptedPassword => _encryptedAccount.Password;
     public string EncryptedEmail => _encryptedAccount.Email;
 
-    public Account(EncryptedAccount model, IDataConnection connection, IAccountValidator accountValidator, ILoggerFactory loggerFactory = null) {
+    public Account(EncryptedAccount model, IDataConnection connection, IAccountValidator accountValidator, ILoggerFactory? loggerFactory = null) {
         _encryptedAccount = model;
         _logger = loggerFactory?.CreateLogger<Account>();
         _connection = connection;
