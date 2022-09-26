@@ -18,13 +18,7 @@ public class AccountEditor : IAccountEditor {
     }
 
     public Option<EditorErrorCode> UpdateAccount(string name, AccountModel newValues) {
-
-        if(string.IsNullOrWhiteSpace(name)) {
-            return EditorErrorCode.InvalidName;
-        }
-
-        var encryptedModel = EncryptModel(newValues);
-        return dataEditor.UpdateAccountAsync(name, encryptedModel).GetAwaiter().GetResult();
+        return UpdateAccountAsync(name, newValues).GetAwaiter().GetResult();
     }
 
     public async Task<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newValues) {

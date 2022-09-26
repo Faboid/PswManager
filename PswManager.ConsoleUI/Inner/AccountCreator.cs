@@ -17,20 +17,7 @@ public class AccountCreator : IAccountCreator {
     readonly ICryptoAccountService cryptoAccount;
 
     public Option<CreatorErrorCode> CreateAccount(AccountModel model) {
-
-        var validationResult = model.IsAnyValueNullOrEmpty();
-        if(validationResult != ValidationResult.Success) {
-            return validationResult switch {
-                ValidationResult.MissingName => CreatorErrorCode.InvalidName,
-                ValidationResult.MissingPassword => CreatorErrorCode.MissingPassword,
-                ValidationResult.MissingEmail => CreatorErrorCode.MissingEmail,
-                _ => CreatorErrorCode.Undefined,
-            };
-        }
-
-        var account = new AccountModel(model.Name, model.Password, model.Email);
-        (account.Password, account.Email) = cryptoAccount.Encrypt(account.Password, account.Email);
-        return dataCreator.CreateAccountAsync(account).GetAwaiter().GetResult();
+        return CreateAccountAsync(model).GetAwaiter().GetResult();
     }
 
     public async Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model) {

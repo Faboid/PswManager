@@ -13,12 +13,7 @@ public class AccountDeleter : IAccountDeleter {
     }
 
     public Option<DeleterErrorCode> DeleteAccount(string name) {
-
-        if(string.IsNullOrWhiteSpace(name)) {
-            return DeleterErrorCode.InvalidName;
-        }
-
-        return dataDeleter.DeleteAccountAsync(name).GetAwaiter().GetResult();
+        return DeleteAccountAsync(name).GetAwaiter().GetResult();
     }
 
     public async Task<Option<DeleterErrorCode>> DeleteAccountAsync(string name) {
