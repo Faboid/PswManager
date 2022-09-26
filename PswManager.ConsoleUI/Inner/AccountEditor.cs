@@ -24,7 +24,7 @@ public class AccountEditor : IAccountEditor {
         }
 
         var encryptedModel = EncryptModel(newValues);
-        return dataEditor.UpdateAccount(name, encryptedModel);
+        return dataEditor.UpdateAccountAsync(name, encryptedModel).GetAwaiter().GetResult();
     }
 
     public async Task<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newValues) {

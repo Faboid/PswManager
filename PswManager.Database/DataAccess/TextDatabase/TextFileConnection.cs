@@ -137,42 +137,7 @@ public class TextFileConnection : IDataConnection {
         return Option.Some<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>(accounts).AsTask();
     }
 
-    public Option<EditorErrorCode> UpdateAccount(string name, AccountModel newModel) {
-        if(string.IsNullOrWhiteSpace(name)) {
-            return EditorErrorCode.InvalidName;
-        }
-
-        using var nameLock = locker.GetLock(name, 50);
-        if(!nameLock.Obtained) {
-            return EditorErrorCode.UsedElsewhere;
-        }
-
-        if(!fileSaver.Exists(name)) {
-            return EditorErrorCode.DoesNotExist;
-        }
-
-        NamesLocker.Lock newModelLock = null;
-        try {
-            if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
-                newModelLock = locker.GetLock(newModel.Name, 50);
-                if(!newModelLock.Obtained) {
-                    return EditorErrorCode.NewNameUsedElsewhere;
-                }
-                if(fileSaver.Exists(newModel.Name)) {
-                    return EditorErrorCode.NewNameExistsAlready;
-                }
-            }
-
-            fileSaver.Update(name, newModel);
-            return Option.None<EditorErrorCode>();
-
-        } finally {
-            newModelLock?.Dispose();
-        }
-
-    }
-
-    public async ValueTask<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newModel) { 
+    public async Task<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newModel) { 
         if(string.IsNullOrWhiteSpace(name)) {
             return EditorErrorCode.InvalidName;
         }

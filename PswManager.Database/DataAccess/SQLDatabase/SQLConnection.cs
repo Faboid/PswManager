@@ -225,46 +225,7 @@ internal class SQLConnection : IDataConnection {
         }
     }
 
-    public Option<EditorErrorCode> UpdateAccount(string name, AccountModel newModel) {
-        if(string.IsNullOrWhiteSpace(name)) {
-            return EditorErrorCode.InvalidName;
-        }
-
-        using var nameLock = locker.GetLock(name);
-        if(nameLock.Obtained == false) {
-            return EditorErrorCode.UsedElsewhere;
-        }
-
-        if(!AccountExist_NoLock(name)) {
-            return EditorErrorCode.DoesNotExist;
-        }
-
-        NamesLocker.Lock newModelLock = null;
-        try {
-            if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
-                newModelLock = locker.GetLock(newModel.Name);
-                if(newModelLock.Obtained == false) {
-                    return EditorErrorCode.NewNameUsedElsewhere;
-                }
-
-                if(AccountExist_NoLock(newModel.Name)) {
-                    return EditorErrorCode.NewNameExistsAlready;
-                }
-            }
-
-            using var cmd = queriesBuilder.UpdateAccountQuery(name, newModel);
-            using(var cnn = cmd.Connection.GetConnection()) {
-                cmd.ExecuteNonQuery();
-            }
-
-            return Option.None<EditorErrorCode>();
-
-        } finally {
-            newModelLock?.Dispose();
-        }
-    }
-
-    public async ValueTask<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newModel) {
+    public async Task<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newModel) {
         if(string.IsNullOrWhiteSpace(name)) {
             return EditorErrorCode.InvalidName;
         }

@@ -94,23 +94,7 @@ internal class JsonConnection : BaseConnection {
         }
     }
 
-    protected override Option<EditorErrorCode> UpdateAccountHook(string name, AccountModel newModel) {
-        var path = BuildFilePath(name);
-        var jsonString = File.ReadAllText(path);
-        var model = JsonSerializer.Deserialize<AccountModel>(jsonString);
-        OverWriteOldModel(model, newModel);
-        var newPath = BuildFilePath(model.Name);
-        var newJsonString = JsonSerializer.Serialize(model);
-        File.WriteAllText(newPath, newJsonString);
-
-        if(path != newPath) {
-            File.Delete(path);
-        }
-
-        return Option.None<EditorErrorCode>();
-    }
-
-    protected override async ValueTask<Option<EditorErrorCode>> UpdateAccountHookAsync(string name, AccountModel newModel) {
+    protected override async Task<Option<EditorErrorCode>> UpdateAccountHookAsync(string name, AccountModel newModel) {
         var path = BuildFilePath(name);
         AccountModel model;
         using(var readStream = new FileStream(path, FileMode.Open)) {

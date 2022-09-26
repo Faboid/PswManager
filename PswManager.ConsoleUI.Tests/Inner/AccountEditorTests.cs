@@ -19,36 +19,12 @@ public class AccountEditorTests {
 
         dataEditorMock = new Mock<IDataEditor>();
         dataEditorMock
-            .Setup(x => x.UpdateAccount(It.IsAny<string>(), It.IsAny<AccountModel>()))
-            .Returns<string, AccountModel>((x, y) => string.IsNullOrWhiteSpace(x) ? EditorErrorCode.InvalidName : Option.None<EditorErrorCode>());
-
-        dataEditorMock
             .Setup(x => x.UpdateAccountAsync(It.IsAny<string>(), It.IsAny<AccountModel>()))
-            .Returns<string, AccountModel>((x, y) => (string.IsNullOrWhiteSpace(x) ? EditorErrorCode.InvalidName : Option.None<EditorErrorCode>()).AsValueTask());
+            .Returns<string, AccountModel>((x, y) => (string.IsNullOrWhiteSpace(x) ? EditorErrorCode.InvalidName : Option.None<EditorErrorCode>()).AsTask());
     }
 
     readonly Mock<IDataEditor> dataEditorMock;
     readonly ICryptoAccountService cryptoAccount;
-
-    [Theory]
-    [InlineData("accName", "noEncrypt", "password", "email")]
-    public void UpdateValuesGotEncrypted(string name, string newName, string password, string email) {
-
-        //arrange
-        var (editor, input, expected) = ArrangeTest(newName, password, email);
-
-        //act
-        var option = editor.UpdateAccount(name, input);
-
-        //assert
-        option.Is(OptionResult.None);
-        dataEditorMock.Verify(x => x.UpdateAccount(
-                It.Is<string>(x => x == name),
-                It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))
-            ));
-        dataEditorMock.VerifyNoOtherCalls();
-
-    }
 
     [Theory]
     [InlineData("accName", "noEncrypt", "password", "email")]
