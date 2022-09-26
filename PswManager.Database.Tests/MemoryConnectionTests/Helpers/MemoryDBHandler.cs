@@ -1,9 +1,8 @@
-﻿using PswManager.Database.DataAccess;
-using PswManager.Database.Models;
+﻿using PswManager.Database.Models;
 using PswManager.Extensions;
 using PswManager.Database.Tests.Generic;
 
-namespace PswManager.Database.Tests.MemoryConnectionTests.Helpers; 
+namespace PswManager.Database.Tests.MemoryConnectionTests.Helpers;
 internal class MemoryDBHandler : ITestDBHandler {
 
     //constructs the class with a default value of five

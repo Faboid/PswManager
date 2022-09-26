@@ -2,7 +2,7 @@ using PswManager.Core.AccountModels;
 using PswManager.Core.Services;
 using PswManager.Core.Tests.Mocks;
 using PswManager.Core.Validators;
-using PswManager.Database.DataAccess;
+using PswManager.Database;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
 using PswManager.Utils;

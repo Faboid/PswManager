@@ -6,7 +6,7 @@ using PswManager.Utils;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PswManager.Database.DataAccess.SQLDatabase; 
+namespace PswManager.Database.DataAccess.SQLDatabase;
 internal class SQLConnection : IDataConnection {
 
     readonly NamesLocker locker = new();

@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PswManager.Database.DataAccess.TextDatabase; 
+namespace PswManager.Database.DataAccess.TextDatabase;
 public class TextFileConnection : IDataConnection {
 
     internal TextFileConnection() {

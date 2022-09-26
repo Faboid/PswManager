@@ -1,7 +1,6 @@
-﻿using PswManager.Database.DataAccess;
-using PswManager.Database.DataAccess.Interfaces;
+﻿using PswManager.Database.DataAccess.Interfaces;
 
-namespace PswManager.Database; 
+namespace PswManager.Database;
 public interface IDataFactory {
 
     IDataConnection GetDataConnection();

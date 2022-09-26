@@ -1,5 +1,4 @@
-﻿using PswManager.Database.DataAccess;
-using PswManager.Database.DataAccess.Interfaces;
+﻿using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.DataAccess.JsonDatabase;
 using PswManager.Database.DataAccess.MemoryDatabase;
 using PswManager.Database.DataAccess.SQLDatabase;
@@ -8,8 +7,8 @@ using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly:InternalsVisibleTo("PswManager.Database.Tests")]
-namespace PswManager.Database; 
+[assembly: InternalsVisibleTo("PswManager.Database.Tests")]
+namespace PswManager.Database;
 public enum DatabaseType {
     TextFile,
     Sql,

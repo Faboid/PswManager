@@ -2,7 +2,7 @@
 using PswManager.Async.Locks;
 using PswManager.Core.AccountModels;
 using PswManager.Core.Validators;
-using PswManager.Database.DataAccess;
+using PswManager.Database;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Utils;
 using System.Collections.Generic;
