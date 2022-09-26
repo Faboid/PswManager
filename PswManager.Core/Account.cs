@@ -62,7 +62,7 @@ internal class Account : IAccount {
                 logLevel = LogLevel.Error;
             }
 
-            _logger?.Log(logLevel, "An EditAccount operation returned: {ErrorCode}", resultCode);
+            _logger?.Log(logLevel, "An EditAccount has failed with the result of: {ErrorCode}", resultCode);
             return output;
         }
 
