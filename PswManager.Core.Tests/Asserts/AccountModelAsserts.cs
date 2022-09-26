@@ -2,7 +2,7 @@
 using PswManager.Database.Models;
 
 namespace PswManager.Core.Tests.Asserts;
-internal class AccountModelAsserts {
+public class AccountModelAsserts {
 
     public static bool AssertEqual(AccountModel expected, AccountModel actual) {
         Assert.Equal(expected.Name, actual.Name);
