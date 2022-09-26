@@ -65,7 +65,7 @@ public class AccountFactory : IAccountFactory {
         var option = await _connection.GetAllAccountsAsync();
 
         if(option.Result() != Utils.Options.OptionResult.Some) {
-            _logger.LogError("");
+            _logger.LogError("_connection.GetAllAccountsAsync has returned {Result}", option.Result());
             return Option.None<IAsyncEnumerable<IAccount>>();
             //todo - remove the optional return of the DB GetAll
         }
