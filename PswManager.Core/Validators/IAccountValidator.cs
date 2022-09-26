@@ -1,12 +1,12 @@
-﻿using PswManager.Database.Models;
+﻿using PswManager.Core.AccountModels;
 
 namespace PswManager.Core.Validators;
 public interface IAccountValidator {
 
-    public NameValid IsNameValid(AccountModel account);
-    public PasswordValid IsPasswordValid(AccountModel account);
-    public EmailValid IsEmailValid(AccountModel account);
-    public AccountValid IsAccountValid(AccountModel account);
+    public NameValid IsNameValid(IAccountModel account);
+    public PasswordValid IsPasswordValid(IAccountModel account);
+    public EmailValid IsEmailValid(IAccountModel account);
+    public AccountValid IsAccountValid(IAccountModel account);
 
 }
 

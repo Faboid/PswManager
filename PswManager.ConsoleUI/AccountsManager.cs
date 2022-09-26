@@ -1,15 +1,14 @@
-﻿using PswManager.Core.Inner;
-using PswManager.Core.Inner.Interfaces;
+﻿using PswManager.ConsoleUI.Inner;
+using PswManager.ConsoleUI.Inner.Interfaces;
 using PswManager.Core.Services;
 using PswManager.Database;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
-using PswManager.Utils;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PswManager.Core;
-public class AccountsManager : IAccountDeleter, IAccountEditor, IAccountReader, IAccountCreator {
+namespace PswManager.ConsoleUI;
+public class AccountsManager : IAccountsManager {
 
     public AccountsManager(IDataFactory dbFactory, ICryptoAccountService cryptoAccount) {
         accountCreator = new AccountCreator(dbFactory.GetDataCreator(), cryptoAccount);

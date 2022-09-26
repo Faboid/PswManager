@@ -3,10 +3,10 @@ using PswManager.Database.Models;
 using PswManager.Commands.AbstractCommands;
 using System.Threading.Tasks;
 using PswManager.ConsoleUI.Commands.ArgsModels;
-using PswManager.Core.Inner.Interfaces;
 using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.ConsoleUI.Inner.Interfaces;
 
-namespace PswManager.ConsoleUI.Commands; 
+namespace PswManager.ConsoleUI.Commands;
 public class AddCommand : BaseCommand<AddCommandArgs> {
 
     private readonly IAccountCreator dataCreator;

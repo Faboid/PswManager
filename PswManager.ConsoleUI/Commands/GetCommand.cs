@@ -3,10 +3,10 @@ using PswManager.Commands.AbstractCommands;
 using PswManager.Database.Models;
 using System.Threading.Tasks;
 using PswManager.ConsoleUI.Commands.ArgsModels;
-using PswManager.Core.Inner.Interfaces;
 using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.ConsoleUI.Inner.Interfaces;
 
-namespace PswManager.ConsoleUI.Commands; 
+namespace PswManager.ConsoleUI.Commands;
 public class GetCommand : BaseCommand<GetCommandArgs> {
 
     private readonly IAccountReader dataReader;

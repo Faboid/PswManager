@@ -1,13 +1,12 @@
 ﻿using PswManager.Encryption.Cryptography;
 using PswManager.Encryption.Services;
-using Xunit;
 using PswManager.TestUtils;
 using PswManager.Core.Services;
 
-namespace PswManager.Core.Tests.Cryptography;
-public class CryptoAccountTests {
+namespace PswManager.Core.Tests.ServicesTests;
+public class CryptoAccountServiceTests {
 
-    public CryptoAccountTests() {
+    public CryptoAccountServiceTests() {
         var passCryptoService = new CryptoService(passPassword, "test.1");
         var emaCryptoService = new CryptoService(emaPassword, "test.2");
         cryptoAccount = new CryptoAccountService(passCryptoService, emaCryptoService);

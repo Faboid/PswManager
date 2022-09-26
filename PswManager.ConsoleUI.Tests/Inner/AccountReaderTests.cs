@@ -1,17 +1,15 @@
 ﻿using Moq;
-using PswManager.Core.Inner;
-using PswManager.Core.Inner.Interfaces;
+using PswManager.ConsoleUI.Inner;
+using PswManager.ConsoleUI.Inner.Interfaces;
 using PswManager.Core.Services;
 using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
-using PswManager.Extensions;
 using PswManager.Utils;
-using Xunit;
 
-namespace PswManager.Core.Tests.Inner;
+namespace PswManager.ConsoleUI.Tests.Inner;
 public class AccountReaderTests {
 
     public AccountReaderTests() {
@@ -25,7 +23,7 @@ public class AccountReaderTests {
 
         dataReaderMock
             .Setup(x => x.GetAccountAsync(It.Is<string>(x => !string.IsNullOrWhiteSpace(x))))
-            .Returns<string>(x => 
+            .Returns<string>(x =>
                 ValueTask.FromResult<Option<AccountModel, ReaderErrorCode>>(AccountModelMocks.GenerateEncryptedFromName(x, cryptoAccount))
             );
 
@@ -117,7 +115,7 @@ public class AccountReaderTests {
 
         //act
         var option = await reader.ReadAllAccountsAsync();
-        var listValues = await option.Or(null).Take(50).ToList().ConfigureAwait(false);
+        var listValues = await option.Or(null).Take(50).ToListAsync().ConfigureAwait(false);
 
         //assert
         Assert.True(option.Match(some => true, error => false, () => false));
@@ -161,7 +159,7 @@ public class AccountReaderTests {
 
         //act
         var result = await reader.ReadAllAccountsAsync().ConfigureAwait(false);
-        var ten = await result.Or(null).Take(10).Select(x => x.Or(null)).ToList();
+        var ten = await result.Or(null).Take(10).Select(x => x.Or(null)).ToListAsync();
 
         //assert
         Assert.True(result.Match(some => true, error => false, () => false));

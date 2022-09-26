@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PswManager.Commands.Unused.Parsing; 
+﻿namespace PswManager.Commands.Unused.Parsing;
 public interface IParser {
 
     public string Separator { get; }

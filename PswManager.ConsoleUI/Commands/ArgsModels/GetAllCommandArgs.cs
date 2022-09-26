@@ -1,12 +1,11 @@
 ﻿using PswManager.Commands;
-using PswManager.ConsoleUI.Commands;
 using PswManager.ConsoleUI.Attributes;
 using PswManager.ConsoleUI.Commands.Validation.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PswManager.ConsoleUI.Commands.ArgsModels; 
+namespace PswManager.ConsoleUI.Commands.ArgsModels;
 public class GetAllCommandArgs : ICommandInput {
 
     [NoDuplicateValues(GetAllCommand.DuplicateKeyErrorMessage)]

@@ -17,7 +17,7 @@ public static class Option {
 
 }
 
-public struct Option<TValue> {
+public struct Option<TValue> : IOption<TValue> {
 
     private IOption<TValue> GetOption => _option ?? new None<TValue>();
     private readonly IOption<TValue> _option;
@@ -41,6 +41,8 @@ public struct Option<TValue> {
     public Option<T> Bind<T>(Func<TValue, Option<T>> func) => GetOption.Bind(func);
     public async Task<Option<T>> BindAsync<T>(Func<TValue, Task<Option<T>>> func) => await GetOption.BindAsync(func).ConfigureAwait(false);
     public TValue Or(TValue def) => GetOption.Or(def);
+    public TValue OrDefault() => GetOption.OrDefault();
+
 
     //static constructors
     public static Option<TValue> Some(TValue value) => new(value);
@@ -54,7 +56,7 @@ public struct Option<TValue> {
 
 }
 
-public struct Option<TValue, TError> {
+public struct Option<TValue, TError> : IOption<TValue, TError> {
 
     private IOption<TValue, TError> GetOption => _option ?? new None<TValue, TError>();
     private readonly IOption<TValue, TError> _option;
@@ -84,6 +86,10 @@ public struct Option<TValue, TError> {
     public Option<T, TError> Bind<T>(Func<TValue, Option<T, TError>> func) => GetOption.Bind(func);
     public async Task<Option<T, TError>> BindAsync<T>(Func<TValue, Task<Option<T, TError>>> func) => await GetOption.BindAsync(func).ConfigureAwait(false);
     public TValue Or(TValue def) => GetOption.Or(def);
+    public TValue OrDefault() => GetOption.OrDefault();
+    public TError OrError(TError def) => GetOption.OrError(def);
+    public TError OrDefaultError() => GetOption.OrDefaultError();
+
 
     //static constructors
     public static Option<TValue, TError> Some(TValue value) => new(value);
