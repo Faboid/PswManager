@@ -6,6 +6,7 @@ public interface IAccount {
     Task DeleteAccountAsync();
     Task<EditAccountResult> EditAccountAsync(IAccountModel newValues);
     DecryptedAccount GetDecryptedModel();
+    Task<DecryptedAccount> GetDecryptedModelAsync();
 }
 
 public enum EditAccountResult {
