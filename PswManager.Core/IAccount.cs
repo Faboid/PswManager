@@ -3,6 +3,10 @@ using System.Threading.Tasks;
 
 namespace PswManager.Core;
 public interface IAccount {
+    string Name { get; }
+    string EncryptedPassword { get; }
+    string EncryptedEmail { get; }
+
     Task DeleteAccountAsync();
     Task<EditAccountResult> EditAccountAsync(IAccountModel newValues);
     DecryptedAccount GetDecryptedModel();
