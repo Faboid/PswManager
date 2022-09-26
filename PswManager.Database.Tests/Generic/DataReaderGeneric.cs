@@ -19,25 +19,6 @@ public abstract class DataReaderGeneric : IDisposable {
     static protected readonly int numValues = 3;
 
     [Fact]
-    public void GetOneShouldReturn() {
-
-        //arrange
-        AccountModel expected = new(
-            dbHandler.GetDefaultValues().GetValue(1, DefaultValues.TypeValue.Name),
-            dbHandler.GetDefaultValues().GetValue(1, DefaultValues.TypeValue.Password),
-            dbHandler.GetDefaultValues().GetValue(1, DefaultValues.TypeValue.Email)
-            );
-
-        //act
-        var actual = dataReader.GetAccount(expected.Name);
-
-        //assert
-        actual.Is(OptionResult.Some);
-        AccountEqual(expected, actual.Or(null));
-
-    }
-
-    [Fact]
     public async Task GetOneShouldReturnAsync() {
 
         //arrange
@@ -59,15 +40,12 @@ public abstract class DataReaderGeneric : IDisposable {
     public async Task GetFailure_InvalidName(string name) {
 
         //act
-        var result = dataReader.GetAccount(name);
-        var resultAsync = await dataReader.GetAccountAsync(name).ConfigureAwait(false);
+        var result = await dataReader.GetAccountAsync(name).ConfigureAwait(false);
 
         //assert
         result.Is(OptionResult.Error);
-        resultAsync.Is(OptionResult.Error);
 
         Assert.Equal(ReaderErrorCode.InvalidName, GetError(result));
-        Assert.Equal(ReaderErrorCode.InvalidName, GetError(resultAsync));
 
     }
 
@@ -79,41 +57,14 @@ public abstract class DataReaderGeneric : IDisposable {
 
         //act
         var exists = dataReader.AccountExist(name);
-        var result = dataReader.GetAccount(name);
-        var resultAsync = await dataReader.GetAccountAsync(name).ConfigureAwait(false);
+        var result = await dataReader.GetAccountAsync(name).ConfigureAwait(false);
 
         //assert
         Assert.Equal(AccountExistsStatus.NotExist, exists);
         result.Is(OptionResult.Error);
-        resultAsync.Is(OptionResult.Error);
 
         Assert.Equal(ReaderErrorCode.DoesNotExist, GetError(result));
-        Assert.Equal(ReaderErrorCode.DoesNotExist, GetError(resultAsync));
 
-    }
-
-    [Fact]
-    public void GetAllShouldGetAll() {
-
-        //arrange
-        var expectedAccounts = dbHandler.GetDefaultValues().GetAll().ToList();
-
-        //act
-        var actual = dataReader.GetAllAccounts();
-        var values = actual.Or(null)
-            .Select(x => x.Or(null))
-            .OrderBy(x => x.Name)
-            .ToList();
-
-        //assert
-        Assert.True(MatchToBool(actual));
-        Assert.Equal(expectedAccounts.Count, values.Count);
-
-        Enumerable
-            .Range(0, dbHandler.GetDefaultValues().values.Count - 1)
-            .ForEach(x => {
-                AccountEqual(expectedAccounts[x], values[x]);
-            });
     }
 
     [Fact]
@@ -137,36 +88,6 @@ public abstract class DataReaderGeneric : IDisposable {
 
         Enumerable
             .Range(0, dbHandler.GetDefaultValues().values.Count - 1)
-            .ForEach(x => {
-                AccountEqual(expectedAccounts[x], values[x]);
-            });
-    }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(2)]
-    [InlineData(3)]
-    public void GetAFewWithIEnumerator(int num) {
-
-        //arrange
-        var expectedAccounts = dbHandler.GetDefaultValues().GetSome(num).ToList();
-
-        //act
-        var actual = dataReader.GetAllAccounts();
-        var values = actual
-            .Or(null)
-            .Select(x => x.Or(null))
-            .Where(x => x != null)
-            .OrderBy(x => x.Name)
-            .Take(num)
-            .ToList();
-
-        //assert
-        Assert.True(MatchToBool(actual));
-        Assert.Equal(expectedAccounts.Count, values.Count);
-
-        Enumerable
-            .Range(0, num)
             .ForEach(x => {
                 AccountEqual(expectedAccounts[x], values[x]);
             });

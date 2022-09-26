@@ -111,20 +111,7 @@ internal class SQLConnection : IDataConnection {
         return (result)? Option.None<DeleterErrorCode>() : DeleterErrorCode.Undefined;
     }
 
-    public Option<AccountModel, ReaderErrorCode> GetAccount(string name) {
-        if(string.IsNullOrWhiteSpace(name)) {
-            return ReaderErrorCode.InvalidName;
-        }
-
-        using var heldLock = locker.GetLock(name, 50);
-        if(heldLock.Obtained == false) {
-            return ReaderErrorCode.UsedElsewhere;
-        }
-
-        return GetAccount_NoLock(name);
-    }
-
-    public async ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
+    public async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
         if(string.IsNullOrWhiteSpace(name)) {
             return ReaderErrorCode.InvalidName;
         }
@@ -135,25 +122,6 @@ internal class SQLConnection : IDataConnection {
         }
 
         return await GetAccountAsync_NoLock(name).ConfigureAwait(false);
-    }
-
-    private Option<AccountModel, ReaderErrorCode> GetAccount_NoLock(string name) {
-        using var cmd = queriesBuilder.GetAccountQuery(name);
-        using var connection = cmd.Connection.GetConnection();
-        using var reader = cmd.ExecuteReader();
-
-        if(!reader.HasRows) {
-            return ReaderErrorCode.DoesNotExist;
-        }
-
-        reader.Read();
-        var model = new AccountModel {
-            Name = reader.GetString(0),
-            Password = reader.GetString(1),
-            Email = reader.GetString(2)
-        };
-
-        return model;
     }
 
     private async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync_NoLock(string name) {
@@ -175,15 +143,6 @@ internal class SQLConnection : IDataConnection {
         return model;
     }
 
-    public Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccounts() {
-        using var mainLock = locker.GetAllLocks(10000);
-        if(mainLock.Obtained == false) {
-            return ReaderAllErrorCode.SomeUsedElsewhere;
-        }
-
-        return new(GetAccounts());
-    }
-
     public async Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsAsync() {
         using var mainLock = await locker.GetAllLocksAsync(10000).ConfigureAwait(false);
         if(mainLock.Obtained == false) {
@@ -191,22 +150,6 @@ internal class SQLConnection : IDataConnection {
         }
 
         return new(GetAccountsAsync());
-    }
-
-    private IEnumerable<NamedAccountOption> GetAccounts() {
-        using var cmd = queriesBuilder.GetAllAccountsQuery();
-        using var cnn = cmd.Connection.GetConnection();
-
-        using var reader = cmd.ExecuteReader();
-        while(reader.Read()) {
-            var model = new AccountModel {
-                Name = reader.GetString(0),
-                Password = reader.GetString(1),
-                Email = reader.GetString(2)
-            };
-
-            yield return model;
-        }
     }
 
     private async IAsyncEnumerable<NamedAccountOption> GetAccountsAsync() {

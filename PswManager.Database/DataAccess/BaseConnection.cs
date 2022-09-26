@@ -82,24 +82,7 @@ internal abstract class BaseConnection : IDataConnection {
         return await DeleteAccountHookAsync(name).ConfigureAwait(false);
     }
 
-    public Option<AccountModel, ReaderErrorCode> GetAccount(string name) {
-        if(string.IsNullOrWhiteSpace(name)) {
-            return ReaderErrorCode.InvalidName;
-        }
-
-        using var ownedLock = Locker.GetLock(name, 50);
-        if(!ownedLock.Obtained) {
-            return ReaderErrorCode.UsedElsewhere;
-        }
-
-        if(AccountExistInternal(name) == AccountExistsStatus.NotExist) {
-            return ReaderErrorCode.DoesNotExist;
-        }
-
-        return GetAccountHook(name);
-    }
-
-    public async ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) { 
+    public async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) { 
         if(string.IsNullOrWhiteSpace(name)) {
             return ReaderErrorCode.InvalidName;
         }
@@ -114,15 +97,6 @@ internal abstract class BaseConnection : IDataConnection {
         }
 
         return await GetAccountHookAsync(name).ConfigureAwait(false);
-    }
-
-    public Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccounts() {
-        using var mainLock = Locker.GetAllLocks(10000);
-        if(mainLock.Obtained == false) {
-            return ReaderAllErrorCode.SomeUsedElsewhere;
-        }
-
-        return GetAllAccountsHook();
     }
 
     public async Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsAsync() {
@@ -184,10 +158,8 @@ internal abstract class BaseConnection : IDataConnection {
 
     protected abstract AccountExistsStatus AccountExistHook(string name);
     protected abstract ValueTask<AccountExistsStatus> AccountExistHookAsync(string name);
-    protected abstract ValueTask<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model);
-    protected abstract Option<AccountModel, ReaderErrorCode> GetAccountHook(string name);
-    protected abstract ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name);
-    protected abstract Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccountsHook();
+    protected abstract Task<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model);
+    protected abstract Task<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name);
     protected abstract Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync();
     protected abstract Task<Option<EditorErrorCode>> UpdateAccountHookAsync(string name, AccountModel newModel);
     protected abstract Task<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name);

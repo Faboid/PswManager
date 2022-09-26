@@ -19,9 +19,9 @@ internal class MemoryConnection : BaseConnection {
         return ValueTask.FromResult(accounts.ContainsKey(name) ? AccountExistsStatus.Exist : AccountExistsStatus.NotExist);
     }
 
-    protected override ValueTask<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model) {
+    protected override Task<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model) {
         accounts.Add(model.Name, model);
-        return ValueTask.FromResult(Option.None<CreatorErrorCode>());
+        return Task.FromResult(Option.None<CreatorErrorCode>());
     }
 
     protected override Task<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name) {
@@ -29,37 +29,18 @@ internal class MemoryConnection : BaseConnection {
         return Option.None<DeleterErrorCode>().AsTask();
     }
 
-    protected override Option<AccountModel, ReaderErrorCode> GetAccountHook(string name) {
-        return accounts[name];
-    }
-
-    protected override ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name) {
-        return ValueTask.FromResult<Option<AccountModel, ReaderErrorCode>>(accounts[name]);
-    }
-
-    protected override Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccountsHook() {
-        var list = accounts
-            .Values
-            .Select(x => (NamedAccountOption)x);
-
-        return new(list);
+    protected override Task<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name) {
+        return Task.FromResult<Option<AccountModel, ReaderErrorCode>>(accounts[name]);
     }
 
     protected override Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync() {
-        //fake async as it's just reading a list
-        Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAccounts() {
-            return GetAllAccountsHook()
-                .Bind(
-                    x => Option.Some<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>(ToAsyncEnumerable(x))
-                );
-        }
-
-        return Task.FromResult(GetAccounts());
+        var enumerator = GetAccountsAsync();
+        return Task.FromResult(Option.Some<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>(enumerator));
     }
 
-    private static async IAsyncEnumerable<NamedAccountOption> ToAsyncEnumerable(IEnumerable<NamedAccountOption> enumerable) {
-        foreach(var item in enumerable) {
-            yield return await Task.FromResult(item);
+    private async IAsyncEnumerable<NamedAccountOption> GetAccountsAsync() {
+        foreach(var account in accounts.Values) {
+            yield return await Task.FromResult<NamedAccountOption>(account);
         }
     }
 

@@ -91,25 +91,7 @@ public class TextFileConnection : IDataConnection {
         return Option.None<DeleterErrorCode>();
     }
 
-    public Option<AccountModel, ReaderErrorCode> GetAccount(string name) {
-        if(string.IsNullOrWhiteSpace(name)) {
-            return ReaderErrorCode.InvalidName;
-        }
-
-        using var accLock = locker.GetLock(name, 50);
-        if(!accLock.Obtained) {
-            return ReaderErrorCode.UsedElsewhere;
-        }
-
-        if(!fileSaver.Exists(name)) {
-            return ReaderErrorCode.DoesNotExist;
-        }
-
-        var account = fileSaver.Get(name);
-        return account;
-    }
-
-    public async ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
+    public async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
         if(string.IsNullOrWhiteSpace(name)) {
             return ReaderErrorCode.InvalidName;
         }
@@ -125,11 +107,6 @@ public class TextFileConnection : IDataConnection {
 
         var account = await fileSaver.GetAsync(name);
         return account;
-    }
-
-    public Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccounts() {
-        var accounts = fileSaver.GetAll(locker);
-        return new(accounts);
     }
 
     public Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsAsync() { 

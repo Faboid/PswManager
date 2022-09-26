@@ -4,6 +4,7 @@ using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PswManager.ConsoleUI.Inner;
@@ -18,12 +19,7 @@ public class AccountReader : IAccountReader {
     }
 
     public Option<AccountModel, ReaderErrorCode> ReadAccount(string name) {
-        if(string.IsNullOrWhiteSpace(name)) {
-            return ReaderErrorCode.InvalidName;
-        }
-
-        var result = dataReader.GetAccount(name);
-        return result.Bind<AccountModel>(x => cryptoAccount.Decrypt(x));
+        return ReadAccountAsync(name).GetAwaiter().GetResult();
     }
 
     public async Task<Option<AccountModel, ReaderErrorCode>> ReadAccountAsync(string name) {
@@ -37,7 +33,7 @@ public class AccountReader : IAccountReader {
 
     public Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> ReadAllAccounts() {
         return dataReader
-            .GetAllAccounts()
+            .GetAllAccountsAsync().GetAwaiter().GetResult()
             .Bind<IEnumerable<NamedAccountOption>>(x => new(DecryptAll(x)));
     }
 
@@ -46,10 +42,8 @@ public class AccountReader : IAccountReader {
             .Bind<IAsyncEnumerable<NamedAccountOption>>(x => new(DecryptAllAsync(x)));
     }
 
-    private IEnumerable<NamedAccountOption> DecryptAll(IEnumerable<NamedAccountOption> enumerable) {
-        foreach(var option in enumerable) {
-            yield return option.Bind<AccountModel>(x => cryptoAccount.Decrypt(x));
-        }
+    private IEnumerable<NamedAccountOption> DecryptAll(IAsyncEnumerable<NamedAccountOption> enumerable) {
+        return enumerable.ToEnumerable().Select(x => x.Bind<AccountModel>(x => cryptoAccount.Decrypt(x)));
     }
 
     private async IAsyncEnumerable<NamedAccountOption> DecryptAllAsync(IAsyncEnumerable<NamedAccountOption> enumerable) {

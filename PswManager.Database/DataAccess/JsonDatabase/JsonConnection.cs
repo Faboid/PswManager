@@ -38,7 +38,7 @@ internal class JsonConnection : BaseConnection {
             AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
 
-    protected async override ValueTask<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model) {
+    protected async override Task<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model) {
         var path = BuildFilePath(model.Name);
         using var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write);
         await JsonSerializer.SerializeAsync(stream, model).ConfigureAwait(false);
@@ -50,29 +50,11 @@ internal class JsonConnection : BaseConnection {
         return Option.None<DeleterErrorCode>().AsTask();
     }
 
-    protected override Option<AccountModel, ReaderErrorCode> GetAccountHook(string name) {
-        var jsonString = File.ReadAllText(BuildFilePath(name));
-        var model = JsonSerializer.Deserialize<AccountModel>(jsonString);
-        return model;
-    }
-
-    protected override async ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name) {
+    protected override async Task<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name) {
         var path = BuildFilePath(name);
         using var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
         AccountModel model = await JsonSerializer.DeserializeAsync<AccountModel>(stream).ConfigureAwait(false);
         return model;
-    }
-
-    protected override Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccountsHook() {
-        var accounts = Directory.GetFiles(directoryPath)
-            .Select(x => Path.GetFileNameWithoutExtension(x))
-            .Select(x => GetAccountHook(x).Match(
-                some => some, 
-                error => (x, error), 
-                () => NamedAccountOption.None())
-            );
-
-        return new(accounts);
     }
 
     protected override Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync() {
