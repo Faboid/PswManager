@@ -1,5 +1,6 @@
 using PswManager.Core.AccountModels;
 using PswManager.Core.Services;
+using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
 using PswManager.Database.Models;
 
@@ -21,28 +22,36 @@ public class AccountModelFactoryTests {
 		var encryptedValues = _cryptoAccountService.Encrypt(GetDefault());
 
 		var encryptedModel = _sut.CreateEncryptedAccount(encryptedValues.Name, encryptedValues.Password, encryptedValues.Email);
+		var encryptedModelFromModel = _sut.CreateEncryptedAccount(encryptedValues);
 
 		Assert.True(encryptedModel.IsEncrypted);
 		Assert.False(encryptedModel.IsPlainText);
-		Assert.Equal(encryptedValues.Name, encryptedModel.Name);
-		Assert.Equal(encryptedValues.Password, encryptedModel.Password);
-		Assert.Equal(encryptedValues.Email, encryptedModel.Email);
+        AccountModelAsserts.AssertEqual(encryptedValues, encryptedModel);
         Assert.IsType<EncryptedAccount>(encryptedModel);
 
-	}
+        Assert.True(encryptedModelFromModel.IsEncrypted);
+        Assert.False(encryptedModelFromModel.IsPlainText);
+        AccountModelAsserts.AssertEqual(encryptedValues, encryptedModelFromModel);
+        Assert.IsType<EncryptedAccount>(encryptedModelFromModel);
+
+    }
 
 	[Fact]
 	public void CreateDecryptedModel() {
 
 		var values = GetDefault();
 		var model = _sut.CreateDecryptedAccount(values.Name, values.Password, values.Email);
+		var modelFromModel = _sut.CreateDecryptedAccount(values);
 
         Assert.False(model.IsEncrypted);
         Assert.True(model.IsPlainText);
-        Assert.Equal(values.Name, model.Name);
-        Assert.Equal(values.Password, model.Password);
-        Assert.Equal(values.Email, model.Email);
+        AccountModelAsserts.AssertEqual(values, model);
         Assert.IsType<DecryptedAccount>(model);
+
+        Assert.False(modelFromModel.IsEncrypted);
+        Assert.True(modelFromModel.IsPlainText);
+        AccountModelAsserts.AssertEqual(values, modelFromModel);
+        Assert.IsType<DecryptedAccount>(modelFromModel);
 
     }
 

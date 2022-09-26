@@ -1,5 +1,6 @@
 ﻿using PswManager.Core.AccountModels;
 using PswManager.Core.Services;
+using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
 
 namespace PswManager.Core.Tests.AccountModelsTests;
@@ -11,6 +12,15 @@ public class DecryptedAccountTests {
     private DecryptedAccount GetDefault() => new("SomeName", "SomePass", "SomeEma", _cryptoAccountService);
 
     [Fact]
+    public void GetUnderlyingModel() {
+
+        var expected = GetDefault();
+        var actual = expected.GetUnderlyingModel();
+        AccountModelAsserts.AssertEqual(expected, actual);
+
+    }
+
+    [Fact]
     public async Task GetDecryptedModel_ReturnsItself() {
 
         var expected = GetDefault();
@@ -20,16 +30,12 @@ public class DecryptedAccountTests {
         Assert.False(actual.IsEncrypted);
         Assert.True(actual.IsPlainText);
         Assert.Equal(expected, actual);
-        Assert.Equal(expected.Name, actual.Name);
-        Assert.Equal(expected.Password, actual.Password);
-        Assert.Equal(expected.Email, actual.Email);
+        AccountModelAsserts.AssertEqual(expected, actual);
 
         Assert.False(actualAsync.IsEncrypted);
         Assert.True(actualAsync.IsPlainText);
         Assert.Equal(expected, actualAsync);
-        Assert.Equal(expected.Name, actualAsync.Name);
-        Assert.Equal(expected.Password, actualAsync.Password);
-        Assert.Equal(expected.Email, actualAsync.Email);
+        AccountModelAsserts.AssertEqual(expected, actualAsync);
 
     }
 
@@ -45,15 +51,11 @@ public class DecryptedAccountTests {
 
         Assert.True(encryptedAccount.IsEncrypted);
         Assert.False(encryptedAccount.IsPlainText);
-        Assert.Equal(expectedValues.Name, encryptedAccount.Name);
-        Assert.Equal(expectedValues.Password, encryptedAccount.Password);
-        Assert.Equal(expectedValues.Email, encryptedAccount.Email);
+        AccountModelAsserts.AssertEqual(expectedValues, encryptedAccount);
 
         Assert.True(encryptedAccountAsync.IsEncrypted);
         Assert.False(encryptedAccountAsync.IsPlainText);
-        Assert.Equal(expectedValues.Name, encryptedAccountAsync.Name);
-        Assert.Equal(expectedValues.Password, encryptedAccountAsync.Password);
-        Assert.Equal(expectedValues.Email, encryptedAccountAsync.Email);
+        AccountModelAsserts.AssertEqual(expectedValues, encryptedAccountAsync);
 
     }
 

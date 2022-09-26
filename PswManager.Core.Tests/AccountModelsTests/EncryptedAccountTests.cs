@@ -1,5 +1,6 @@
 using PswManager.Core.AccountModels;
 using PswManager.Core.Services;
+using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
 
 namespace PswManager.Core.Tests.AccountModelsTests;
@@ -9,6 +10,15 @@ public class EncryptedAccountTests {
 	private readonly ICryptoAccountService _cryptoAccountService = ICryptoAccountMocks.GetReversedAndSummingCryptor();
 
 	private EncryptedAccount GetDefault() => new("SomeName", "SomePass", "SomeEma", _cryptoAccountService);
+
+	[Fact]
+	public void GetUnderlyingModel() {
+
+		var expected = GetDefault();
+		var actual = expected.GetUnderlyingModel();
+		AccountModelAsserts.AssertEqual(expected, actual);
+
+	}
 
     [Fact]
 	public async Task GetEncryptedModel_ReturnsItself() {
@@ -20,16 +30,12 @@ public class EncryptedAccountTests {
         Assert.True(actual.IsEncrypted);
         Assert.False(actual.IsPlainText);
         Assert.Equal(expected, actual);
-		Assert.Equal(expected.Name, actual.Name);
-		Assert.Equal(expected.Password, actual.Password);
-		Assert.Equal(expected.Email, actual.Email);
+		AccountModelAsserts.AssertEqual(expected, actual);
 
         Assert.True(actualAsync.IsEncrypted);
         Assert.False(actualAsync.IsPlainText);
         Assert.Equal(expected, actualAsync);
-        Assert.Equal(expected.Name, actualAsync.Name);
-        Assert.Equal(expected.Password, actualAsync.Password);
-        Assert.Equal(expected.Email, actualAsync.Email);
+		AccountModelAsserts.AssertEqual(expected, actualAsync);
 
     }
 
