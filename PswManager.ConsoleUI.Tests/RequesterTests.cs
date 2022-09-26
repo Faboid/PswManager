@@ -1,9 +1,8 @@
 ﻿using PswManager.ConsoleUI;
 using PswManager.ConsoleUI.Attributes;
 using PswManager.Core;
-using Xunit;
 
-namespace PswManager.Tests.Parsing; 
+namespace PswManager.ConsoleUI.Tests;
 public class RequesterTests {
 
     [Fact]
@@ -111,7 +110,7 @@ internal class FakeUserInput : IUserInput {
     }
 
     public void SendMessage(string message) {
-        
+
     }
 
     public char[] RequestPassword() {

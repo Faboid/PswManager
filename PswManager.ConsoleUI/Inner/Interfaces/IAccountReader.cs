@@ -1,10 +1,9 @@
 ﻿using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
-using PswManager.Utils;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PswManager.Core.Inner.Interfaces;
+namespace PswManager.ConsoleUI.Inner.Interfaces;
 public interface IAccountReader {
 
     Option<AccountModel, ReaderErrorCode> ReadAccount(string name);

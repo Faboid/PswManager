@@ -1,5 +1,5 @@
-﻿using PswManager.Core.Inner;
-using PswManager.Core.Inner.Interfaces;
+﻿using PswManager.ConsoleUI.Inner;
+using PswManager.ConsoleUI.Inner.Interfaces;
 using PswManager.Core.Services;
 using PswManager.Database;
 using PswManager.Database.DataAccess.ErrorCodes;

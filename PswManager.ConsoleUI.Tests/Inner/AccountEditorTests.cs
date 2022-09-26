@@ -1,4 +1,5 @@
-﻿using PswManager.Core.Inner;
+﻿using Moq;
+using PswManager.ConsoleUI.Inner;
 using PswManager.Core.Services;
 using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
@@ -10,7 +11,7 @@ using PswManager.TestUtils;
 using PswManager.Utils;
 using PswManager.Utils.Options;
 
-namespace PswManager.Core.Tests.Inner;
+namespace PswManager.ConsoleUI.Tests.Inner;
 public class AccountEditorTests {
 
     public AccountEditorTests() {
@@ -19,7 +20,7 @@ public class AccountEditorTests {
         dataEditorMock = new Mock<IDataEditor>();
         dataEditorMock
             .Setup(x => x.UpdateAccount(It.IsAny<string>(), It.IsAny<AccountModel>()))
-            .Returns<string, AccountModel>((x, y) => string.IsNullOrWhiteSpace(x)? EditorErrorCode.InvalidName : Option.None<EditorErrorCode>());
+            .Returns<string, AccountModel>((x, y) => string.IsNullOrWhiteSpace(x) ? EditorErrorCode.InvalidName : Option.None<EditorErrorCode>());
 
         dataEditorMock
             .Setup(x => x.UpdateAccountAsync(It.IsAny<string>(), It.IsAny<AccountModel>()))

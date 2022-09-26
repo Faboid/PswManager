@@ -1,12 +1,11 @@
 ﻿using PswManager.Commands;
 using PswManager.Database.DataAccess.Interfaces;
-using Xunit;
 using PswManager.ConsoleUI.Tests.Commands.Helper;
 using PswManager.ConsoleUI.Commands;
-using PswManager.Core.Inner;
 using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.ConsoleUI.Inner;
 
-namespace PswManager.ConsoleUI.Tests.Commands; 
+namespace PswManager.ConsoleUI.Tests.Commands;
 public class AddCommandTests {
 
     public AddCommandTests() {

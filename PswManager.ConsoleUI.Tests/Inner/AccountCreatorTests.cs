@@ -1,4 +1,5 @@
-﻿using PswManager.Core.Inner;
+﻿using Moq;
+using PswManager.ConsoleUI.Inner;
 using PswManager.Core.Services;
 using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
@@ -7,7 +8,7 @@ using PswManager.Database.Models;
 using PswManager.TestUtils;
 using PswManager.Utils.Options;
 
-namespace PswManager.Core.Tests.Inner;
+namespace PswManager.ConsoleUI.Tests.Inner;
 public class AccountCreatorTests {
 
     public AccountCreatorTests() {

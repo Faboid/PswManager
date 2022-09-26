@@ -1,4 +1,5 @@
-﻿using PswManager.Core.Inner;
+﻿using Moq;
+using PswManager.ConsoleUI.Inner;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Extensions;
@@ -6,7 +7,7 @@ using PswManager.TestUtils;
 using PswManager.Utils;
 using PswManager.Utils.Options;
 
-namespace PswManager.Core.Tests.Inner;
+namespace PswManager.ConsoleUI.Tests.Inner;
 public class AccountDeleterTests {
 
     public AccountDeleterTests() {
@@ -15,11 +16,11 @@ public class AccountDeleterTests {
 
         dataDeleterMock
             .Setup(x => x.DeleteAccount(It.IsAny<string>()))
-            .Returns<string>(x => string.IsNullOrWhiteSpace(x)? DeleterErrorCode.InvalidName : Option.None<DeleterErrorCode>());
+            .Returns<string>(x => string.IsNullOrWhiteSpace(x) ? DeleterErrorCode.InvalidName : Option.None<DeleterErrorCode>());
 
         dataDeleterMock
             .Setup(x => x.DeleteAccountAsync(It.IsAny<string>()))
-            .Returns<string>(x => (string.IsNullOrWhiteSpace(x)? DeleterErrorCode.InvalidName : Option.None<DeleterErrorCode>()).AsValueTask());
+            .Returns<string>(x => (string.IsNullOrWhiteSpace(x) ? DeleterErrorCode.InvalidName : Option.None<DeleterErrorCode>()).AsValueTask());
     }
 
     readonly Mock<IDataDeleter> dataDeleterMock;

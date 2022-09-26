@@ -1,9 +1,8 @@
 ﻿using PswManager.Commands.Validation.Attributes;
 using System.Reflection;
-using Xunit;
 using Xunit.Abstractions;
 
-namespace PswManager.ConsoleUI.Tests; 
+namespace PswManager.ConsoleUI.Tests;
 public class AttributesUsageTests {
 
     public AttributesUsageTests(ITestOutputHelper output) {

@@ -1,8 +1,7 @@
 ﻿using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.Utils;
 using System.Threading.Tasks;
 
-namespace PswManager.Core.Inner.Interfaces;
+namespace PswManager.ConsoleUI.Inner.Interfaces;
 public interface IAccountDeleter {
 
     Option<DeleterErrorCode> DeleteAccount(string name);
