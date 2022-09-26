@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace PswManager.Core;
 public interface IAccount {
-    Task DeleteAccount();
+    Task DeleteAccountAsync();
     Task<EditAccountResult> EditAccountAsync(IAccountModel newValues);
     DecryptedAccount GetDecryptedModel();
 }

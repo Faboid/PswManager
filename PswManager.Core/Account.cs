@@ -29,7 +29,7 @@ internal class Account : IAccount {
     }
 
     public DecryptedAccount GetDecryptedModel() => _encryptedAccount.GetDecryptedAccount();
-    public async Task<DecryptedAccount> GetDecryptedModelAsync() => await _encryptedAccount.GetDecryptedAccountAsync().ConfigureAwait(false);
+    public Task<DecryptedAccount> GetDecryptedModelAsync() => _encryptedAccount.GetDecryptedAccountAsync();
 
     public async Task<EditAccountResult> EditAccountAsync(IAccountModel newValues) {
         using var locker = await _locker.GetLockAsync();
@@ -76,7 +76,7 @@ internal class Account : IAccount {
         return EditAccountResult.Success;
     }
 
-    public async Task DeleteAccount() {
+    public async Task DeleteAccountAsync() {
 
         using var locker = await _locker.GetLockAsync();
         _logger?.LogInformation("Starting to delete {Name}.", Name);
