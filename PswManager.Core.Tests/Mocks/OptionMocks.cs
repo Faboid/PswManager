@@ -4,7 +4,7 @@ using PswManager.Database.Models;
 using PswManager.Utils;
 
 namespace PswManager.Core.Tests.Mocks;
-internal class OptionMocks {
+public class OptionMocks {
 
     public static Option<CreatorErrorCode> ValidateValues(AccountModel model) {
 
