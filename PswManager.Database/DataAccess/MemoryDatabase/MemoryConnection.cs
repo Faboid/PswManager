@@ -19,11 +19,6 @@ internal class MemoryConnection : BaseConnection {
         return ValueTask.FromResult(accounts.ContainsKey(name) ? AccountExistsStatus.Exist : AccountExistsStatus.NotExist);
     }
 
-    protected override Option<CreatorErrorCode> CreateAccountHook(AccountModel model) {
-        accounts.Add(model.Name, model);
-        return Option.None<CreatorErrorCode>();
-    }
-
     protected override ValueTask<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model) {
         accounts.Add(model.Name, model);
         return ValueTask.FromResult(Option.None<CreatorErrorCode>());

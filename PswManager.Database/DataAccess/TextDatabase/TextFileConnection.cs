@@ -55,24 +55,6 @@ public class TextFileConnection : IDataConnection {
             AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
 
-    public Option<CreatorErrorCode> CreateAccount(AccountModel model) {
-        if(!model.IsAllValid(out var errorCode)) {
-            return errorCode.ToCreatorErrorCode();
-        }
-
-        using var accLock = locker.GetLock(model.Name, 50);
-        if(!accLock.Obtained) {
-            return CreatorErrorCode.UsedElsewhere; 
-        }
-
-        if(fileSaver.Exists(model.Name)) {
-            return CreatorErrorCode.AccountExistsAlready;
-        }
-
-        fileSaver.Create(model);
-        return Option.None<CreatorErrorCode>();
-    }
-
     public async Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model) {
         if(!model.IsAllValid(out var errorCode)) {
             return errorCode.ToCreatorErrorCode();

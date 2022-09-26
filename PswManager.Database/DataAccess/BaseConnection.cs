@@ -48,23 +48,6 @@ internal abstract class BaseConnection : IDataConnection {
         return await AccountExistInternalAsync(name).ConfigureAwait(false);
     }
 
-    public Option<CreatorErrorCode> CreateAccount(AccountModel model) {
-        if(!model.IsAllValid(out var errorCode)) {
-            return errorCode.ToCreatorErrorCode();
-        }
-
-        using var ownLock = Locker.GetLock(model.Name, 50);
-        if(!ownLock.Obtained) {
-            return CreatorErrorCode.UsedElsewhere;
-        }
-
-        if(AccountExistInternal(model.Name) != AccountExistsStatus.NotExist) {
-            return CreatorErrorCode.AccountExistsAlready;
-        }
-
-        return CreateAccountHook(model);
-    }
-
     public async Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model) {
         if(!model.IsAllValid(out var errorCode)) {
             return errorCode.ToCreatorErrorCode();
@@ -254,7 +237,6 @@ internal abstract class BaseConnection : IDataConnection {
 
     protected abstract AccountExistsStatus AccountExistHook(string name);
     protected abstract ValueTask<AccountExistsStatus> AccountExistHookAsync(string name);
-    protected abstract Option<CreatorErrorCode> CreateAccountHook(AccountModel model);
     protected abstract ValueTask<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model);
     protected abstract Option<AccountModel, ReaderErrorCode> GetAccountHook(string name);
     protected abstract ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name);

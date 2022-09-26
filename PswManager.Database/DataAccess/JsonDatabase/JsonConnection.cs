@@ -38,14 +38,6 @@ internal class JsonConnection : BaseConnection {
             AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
 
-    protected override Option<CreatorErrorCode> CreateAccountHook(AccountModel model) {
-        var path = BuildFilePath(model.Name);
-        var jsonString = JsonSerializer.Serialize(model);
-        File.WriteAllText(path, jsonString);
-
-        return Option.None<CreatorErrorCode>();
-    }
-
     protected async override ValueTask<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model) {
         var path = BuildFilePath(model.Name);
         using var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write);

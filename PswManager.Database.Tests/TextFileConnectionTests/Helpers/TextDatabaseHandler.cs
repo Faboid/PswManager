@@ -24,7 +24,7 @@ internal class TextDatabaseHandler : ITestDBHandler, IDisposable {
     public ITestDBHandler SetUpDefaultValues() {
         foreach(var value in defaultValues.values) {
             var account = DefaultValues.ToAccount(value);
-            dataCreator.CreateAccount(account);
+            dataCreator.CreateAccountAsync(account).GetAwaiter().GetResult();
         }
 
         return this;

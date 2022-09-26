@@ -32,7 +32,7 @@ internal class MemoryDBHandler : ITestDBHandler {
             var email = defaultValues.GetValue(x, DefaultValues.TypeValue.Email);
 
             var model = new AccountModel(name, password, email);
-            dbConnection.CreateAccount(model);
+            dbConnection.CreateAccountAsync(model).GetAwaiter().GetResult();
         });
 
         return this;

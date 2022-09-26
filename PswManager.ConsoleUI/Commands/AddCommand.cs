@@ -17,8 +17,7 @@ public class AddCommand : BaseCommand<AddCommandArgs> {
     }
 
     protected override CommandResult RunLogic(AddCommandArgs obj) {
-
-        var result = dataCreator.CreateAccount(new AccountModel(obj.Name, obj.Password, obj.Email));
+        var result = dataCreator.CreateAccountAsync(new AccountModel(obj.Name, obj.Password, obj.Email)).GetAwaiter().GetResult();
         return MatchResult(result, obj.Name);
     }
 

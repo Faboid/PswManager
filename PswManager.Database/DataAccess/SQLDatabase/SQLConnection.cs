@@ -66,30 +66,6 @@ internal class SQLConnection : IDataConnection {
         return await reader.ReadAsync().ConfigureAwait(false);
     }
 
-    public Option<CreatorErrorCode> CreateAccount(AccountModel model) {
-        if(!model.IsAllValid(out var errorCode)) {
-            return errorCode.ToCreatorErrorCode();
-        }
-
-        using var heldLock = locker.GetLock(model.Name, 50);
-        if(heldLock.Obtained == false) {
-            return CreatorErrorCode.UsedElsewhere;
-        }
-
-        if(AccountExist_NoLock(model.Name)) {
-            return CreatorErrorCode.AccountExistsAlready;
-        }
-
-        using var cmd = queriesBuilder.CreateAccountQuery(model);
-        using var cnn = cmd.Connection.GetConnection();
-        var result = cmd.ExecuteNonQuery() == 1;
-
-        return result switch {
-            true => Option.None<CreatorErrorCode>(),
-            false => CreatorErrorCode.Undefined,
-        };
-    }
-
     public async Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model) {
         if(!model.IsAllValid(out var errorCode)) {
             return errorCode.ToCreatorErrorCode();

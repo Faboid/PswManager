@@ -25,7 +25,7 @@ internal class TestDatabaseHandler : ITestDBHandler, IDisposable {
 
         foreach(var value in defaultValues.values) {
             var account = DefaultValues.ToAccount(value);
-            dataFactory.GetDataCreator().CreateAccount(account);
+            dataFactory.GetDataCreator().CreateAccountAsync(account).GetAwaiter().GetResult();
         }
 
         return this;
