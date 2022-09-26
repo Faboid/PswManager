@@ -8,7 +8,7 @@ using PswManager.Utils;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PswManager.Core;
+namespace PswManager.ConsoleUI;
 public class AccountsManager : IAccountsManager {
 
     public AccountsManager(IDataFactory dbFactory, ICryptoAccountService cryptoAccount) {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using PswManager.Core.Cryptography;
 using PswManager.ConsoleUI;
 using PswManager.Core.Services;
 using System.IO.Abstractions;
