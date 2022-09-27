@@ -41,7 +41,7 @@ public class TextFileConnection : IDataConnection {
         return fileSaver.Exists(name)? AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
 
-    public async ValueTask<AccountExistsStatus> AccountExistAsync(string name) { 
+    public async Task<AccountExistsStatus> AccountExistAsync(string name) { 
         if(string.IsNullOrWhiteSpace(name)) {
             return AccountExistsStatus.InvalidName;
         }

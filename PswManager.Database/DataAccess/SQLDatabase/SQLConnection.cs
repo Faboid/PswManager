@@ -41,7 +41,7 @@ internal class SQLConnection : IDataConnection {
         return reader.Read();
     }
 
-    public async ValueTask<AccountExistsStatus> AccountExistAsync(string name) { 
+    public async Task<AccountExistsStatus> AccountExistAsync(string name) { 
         if(string.IsNullOrWhiteSpace(name)) {
             return AccountExistsStatus.InvalidName;
         }
@@ -55,7 +55,7 @@ internal class SQLConnection : IDataConnection {
             AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
 
-    private async ValueTask<bool> AccountExistAsync_NoLock(string name) {
+    private async Task<bool> AccountExistAsync_NoLock(string name) {
         if(string.IsNullOrWhiteSpace(name)) {
             return false;
         }

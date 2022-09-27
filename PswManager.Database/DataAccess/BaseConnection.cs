@@ -35,7 +35,7 @@ internal abstract class BaseConnection : IDataConnection {
         return AccountExistInternal(name);
     }
 
-    public async ValueTask<AccountExistsStatus> AccountExistAsync(string name) {
+    public async Task<AccountExistsStatus> AccountExistAsync(string name) {
         if(string.IsNullOrWhiteSpace(name)) {
             return AccountExistsStatus.InvalidName;
         }
@@ -157,7 +157,7 @@ internal abstract class BaseConnection : IDataConnection {
     }
 
     protected abstract AccountExistsStatus AccountExistHook(string name);
-    protected abstract ValueTask<AccountExistsStatus> AccountExistHookAsync(string name);
+    protected abstract Task<AccountExistsStatus> AccountExistHookAsync(string name);
     protected abstract Task<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model);
     protected abstract Task<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name);
     protected abstract Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync();

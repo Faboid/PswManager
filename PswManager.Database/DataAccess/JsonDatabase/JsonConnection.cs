@@ -33,7 +33,7 @@ internal class JsonConnection : BaseConnection {
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    protected override async ValueTask<AccountExistsStatus> AccountExistHookAsync(string name) {
+    protected override async Task<AccountExistsStatus> AccountExistHookAsync(string name) {
         return await Task.Run(() => File.Exists(BuildFilePath(name))).ConfigureAwait(false) ?
             AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
