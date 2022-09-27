@@ -108,18 +108,18 @@ internal abstract class BaseConnection : IDataConnection {
         return await GetAllAccountsHookAsync().ConfigureAwait(false);
     }
 
-    public async Task<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newModel) { 
+    public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) { 
         if(string.IsNullOrWhiteSpace(name)) {
-            return EditorErrorCode.InvalidName;
+            return EditorResponseCode.InvalidName;
         }
 
         using var oldModelLock = await Locker.GetLockAsync(name, 50).ConfigureAwait(false);
         if(!oldModelLock.Obtained) {
-            return EditorErrorCode.UsedElsewhere;
+            return EditorResponseCode.UsedElsewhere;
         }
 
         if(await AccountExistInternalAsync(name).ConfigureAwait(false) == AccountExistsStatus.NotExist) {
-            return EditorErrorCode.DoesNotExist;
+            return EditorResponseCode.DoesNotExist;
         }
 
         NamesLocker.Lock newModelLock = null;
@@ -127,10 +127,10 @@ internal abstract class BaseConnection : IDataConnection {
             if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
                 newModelLock = await Locker.GetLockAsync(newModel.Name, 50).ConfigureAwait(false);
                 if(!newModelLock.Obtained) {
-                    return EditorErrorCode.NewNameUsedElsewhere;
+                    return EditorResponseCode.NewNameUsedElsewhere;
                 }
                 if(await AccountExistInternalAsync(newModel.Name) != AccountExistsStatus.NotExist) {
-                    return EditorErrorCode.NewNameExistsAlready;
+                    return EditorResponseCode.NewNameExistsAlready;
                 }
             }
 
@@ -161,7 +161,7 @@ internal abstract class BaseConnection : IDataConnection {
     protected abstract Task<CreatorResponseCode> CreateAccountHookAsync(AccountModel model);
     protected abstract Task<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name);
     protected abstract Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync();
-    protected abstract Task<Option<EditorErrorCode>> UpdateAccountHookAsync(string name, AccountModel newModel);
+    protected abstract Task<EditorResponseCode> UpdateAccountHookAsync(string name, AccountModel newModel);
     protected abstract Task<DeleterResponseCode> DeleteAccountHookAsync(string name);
 
 }

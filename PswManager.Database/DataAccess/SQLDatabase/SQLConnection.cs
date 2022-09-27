@@ -168,18 +168,18 @@ internal class SQLConnection : IDataConnection {
         }
     }
 
-    public async Task<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newModel) {
+    public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
         if(string.IsNullOrWhiteSpace(name)) {
-            return EditorErrorCode.InvalidName;
+            return EditorResponseCode.InvalidName;
         }
 
         using var nameLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
         if(!nameLock.Obtained) {
-            return EditorErrorCode.UsedElsewhere;
+            return EditorResponseCode.UsedElsewhere;
         }
 
         if(!await AccountExistAsync_NoLock(name).ConfigureAwait(false)) {
-            return EditorErrorCode.DoesNotExist;
+            return EditorResponseCode.DoesNotExist;
         }
 
         NamesLocker.Lock newModelLock = null;
@@ -187,11 +187,11 @@ internal class SQLConnection : IDataConnection {
             if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
                 newModelLock = await locker.GetLockAsync(newModel.Name, 50).ConfigureAwait(false);
                 if(newModelLock.Obtained == false) {
-                    return EditorErrorCode.NewNameUsedElsewhere;
+                    return EditorResponseCode.NewNameUsedElsewhere;
                 }
 
                 if(await AccountExistAsync_NoLock(newModel.Name).ConfigureAwait(false)) {
-                    return EditorErrorCode.NewNameExistsAlready;
+                    return EditorResponseCode.NewNameExistsAlready;
                 }
             }
 
@@ -200,7 +200,7 @@ internal class SQLConnection : IDataConnection {
                 await cmd.ExecuteNonQueryAsync();
             }
 
-            return Option.None<EditorErrorCode>();
+            return EditorResponseCode.Success;
 
         } finally {
             newModelLock?.Dispose();

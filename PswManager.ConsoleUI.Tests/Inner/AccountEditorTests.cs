@@ -20,7 +20,7 @@ public class AccountEditorTests {
         dataEditorMock = new Mock<IDataEditor>();
         dataEditorMock
             .Setup(x => x.UpdateAccountAsync(It.IsAny<string>(), It.IsAny<AccountModel>()))
-            .Returns<string, AccountModel>((x, y) => (string.IsNullOrWhiteSpace(x) ? EditorErrorCode.InvalidName : Option.None<EditorErrorCode>()).AsTask());
+            .Returns<string, AccountModel>((x, y) => (string.IsNullOrWhiteSpace(x) ? EditorResponseCode.InvalidName : EditorResponseCode.Success).AsTask());
     }
 
     readonly Mock<IDataEditor> dataEditorMock;
@@ -35,10 +35,10 @@ public class AccountEditorTests {
         var (editor, input, expected) = ArrangeTest(newName, password, email);
 
         //act
-        var option = await editor.UpdateAccountAsync(name, input);
+        var result = await editor.UpdateAccountAsync(name, input);
 
         //assert
-        option.Is(OptionResult.None);
+        Assert.Equal(EditorResponseCode.Success, result);
         dataEditorMock.Verify(x => x.UpdateAccountAsync(
                 It.Is<string>(x => x == name),
                 It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))
@@ -58,12 +58,12 @@ public class AccountEditorTests {
         AccountEditor editor = new(dataEditorMock.Object, cryptoAccount);
 
         //act
-        var option = editor.UpdateAccount(name, input);
-        var optionAsync = await editor.UpdateAccountAsync(name, input);
+        var result = editor.UpdateAccount(name, input);
+        var resultAsync = await editor.UpdateAccountAsync(name, input);
 
         //assert
-        option.Is(OptionResult.Some);
-        optionAsync.Is(OptionResult.Some);
+        Assert.Equal(EditorResponseCode.InvalidName, result);
+        Assert.Equal(EditorResponseCode.InvalidName, resultAsync);
         dataEditorMock.VerifyNoOtherCalls();
 
     }

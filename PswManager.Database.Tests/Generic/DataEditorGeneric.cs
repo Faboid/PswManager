@@ -61,11 +61,11 @@ public abstract class DataEditorGeneric : IDisposable {
         }
 
         //act
-        var option = await dataEditor.UpdateAccountAsync(name, newAccount).ConfigureAwait(false);
+        var result = await dataEditor.UpdateAccountAsync(name, newAccount).ConfigureAwait(false);
         var updated = await dataReader.GetAccountAsync(string.IsNullOrWhiteSpace(newAccount.Name) ? name : newAccount.Name).ConfigureAwait(false);
 
         //assert
-        option.Is(OptionResult.None);
+        Assert.Equal(EditorResponseCode.Success, result);
         Assert.NotNull(updated.Or(null));
         AssertAccountEqual(expected, updated.Or(null));
 
@@ -84,9 +84,7 @@ public abstract class DataEditorGeneric : IDisposable {
 
         //assert
         Assert.Equal(AccountExistsStatus.NotExist, exist);
-        result.Is(OptionResult.Some);
-
-        Assert.Equal(EditorErrorCode.DoesNotExist, result.Or(default));
+        Assert.Equal(EditorResponseCode.DoesNotExist, result);
 
     }
 
@@ -106,10 +104,7 @@ public abstract class DataEditorGeneric : IDisposable {
         //assert
         Assert.Equal(AccountExistsStatus.Exist, currExists);
         Assert.Equal(AccountExistsStatus.Exist, newExists);
-
-        result.Is(OptionResult.Some);
-
-        Assert.Equal(EditorErrorCode.NewNameExistsAlready, result.Or(default));
+        Assert.Equal(EditorResponseCode.NewNameExistsAlready, result);
 
     }
 

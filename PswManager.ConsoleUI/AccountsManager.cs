@@ -62,11 +62,11 @@ public class AccountsManager : IAccountsManager {
         return accountReader.ReadAllAccountsAsync();
     }
 
-    public Option<EditorErrorCode> UpdateAccount(string name, AccountModel newValues) {
+    public EditorResponseCode UpdateAccount(string name, AccountModel newValues) {
         return accountEditor.UpdateAccount(name, newValues);
     }
 
-    public Task<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newValues) {
+    public Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newValues) {
         return accountEditor.UpdateAccountAsync(name, newValues);
     }
 

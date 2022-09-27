@@ -53,7 +53,7 @@ public enum DeleterResponseCode {
     Success,
 }
 
-public enum EditorErrorCode {
+public enum EditorResponseCode {
     /// <summary>
     /// The error is undefined. This could either created with <see langword="default"/> or because an unknown error happened.
     /// </summary>
@@ -78,4 +78,5 @@ public enum EditorErrorCode {
     /// The new name exists already, so the account cannot be use it.
     /// </summary>
     NewNameExistsAlready,
+    Success,
 }

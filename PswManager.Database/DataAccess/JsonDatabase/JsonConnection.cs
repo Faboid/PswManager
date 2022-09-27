@@ -76,7 +76,7 @@ internal class JsonConnection : BaseConnection {
         }
     }
 
-    protected override async Task<Option<EditorErrorCode>> UpdateAccountHookAsync(string name, AccountModel newModel) {
+    protected override async Task<EditorResponseCode> UpdateAccountHookAsync(string name, AccountModel newModel) {
         var path = BuildFilePath(name);
         AccountModel model;
         using(var readStream = new FileStream(path, FileMode.Open)) {
@@ -94,7 +94,7 @@ internal class JsonConnection : BaseConnection {
             File.Delete(path);
         }
 
-        return Option.None<EditorErrorCode>();
+        return EditorResponseCode.Success;
     }
 
     private static void OverWriteOldModel(AccountModel oldAccount, AccountModel newAccount) {

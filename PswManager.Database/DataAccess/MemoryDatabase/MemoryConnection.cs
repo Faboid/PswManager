@@ -44,7 +44,7 @@ internal class MemoryConnection : BaseConnection {
         }
     }
 
-    protected override Task<Option<EditorErrorCode>> UpdateAccountHookAsync(string name, AccountModel newModel) {
+    protected override Task<EditorResponseCode> UpdateAccountHookAsync(string name, AccountModel newModel) {
         var account = accounts[name];
 
         if(!string.IsNullOrWhiteSpace(newModel.Password)) {
@@ -60,7 +60,7 @@ internal class MemoryConnection : BaseConnection {
             accounts.Add(newModel.Name, account);
         }
 
-        return Option.None<EditorErrorCode>().AsTask();
+        return EditorResponseCode.Success.AsTask();
     }
 
 }

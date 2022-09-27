@@ -17,14 +17,14 @@ public class AccountEditor : IAccountEditor {
         this.cryptoAccount = cryptoAccount;
     }
 
-    public Option<EditorErrorCode> UpdateAccount(string name, AccountModel newValues) {
+    public EditorResponseCode UpdateAccount(string name, AccountModel newValues) {
         return UpdateAccountAsync(name, newValues).GetAwaiter().GetResult();
     }
 
-    public async Task<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newValues) {
+    public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newValues) {
 
         if(string.IsNullOrWhiteSpace(name)) {
-            return EditorErrorCode.InvalidName;
+            return EditorResponseCode.InvalidName;
         }
 
         var encryptedModel = await Task.Run(() => EncryptModel(newValues)).ConfigureAwait(false);
