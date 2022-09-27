@@ -12,4 +12,3 @@ public interface IDataReader : IDataHelper
     Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name);
 
 }
-
