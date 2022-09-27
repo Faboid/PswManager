@@ -90,25 +90,25 @@ internal class SQLConnection : IDataConnection {
         };
     }
 
-    public async Task<Option<DeleterErrorCode>> DeleteAccountAsync(string name) { 
+    public async Task<DeleterResponseCode> DeleteAccountAsync(string name) { 
         if(string.IsNullOrWhiteSpace(name)) {
-            return DeleterErrorCode.InvalidName;
+            return DeleterResponseCode.InvalidName;
             ;
         }
 
         using var heldLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
         if(!heldLock.Obtained) {
-            return DeleterErrorCode.UsedElsewhere;
+            return DeleterResponseCode.UsedElsewhere;
         }
 
         if(!await AccountExistAsync_NoLock(name).ConfigureAwait(false)) {
-            return DeleterErrorCode.DoesNotExist;
+            return DeleterResponseCode.DoesNotExist;
         }
 
         using var cmd = queriesBuilder.DeleteAccountQuery(name);
         await using var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
         var result = await cmd.ExecuteNonQueryAsync() == 1;
-        return (result)? Option.None<DeleterErrorCode>() : DeleterErrorCode.Undefined;
+        return (result)? DeleterResponseCode.Success : DeleterResponseCode.Undefined;
     }
 
     public async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {

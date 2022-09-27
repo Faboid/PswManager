@@ -73,22 +73,22 @@ public class TextFileConnection : IDataConnection {
         return CreatorResponseCode.Success;
     }
 
-    public async Task<Option<DeleterErrorCode>> DeleteAccountAsync(string name) { 
+    public async Task<DeleterResponseCode> DeleteAccountAsync(string name) { 
         if(string.IsNullOrWhiteSpace(name)) {
-            return DeleterErrorCode.InvalidName;
+            return DeleterResponseCode.InvalidName;
         }
 
         using var heldLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
         if(!heldLock.Obtained) {
-            return DeleterErrorCode.UsedElsewhere;
+            return DeleterResponseCode.UsedElsewhere;
         }
 
         if(!await fileSaver.ExistsAsync(name).ConfigureAwait(false)) {
-            return DeleterErrorCode.DoesNotExist;
+            return DeleterResponseCode.DoesNotExist;
         }
 
         await fileSaver.DeleteAsync(name);
-        return Option.None<DeleterErrorCode>();
+        return DeleterResponseCode.Success;
     }
 
     public async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {

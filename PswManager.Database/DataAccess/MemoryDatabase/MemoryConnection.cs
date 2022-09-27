@@ -24,9 +24,9 @@ internal class MemoryConnection : BaseConnection {
         return Task.FromResult(CreatorResponseCode.Success);
     }
 
-    protected override Task<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name) {
+    protected override Task<DeleterResponseCode> DeleteAccountHookAsync(string name) {
         accounts.Remove(name);
-        return Option.None<DeleterErrorCode>().AsTask();
+        return DeleterResponseCode.Success.AsTask();
     }
 
     protected override Task<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name) {

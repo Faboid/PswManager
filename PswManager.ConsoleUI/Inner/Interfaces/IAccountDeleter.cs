@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace PswManager.ConsoleUI.Inner.Interfaces;
 public interface IAccountDeleter {
 
-    Option<DeleterErrorCode> DeleteAccount(string name);
-    Task<Option<DeleterErrorCode>> DeleteAccountAsync(string name);
+    DeleterResponseCode DeleteAccount(string name);
+    Task<DeleterResponseCode> DeleteAccountAsync(string name);
 
 }

@@ -70,11 +70,11 @@ public class AccountsManager : IAccountsManager {
         return accountEditor.UpdateAccountAsync(name, newValues);
     }
 
-    public Option<DeleterErrorCode> DeleteAccount(string name) {
+    public DeleterResponseCode DeleteAccount(string name) {
         return accountDeleter.DeleteAccount(name);
     }
 
-    public Task<Option<DeleterErrorCode>> DeleteAccountAsync(string name) {
+    public Task<DeleterResponseCode> DeleteAccountAsync(string name) {
         return accountDeleter.DeleteAccountAsync(name);
     }
 

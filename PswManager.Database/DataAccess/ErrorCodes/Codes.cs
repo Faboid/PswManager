@@ -45,11 +45,12 @@ public enum AccountExistsStatus {
     UsedElsewhere,
 }
 
-public enum DeleterErrorCode {
+public enum DeleterResponseCode {
     Undefined,
     InvalidName,
     UsedElsewhere,
     DoesNotExist,
+    Success,
 }
 
 public enum EditorErrorCode {

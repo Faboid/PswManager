@@ -15,7 +15,7 @@ public class AccountDeleterTests {
         dataDeleterMock = new();
         dataDeleterMock
             .Setup(x => x.DeleteAccountAsync(It.IsAny<string>()))
-            .Returns<string>(x => (string.IsNullOrWhiteSpace(x) ? DeleterErrorCode.InvalidName : Option.None<DeleterErrorCode>()).AsTask());
+            .Returns<string>(x => (string.IsNullOrWhiteSpace(x) ? DeleterResponseCode.InvalidName : DeleterResponseCode.Success).AsTask());
     }
 
     readonly Mock<IDataDeleter> dataDeleterMock;
@@ -31,7 +31,7 @@ public class AccountDeleterTests {
         var result = await deleter.DeleteAccountAsync(name);
 
         //assert
-        result.Is(OptionResult.None);
+        Assert.Equal(DeleterResponseCode.Success, result);
         dataDeleterMock.Verify(x => x.DeleteAccountAsync(It.Is<string>(x => x == name)));
         dataDeleterMock.VerifyNoOtherCalls();
 
@@ -51,8 +51,8 @@ public class AccountDeleterTests {
         var resultAsync = await creator.DeleteAccountAsync(name);
 
         //assert
-        result.Is(OptionResult.Some);
-        resultAsync.Is(OptionResult.Some);
+        Assert.Equal(DeleterResponseCode.InvalidName, result);
+        Assert.Equal(DeleterResponseCode.InvalidName, resultAsync);
         dataDeleterMock.VerifyNoOtherCalls();
 
     }

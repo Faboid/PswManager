@@ -45,9 +45,9 @@ internal class JsonConnection : BaseConnection {
         return CreatorResponseCode.Success;
     }
 
-    protected override Task<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name) {
+    protected override Task<DeleterResponseCode> DeleteAccountHookAsync(string name) {
         File.Delete(BuildFilePath(name));
-        return Option.None<DeleterErrorCode>().AsTask();
+        return DeleterResponseCode.Success.AsTask();
     }
 
     protected override async Task<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name) {

@@ -1,6 +1,5 @@
 ﻿using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
-using PswManager.Utils.Options;
 using Xunit;
 
 namespace PswManager.Database.Tests.Generic; 
@@ -27,7 +26,7 @@ public abstract class DataDeleterGeneric : IDisposable {
 
         //assert
         Assert.Equal(AccountExistsStatus.Exist, exists);
-        result.Is(OptionResult.None);
+        Assert.Equal(DeleterResponseCode.Success, result);
         Assert.Equal(AccountExistsStatus.NotExist, await dataDeleter.AccountExistAsync(name).ConfigureAwait(false));
 
     }
@@ -42,9 +41,7 @@ public abstract class DataDeleterGeneric : IDisposable {
         var result = await dataDeleter.DeleteAccountAsync(name).ConfigureAwait(false);
 
         //assert
-        result.Is(OptionResult.Some);
-
-        Assert.Equal(DeleterErrorCode.InvalidName, result.Or(default));
+        Assert.Equal(DeleterResponseCode.InvalidName, result);
 
     }
 
@@ -60,10 +57,7 @@ public abstract class DataDeleterGeneric : IDisposable {
 
         //assert
         Assert.Equal(AccountExistsStatus.NotExist, exists);
-        result.Is(OptionResult.Some);
-
-
-        Assert.Equal(DeleterErrorCode.DoesNotExist, result.Or(default));
+        Assert.Equal(DeleterResponseCode.DoesNotExist, result);
 
     }
 
