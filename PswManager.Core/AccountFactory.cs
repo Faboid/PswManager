@@ -2,9 +2,10 @@
 using PswManager.Async.Locks;
 using PswManager.Core.AccountModels;
 using PswManager.Core.Validators;
-using PswManager.Database.DataAccess;
+using PswManager.Database;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Utils;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,14 +45,14 @@ public class AccountFactory : IAccountFactory {
         var encrypted = await encryptedTask;
         _logger?.LogInformation("Beginning creation of a new account: {Name}", encrypted.Name);
         var result = await _connection.CreateAccountAsync(encrypted.GetUnderlyingModel()).ConfigureAwait(false);
-        if(result.Result() == Utils.Options.OptionResult.Some) {
-            _logger?.LogInformation("Creation of new account {Name} has failed with error {ErrorCode}", encrypted.Name, result.Or(0));
-            return result.Or(0) switch {
-                CreatorErrorCode.InvalidName => CreateAccountErrorCode.NameEmptyOrNull,
-                CreatorErrorCode.MissingPassword => CreateAccountErrorCode.PasswordEmptyOrNull,
-                CreatorErrorCode.MissingEmail => CreateAccountErrorCode.EmailEmptyOrNull,
-                CreatorErrorCode.AccountExistsAlready => CreateAccountErrorCode.NameIsOccupied,
-                CreatorErrorCode.UsedElsewhere => CreateAccountErrorCode.NameIsOccupied,
+        if(result != CreatorResponseCode.Success) {
+            _logger?.LogInformation("Creation of new account {Name} has failed with error {ErrorCode}", encrypted.Name, result);
+            return result switch {
+                CreatorResponseCode.InvalidName => CreateAccountErrorCode.NameEmptyOrNull,
+                CreatorResponseCode.MissingPassword => CreateAccountErrorCode.PasswordEmptyOrNull,
+                CreatorResponseCode.MissingEmail => CreateAccountErrorCode.EmailEmptyOrNull,
+                CreatorResponseCode.AccountExistsAlready => CreateAccountErrorCode.NameIsOccupied,
+                CreatorResponseCode.UsedElsewhere => CreateAccountErrorCode.NameIsOccupied,
                 _ => CreateAccountErrorCode.Unknown,
             };
         }
@@ -61,19 +62,8 @@ public class AccountFactory : IAccountFactory {
         return account;
     }
 
-    public async Task<Option<IAsyncEnumerable<IAccount>>> LoadAccounts() {
-        var option = await _connection.GetAllAccountsAsync();
-
-        if(option.Result() != Utils.Options.OptionResult.Some) {
-            _logger?.LogError("_connection.GetAllAccountsAsync has returned {Result}", option.Result());
-            return Option.None<IAsyncEnumerable<IAccount>>();
-            //todo - remove the optional return of the DB GetAll
-        }
-
-        return new Option<IAsyncEnumerable<IAccount>>(Load(option.Or(AsyncEnumerable.Empty<NamedAccountOption>())));
-    }
-
-    private async IAsyncEnumerable<IAccount> Load(IAsyncEnumerable<NamedAccountOption> enumerable) {
+    public async IAsyncEnumerable<IAccount> LoadAccounts() {
+        var enumerable = _connection.EnumerateAccountsAsync();
         await foreach(var option in enumerable) {
             var info = option.OrDefault();
             if(info != null) {

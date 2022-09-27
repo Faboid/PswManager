@@ -1,9 +1,10 @@
 ﻿using PswManager.ConsoleUI.Inner.Interfaces;
 using PswManager.Core.Services;
 using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.Database.DataAccess.Interfaces;
+using PswManager.Database.Interfaces;
 using PswManager.Database.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PswManager.ConsoleUI.Inner;
@@ -18,12 +19,7 @@ public class AccountReader : IAccountReader {
     }
 
     public Option<AccountModel, ReaderErrorCode> ReadAccount(string name) {
-        if(string.IsNullOrWhiteSpace(name)) {
-            return ReaderErrorCode.InvalidName;
-        }
-
-        var result = dataReader.GetAccount(name);
-        return result.Bind<AccountModel>(x => cryptoAccount.Decrypt(x));
+        return ReadAccountAsync(name).GetAwaiter().GetResult();
     }
 
     public async Task<Option<AccountModel, ReaderErrorCode>> ReadAccountAsync(string name) {
@@ -35,21 +31,12 @@ public class AccountReader : IAccountReader {
         return await result.BindAsync(x => Task.Run<Option<AccountModel, ReaderErrorCode>>(() => cryptoAccount.Decrypt(x)));
     }
 
-    public Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> ReadAllAccounts() {
-        return dataReader
-            .GetAllAccounts()
-            .Bind<IEnumerable<NamedAccountOption>>(x => new(DecryptAll(x)));
+    public IEnumerable<NamedAccountOption> ReadAllAccounts() {
+        return ReadAllAccountsAsync().ToEnumerable();
     }
 
-    public async Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> ReadAllAccountsAsync() {
-        return (await dataReader.GetAllAccountsAsync())
-            .Bind<IAsyncEnumerable<NamedAccountOption>>(x => new(DecryptAllAsync(x)));
-    }
-
-    private IEnumerable<NamedAccountOption> DecryptAll(IEnumerable<NamedAccountOption> enumerable) {
-        foreach(var option in enumerable) {
-            yield return option.Bind<AccountModel>(x => cryptoAccount.Decrypt(x));
-        }
+    public IAsyncEnumerable<NamedAccountOption> ReadAllAccountsAsync() {
+        return DecryptAllAsync(dataReader.EnumerateAccountsAsync());
     }
 
     private async IAsyncEnumerable<NamedAccountOption> DecryptAllAsync(IAsyncEnumerable<NamedAccountOption> enumerable) {

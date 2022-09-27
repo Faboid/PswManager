@@ -1,9 +1,9 @@
 ﻿using PswManager.Commands;
-using PswManager.Database.DataAccess.Interfaces;
 using PswManager.ConsoleUI.Tests.Commands.Helper;
 using PswManager.ConsoleUI.Commands;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.ConsoleUI.Inner;
+using PswManager.Database.Interfaces;
 
 namespace PswManager.ConsoleUI.Tests.Commands;
 public class AddCommandTests {

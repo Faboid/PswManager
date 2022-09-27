@@ -2,7 +2,7 @@
 using PswManager.Async.Locks;
 using PswManager.Core.AccountModels;
 using PswManager.Core.Validators;
-using PswManager.Database.DataAccess;
+using PswManager.Database;
 using PswManager.Database.DataAccess.ErrorCodes;
 using System.Threading.Tasks;
 
@@ -49,11 +49,10 @@ internal class Account : IAccount {
         var encrypted = await newValues.GetEncryptedAccountAsync();
         _logger?.LogInformation("Beginning editing {Name}", Name);
         var result = await _connection.UpdateAccountAsync(Name, encrypted.GetUnderlyingModel());
-        if(result.Result() == Utils.Options.OptionResult.Some) {
-            var resultCode = result.Or(0);
-            var output = resultCode switch {
-                EditorErrorCode.NewNameUsedElsewhere => EditAccountResult.NewNameIsOccupied,
-                EditorErrorCode.NewNameExistsAlready => EditAccountResult.NewNameIsOccupied,
+        if(result != EditorResponseCode.Success) {
+            var output = result switch {
+                EditorResponseCode.NewNameUsedElsewhere => EditAccountResult.NewNameIsOccupied,
+                EditorResponseCode.NewNameExistsAlready => EditAccountResult.NewNameIsOccupied,
                 _ => EditAccountResult.Unknown,
             };
 
@@ -62,7 +61,7 @@ internal class Account : IAccount {
                 logLevel = LogLevel.Error;
             }
 
-            _logger?.Log(logLevel, "An EditAccount has failed with the result of: {ErrorCode}", resultCode);
+            _logger?.Log(logLevel, "An EditAccount has failed with the result of: {ErrorCode}", result);
             return output;
         }
 

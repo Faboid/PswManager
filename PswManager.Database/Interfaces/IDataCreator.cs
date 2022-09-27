@@ -2,10 +2,10 @@
 using PswManager.Database.Models;
 using System.Threading.Tasks;
 
-namespace PswManager.ConsoleUI.Inner.Interfaces;
-public interface IAccountCreator {
+namespace PswManager.Database.Interfaces;
+public interface IDataCreator : IDataHelper
+{
 
-    CreatorResponseCode CreateAccount(AccountModel model);
     Task<CreatorResponseCode> CreateAccountAsync(AccountModel model);
 
 }

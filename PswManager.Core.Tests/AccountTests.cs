@@ -2,7 +2,7 @@ using PswManager.Core.AccountModels;
 using PswManager.Core.Services;
 using PswManager.Core.Tests.Mocks;
 using PswManager.Core.Validators;
-using PswManager.Database.DataAccess;
+using PswManager.Database;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
 using PswManager.Utils;
@@ -57,14 +57,14 @@ public class AccountTests {
     }
 
     [Theory]
-    [InlineData(EditorErrorCode.Undefined, EditAccountResult.Unknown)]
-    [InlineData(EditorErrorCode.NewNameUsedElsewhere, EditAccountResult.NewNameIsOccupied)]
-    [InlineData(EditorErrorCode.NewNameExistsAlready, EditAccountResult.NewNameIsOccupied)]
-    public async Task EditAccountFailsByExecution(EditorErrorCode errorCode, EditAccountResult expected) {
+    [InlineData(EditorResponseCode.Undefined, EditAccountResult.Unknown)]
+    [InlineData(EditorResponseCode.NewNameUsedElsewhere, EditAccountResult.NewNameIsOccupied)]
+    [InlineData(EditorResponseCode.NewNameExistsAlready, EditAccountResult.NewNameIsOccupied)]
+    public async Task EditAccountFailsByExecution(EditorResponseCode errorCode, EditAccountResult expected) {
 
         var account = _accountModelFactory.CreateEncryptedAccount(GetGeneric());
         var connectionMock = new Mock<IDataConnection>();
-        connectionMock.Setup(x => x.UpdateAccountAsync(account.Name, It.IsAny<AccountModel>())).Returns(() => ValueTask.FromResult<Option<EditorErrorCode>>(errorCode));
+        connectionMock.Setup(x => x.UpdateAccountAsync(account.Name, It.IsAny<AccountModel>())).Returns(Task.FromResult(errorCode));
 
         var sut = new Account(account, connectionMock.Object, new AccountValidator());
         var actual = await sut.EditAccountAsync(_accountModelFactory.CreateEncryptedAccount(GetGeneric()));
@@ -78,7 +78,7 @@ public class AccountTests {
         var decryptedModel = _accountModelFactory.CreateDecryptedAccount(GetGeneric());
         var expected = await decryptedModel.GetEncryptedAccountAsync();
         var connectionMock = new Mock<IDataConnection>();
-        connectionMock.Setup(x => x.UpdateAccountAsync(expected.Name, It.IsAny<AccountModel>())).Returns(() => ValueTask.FromResult(Option.None<EditorErrorCode>()));
+        connectionMock.Setup(x => x.UpdateAccountAsync("AName", It.IsAny<AccountModel>())).Returns(Task.FromResult(EditorResponseCode.Success));
 
         var sut = new Account(_accountModelFactory.CreateEncryptedAccount(new("AName", "APassword", "AnEmail")), connectionMock.Object, new AccountValidator());
 

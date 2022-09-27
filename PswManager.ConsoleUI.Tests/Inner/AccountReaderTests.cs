@@ -5,7 +5,7 @@ using PswManager.Core.Services;
 using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
 using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.Database.DataAccess.Interfaces;
+using PswManager.Database.Interfaces;
 using PswManager.Database.Models;
 using PswManager.Utils;
 
@@ -18,22 +18,14 @@ public class AccountReaderTests {
         dataReaderMock = new();
 
         dataReaderMock
-            .Setup(x => x.GetAccount(It.Is<string>(x => !string.IsNullOrWhiteSpace(x))))
-            .Returns<string>(x => AccountModelMocks.GenerateEncryptedFromName(x, cryptoAccount));
-
-        dataReaderMock
             .Setup(x => x.GetAccountAsync(It.Is<string>(x => !string.IsNullOrWhiteSpace(x))))
             .Returns<string>(x =>
-                ValueTask.FromResult<Option<AccountModel, ReaderErrorCode>>(AccountModelMocks.GenerateEncryptedFromName(x, cryptoAccount))
+                Task.FromResult<Option<AccountModel, ReaderErrorCode>>(AccountModelMocks.GenerateEncryptedFromName(x, cryptoAccount))
             );
 
         dataReaderMock
-            .Setup(x => x.GetAllAccounts())
-            .Returns(() => OptionMocks.GenerateInfiniteEncryptedAccountList(cryptoAccount));
-
-        dataReaderMock
-            .Setup(x => x.GetAllAccountsAsync())
-            .Returns(() => Task.FromResult(OptionMocks.GenerateInfiniteEncryptedAccountListAsync(cryptoAccount)));
+            .Setup(x => x.EnumerateAccountsAsync())
+            .Returns(IAsyncEnumerableGenerator.GenerateInfiniteEncryptedAccountListAsync(cryptoAccount));
 
         reader = new AccountReader(dataReaderMock.Object, cryptoAccount);
     }
@@ -41,24 +33,6 @@ public class AccountReaderTests {
     readonly Mock<IDataReader> dataReaderMock;
     readonly ICryptoAccountService cryptoAccount;
     readonly IAccountReader reader;
-
-    [Theory]
-    [InlineData("someName")]
-    public void ReadAccountCallsDBCorrectly(string name) {
-
-        //arrange
-        AccountModel expected = cryptoAccount.Decrypt(AccountModelMocks.GenerateEncryptedFromName(name, cryptoAccount));
-
-        //act
-        var option = reader.ReadAccount(name);
-
-        //assert
-        Assert.True(option.Match(some => true, error => false, () => false));
-        AccountModelAsserts.AssertEqual(expected, option.Or(null));
-        dataReaderMock.Verify(x => x.GetAccount(It.Is<string>(x => x == name)));
-        dataReaderMock.VerifyNoOtherCalls();
-
-    }
 
     [Theory]
     [InlineData("someName")]
@@ -95,32 +69,16 @@ public class AccountReaderTests {
 
     }
 
-    [Fact] //if it's iterated, it will deadlock
-    public void GetAllAccountsIsNotIterated() {
-
-        //act
-        var option = reader.ReadAllAccounts();
-        var listValues = option.Or(null).Take(50).ToList();
-
-        //assert
-        Assert.True(option.Match(some => true, error => false, () => false));
-        Assert.True(listValues.Count == 50 && listValues.All(x => x.Match(some => true, error => false, () => false)));
-        dataReaderMock.Verify(x => x.GetAllAccounts());
-        dataReaderMock.VerifyNoOtherCalls();
-
-    }
-
-    [Fact] //if it's iterated, it will deadlock
+    [Fact] //if it's iterated, it will deadlock due to the mock's infinite generation
     public async Task GetAllAccountsIsNotIteratedAsync() {
 
         //act
-        var option = await reader.ReadAllAccountsAsync();
-        var listValues = await option.Or(null).Take(50).ToListAsync().ConfigureAwait(false);
+        var asyncEnumerable = reader.ReadAllAccountsAsync();
+        var listValues = await asyncEnumerable.Take(50).ToListAsync().ConfigureAwait(false);
 
         //assert
-        Assert.True(option.Match(some => true, error => false, () => false));
         Assert.True(listValues.Count == 50 && listValues.All(x => x.Match(some => true, error => false, () => false)));
-        dataReaderMock.Verify(x => x.GetAllAccountsAsync());
+        dataReaderMock.Verify(x => x.EnumerateAccountsAsync());
         dataReaderMock.VerifyNoOtherCalls();
 
     }
@@ -138,10 +96,9 @@ public class AccountReaderTests {
 
         //act
         var result = reader.ReadAllAccounts();
-        var ten = result.Or(null).Take(10).Select(x => x.Or(null)).ToList();
+        var ten = result.Take(10).Select(x => x.Or(null)).ToList();
 
         //assert
-        Assert.True(result.Match(some => true, error => false, () => false));
         Assert.True(Enumerable.Range(0, 10).All(x => AccountModelAsserts.AssertEqual(expected[x], ten[x])));
 
     }
@@ -158,11 +115,10 @@ public class AccountReaderTests {
             .ToList();
 
         //act
-        var result = await reader.ReadAllAccountsAsync().ConfigureAwait(false);
-        var ten = await result.Or(null).Take(10).Select(x => x.Or(null)).ToListAsync();
+        var result = reader.ReadAllAccountsAsync();
+        var ten = await result.Take(10).Select(x => x.Or(null)).ToListAsync();
 
         //assert
-        Assert.True(result.Match(some => true, error => false, () => false));
         Assert.True(Enumerable.Range(0, 10).All(x => AccountModelAsserts.AssertEqual(expected[x], ten[x])));
 
     }

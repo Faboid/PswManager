@@ -38,11 +38,11 @@ public class AccountsManager : IAccountsManager {
     readonly IAccountEditor accountEditor;
     readonly IAccountDeleter accountDeleter;
 
-    public Option<CreatorErrorCode> CreateAccount(AccountModel model) {
+    public CreatorResponseCode CreateAccount(AccountModel model) {
         return accountCreator.CreateAccount(model);
     }
 
-    public Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model) {
+    public Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
         return accountCreator.CreateAccountAsync(model);
     }
 
@@ -54,27 +54,28 @@ public class AccountsManager : IAccountsManager {
         return accountReader.ReadAccountAsync(name);
     }
 
-    public Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> ReadAllAccounts() {
+    public IEnumerable<NamedAccountOption> ReadAllAccounts() {
         return accountReader.ReadAllAccounts();
     }
 
-    public Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> ReadAllAccountsAsync() {
+    public IAsyncEnumerable<NamedAccountOption> ReadAllAccountsAsync() {
         return accountReader.ReadAllAccountsAsync();
     }
 
-    public Option<EditorErrorCode> UpdateAccount(string name, AccountModel newValues) {
+    public EditorResponseCode UpdateAccount(string name, AccountModel newValues) {
         return accountEditor.UpdateAccount(name, newValues);
     }
 
-    public Task<Option<EditorErrorCode>> UpdateAccountAsync(string name, AccountModel newValues) {
+    public Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newValues) {
         return accountEditor.UpdateAccountAsync(name, newValues);
     }
 
-    public Option<DeleterErrorCode> DeleteAccount(string name) {
+    public DeleterResponseCode DeleteAccount(string name) {
         return accountDeleter.DeleteAccount(name);
     }
 
-    public Task<Option<DeleterErrorCode>> DeleteAccountAsync(string name) {
+    public Task<DeleterResponseCode> DeleteAccountAsync(string name) {
         return accountDeleter.DeleteAccountAsync(name);
     }
+
 }

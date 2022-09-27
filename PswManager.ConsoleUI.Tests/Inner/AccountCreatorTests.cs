@@ -3,7 +3,8 @@ using PswManager.ConsoleUI.Inner;
 using PswManager.Core.Services;
 using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
-using PswManager.Database.DataAccess.Interfaces;
+using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Database.Interfaces;
 using PswManager.Database.Models;
 using PswManager.TestUtils;
 using PswManager.Utils.Options;
@@ -13,14 +14,7 @@ public class AccountCreatorTests {
 
     public AccountCreatorTests() {
         cryptoAccount = new CryptoAccountService(ICryptoServiceMocks.GetReverseCryptor().Object, ICryptoServiceMocks.GetSummingCryptor().Object);
-
-        dataCreatorMock = new Mock<IDataCreator>();
-        dataCreatorMock
-            .Setup(x => x.CreateAccount(It.IsAny<AccountModel>()))
-            .Returns<AccountModel>(OptionMocks.ValidateValues);
-        dataCreatorMock
-            .Setup(x => x.CreateAccountAsync(It.IsAny<AccountModel>()))
-            .Returns<AccountModel>(x => Task.FromResult(OptionMocks.ValidateValues(x)));
+        dataCreatorMock = DataCreatorMock.GetValidatorMock();
     }
 
     //since the purpose of this class is encrypting the password & email,
@@ -31,7 +25,7 @@ public class AccountCreatorTests {
     readonly ICryptoAccountService cryptoAccount;
 
     [Theory]
-    [InlineData("nameHere", "passPass", "emaema")]
+    [InlineData("asyncName", "newpass", "ema@here.com")]
     public void AccountObjectGotEncrypted(string name, string password, string email) {
 
         //arrange
@@ -41,8 +35,8 @@ public class AccountCreatorTests {
         var result = creator.CreateAccount(input);
 
         //assert
-        result.Is(OptionResult.None);
-        dataCreatorMock.Verify(x => x.CreateAccount(It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))));
+        Assert.Equal(CreatorResponseCode.Success, result);
+        dataCreatorMock.Verify(x => x.CreateAccountAsync(It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))));
         dataCreatorMock.VerifyNoOtherCalls();
 
     }
@@ -58,7 +52,7 @@ public class AccountCreatorTests {
         var result = await creator.CreateAccountAsync(input);
 
         //assert
-        result.Is(OptionResult.None);
+        Assert.Equal(CreatorResponseCode.Success, result);
         dataCreatorMock.Verify(x => x.CreateAccountAsync(It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))));
         dataCreatorMock.VerifyNoOtherCalls();
 
@@ -75,12 +69,12 @@ public class AccountCreatorTests {
         AccountCreator creator = new(dataCreatorMock.Object, cryptoAccount);
 
         //act
-        var result = creator.CreateAccount(input);
-        var resultAsync = await creator.CreateAccountAsync(input);
+        var actual = creator.CreateAccount(input);
+        var actualAsync = await creator.CreateAccountAsync(input);
 
         //assert
-        result.Is(OptionResult.Some);
-        resultAsync.Is(OptionResult.Some);
+        Assert.Equal(CreatorResponseCode.InvalidName, actual);
+        Assert.Equal(CreatorResponseCode.InvalidName, actualAsync);
         dataCreatorMock.VerifyNoOtherCalls();
 
     }
@@ -94,7 +88,6 @@ public class AccountCreatorTests {
         var sut = new AccountCreator(dataCreatorMock.Object, cryptoAccount);
 
         //act
-        _ = sut.CreateAccount(actual);
         _ = await sut.CreateAccountAsync(actual);
 
         //assert

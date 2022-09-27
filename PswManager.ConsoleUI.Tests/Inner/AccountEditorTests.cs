@@ -4,7 +4,7 @@ using PswManager.Core.Services;
 using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
 using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.Database.DataAccess.Interfaces;
+using PswManager.Database.Interfaces;
 using PswManager.Database.Models;
 using PswManager.Extensions;
 using PswManager.TestUtils;
@@ -19,36 +19,12 @@ public class AccountEditorTests {
 
         dataEditorMock = new Mock<IDataEditor>();
         dataEditorMock
-            .Setup(x => x.UpdateAccount(It.IsAny<string>(), It.IsAny<AccountModel>()))
-            .Returns<string, AccountModel>((x, y) => string.IsNullOrWhiteSpace(x) ? EditorErrorCode.InvalidName : Option.None<EditorErrorCode>());
-
-        dataEditorMock
             .Setup(x => x.UpdateAccountAsync(It.IsAny<string>(), It.IsAny<AccountModel>()))
-            .Returns<string, AccountModel>((x, y) => (string.IsNullOrWhiteSpace(x) ? EditorErrorCode.InvalidName : Option.None<EditorErrorCode>()).AsValueTask());
+            .Returns<string, AccountModel>((x, y) => (string.IsNullOrWhiteSpace(x) ? EditorResponseCode.InvalidName : EditorResponseCode.Success).AsTask());
     }
 
     readonly Mock<IDataEditor> dataEditorMock;
     readonly ICryptoAccountService cryptoAccount;
-
-    [Theory]
-    [InlineData("accName", "noEncrypt", "password", "email")]
-    public void UpdateValuesGotEncrypted(string name, string newName, string password, string email) {
-
-        //arrange
-        var (editor, input, expected) = ArrangeTest(newName, password, email);
-
-        //act
-        var option = editor.UpdateAccount(name, input);
-
-        //assert
-        option.Is(OptionResult.None);
-        dataEditorMock.Verify(x => x.UpdateAccount(
-                It.Is<string>(x => x == name),
-                It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))
-            ));
-        dataEditorMock.VerifyNoOtherCalls();
-
-    }
 
     [Theory]
     [InlineData("accName", "noEncrypt", "password", "email")]
@@ -59,10 +35,10 @@ public class AccountEditorTests {
         var (editor, input, expected) = ArrangeTest(newName, password, email);
 
         //act
-        var option = await editor.UpdateAccountAsync(name, input);
+        var result = await editor.UpdateAccountAsync(name, input);
 
         //assert
-        option.Is(OptionResult.None);
+        Assert.Equal(EditorResponseCode.Success, result);
         dataEditorMock.Verify(x => x.UpdateAccountAsync(
                 It.Is<string>(x => x == name),
                 It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))
@@ -82,12 +58,12 @@ public class AccountEditorTests {
         AccountEditor editor = new(dataEditorMock.Object, cryptoAccount);
 
         //act
-        var option = editor.UpdateAccount(name, input);
-        var optionAsync = await editor.UpdateAccountAsync(name, input);
+        var result = editor.UpdateAccount(name, input);
+        var resultAsync = await editor.UpdateAccountAsync(name, input);
 
         //assert
-        option.Is(OptionResult.Some);
-        optionAsync.Is(OptionResult.Some);
+        Assert.Equal(EditorResponseCode.InvalidName, result);
+        Assert.Equal(EditorResponseCode.InvalidName, resultAsync);
         dataEditorMock.VerifyNoOtherCalls();
 
     }

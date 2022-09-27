@@ -1,78 +1,45 @@
-﻿using PswManager.Database.DataAccess.ErrorCodes;
+﻿using PswManager.Async.Locks;
+using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
 using PswManager.Extensions;
 using PswManager.Utils;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PswManager.Database.DataAccess.MemoryDatabase; 
-internal class MemoryConnection : BaseConnection {
+internal class MemoryConnection : IDBConnection {
 
     readonly Dictionary<string, AccountModel> accounts = new();
 
-    protected override AccountExistsStatus AccountExistHook(string name) {
+    public AccountExistsStatus AccountExist(string name) {
         return accounts.ContainsKey(name) ? AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
 
-    protected override ValueTask<AccountExistsStatus> AccountExistHookAsync(string name) {
-        return ValueTask.FromResult(accounts.ContainsKey(name) ? AccountExistsStatus.Exist : AccountExistsStatus.NotExist);
+    public Task<AccountExistsStatus> AccountExistAsync(string name) {
+        return Task.FromResult(accounts.ContainsKey(name) ? AccountExistsStatus.Exist : AccountExistsStatus.NotExist);
     }
 
-    protected override Option<CreatorErrorCode> CreateAccountHook(AccountModel model) {
+    public Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
         accounts.Add(model.Name, model);
-        return Option.None<CreatorErrorCode>();
+        return Task.FromResult(CreatorResponseCode.Success);
     }
 
-    protected override ValueTask<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model) {
-        accounts.Add(model.Name, model);
-        return ValueTask.FromResult(Option.None<CreatorErrorCode>());
-    }
-
-    protected override Option<DeleterErrorCode> DeleteAccountHook(string name) {
+    public Task<DeleterResponseCode> DeleteAccountAsync(string name) {
         accounts.Remove(name);
-        return Option.None<DeleterErrorCode>();
+        return DeleterResponseCode.Success.AsTask();
     }
 
-    protected override ValueTask<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name) {
-        return DeleteAccountHook(name).AsValueTask();
-    }
-
-    protected override Option<AccountModel, ReaderErrorCode> GetAccountHook(string name) {
-        return accounts[name];
-    }
-
-    protected override ValueTask<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name) {
-        return ValueTask.FromResult<Option<AccountModel, ReaderErrorCode>>(accounts[name]);
-    }
-
-    protected override Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAllAccountsHook() {
-        var list = accounts
-            .Values
-            .Select(x => (NamedAccountOption)x);
-
-        return new(list);
-    }
-
-    protected override Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync() {
-        //fake async as it's just reading a list
-        Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode> GetAccounts() {
-            return GetAllAccountsHook()
-                .Bind(
-                    x => Option.Some<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>(ToAsyncEnumerable(x))
-                );
-        }
-
-        return Task.FromResult(GetAccounts());
-    }
-
-    private static async IAsyncEnumerable<NamedAccountOption> ToAsyncEnumerable(IEnumerable<NamedAccountOption> enumerable) {
-        foreach(var item in enumerable) {
-            yield return await Task.FromResult(item);
+    public async IAsyncEnumerable<NamedAccountOption> EnumerateAccountsAsync(NamesLocker locker) {
+        foreach(var account in accounts.Values) {
+            yield return await Task.FromResult<NamedAccountOption>(account);
         }
     }
 
-    protected override Option<EditorErrorCode> UpdateAccountHook(string name, AccountModel newModel) {
+    public Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
+        return Task.FromResult<Option<AccountModel, ReaderErrorCode>>(accounts[name]);
+    }
+
+    public Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
         var account = accounts[name];
 
         if(!string.IsNullOrWhiteSpace(newModel.Password)) {
@@ -88,11 +55,7 @@ internal class MemoryConnection : BaseConnection {
             accounts.Add(newModel.Name, account);
         }
 
-        return Option.None<EditorErrorCode>();
-    }
-
-    protected override ValueTask<Option<EditorErrorCode>> UpdateAccountHookAsync(string name, AccountModel newModel) {
-        return UpdateAccountHook(name, newModel).AsValueTask();
+        return EditorResponseCode.Success.AsTask();
     }
 
 }

@@ -17,7 +17,6 @@ public class AddCommand : BaseCommand<AddCommandArgs> {
     }
 
     protected override CommandResult RunLogic(AddCommandArgs obj) {
-
         var result = dataCreator.CreateAccount(new AccountModel(obj.Name, obj.Password, obj.Email));
         return MatchResult(result, obj.Name);
     }
@@ -28,17 +27,21 @@ public class AddCommand : BaseCommand<AddCommandArgs> {
         return MatchResult(result, obj.Name);
     }
 
-    private static CommandResult MatchResult(Option<CreatorErrorCode> result, string name) => result.Match(
-        some => new CommandResult($"There has been an error: {ErrorCodeToMessage(some, name)}", false),
-        () => new CommandResult("The account has been created successfully.", true)
-    );
+    private static CommandResult MatchResult(CreatorResponseCode result, string name) {
+        
+        if(result == CreatorResponseCode.Success) {
+            return new CommandResult("The account has been created successfully.", true);
+        }
 
-    private static string ErrorCodeToMessage(CreatorErrorCode errorCode, string name) => errorCode switch {
-        CreatorErrorCode.InvalidName => "The given name cannot be empty.",
-        CreatorErrorCode.MissingPassword => $"The password to create the account {name} cannot be empty.",
-        CreatorErrorCode.MissingEmail => $"The email to create the account {name} cannot be empty.",
-        CreatorErrorCode.AccountExistsAlready => $"The account {name} exists already.",
-        CreatorErrorCode.UsedElsewhere => $"The account {name} is being used elsewhere.",
+        return new CommandResult($"There has been an error: {ErrorCodeToMessage(result, name)}", false);
+    }
+
+    private static string ErrorCodeToMessage(CreatorResponseCode errorCode, string name) => errorCode switch {
+        CreatorResponseCode.InvalidName => "The given name cannot be empty.",
+        CreatorResponseCode.MissingPassword => $"The password to create the account {name} cannot be empty.",
+        CreatorResponseCode.MissingEmail => $"The email to create the account {name} cannot be empty.",
+        CreatorResponseCode.AccountExistsAlready => $"The account {name} exists already.",
+        CreatorResponseCode.UsedElsewhere => $"The account {name} is being used elsewhere.",
         _ => $"The account {name}'s creation has failed for an unknown reason.",
     };
 

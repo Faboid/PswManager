@@ -1,10 +1,10 @@
 ﻿using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.Database.DataAccess.Interfaces;
+using PswManager.Database.Interfaces;
 using PswManager.Database.Models;
 using PswManager.Utils.Options;
 using Xunit;
 
-namespace PswManager.Database.Tests.Generic; 
+namespace PswManager.Database.Tests.Generic;
 public abstract class DataEditorGeneric : IDisposable {
     public DataEditorGeneric(ITestDBHandler dbHandler) {
         this.dbHandler = dbHandler.SetUpDefaultValues();
@@ -48,29 +48,6 @@ public abstract class DataEditorGeneric : IDisposable {
         );
     }
 
-    private bool firstRun = true;
-
-    [Theory]
-    [MemberData(nameof(UpdateAccountCorrectlyData))]
-    public void UpdateAccountCorrectly(string name, AccountModel newAccount, AccountModel expected) {
-
-        //arrange
-        if(firstRun) {
-            dbHandler.SetUpDefaultValues();
-            firstRun = false;
-        }
-
-        //act
-        var actual = dataEditor.UpdateAccount(name, newAccount);
-        var updated = dataReader.GetAccount(string.IsNullOrWhiteSpace(newAccount.Name) ? name : newAccount.Name);
-
-        //assert
-        actual.Is(OptionResult.None);
-        Assert.NotNull(updated.Or(null));
-        AssertAccountEqual(expected, updated.Or(null));
-
-    }
-
     private bool firstAsyncRun = true;
 
     [Theory]
@@ -84,11 +61,11 @@ public abstract class DataEditorGeneric : IDisposable {
         }
 
         //act
-        var option = await dataEditor.UpdateAccountAsync(name, newAccount).ConfigureAwait(false);
+        var result = await dataEditor.UpdateAccountAsync(name, newAccount).ConfigureAwait(false);
         var updated = await dataReader.GetAccountAsync(string.IsNullOrWhiteSpace(newAccount.Name) ? name : newAccount.Name).ConfigureAwait(false);
 
         //assert
-        option.Is(OptionResult.None);
+        Assert.Equal(EditorResponseCode.Success, result);
         Assert.NotNull(updated.Or(null));
         AssertAccountEqual(expected, updated.Or(null));
 
@@ -103,16 +80,11 @@ public abstract class DataEditorGeneric : IDisposable {
 
         //act
         var exist = dataEditor.AccountExist(inexistantName);
-        var result = dataEditor.UpdateAccount(inexistantName, model);
-        var resultAsync = await dataEditor.UpdateAccountAsync(inexistantName, model);
+        var result = await dataEditor.UpdateAccountAsync(inexistantName, model);
 
         //assert
         Assert.Equal(AccountExistsStatus.NotExist, exist);
-        result.Is(OptionResult.Some);
-        resultAsync.Is(OptionResult.Some);
-
-        Assert.Equal(EditorErrorCode.DoesNotExist, result.Or(default));
-        Assert.Equal(EditorErrorCode.DoesNotExist, resultAsync.Or(default));
+        Assert.Equal(EditorResponseCode.DoesNotExist, result);
 
     }
 
@@ -127,18 +99,12 @@ public abstract class DataEditorGeneric : IDisposable {
         //act
         var currExists = dataEditor.AccountExist(currentName);
         var newExists = dataEditor.AccountExist(newExistingName);
-        var result = dataEditor.UpdateAccount(currentName, newModel);
-        var resultAsync = await dataEditor.UpdateAccountAsync(currentName, newModel).ConfigureAwait(false);
+        var result = await dataEditor.UpdateAccountAsync(currentName, newModel).ConfigureAwait(false);
 
         //assert
         Assert.Equal(AccountExistsStatus.Exist, currExists);
         Assert.Equal(AccountExistsStatus.Exist, newExists);
-
-        result.Is(OptionResult.Some);
-        resultAsync.Is(OptionResult.Some);
-
-        Assert.Equal(EditorErrorCode.NewNameExistsAlready, result.Or(default));
-        Assert.Equal(EditorErrorCode.NewNameExistsAlready, resultAsync.Or(default));
+        Assert.Equal(EditorResponseCode.NewNameExistsAlready, result);
 
     }
 

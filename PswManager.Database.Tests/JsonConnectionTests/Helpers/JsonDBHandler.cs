@@ -27,7 +27,7 @@ internal class JsonDBHandler : ITestDBHandler {
 
         foreach(var value in defaultValues.values) {
             var account = DefaultValues.ToAccount(value);
-            factory.GetDataCreator().CreateAccount(account);
+            factory.GetDataCreator().CreateAccountAsync(account).GetAwaiter().GetResult();
         }
 
         return this;

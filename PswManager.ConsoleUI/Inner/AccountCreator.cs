@@ -1,7 +1,7 @@
 ﻿using PswManager.ConsoleUI.Inner.Interfaces;
 using PswManager.Core.Services;
 using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.Database.DataAccess.Interfaces;
+using PswManager.Database.Interfaces;
 using PswManager.Database.Models;
 using System.Threading.Tasks;
 
@@ -16,33 +16,19 @@ public class AccountCreator : IAccountCreator {
     readonly IDataCreator dataCreator;
     readonly ICryptoAccountService cryptoAccount;
 
-    public Option<CreatorErrorCode> CreateAccount(AccountModel model) {
-
-        var validationResult = model.IsAnyValueNullOrEmpty();
-        if(validationResult != ValidationResult.Success) {
-            return validationResult switch {
-                ValidationResult.MissingName => CreatorErrorCode.InvalidName,
-                ValidationResult.MissingPassword => CreatorErrorCode.MissingPassword,
-                ValidationResult.MissingEmail => CreatorErrorCode.MissingEmail,
-                _ => CreatorErrorCode.Undefined,
-            };
-        }
-
-        var account = new AccountModel(model.Name, model.Password, model.Email);
-        (account.Password, account.Email) = cryptoAccount.Encrypt(account.Password, account.Email);
-
-        return dataCreator.CreateAccount(account);
+    public CreatorResponseCode CreateAccount(AccountModel model) {
+        return CreateAccountAsync(model).GetAwaiter().GetResult();
     }
 
-    public async Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model) {
+    public async Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
 
         var validationResult = model.IsAnyValueNullOrEmpty();
         if(validationResult != ValidationResult.Success) {
             return validationResult switch {
-                ValidationResult.MissingName => CreatorErrorCode.InvalidName,
-                ValidationResult.MissingPassword => CreatorErrorCode.MissingPassword,
-                ValidationResult.MissingEmail => CreatorErrorCode.MissingEmail,
-                _ => CreatorErrorCode.Undefined,
+                ValidationResult.MissingName => CreatorResponseCode.InvalidName,
+                ValidationResult.MissingPassword => CreatorResponseCode.MissingPassword,
+                ValidationResult.MissingEmail => CreatorResponseCode.MissingEmail,
+                _ => CreatorResponseCode.Undefined,
             };
         }
 

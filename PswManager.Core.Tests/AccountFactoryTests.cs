@@ -1,12 +1,12 @@
 using PswManager.Core.Validators;
 using static PswManager.Core.AccountFactory;
-using PswManager.Database.DataAccess;
 using PswManager.Core.AccountModels;
 using PswManager.Core.Tests.Mocks;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
 using PswManager.Utils;
 using PswManager.Core.Tests.Asserts;
+using PswManager.Database;
 
 namespace PswManager.Core.Tests;
 
@@ -29,16 +29,16 @@ public class AccountFactoryTests {
     }
 
     [Theory]
-    [InlineData(CreatorErrorCode.Undefined, CreateAccountErrorCode.Unknown)]
-    [InlineData(CreatorErrorCode.InvalidName, CreateAccountErrorCode.NameEmptyOrNull)]
-    [InlineData(CreatorErrorCode.MissingPassword, CreateAccountErrorCode.PasswordEmptyOrNull)]
-    [InlineData(CreatorErrorCode.MissingEmail, CreateAccountErrorCode.EmailEmptyOrNull)]
-    [InlineData(CreatorErrorCode.AccountExistsAlready, CreateAccountErrorCode.NameIsOccupied)]
-    [InlineData(CreatorErrorCode.UsedElsewhere, CreateAccountErrorCode.NameIsOccupied)]
-    public async Task CreateAccount_FailsDatabaseSaving(CreatorErrorCode errorCode, CreateAccountErrorCode expected) {
+    [InlineData(CreatorResponseCode.Undefined, CreateAccountErrorCode.Unknown)]
+    [InlineData(CreatorResponseCode.InvalidName, CreateAccountErrorCode.NameEmptyOrNull)]
+    [InlineData(CreatorResponseCode.MissingPassword, CreateAccountErrorCode.PasswordEmptyOrNull)]
+    [InlineData(CreatorResponseCode.MissingEmail, CreateAccountErrorCode.EmailEmptyOrNull)]
+    [InlineData(CreatorResponseCode.AccountExistsAlready, CreateAccountErrorCode.NameIsOccupied)]
+    [InlineData(CreatorResponseCode.UsedElsewhere, CreateAccountErrorCode.NameIsOccupied)]
+    public async Task CreateAccount_FailsDatabaseSaving(CreatorResponseCode errorCode, CreateAccountErrorCode expected) {
 
         var connectionMock = new Mock<IDataConnection>();
-        connectionMock.Setup(x => x.CreateAccountAsync(It.IsAny<AccountModel>())).Returns(Task.FromResult(Option.Some(errorCode)));
+        connectionMock.Setup(x => x.CreateAccountAsync(It.IsAny<AccountModel>())).Returns(Task.FromResult(errorCode));
         var sut = new AccountFactory(connectionMock.Object, new AccountValidator(), Mock.Of<IAccountModelFactory>());
         var actual = await sut.CreateAccountAsync(CreateDefaultEncrypted());
         Assert.Equal(expected, actual.OrDefaultError());
@@ -48,7 +48,9 @@ public class AccountFactoryTests {
     [Fact]
     public async Task CreateAccount_CorrectValues() {
 
-        var sut = new AccountFactory(Mock.Of<IDataConnection>(), new AccountValidator(), Mock.Of<IAccountModelFactory>());
+        var connectionMock = new Mock<IDataConnection>();
+        connectionMock.Setup(x => x.CreateAccountAsync(It.IsAny<AccountModel>())).Returns(Task.FromResult(CreatorResponseCode.Success));
+        var sut = new AccountFactory(connectionMock.Object, new AccountValidator(), Mock.Of<IAccountModelFactory>());
         var decrypted = CreateDefaultDecrypted();
         var expected = decrypted.GetEncryptedAccount();
         var actual = await sut.CreateAccountAsync(decrypted);

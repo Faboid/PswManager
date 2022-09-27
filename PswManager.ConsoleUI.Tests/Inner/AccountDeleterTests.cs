@@ -1,7 +1,7 @@
 ﻿using Moq;
 using PswManager.ConsoleUI.Inner;
 using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.Database.DataAccess.Interfaces;
+using PswManager.Database.Interfaces;
 using PswManager.Extensions;
 using PswManager.TestUtils;
 using PswManager.Utils;
@@ -13,34 +13,12 @@ public class AccountDeleterTests {
     public AccountDeleterTests() {
 
         dataDeleterMock = new();
-
-        dataDeleterMock
-            .Setup(x => x.DeleteAccount(It.IsAny<string>()))
-            .Returns<string>(x => string.IsNullOrWhiteSpace(x) ? DeleterErrorCode.InvalidName : Option.None<DeleterErrorCode>());
-
         dataDeleterMock
             .Setup(x => x.DeleteAccountAsync(It.IsAny<string>()))
-            .Returns<string>(x => (string.IsNullOrWhiteSpace(x) ? DeleterErrorCode.InvalidName : Option.None<DeleterErrorCode>()).AsValueTask());
+            .Returns<string>(x => (string.IsNullOrWhiteSpace(x) ? DeleterResponseCode.InvalidName : DeleterResponseCode.Success).AsTask());
     }
 
     readonly Mock<IDataDeleter> dataDeleterMock;
-
-    [Theory]
-    [InlineData("someName")]
-    public void DeleteAccountCallsDBCorrectly(string name) {
-
-        //arrange
-        AccountDeleter deleter = new(dataDeleterMock.Object);
-
-        //act
-        var result = deleter.DeleteAccount(name);
-
-        //assert
-        result.Is(OptionResult.None);
-        dataDeleterMock.Verify(x => x.DeleteAccount(It.Is<string>(x => x == name)));
-        dataDeleterMock.VerifyNoOtherCalls();
-
-    }
 
     [Theory]
     [InlineData("someName")]
@@ -53,7 +31,7 @@ public class AccountDeleterTests {
         var result = await deleter.DeleteAccountAsync(name);
 
         //assert
-        result.Is(OptionResult.None);
+        Assert.Equal(DeleterResponseCode.Success, result);
         dataDeleterMock.Verify(x => x.DeleteAccountAsync(It.Is<string>(x => x == name)));
         dataDeleterMock.VerifyNoOtherCalls();
 
@@ -73,8 +51,8 @@ public class AccountDeleterTests {
         var resultAsync = await creator.DeleteAccountAsync(name);
 
         //assert
-        result.Is(OptionResult.Some);
-        resultAsync.Is(OptionResult.Some);
+        Assert.Equal(DeleterResponseCode.InvalidName, result);
+        Assert.Equal(DeleterResponseCode.InvalidName, resultAsync);
         dataDeleterMock.VerifyNoOtherCalls();
 
     }
