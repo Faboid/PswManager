@@ -1,8 +1,8 @@
 ﻿using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.Database.DataAccess.Interfaces;
+using PswManager.Database.Interfaces;
 using Xunit;
 
-namespace PswManager.Database.Tests.Generic; 
+namespace PswManager.Database.Tests.Generic;
 public abstract class DataHelperGeneric : IDisposable {
 
     public DataHelperGeneric(ITestDBHandler dbHandler) {

@@ -1,10 +1,10 @@
 ﻿using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.Database.DataAccess.Interfaces;
+using PswManager.Database.Interfaces;
 using PswManager.Database.Models;
 using PswManager.Utils;
 using Xunit;
 
-namespace PswManager.Database.Tests.Generic; 
+namespace PswManager.Database.Tests.Generic;
 public abstract class DataCreatorGeneric : IDisposable {
 
     public DataCreatorGeneric(ITestDBHandler dbHandler) {

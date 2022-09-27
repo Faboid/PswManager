@@ -1,7 +1,7 @@
 ﻿using Moq;
 using PswManager.ConsoleUI.Inner;
 using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.Database.DataAccess.Interfaces;
+using PswManager.Database.Interfaces;
 using PswManager.Extensions;
 using PswManager.TestUtils;
 using PswManager.Utils;

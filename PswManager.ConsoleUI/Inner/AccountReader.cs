@@ -1,7 +1,7 @@
 ﻿using PswManager.ConsoleUI.Inner.Interfaces;
 using PswManager.Core.Services;
 using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.Database.DataAccess.Interfaces;
+using PswManager.Database.Interfaces;
 using PswManager.Database.Models;
 using System.Collections.Generic;
 using System.Linq;

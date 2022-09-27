@@ -1,6 +1,6 @@
 ﻿using PswManager.ConsoleUI.Inner.Interfaces;
 using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.Database.DataAccess.Interfaces;
+using PswManager.Database.Interfaces;
 using System.Threading.Tasks;
 
 namespace PswManager.ConsoleUI.Inner;

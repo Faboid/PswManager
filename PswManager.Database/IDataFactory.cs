@@ -1,4 +1,4 @@
-﻿using PswManager.Database.DataAccess.Interfaces;
+﻿using PswManager.Database.Interfaces;
 
 namespace PswManager.Database;
 public interface IDataFactory {

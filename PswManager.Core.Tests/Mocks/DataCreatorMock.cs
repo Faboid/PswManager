@@ -1,5 +1,5 @@
 ﻿using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.Database.DataAccess.Interfaces;
+using PswManager.Database.Interfaces;
 using PswManager.Database.Models;
 
 namespace PswManager.Core.Tests.Mocks;

@@ -4,7 +4,7 @@ using PswManager.Core.Services;
 using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
 using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.Database.DataAccess.Interfaces;
+using PswManager.Database.Interfaces;
 using PswManager.Database.Models;
 using PswManager.TestUtils;
 using PswManager.Utils.Options;

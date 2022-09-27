@@ -1,8 +1,8 @@
-﻿using PswManager.Database.DataAccess.Interfaces;
-using PswManager.Utils;
+﻿using PswManager.Utils;
 using PswManager.Database.Tests.Generic;
+using PswManager.Database.Interfaces;
 
-namespace PswManager.Database.Tests.TextFileConnectionTests.Helpers; 
+namespace PswManager.Database.Tests.TextFileConnectionTests.Helpers;
 internal class TextDatabaseHandler : ITestDBHandler, IDisposable {
 
     public TextDatabaseHandler(string dbName) : this(dbName, 5) { }
