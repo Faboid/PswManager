@@ -63,7 +63,7 @@ public class AccountFactory : IAccountFactory {
     }
 
     public async IAsyncEnumerable<IAccount> LoadAccounts() {
-        var enumerable = _connection.GetAllAccountsAsync();
+        var enumerable = _connection.EnumerateAccountsAsync();
         await foreach(var option in enumerable) {
             var info = option.OrDefault();
             if(info != null) {

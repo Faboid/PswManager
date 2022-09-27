@@ -36,7 +36,7 @@ public class AccountReader : IAccountReader {
     }
 
     public IAsyncEnumerable<NamedAccountOption> ReadAllAccountsAsync() {
-        return DecryptAllAsync(dataReader.GetAllAccountsAsync());
+        return DecryptAllAsync(dataReader.EnumerateAccountsAsync());
     }
 
     private async IAsyncEnumerable<NamedAccountOption> DecryptAllAsync(IAsyncEnumerable<NamedAccountOption> enumerable) {

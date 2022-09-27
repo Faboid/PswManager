@@ -24,7 +24,7 @@ public class AccountReaderTests {
             );
 
         dataReaderMock
-            .Setup(x => x.GetAllAccountsAsync())
+            .Setup(x => x.EnumerateAccountsAsync())
             .Returns(IAsyncEnumerableGenerator.GenerateInfiniteEncryptedAccountListAsync(cryptoAccount));
 
         reader = new AccountReader(dataReaderMock.Object, cryptoAccount);
@@ -78,7 +78,7 @@ public class AccountReaderTests {
 
         //assert
         Assert.True(listValues.Count == 50 && listValues.All(x => x.Match(some => true, error => false, () => false)));
-        dataReaderMock.Verify(x => x.GetAllAccountsAsync());
+        dataReaderMock.Verify(x => x.EnumerateAccountsAsync());
         dataReaderMock.VerifyNoOtherCalls();
 
     }

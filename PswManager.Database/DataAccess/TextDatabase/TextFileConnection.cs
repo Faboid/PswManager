@@ -109,7 +109,7 @@ public class TextFileConnection : IDataConnection {
         return account;
     }
 
-    public IAsyncEnumerable<NamedAccountOption> GetAllAccountsAsync() { 
+    public IAsyncEnumerable<NamedAccountOption> EnumerateAccountsAsync() { 
         return fileSaver.GetAllAsync(locker);
     }
 

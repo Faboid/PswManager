@@ -74,7 +74,7 @@ public abstract class DataReaderGeneric : IDisposable {
         var expectedAccounts = dbHandler.GetDefaultValues().GetAll().ToList();
 
         //act
-        var actual = dataReader.GetAllAccountsAsync();
+        var actual = dataReader.EnumerateAccountsAsync();
         List<AccountModel> values = await actual
             .Select(x => x.Or(null))
             .ToList()
@@ -101,7 +101,7 @@ public abstract class DataReaderGeneric : IDisposable {
         var expectedAccounts = dbHandler.GetDefaultValues().GetSome(num).ToList();
 
         //act
-        var actual = dataReader.GetAllAccountsAsync();
+        var actual = dataReader.EnumerateAccountsAsync();
         List<AccountModel> values = await actual.Select(x => x.Or(null)).Take(num).ToList().ConfigureAwait(false);
         values.Sort((x, y) => x.Name.CompareTo(y.Name));
 

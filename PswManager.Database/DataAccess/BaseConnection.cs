@@ -99,7 +99,7 @@ internal abstract class BaseConnection : IDataConnection {
         return await GetAccountHookAsync(name).ConfigureAwait(false);
     }
 
-    public async IAsyncEnumerable<NamedAccountOption> GetAllAccountsAsync() {
+    public async IAsyncEnumerable<NamedAccountOption> EnumerateAccountsAsync() {
         using var mainLock = await Locker.GetAllLocksAsync().ConfigureAwait(false);
         await foreach(var account in GetAllAccountsHookAsync()) {
             yield return account;
