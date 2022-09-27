@@ -54,11 +54,11 @@ public class AccountsManager : IAccountsManager {
         return accountReader.ReadAccountAsync(name);
     }
 
-    public Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> ReadAllAccounts() {
+    public IEnumerable<NamedAccountOption> ReadAllAccounts() {
         return accountReader.ReadAllAccounts();
     }
 
-    public Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> ReadAllAccountsAsync() {
+    public IAsyncEnumerable<NamedAccountOption> ReadAllAccountsAsync() {
         return accountReader.ReadAllAccountsAsync();
     }
 

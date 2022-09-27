@@ -25,7 +25,7 @@ public class AccountReaderTests {
 
         dataReaderMock
             .Setup(x => x.GetAllAccountsAsync())
-            .Returns(() => Task.FromResult(OptionMocks.GenerateInfiniteEncryptedAccountListAsync(cryptoAccount)));
+            .Returns(IAsyncEnumerableGenerator.GenerateInfiniteEncryptedAccountListAsync(cryptoAccount));
 
         reader = new AccountReader(dataReaderMock.Object, cryptoAccount);
     }
@@ -73,11 +73,10 @@ public class AccountReaderTests {
     public async Task GetAllAccountsIsNotIteratedAsync() {
 
         //act
-        var option = await reader.ReadAllAccountsAsync();
-        var listValues = await option.Or(null).Take(50).ToListAsync().ConfigureAwait(false);
+        var asyncEnumerable = reader.ReadAllAccountsAsync();
+        var listValues = await asyncEnumerable.Take(50).ToListAsync().ConfigureAwait(false);
 
         //assert
-        Assert.True(option.Match(some => true, error => false, () => false));
         Assert.True(listValues.Count == 50 && listValues.All(x => x.Match(some => true, error => false, () => false)));
         dataReaderMock.Verify(x => x.GetAllAccountsAsync());
         dataReaderMock.VerifyNoOtherCalls();
@@ -97,10 +96,9 @@ public class AccountReaderTests {
 
         //act
         var result = reader.ReadAllAccounts();
-        var ten = result.Or(null).Take(10).Select(x => x.Or(null)).ToList();
+        var ten = result.Take(10).Select(x => x.Or(null)).ToList();
 
         //assert
-        Assert.True(result.Match(some => true, error => false, () => false));
         Assert.True(Enumerable.Range(0, 10).All(x => AccountModelAsserts.AssertEqual(expected[x], ten[x])));
 
     }
@@ -117,11 +115,10 @@ public class AccountReaderTests {
             .ToList();
 
         //act
-        var result = await reader.ReadAllAccountsAsync().ConfigureAwait(false);
-        var ten = await result.Or(null).Take(10).Select(x => x.Or(null)).ToListAsync();
+        var result = reader.ReadAllAccountsAsync();
+        var ten = await result.Take(10).Select(x => x.Or(null)).ToListAsync();
 
         //assert
-        Assert.True(result.Match(some => true, error => false, () => false));
         Assert.True(Enumerable.Range(0, 10).All(x => AccountModelAsserts.AssertEqual(expected[x], ten[x])));
 
     }

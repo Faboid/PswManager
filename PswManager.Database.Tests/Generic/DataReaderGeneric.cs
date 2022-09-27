@@ -74,16 +74,14 @@ public abstract class DataReaderGeneric : IDisposable {
         var expectedAccounts = dbHandler.GetDefaultValues().GetAll().ToList();
 
         //act
-        var actual = await dataReader.GetAllAccountsAsync().ConfigureAwait(false);
+        var actual = dataReader.GetAllAccountsAsync();
         List<AccountModel> values = await actual
-            .Or(null)
             .Select(x => x.Or(null))
             .ToList()
             .ConfigureAwait(false);
         values.Sort((x, y) => x.Name.CompareTo(y.Name));
 
         //assert
-        Assert.True(MatchToBool(actual));
         Assert.Equal(expectedAccounts.Count, values.Count);
 
         Enumerable
@@ -103,12 +101,11 @@ public abstract class DataReaderGeneric : IDisposable {
         var expectedAccounts = dbHandler.GetDefaultValues().GetSome(num).ToList();
 
         //act
-        var actual = await dataReader.GetAllAccountsAsync().ConfigureAwait(false);
-        List<AccountModel> values = await actual.Or(null).Select(x => x.Or(null)).Take(num).ToList().ConfigureAwait(false);
+        var actual = dataReader.GetAllAccountsAsync();
+        List<AccountModel> values = await actual.Select(x => x.Or(null)).Take(num).ToList().ConfigureAwait(false);
         values.Sort((x, y) => x.Name.CompareTo(y.Name));
 
         //assert
-        Assert.True(MatchToBool(actual));
         Assert.Equal(expectedAccounts.Count, values.Count);
 
         Enumerable
@@ -118,8 +115,6 @@ public abstract class DataReaderGeneric : IDisposable {
             });
 
     }
-
-    private static bool MatchToBool<TValue, TError>(Option<TValue, TError> option) => option.Match(some => true, error => false, () => false);
 
     private static ReaderErrorCode GetError(Option<AccountModel, ReaderErrorCode> option) 
         => option.Match(some => throw new Exception("Option should not be Some."), error => error, () => throw new Exception("Option should not be None."));

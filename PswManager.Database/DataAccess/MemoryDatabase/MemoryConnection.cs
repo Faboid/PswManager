@@ -33,12 +33,7 @@ internal class MemoryConnection : BaseConnection {
         return Task.FromResult<Option<AccountModel, ReaderErrorCode>>(accounts[name]);
     }
 
-    protected override Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync() {
-        var enumerator = GetAccountsAsync();
-        return Task.FromResult(Option.Some<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>(enumerator));
-    }
-
-    private async IAsyncEnumerable<NamedAccountOption> GetAccountsAsync() {
+    protected override async IAsyncEnumerable<NamedAccountOption> GetAllAccountsHookAsync() {
         foreach(var account in accounts.Values) {
             yield return await Task.FromResult<NamedAccountOption>(account);
         }

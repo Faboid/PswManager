@@ -26,12 +26,8 @@ internal class MemoryDBHandler {
 
     public async Task<MemoryDBHandler> SetUpDefaultValuesAsync() {
         //reset database
-        var existing = (await dbConnection.GetAllAccountsAsync())
-            .Match(some => some, error => throw new Exception(), () => throw new Exception())
-            .Select(x => x.Or(null) ?? throw new Exception());
-
-        await foreach(var acc in existing) {
-            await dbConnection.DeleteAccountAsync(acc.Name);
+        await foreach(var acc in dbConnection.GetAllAccountsAsync()) {
+            await dbConnection.DeleteAccountAsync(acc.Match(some => some.Name, error => error.Name, () => throw new Exception()));
         }
 
         for(int i = 0; i < numValues; i++) {

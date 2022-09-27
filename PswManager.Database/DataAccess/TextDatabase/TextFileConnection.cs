@@ -109,9 +109,8 @@ public class TextFileConnection : IDataConnection {
         return account;
     }
 
-    public Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsAsync() { 
-        var accounts = fileSaver.GetAllAsync(locker);
-        return Option.Some<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>(accounts).AsTask();
+    public IAsyncEnumerable<NamedAccountOption> GetAllAccountsAsync() { 
+        return fileSaver.GetAllAsync(locker);
     }
 
     public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) { 

@@ -57,11 +57,7 @@ internal class JsonConnection : BaseConnection {
         return model;
     }
 
-    protected override Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync() {
-        return Task.FromResult<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>>(new(GetAccountsAsync()));
-    }
-
-    private async IAsyncEnumerable<NamedAccountOption> GetAccountsAsync() {
+    protected override async IAsyncEnumerable<NamedAccountOption> GetAllAccountsHookAsync() {
         var accounts = Directory.GetFiles(directoryPath)
             .Select(x => Path.GetFileNameWithoutExtension(x))
             .Select(x => (x, GetAccountHookAsync(x)));

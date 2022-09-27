@@ -31,19 +31,12 @@ public class AccountReader : IAccountReader {
         return await result.BindAsync(x => Task.Run<Option<AccountModel, ReaderErrorCode>>(() => cryptoAccount.Decrypt(x)));
     }
 
-    public Option<IEnumerable<NamedAccountOption>, ReaderAllErrorCode> ReadAllAccounts() {
-        return dataReader
-            .GetAllAccountsAsync().GetAwaiter().GetResult()
-            .Bind<IEnumerable<NamedAccountOption>>(x => new(DecryptAll(x)));
+    public IEnumerable<NamedAccountOption> ReadAllAccounts() {
+        return ReadAllAccountsAsync().ToEnumerable();
     }
 
-    public async Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> ReadAllAccountsAsync() {
-        return (await dataReader.GetAllAccountsAsync())
-            .Bind<IAsyncEnumerable<NamedAccountOption>>(x => new(DecryptAllAsync(x)));
-    }
-
-    private IEnumerable<NamedAccountOption> DecryptAll(IAsyncEnumerable<NamedAccountOption> enumerable) {
-        return enumerable.ToEnumerable().Select(x => x.Bind<AccountModel>(x => cryptoAccount.Decrypt(x)));
+    public IAsyncEnumerable<NamedAccountOption> ReadAllAccountsAsync() {
+        return DecryptAllAsync(dataReader.GetAllAccountsAsync());
     }
 
     private async IAsyncEnumerable<NamedAccountOption> DecryptAllAsync(IAsyncEnumerable<NamedAccountOption> enumerable) {

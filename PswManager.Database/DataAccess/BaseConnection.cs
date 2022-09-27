@@ -99,13 +99,11 @@ internal abstract class BaseConnection : IDataConnection {
         return await GetAccountHookAsync(name).ConfigureAwait(false);
     }
 
-    public async Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsAsync() {
-        using var mainLock = await Locker.GetAllLocksAsync(10000).ConfigureAwait(false);
-        if(mainLock.Obtained == false) {
-            return ReaderAllErrorCode.SomeUsedElsewhere;
+    public async IAsyncEnumerable<NamedAccountOption> GetAllAccountsAsync() {
+        using var mainLock = await Locker.GetAllLocksAsync().ConfigureAwait(false);
+        await foreach(var account in GetAllAccountsHookAsync()) {
+            yield return account;
         }
-
-        return await GetAllAccountsHookAsync().ConfigureAwait(false);
     }
 
     public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) { 
@@ -160,7 +158,7 @@ internal abstract class BaseConnection : IDataConnection {
     protected abstract Task<AccountExistsStatus> AccountExistHookAsync(string name);
     protected abstract Task<CreatorResponseCode> CreateAccountHookAsync(AccountModel model);
     protected abstract Task<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name);
-    protected abstract Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync();
+    protected abstract IAsyncEnumerable<NamedAccountOption> GetAllAccountsHookAsync();
     protected abstract Task<EditorResponseCode> UpdateAccountHookAsync(string name, AccountModel newModel);
     protected abstract Task<DeleterResponseCode> DeleteAccountHookAsync(string name);
 

@@ -5,6 +5,7 @@ using PswManager.Core.Validators;
 using PswManager.Database;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Utils;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,19 +62,8 @@ public class AccountFactory : IAccountFactory {
         return account;
     }
 
-    public async Task<Option<IAsyncEnumerable<IAccount>>> LoadAccounts() {
-        var option = await _connection.GetAllAccountsAsync();
-
-        if(option.Result() != Utils.Options.OptionResult.Some) {
-            _logger?.LogError("_connection.GetAllAccountsAsync has returned {Result}", option.Result());
-            return Option.None<IAsyncEnumerable<IAccount>>();
-            //todo - remove the optional return of the DB GetAll
-        }
-
-        return new Option<IAsyncEnumerable<IAccount>>(Load(option.Or(AsyncEnumerable.Empty<NamedAccountOption>())));
-    }
-
-    private async IAsyncEnumerable<IAccount> Load(IAsyncEnumerable<NamedAccountOption> enumerable) {
+    public async IAsyncEnumerable<IAccount> LoadAccounts() {
+        var enumerable = _connection.GetAllAccountsAsync();
         await foreach(var option in enumerable) {
             var info = option.OrDefault();
             if(info != null) {

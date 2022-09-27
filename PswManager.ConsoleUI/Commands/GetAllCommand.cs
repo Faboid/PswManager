@@ -70,22 +70,18 @@ public class GetAllCommand : BaseCommand<GetAllCommandArgs> {
     protected override CommandResult RunLogic(GetAllCommandArgs arguments) {
         var toGet = new ValuesToGet(arguments);
 
-        return dataReader.ReadAllAccounts()
-            .Bind<IEnumerable<string>>(x => new(GetAllAccountsAsStrings(x, toGet)))
-            .Match(StringListToResult, AllErrorToResult, NoneToResult);
+        var enumerable = dataReader.ReadAllAccounts();
+        var asStrings = GetAllAccountsAsStrings(enumerable, toGet);
+        var asCommandResult = StringListToResult(asStrings);
+        return asCommandResult;
     }
 
     protected override async ValueTask<CommandResult> RunLogicAsync(GetAllCommandArgs args) {
         var toGet = new ValuesToGet(args);
 
-        var option = await dataReader.ReadAllAccountsAsync().ConfigureAwait(false);
-        return await option
-            .Bind<IAsyncEnumerable<string>>(x => new(GetAllAccountsAsStringsAsync(x, toGet)))
-            .Match(
-                StringListToResultAsync, 
-                error => AllErrorToResult(error).AsTask(), 
-                () => NoneToResult().AsTask()
-            );
+        var enumerable = dataReader.ReadAllAccountsAsync();
+        var asStrings = GetAllAccountsAsStringsAsync(enumerable, toGet);
+        return await StringListToResultAsync(asStrings);
     }
 
     public override string GetDescription() {
@@ -95,19 +91,6 @@ public class GetAllCommand : BaseCommand<GetAllCommandArgs> {
     protected override AutoValidatorBuilder<GetAllCommandArgs> AddRules(AutoValidatorBuilder<GetAllCommandArgs> builder) => builder
         .AddRule<ValidValuesRule>()
         .AddRule<NoDuplicateValuesRule>();
-
-    private static CommandResult NoneToResult() {
-        return new("The get-all query has failed for an unknown reason.", false);
-    }
-
-    private static CommandResult AllErrorToResult(ReaderAllErrorCode errorCode) {
-        var errorMessage = "There has been an error when trying to get all accounts:" + errorCode switch {
-            ReaderAllErrorCode.SomeUsedElsewhere => "Some values are being used elsewhere.",
-            _ => "The query has failed for an unknown reason.",
-        };
-
-        return new(errorMessage, false);
-    }
 
     private static string SingleErrorToMessage(string name, ReaderErrorCode errorCode) => errorCode switch {
         ReaderErrorCode.InvalidName => "Some query has received an invalid name.", //this should never happen, but I'll leave it here just in case

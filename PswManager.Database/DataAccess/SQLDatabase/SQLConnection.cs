@@ -143,16 +143,9 @@ internal class SQLConnection : IDataConnection {
         return model;
     }
 
-    public async Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsAsync() {
-        using var mainLock = await locker.GetAllLocksAsync(10000).ConfigureAwait(false);
-        if(mainLock.Obtained == false) {
-            return ReaderAllErrorCode.SomeUsedElsewhere;
-        }
+    public async IAsyncEnumerable<NamedAccountOption> GetAllAccountsAsync() {
+        using var mainLock = await locker.GetAllLocksAsync().ConfigureAwait(false);
 
-        return new(GetAccountsAsync());
-    }
-
-    private async IAsyncEnumerable<NamedAccountOption> GetAccountsAsync() {
         using var cmd = queriesBuilder.GetAllAccountsQuery();
         await using var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
 
