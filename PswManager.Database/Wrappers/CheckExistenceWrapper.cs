@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace PswManager.Database.Wrappers;
 
-internal class CheckExistenceWrapper : IInternalDBConnection {
+internal class CheckExistenceWrapper : IDBConnection {
 
-    private readonly IInternalDBConnection _connection;
+    private readonly IDBConnection _connection;
 
-    public CheckExistenceWrapper(IInternalDBConnection connection) {
+    public CheckExistenceWrapper(IDBConnection connection) {
         _connection = connection;
     }
 
@@ -57,7 +57,7 @@ internal class CheckExistenceWrapper : IInternalDBConnection {
             return EditorResponseCode.DoesNotExist;
         }
 
-        if(name != newModel.Name) {
+        if(name != newModel.Name && !string.IsNullOrWhiteSpace(newModel.Name)) {
             if(await AccountExistAsync(newModel.Name) is AccountExistsStatus.Exist or AccountExistsStatus.UsedElsewhere) {
                 return EditorResponseCode.NewNameExistsAlready;
             }

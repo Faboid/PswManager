@@ -18,7 +18,7 @@ internal class ValidationWrapper : IDataConnection {
         if(string.IsNullOrWhiteSpace(name)) {
             return AccountExistsStatus.InvalidName;
         }
-
+        
         return _connection.AccountExist(name);
     }
 
@@ -62,8 +62,6 @@ internal class ValidationWrapper : IDataConnection {
         if(string.IsNullOrWhiteSpace(name)) {
             return Task.FromResult(EditorResponseCode.InvalidName);
         }
-
-        //todo - consider whether to allow null newModel values.
 
         return _connection.UpdateAccountAsync(name, newModel);
     }

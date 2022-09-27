@@ -1,6 +1,7 @@
 using PswManager.Async.Locks;
 using PswManager.Database.DataAccess;
 using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Database.Interfaces;
 using PswManager.Database.Models;
 using PswManager.Utils;
 using System.Collections.Generic;
@@ -10,11 +11,11 @@ namespace PswManager.Database.Wrappers;
 
 internal class ConcurrencyWrapper : IDataConnection {
 
-    private readonly IInternalDBConnection _connection;
+    private readonly IDBConnection _connection;
     private readonly int _millisecondsWaitTime;
     private readonly NamesLocker _locker = new();
 
-    public ConcurrencyWrapper(IInternalDBConnection connection, int millisecondsWaitTime = 1000) {
+    public ConcurrencyWrapper(IDBConnection connection, int millisecondsWaitTime = 1000) {
         _connection = connection;
         _millisecondsWaitTime = millisecondsWaitTime;
     }
@@ -74,7 +75,7 @@ internal class ConcurrencyWrapper : IDataConnection {
             return EditorResponseCode.UsedElsewhere;
         }
 
-        if(name != newModel.Name) {
+        if(name != newModel.Name && !string.IsNullOrWhiteSpace(newModel.Name)) {
             using var newLocker = await _locker.GetLockAsync(newModel.Name, _millisecondsWaitTime);
             if(!newLocker.Obtained) {
                 return EditorResponseCode.NewNameUsedElsewhere;            
