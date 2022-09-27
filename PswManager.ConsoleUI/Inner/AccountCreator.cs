@@ -16,19 +16,19 @@ public class AccountCreator : IAccountCreator {
     readonly IDataCreator dataCreator;
     readonly ICryptoAccountService cryptoAccount;
 
-    public Option<CreatorErrorCode> CreateAccount(AccountModel model) {
+    public CreatorResponseCode CreateAccount(AccountModel model) {
         return CreateAccountAsync(model).GetAwaiter().GetResult();
     }
 
-    public async Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model) {
+    public async Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
 
         var validationResult = model.IsAnyValueNullOrEmpty();
         if(validationResult != ValidationResult.Success) {
             return validationResult switch {
-                ValidationResult.MissingName => CreatorErrorCode.InvalidName,
-                ValidationResult.MissingPassword => CreatorErrorCode.MissingPassword,
-                ValidationResult.MissingEmail => CreatorErrorCode.MissingEmail,
-                _ => CreatorErrorCode.Undefined,
+                ValidationResult.MissingName => CreatorResponseCode.InvalidName,
+                ValidationResult.MissingPassword => CreatorResponseCode.MissingPassword,
+                ValidationResult.MissingEmail => CreatorResponseCode.MissingEmail,
+                _ => CreatorResponseCode.Undefined,
             };
         }
 

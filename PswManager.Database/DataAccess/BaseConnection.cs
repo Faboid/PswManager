@@ -48,18 +48,18 @@ internal abstract class BaseConnection : IDataConnection {
         return await AccountExistInternalAsync(name).ConfigureAwait(false);
     }
 
-    public async Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model) {
+    public async Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
         if(!model.IsAllValid(out var errorCode)) {
             return errorCode.ToCreatorErrorCode();
         }
 
         using var ownedLock = await Locker.GetLockAsync(model.Name, 50).ConfigureAwait(false);
         if(!ownedLock.Obtained) {
-            return CreatorErrorCode.UsedElsewhere;
+            return CreatorResponseCode.UsedElsewhere;
         }
 
         if(await AccountExistInternalAsync(model.Name).ConfigureAwait(false) != AccountExistsStatus.NotExist) {
-            return CreatorErrorCode.AccountExistsAlready;
+            return CreatorResponseCode.AccountExistsAlready;
         }
 
         return await CreateAccountHookAsync(model).ConfigureAwait(false);
@@ -158,7 +158,7 @@ internal abstract class BaseConnection : IDataConnection {
 
     protected abstract AccountExistsStatus AccountExistHook(string name);
     protected abstract Task<AccountExistsStatus> AccountExistHookAsync(string name);
-    protected abstract Task<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model);
+    protected abstract Task<CreatorResponseCode> CreateAccountHookAsync(AccountModel model);
     protected abstract Task<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name);
     protected abstract Task<Option<IAsyncEnumerable<NamedAccountOption>, ReaderAllErrorCode>> GetAllAccountsHookAsync();
     protected abstract Task<Option<EditorErrorCode>> UpdateAccountHookAsync(string name, AccountModel newModel);

@@ -1,7 +1,8 @@
 ﻿namespace PswManager.Database.DataAccess.ErrorCodes;
 
-public enum CreatorErrorCode {
+public enum CreatorResponseCode {
     Undefined,
+    Success,
     InvalidName,
     MissingPassword,
     MissingEmail,

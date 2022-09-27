@@ -38,11 +38,11 @@ public class AccountsManager : IAccountsManager {
     readonly IAccountEditor accountEditor;
     readonly IAccountDeleter accountDeleter;
 
-    public Option<CreatorErrorCode> CreateAccount(AccountModel model) {
+    public CreatorResponseCode CreateAccount(AccountModel model) {
         return accountCreator.CreateAccount(model);
     }
 
-    public Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model) {
+    public Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
         return accountCreator.CreateAccountAsync(model);
     }
 

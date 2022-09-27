@@ -44,14 +44,14 @@ public class AccountFactory : IAccountFactory {
         var encrypted = await encryptedTask;
         _logger?.LogInformation("Beginning creation of a new account: {Name}", encrypted.Name);
         var result = await _connection.CreateAccountAsync(encrypted.GetUnderlyingModel()).ConfigureAwait(false);
-        if(result.Result() == Utils.Options.OptionResult.Some) {
-            _logger?.LogInformation("Creation of new account {Name} has failed with error {ErrorCode}", encrypted.Name, result.Or(0));
-            return result.Or(0) switch {
-                CreatorErrorCode.InvalidName => CreateAccountErrorCode.NameEmptyOrNull,
-                CreatorErrorCode.MissingPassword => CreateAccountErrorCode.PasswordEmptyOrNull,
-                CreatorErrorCode.MissingEmail => CreateAccountErrorCode.EmailEmptyOrNull,
-                CreatorErrorCode.AccountExistsAlready => CreateAccountErrorCode.NameIsOccupied,
-                CreatorErrorCode.UsedElsewhere => CreateAccountErrorCode.NameIsOccupied,
+        if(result != CreatorResponseCode.Success) {
+            _logger?.LogInformation("Creation of new account {Name} has failed with error {ErrorCode}", encrypted.Name, result);
+            return result switch {
+                CreatorResponseCode.InvalidName => CreateAccountErrorCode.NameEmptyOrNull,
+                CreatorResponseCode.MissingPassword => CreateAccountErrorCode.PasswordEmptyOrNull,
+                CreatorResponseCode.MissingEmail => CreateAccountErrorCode.EmailEmptyOrNull,
+                CreatorResponseCode.AccountExistsAlready => CreateAccountErrorCode.NameIsOccupied,
+                CreatorResponseCode.UsedElsewhere => CreateAccountErrorCode.NameIsOccupied,
                 _ => CreateAccountErrorCode.Unknown,
             };
         }

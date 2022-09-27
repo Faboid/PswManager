@@ -38,11 +38,11 @@ internal class JsonConnection : BaseConnection {
             AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
 
-    protected async override Task<Option<CreatorErrorCode>> CreateAccountHookAsync(AccountModel model) {
+    protected async override Task<CreatorResponseCode> CreateAccountHookAsync(AccountModel model) {
         var path = BuildFilePath(model.Name);
         using var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write);
         await JsonSerializer.SerializeAsync(stream, model).ConfigureAwait(false);
-        return Option.None<CreatorErrorCode>();
+        return CreatorResponseCode.Success;
     }
 
     protected override Task<Option<DeleterErrorCode>> DeleteAccountHookAsync(string name) {

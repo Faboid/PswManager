@@ -29,7 +29,7 @@ public abstract class DataCreatorGeneric : IDisposable {
 
         //assert
         Assert.Equal(AccountExistsStatus.NotExist, exist);
-        Assert.True(OptionToSuccess(result));
+        Assert.Equal(CreatorResponseCode.Success, result);
         Assert.Equal(AccountExistsStatus.Exist, await dataCreator.AccountExistAsync(account.Name).ConfigureAwait(false));
 
     }
@@ -46,10 +46,7 @@ public abstract class DataCreatorGeneric : IDisposable {
 
         //assert
         Assert.Equal(AccountExistsStatus.Exist, exist);
-        Assert.False(OptionToSuccess(result));
-
-
-        Assert.Equal(CreatorErrorCode.AccountExistsAlready, result.Or(default));
+        Assert.Equal(CreatorResponseCode.AccountExistsAlready, result);
 
     }
 
@@ -66,10 +63,7 @@ public abstract class DataCreatorGeneric : IDisposable {
         var result = await dataCreator.CreateAccountAsync(account);
 
         //assert
-        Assert.False(OptionToSuccess(result));
-
-
-        Assert.Equal(CreatorErrorCode.InvalidName, result.Or(default));
+        Assert.Equal(CreatorResponseCode.InvalidName, result);
 
     }
 
@@ -86,9 +80,7 @@ public abstract class DataCreatorGeneric : IDisposable {
         var result = await dataCreator.CreateAccountAsync(account);
 
         //assert
-        Assert.False(OptionToSuccess(result));
-
-        Assert.Equal(CreatorErrorCode.MissingPassword, result.Or(default));
+        Assert.Equal(CreatorResponseCode.MissingPassword, result);
 
     }
 
@@ -105,14 +97,9 @@ public abstract class DataCreatorGeneric : IDisposable {
         var result = await dataCreator.CreateAccountAsync(account);
 
         //assert
-        Assert.False(OptionToSuccess(result));
-
-
-        Assert.Equal(CreatorErrorCode.MissingEmail, result.Or(default));
+        Assert.Equal(CreatorResponseCode.MissingEmail, result);
 
     }
-
-    private static bool OptionToSuccess(Option<CreatorErrorCode> option) => option.Match(error => false, () => true);
 
     public void Dispose() {
         dbHandler.Dispose();

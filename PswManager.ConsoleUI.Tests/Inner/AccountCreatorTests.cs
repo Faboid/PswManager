@@ -3,6 +3,7 @@ using PswManager.ConsoleUI.Inner;
 using PswManager.Core.Services;
 using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
+using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.Interfaces;
 using PswManager.Database.Models;
 using PswManager.TestUtils;
@@ -13,11 +14,7 @@ public class AccountCreatorTests {
 
     public AccountCreatorTests() {
         cryptoAccount = new CryptoAccountService(ICryptoServiceMocks.GetReverseCryptor().Object, ICryptoServiceMocks.GetSummingCryptor().Object);
-
-        dataCreatorMock = new Mock<IDataCreator>();
-        dataCreatorMock
-            .Setup(x => x.CreateAccountAsync(It.IsAny<AccountModel>()))
-            .Returns<AccountModel>(x => Task.FromResult(OptionMocks.ValidateValues(x)));
+        dataCreatorMock = DataCreatorMock.GetValidatorMock();
     }
 
     //since the purpose of this class is encrypting the password & email,
@@ -38,7 +35,7 @@ public class AccountCreatorTests {
         var result = creator.CreateAccount(input);
 
         //assert
-        result.Is(OptionResult.None);
+        Assert.Equal(CreatorResponseCode.Success, result);
         dataCreatorMock.Verify(x => x.CreateAccountAsync(It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))));
         dataCreatorMock.VerifyNoOtherCalls();
 
@@ -55,7 +52,7 @@ public class AccountCreatorTests {
         var result = await creator.CreateAccountAsync(input);
 
         //assert
-        result.Is(OptionResult.None);
+        Assert.Equal(CreatorResponseCode.Success, result);
         dataCreatorMock.Verify(x => x.CreateAccountAsync(It.Is<AccountModel>(x => AccountModelAsserts.AssertEqual(expected, x))));
         dataCreatorMock.VerifyNoOtherCalls();
 
@@ -76,8 +73,8 @@ public class AccountCreatorTests {
         var actualAsync = await creator.CreateAccountAsync(input);
 
         //assert
-        actual.Is(OptionResult.Some);
-        actualAsync.Is(OptionResult.Some);
+        Assert.Equal(CreatorResponseCode.InvalidName, actual);
+        Assert.Equal(CreatorResponseCode.InvalidName, actualAsync);
         dataCreatorMock.VerifyNoOtherCalls();
 
     }

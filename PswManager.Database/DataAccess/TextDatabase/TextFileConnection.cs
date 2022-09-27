@@ -55,22 +55,22 @@ public class TextFileConnection : IDataConnection {
             AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
 
-    public async Task<Option<CreatorErrorCode>> CreateAccountAsync(AccountModel model) {
+    public async Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
         if(!model.IsAllValid(out var errorCode)) {
             return errorCode.ToCreatorErrorCode();
         }
 
         using var accLock = await locker.GetLockAsync(model.Name, 50).ConfigureAwait(false);
         if(!accLock.Obtained) {
-            return CreatorErrorCode.UsedElsewhere;
+            return CreatorResponseCode.UsedElsewhere;
         }
 
         if(await fileSaver.ExistsAsync(model.Name).ConfigureAwait(false)) {
-            return CreatorErrorCode.AccountExistsAlready;
+            return CreatorResponseCode.AccountExistsAlready;
         }
 
         await fileSaver.CreateAsync(model).ConfigureAwait(false);
-        return Option.None<CreatorErrorCode>();
+        return CreatorResponseCode.Success;
     }
 
     public async Task<Option<DeleterErrorCode>> DeleteAccountAsync(string name) { 
