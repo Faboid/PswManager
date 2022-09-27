@@ -1,8 +1,10 @@
-﻿using PswManager.Database.DataAccess.JsonDatabase;
+﻿using PswManager.Database.DataAccess;
+using PswManager.Database.DataAccess.JsonDatabase;
 using PswManager.Database.DataAccess.MemoryDatabase;
 using PswManager.Database.DataAccess.SQLDatabase;
 using PswManager.Database.DataAccess.TextDatabase;
 using PswManager.Database.Interfaces;
+using PswManager.Database.Wrappers;
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -22,13 +24,15 @@ public class DataFactory : IDataFactory {
 
     public DataFactory(DatabaseType dbType) {
 
-        dataConnection = dbType switch {
+        IDBConnection dbConnection = dbType switch {
             DatabaseType.TextFile => new TextFileConnection(),
             DatabaseType.Sql => new SQLConnection(),
             DatabaseType.InMemory => new MemoryConnection(),
             DatabaseType.Json => new JsonConnection(),
             _ => throw new ArgumentException("The given DatabaseType enum isn't supported.", nameof(dbType))
         };
+
+        dataConnection = new WrappersBuilder(dbConnection).BuildWrappers();
     }
 
     /// <summary>
@@ -47,7 +51,8 @@ public class DataFactory : IDataFactory {
         };
 
         BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-        dataConnection = (IDataConnection)Activator.CreateInstance(dbClassType, flags, null, arguments, null);
+        var dbConnection = (IDBConnection)Activator.CreateInstance(dbClassType, flags, null, arguments, null);
+        dataConnection = new WrappersBuilder(dbConnection).BuildWrappers();
     }
 
     public IDataConnection GetDataConnection() => dataConnection;

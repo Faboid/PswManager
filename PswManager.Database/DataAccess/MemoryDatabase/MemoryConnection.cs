@@ -1,45 +1,45 @@
-﻿using PswManager.Database.DataAccess.ErrorCodes;
+﻿using PswManager.Async.Locks;
+using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
 using PswManager.Extensions;
 using PswManager.Utils;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PswManager.Database.DataAccess.MemoryDatabase; 
-internal class MemoryConnection : BaseConnection {
+internal class MemoryConnection : IDBConnection {
 
     readonly Dictionary<string, AccountModel> accounts = new();
 
-    protected override AccountExistsStatus AccountExistHook(string name) {
+    public AccountExistsStatus AccountExist(string name) {
         return accounts.ContainsKey(name) ? AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
 
-    protected override Task<AccountExistsStatus> AccountExistHookAsync(string name) {
+    public Task<AccountExistsStatus> AccountExistAsync(string name) {
         return Task.FromResult(accounts.ContainsKey(name) ? AccountExistsStatus.Exist : AccountExistsStatus.NotExist);
     }
 
-    protected override Task<CreatorResponseCode> CreateAccountHookAsync(AccountModel model) {
+    public Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
         accounts.Add(model.Name, model);
         return Task.FromResult(CreatorResponseCode.Success);
     }
 
-    protected override Task<DeleterResponseCode> DeleteAccountHookAsync(string name) {
+    public Task<DeleterResponseCode> DeleteAccountAsync(string name) {
         accounts.Remove(name);
         return DeleterResponseCode.Success.AsTask();
     }
 
-    protected override Task<Option<AccountModel, ReaderErrorCode>> GetAccountHookAsync(string name) {
-        return Task.FromResult<Option<AccountModel, ReaderErrorCode>>(accounts[name]);
-    }
-
-    protected override async IAsyncEnumerable<NamedAccountOption> GetAllAccountsHookAsync() {
+    public async IAsyncEnumerable<NamedAccountOption> EnumerateAccountsAsync(NamesLocker locker) {
         foreach(var account in accounts.Values) {
             yield return await Task.FromResult<NamedAccountOption>(account);
         }
     }
 
-    protected override Task<EditorResponseCode> UpdateAccountHookAsync(string name, AccountModel newModel) {
+    public Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
+        return Task.FromResult<Option<AccountModel, ReaderErrorCode>>(accounts[name]);
+    }
+
+    public Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
         var account = accounts[name];
 
         if(!string.IsNullOrWhiteSpace(newModel.Password)) {

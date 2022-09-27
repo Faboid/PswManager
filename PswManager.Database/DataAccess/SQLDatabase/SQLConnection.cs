@@ -7,9 +7,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PswManager.Database.DataAccess.SQLDatabase;
-internal class SQLConnection : IDataConnection {
+internal class SQLConnection : IDBConnection {
 
-    readonly NamesLocker locker = new();
     readonly DatabaseBuilder database;
     readonly QueriesBuilder queriesBuilder;
 
@@ -21,65 +20,20 @@ internal class SQLConnection : IDataConnection {
     }
 
     public AccountExistsStatus AccountExist(string name) {
-        if(string.IsNullOrWhiteSpace(name)) {
-            return AccountExistsStatus.InvalidName;
-        }
-
-        using var heldLock = locker.GetLock(name, 10000);
-        if(!heldLock.Obtained) {
-            return AccountExistsStatus.UsedElsewhere;
-        }
-
-        return AccountExist_NoLock(name) ? 
-            AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
-    }
-
-    private bool AccountExist_NoLock(string name) {
         using var cmd = queriesBuilder.GetAccountQuery(name);
         using var cnn = cmd.Connection.GetConnection();
         using var reader = cmd.ExecuteReader();
-        return reader.Read();
+        return reader.Read() ? AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
 
-    public async Task<AccountExistsStatus> AccountExistAsync(string name) { 
-        if(string.IsNullOrWhiteSpace(name)) {
-            return AccountExistsStatus.InvalidName;
-        }
-
-        using var heldLock = await locker.GetLockAsync(name, 10000);
-        if(!heldLock.Obtained) {
-            return AccountExistsStatus.UsedElsewhere;
-        }
-
-        return await AccountExistAsync_NoLock(name).ConfigureAwait(false) ? 
-            AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
-    }
-
-    private async Task<bool> AccountExistAsync_NoLock(string name) {
-        if(string.IsNullOrWhiteSpace(name)) {
-            return false;
-        }
-
+    public async Task<AccountExistsStatus> AccountExistAsync(string name) {
         using var cmd = queriesBuilder.GetAccountQuery(name);
         await using var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
         using var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false);
-        return await reader.ReadAsync().ConfigureAwait(false);
+        return await reader.ReadAsync().ConfigureAwait(false) ? AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
 
     public async Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
-        if(!model.IsAllValid(out var errorCode)) {
-            return errorCode.ToCreatorErrorCode();
-        }
-
-        using var heldLock = await locker.GetLockAsync(model.Name, 50).ConfigureAwait(false);
-        if(heldLock.Obtained == false) {
-            return CreatorResponseCode.UsedElsewhere;
-        }
-
-        if(await AccountExistAsync_NoLock(model.Name).ConfigureAwait(false)) {
-            return CreatorResponseCode.AccountExistsAlready;
-        }
-
         using var cmd = queriesBuilder.CreateAccountQuery(model);
         await using var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
         var result = await cmd.ExecuteNonQueryAsync().ConfigureAwait(false) == 1;
@@ -91,20 +45,6 @@ internal class SQLConnection : IDataConnection {
     }
 
     public async Task<DeleterResponseCode> DeleteAccountAsync(string name) { 
-        if(string.IsNullOrWhiteSpace(name)) {
-            return DeleterResponseCode.InvalidName;
-            ;
-        }
-
-        using var heldLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
-        if(!heldLock.Obtained) {
-            return DeleterResponseCode.UsedElsewhere;
-        }
-
-        if(!await AccountExistAsync_NoLock(name).ConfigureAwait(false)) {
-            return DeleterResponseCode.DoesNotExist;
-        }
-
         using var cmd = queriesBuilder.DeleteAccountQuery(name);
         await using var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
         var result = await cmd.ExecuteNonQueryAsync() == 1;
@@ -112,19 +52,6 @@ internal class SQLConnection : IDataConnection {
     }
 
     public async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
-        if(string.IsNullOrWhiteSpace(name)) {
-            return ReaderErrorCode.InvalidName;
-        }
-
-        using var heldLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
-        if(!heldLock.Obtained) {
-            return ReaderErrorCode.UsedElsewhere;
-        }
-
-        return await GetAccountAsync_NoLock(name).ConfigureAwait(false);
-    }
-
-    private async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync_NoLock(string name) {
         using var cmd = queriesBuilder.GetAccountQuery(name);
         await using var connection = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
         using var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false);
@@ -143,7 +70,7 @@ internal class SQLConnection : IDataConnection {
         return model;
     }
 
-    public async IAsyncEnumerable<NamedAccountOption> EnumerateAccountsAsync() {
+    public async IAsyncEnumerable<NamedAccountOption> EnumerateAccountsAsync(NamesLocker locker) {
         using var mainLock = await locker.GetAllLocksAsync().ConfigureAwait(false);
 
         using var cmd = queriesBuilder.GetAllAccountsQuery();
@@ -162,41 +89,12 @@ internal class SQLConnection : IDataConnection {
     }
 
     public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
-        if(string.IsNullOrWhiteSpace(name)) {
-            return EditorResponseCode.InvalidName;
+        using var cmd = queriesBuilder.UpdateAccountQuery(name, newModel);
+        await using(var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false)) {
+            await cmd.ExecuteNonQueryAsync();
         }
 
-        using var nameLock = await locker.GetLockAsync(name, 50).ConfigureAwait(false);
-        if(!nameLock.Obtained) {
-            return EditorResponseCode.UsedElsewhere;
-        }
-
-        if(!await AccountExistAsync_NoLock(name).ConfigureAwait(false)) {
-            return EditorResponseCode.DoesNotExist;
-        }
-
-        NamesLocker.Lock newModelLock = null;
-        try {
-            if(!string.IsNullOrWhiteSpace(newModel.Name) && name != newModel.Name) {
-                newModelLock = await locker.GetLockAsync(newModel.Name, 50).ConfigureAwait(false);
-                if(newModelLock.Obtained == false) {
-                    return EditorResponseCode.NewNameUsedElsewhere;
-                }
-
-                if(await AccountExistAsync_NoLock(newModel.Name).ConfigureAwait(false)) {
-                    return EditorResponseCode.NewNameExistsAlready;
-                }
-            }
-
-            using var cmd = queriesBuilder.UpdateAccountQuery(name, newModel);
-            await using(var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false)) {
-                await cmd.ExecuteNonQueryAsync();
-            }
-
-            return EditorResponseCode.Success;
-
-        } finally {
-            newModelLock?.Dispose();
-        }
+        return EditorResponseCode.Success;
     }
+
 }
