@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace PswManager.Core.AccountModels;
 
-public class DecryptedAccount : IAccountModel {
+public class DecryptedAccount : IExtendedAccountModel {
 
 	private readonly ICryptoAccountService _cryptoAccountService;
 

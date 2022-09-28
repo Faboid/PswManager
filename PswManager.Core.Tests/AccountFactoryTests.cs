@@ -20,7 +20,7 @@ public class AccountFactoryTests {
     public async Task CreateAccount_FailsValidation(AccountValid validationError, CreateAccountErrorCode expected) {
 
         var validatorMock = new Mock<IAccountValidator>();
-        validatorMock.Setup(x => x.IsAccountValid(It.IsAny<IAccountModel>())).Returns(validationError);
+        validatorMock.Setup(x => x.IsAccountValid(It.IsAny<IExtendedAccountModel>())).Returns(validationError);
         var sut = new AccountFactory(Mock.Of<IDataConnection>(), validatorMock.Object, Mock.Of<IAccountModelFactory>());
 
         var actual = await sut.CreateAccountAsync(CreateDefaultEncrypted());

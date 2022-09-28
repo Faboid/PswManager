@@ -1,5 +1,6 @@
-﻿namespace PswManager.Database.Models; 
-public class AccountModel {
+﻿namespace PswManager.Database.Models;
+
+public class AccountModel : IAccountModel, IReadOnlyAccountModel {
 
     public AccountModel() {
 

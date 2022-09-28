@@ -9,7 +9,7 @@ public class AccountValidatorTests {
     private readonly IAccountValidator _sut = new AccountValidator();
 
     public static IEnumerable<object[]> TestData() {
-        static object[] NewTestCase(IAccountModel model, AccountValid expected) => new object[] { model, expected };
+        static object[] NewTestCase(IExtendedAccountModel model, AccountValid expected) => new object[] { model, expected };
 
         yield return NewTestCase(NewAccountModel("ValidName", "ValidPassword", "ValidEmail@Email.com"), AccountValid.Valid);
 
@@ -33,13 +33,13 @@ public class AccountValidatorTests {
 
     [Theory]
     [MemberData(nameof(TestData))]
-    public void IsValidReturnsCorrectResult(IAccountModel model, AccountValid expected) {
+    public void IsValidReturnsCorrectResult(IExtendedAccountModel model, AccountValid expected) {
 
         Assert.Equal(expected, _sut.IsAccountValid(model));
 
     }
 
-    private static IAccountModel NewAccountModel(string name, string password, string email) {
+    private static IExtendedAccountModel NewAccountModel(string name, string password, string email) {
         return new DecryptedAccount(name, password, email, Mock.Of<ICryptoAccountService>());
     }
 

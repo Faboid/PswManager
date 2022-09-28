@@ -3,7 +3,7 @@
 namespace PswManager.Core.AccountModels;
 
 /// <summary>
-/// Provides methods to instance <see cref="IAccountModel"/>.
+/// Provides methods to instance <see cref="IExtendedAccountModel"/>.
 /// </summary>
 public interface IAccountModelFactory {
 

@@ -6,22 +6,7 @@ namespace PswManager.Core.AccountModels;
 /// <summary>
 /// Represents a model that could be encrypted or decrypted.
 /// </summary>
-public interface IAccountModel {
-
-	/// <summary>
-	/// The account name.
-	/// </summary>
-	string Name { get; }
-
-	/// <summary>
-	/// The account password.
-	/// </summary>
-	string Password { get; }
-
-	/// <summary>
-	/// The account email.
-	/// </summary>
-	string Email { get; }
+public interface IExtendedAccountModel : IReadOnlyAccountModel {
 
 	/// <summary>
 	/// Whether this model's values are encrypted.

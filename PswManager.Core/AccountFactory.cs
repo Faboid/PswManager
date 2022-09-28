@@ -27,7 +27,7 @@ public class AccountFactory : IAccountFactory {
         _accountModelFactory = accountModelFactory;
     }
 
-    public async Task<Option<IAccount, CreateAccountErrorCode>> CreateAccountAsync(IAccountModel model) {
+    public async Task<Option<IAccount, CreateAccountErrorCode>> CreateAccountAsync(IExtendedAccountModel model) {
         var valid = _accountValidator.IsAccountValid(model);
         if(valid != AccountValid.Valid) {
             return valid switch {

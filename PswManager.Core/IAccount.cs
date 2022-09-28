@@ -8,7 +8,7 @@ public interface IAccount {
     string EncryptedEmail { get; }
 
     Task DeleteAccountAsync();
-    Task<EditAccountResult> EditAccountAsync(IAccountModel newValues);
+    Task<EditAccountResult> EditAccountAsync(IExtendedAccountModel newValues);
     DecryptedAccount GetDecryptedModel();
     Task<DecryptedAccount> GetDecryptedModelAsync();
 }

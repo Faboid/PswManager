@@ -31,7 +31,7 @@ internal class Account : IAccount {
     public DecryptedAccount GetDecryptedModel() => _encryptedAccount.GetDecryptedAccount();
     public Task<DecryptedAccount> GetDecryptedModelAsync() => _encryptedAccount.GetDecryptedAccountAsync();
 
-    public async Task<EditAccountResult> EditAccountAsync(IAccountModel newValues) {
+    public async Task<EditAccountResult> EditAccountAsync(IExtendedAccountModel newValues) {
         using var locker = await _locker.GetLockAsync();
 
         if(!_exists) { return EditAccountResult.DoesNotExist; }

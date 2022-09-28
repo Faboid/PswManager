@@ -47,7 +47,7 @@ public class AccountTests {
     public async Task EditAccountFailsByValidation(AccountValid accountValid, EditAccountResult expected) {
 
         var validatorMock = new Mock<IAccountValidator>();
-        validatorMock.Setup(x => x.IsAccountValid(It.IsAny<IAccountModel>())).Returns(accountValid);
+        validatorMock.Setup(x => x.IsAccountValid(It.IsAny<IExtendedAccountModel>())).Returns(accountValid);
         var connectionMock = new Mock<IDataConnection>();
 
         var sut = new Account(_accountModelFactory.CreateEncryptedAccount(GetGeneric()), Mock.Of<IDataConnection>(), validatorMock.Object);
