@@ -19,12 +19,6 @@ public interface IExtendedAccountModel : IReadOnlyAccountModel {
     bool IsPlainText { get; }
 
     /// <summary>
-    /// Gets a database model with the corresponding <see cref="Name"/>, <see cref="Password"/>, and <see cref="Email"/>.
-    /// </summary>
-    /// <returns></returns>
-    public AccountModel GetUnderlyingModel();
-
-    /// <summary>
     /// Gets a decrypted account. Will return its instance if they're already decrypted, or will decrypt them before returning.
     /// </summary>
     /// <returns></returns>

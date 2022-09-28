@@ -1,5 +1,4 @@
 ﻿using PswManager.Core.Services;
-using PswManager.Database.Models;
 using System.Threading.Tasks;
 
 namespace PswManager.Core.AccountModels;
@@ -38,5 +37,4 @@ public class EncryptedAccount : IExtendedAccountModel {
     public Task<DecryptedAccount> GetDecryptedAccountAsync() => Task.Run(GetDecryptedAccount);
     public EncryptedAccount GetEncryptedAccount() => this;
     public Task<EncryptedAccount> GetEncryptedAccountAsync() => Task.FromResult(this);
-    public AccountModel GetUnderlyingModel() => new(Name, Password, Email);
 }

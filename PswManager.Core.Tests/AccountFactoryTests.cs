@@ -38,7 +38,7 @@ public class AccountFactoryTests {
     public async Task CreateAccount_FailsDatabaseSaving(CreatorResponseCode errorCode, CreateAccountErrorCode expected) {
 
         var connectionMock = new Mock<IDataConnection>();
-        connectionMock.Setup(x => x.CreateAccountAsync(It.IsAny<AccountModel>())).Returns(Task.FromResult(errorCode));
+        connectionMock.Setup(x => x.CreateAccountAsync(It.IsAny<IReadOnlyAccountModel>())).Returns(Task.FromResult(errorCode));
         var sut = new AccountFactory(connectionMock.Object, new AccountValidator(), Mock.Of<IAccountModelFactory>());
         var actual = await sut.CreateAccountAsync(CreateDefaultEncrypted());
         Assert.Equal(expected, actual.OrDefaultError());
@@ -49,7 +49,7 @@ public class AccountFactoryTests {
     public async Task CreateAccount_CorrectValues() {
 
         var connectionMock = new Mock<IDataConnection>();
-        connectionMock.Setup(x => x.CreateAccountAsync(It.IsAny<AccountModel>())).Returns(Task.FromResult(CreatorResponseCode.Success));
+        connectionMock.Setup(x => x.CreateAccountAsync(It.IsAny<IReadOnlyAccountModel>())).Returns(Task.FromResult(CreatorResponseCode.Success));
         var sut = new AccountFactory(connectionMock.Object, new AccountValidator(), Mock.Of<IAccountModelFactory>());
         var decrypted = CreateDefaultDecrypted();
         var expected = decrypted.GetEncryptedAccount();

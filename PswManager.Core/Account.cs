@@ -48,7 +48,7 @@ internal class Account : IAccount {
 
         var encrypted = await newValues.GetEncryptedAccountAsync();
         _logger?.LogInformation("Beginning editing {Name}", Name);
-        var result = await _connection.UpdateAccountAsync(Name, encrypted.GetUnderlyingModel());
+        var result = await _connection.UpdateAccountAsync(Name, encrypted);
         if(result != EditorResponseCode.Success) {
             var output = result switch {
                 EditorResponseCode.NewNameUsedElsewhere => EditAccountResult.NewNameIsOccupied,

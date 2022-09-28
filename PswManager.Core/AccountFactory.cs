@@ -42,7 +42,7 @@ public class AccountFactory : IAccountFactory {
         using var locker = await _locker.GetLockAsync();
         var encrypted = await encryptedTask;
         _logger?.LogInformation("Beginning creation of a new account: {Name}", encrypted.Name);
-        var result = await _connection.CreateAccountAsync(encrypted.GetUnderlyingModel()).ConfigureAwait(false);
+        var result = await _connection.CreateAccountAsync(encrypted).ConfigureAwait(false);
         if(result != CreatorResponseCode.Success) {
             _logger?.LogInformation("Creation of new account {Name} has failed with error {ErrorCode}", encrypted.Name, result);
             return result switch {

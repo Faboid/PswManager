@@ -27,5 +27,4 @@ public class DecryptedAccount : IExtendedAccountModel {
     public EncryptedAccount GetEncryptedAccount()
         => new(Name, _cryptoAccountService.GetPassCryptoService().Encrypt(Password), _cryptoAccountService.GetEmaCryptoService().Encrypt(Email), _cryptoAccountService);
     public Task<EncryptedAccount> GetEncryptedAccountAsync() => Task.Run(GetEncryptedAccount);
-    public AccountModel GetUnderlyingModel() => new(Name, Password, Email);
 }

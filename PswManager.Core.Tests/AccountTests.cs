@@ -64,7 +64,7 @@ public class AccountTests {
 
         var account = _accountModelFactory.CreateEncryptedAccount(GetGeneric());
         var connectionMock = new Mock<IDataConnection>();
-        connectionMock.Setup(x => x.UpdateAccountAsync(account.Name, It.IsAny<AccountModel>())).Returns(Task.FromResult(errorCode));
+        connectionMock.Setup(x => x.UpdateAccountAsync(account.Name, It.IsAny<IReadOnlyAccountModel>())).Returns(Task.FromResult(errorCode));
 
         var sut = new Account(account, connectionMock.Object, new AccountValidator());
         var actual = await sut.EditAccountAsync(_accountModelFactory.CreateEncryptedAccount(GetGeneric()));
@@ -78,7 +78,7 @@ public class AccountTests {
         var decryptedModel = _accountModelFactory.CreateDecryptedAccount(GetGeneric());
         var expected = await decryptedModel.GetEncryptedAccountAsync();
         var connectionMock = new Mock<IDataConnection>();
-        connectionMock.Setup(x => x.UpdateAccountAsync("AName", It.IsAny<AccountModel>())).Returns(Task.FromResult(EditorResponseCode.Success));
+        connectionMock.Setup(x => x.UpdateAccountAsync("AName", It.IsAny<IReadOnlyAccountModel>())).Returns(Task.FromResult(EditorResponseCode.Success));
 
         var sut = new Account(_accountModelFactory.CreateEncryptedAccount(new AccountModel("AName", "APassword", "AnEmail")), connectionMock.Object, new AccountValidator());
 
