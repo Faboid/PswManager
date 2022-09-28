@@ -35,7 +35,7 @@ public class TextFileConnection : IDBConnection {
             AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
 
-    public async Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
+    public async Task<CreatorResponseCode> CreateAccountAsync(IReadOnlyAccountModel model) {
         await fileSaver.CreateAsync(model).ConfigureAwait(false);
         return CreatorResponseCode.Success;
     }

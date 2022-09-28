@@ -3,7 +3,7 @@
 namespace PswManager.Database.DataAccess.TextDatabase.TextFileConnHelper;
 internal class AccountSerializer {
 
-    public static string[] Serialize(AccountModel account) {
+    public static string[] Serialize(IReadOnlyAccountModel account) {
         string[] output = new string[3];
         output[0] = account.Name;
         output[1] = account.Password;

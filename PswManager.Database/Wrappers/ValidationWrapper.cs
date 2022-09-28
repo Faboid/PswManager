@@ -1,5 +1,6 @@
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
+using PswManager.Database.Models.Extensions;
 using PswManager.Utils;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -30,8 +31,8 @@ internal class ValidationWrapper : IDataConnection {
         return _connection.AccountExistAsync(name);
     }
 
-    public Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
-        if(!model.IsAllValid(out var errorCode)) {
+    public Task<CreatorResponseCode> CreateAccountAsync(IReadOnlyAccountModel model) {
+        if(!model.IsValid(out var errorCode)) {
             return Task.FromResult(errorCode.ToCreatorErrorCode());
         }
 

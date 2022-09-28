@@ -8,6 +8,7 @@ public enum CreatorResponseCode {
     MissingEmail,
     AccountExistsAlready,
     UsedElsewhere,
+    GivenModelIsNull,
 }
 
 public enum ReaderErrorCode {

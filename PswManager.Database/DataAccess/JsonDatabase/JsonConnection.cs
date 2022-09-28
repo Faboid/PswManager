@@ -50,7 +50,7 @@ internal class JsonConnection : IDBConnection {
             AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
 
-    public async Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
+    public async Task<CreatorResponseCode> CreateAccountAsync(IReadOnlyAccountModel model) {
         var path = BuildFilePath(model.Name);
         using var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write);
         await JsonSerializer.SerializeAsync(stream, model).ConfigureAwait(false);

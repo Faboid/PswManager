@@ -19,8 +19,8 @@ internal class MemoryConnection : IDBConnection {
         return Task.FromResult(accounts.ContainsKey(name) ? AccountExistsStatus.Exist : AccountExistsStatus.NotExist);
     }
 
-    public Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
-        accounts.Add(model.Name, model);
+    public Task<CreatorResponseCode> CreateAccountAsync(IReadOnlyAccountModel model) {
+        accounts.Add(model.Name, new(model.Name, model.Password, model.Email));
         return Task.FromResult(CreatorResponseCode.Success);
     }
 

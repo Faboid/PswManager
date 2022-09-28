@@ -49,7 +49,7 @@ internal class FileSaver {
         File.WriteAllLines(path, serialized);
     }
 
-    public async Task CreateAsync(AccountModel account) {
+    public async Task CreateAsync(IReadOnlyAccountModel account) {
         var path = BuildFilePath(account.Name);
         var serialized = AccountSerializer.Serialize(account);
         await File.WriteAllLinesAsync(path, serialized).ConfigureAwait(false);

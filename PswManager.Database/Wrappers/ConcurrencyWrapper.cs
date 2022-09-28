@@ -38,7 +38,7 @@ internal class ConcurrencyWrapper : IDataConnection {
         return await _connection.AccountExistAsync(name);
     }
 
-    public async Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
+    public async Task<CreatorResponseCode> CreateAccountAsync(IReadOnlyAccountModel model) {
         using var locker = await _locker.GetLockAsync(model.Name, _millisecondsWaitTime);
         if(!locker.Obtained) {
             return CreatorResponseCode.UsedElsewhere;

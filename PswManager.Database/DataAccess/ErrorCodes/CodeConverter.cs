@@ -21,6 +21,7 @@ internal static class CodeConverter {
         AccountValid.MissingName => CreatorResponseCode.InvalidName,
         AccountValid.MissingPassword => CreatorResponseCode.MissingPassword,
         AccountValid.MissingEmail => CreatorResponseCode.MissingEmail,
+        AccountValid.IsNull => CreatorResponseCode.GivenModelIsNull,
         _ => CreatorResponseCode.Undefined,
     };
 

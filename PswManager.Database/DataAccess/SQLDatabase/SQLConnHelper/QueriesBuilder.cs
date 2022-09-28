@@ -11,7 +11,7 @@ internal class QueriesBuilder {
     private readonly SQLiteConnection connection;
     private const string accountsTable = "Accounts";
 
-    public SQLiteCommand CreateAccountQuery(AccountModel model) {
+    public SQLiteCommand CreateAccountQuery(IReadOnlyAccountModel model) {
         string query = $"insert into {accountsTable} " +
             $"values(@Name, @Password, @Email)";
         var cmd = new SQLiteCommand(query, connection);

@@ -24,7 +24,7 @@ internal class CheckExistenceWrapper : IDBConnection {
         return _connection.AccountExistAsync(name);
     }
 
-    public async Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
+    public async Task<CreatorResponseCode> CreateAccountAsync(IReadOnlyAccountModel model) {
         if(await AccountExistAsync(model.Name) is AccountExistsStatus.Exist or AccountExistsStatus.UsedElsewhere) {
             return CreatorResponseCode.AccountExistsAlready;
         }

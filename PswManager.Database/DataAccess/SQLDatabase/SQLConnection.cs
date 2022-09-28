@@ -33,7 +33,7 @@ internal class SQLConnection : IDBConnection {
         return await reader.ReadAsync().ConfigureAwait(false) ? AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
 
-    public async Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
+    public async Task<CreatorResponseCode> CreateAccountAsync(IReadOnlyAccountModel model) {
         using var cmd = queriesBuilder.CreateAccountQuery(model);
         await using var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
         var result = await cmd.ExecuteNonQueryAsync().ConfigureAwait(false) == 1;
