@@ -3,21 +3,21 @@
 /// <summary>
 /// Represents an account.
 /// </summary>
-public interface IAccountModel {
+public interface IAccountModel : IReadOnlyAccountModel {
 
     /// <summary>
     /// The account name.
     /// </summary>
-    string Name { get; set; }
+    new string Name { get; set; }
 
     /// <summary>
     /// The account password.
     /// </summary>
-    string Password { get; set; }
+    new string Password { get; set; }
 
     /// <summary>
     /// The account email.
     /// </summary>
-    string Email { get; set; }
+    new string Email { get; set; }
 
 }
