@@ -6,7 +6,7 @@ using PswManager.Utils;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PswManager.Database.DataAccess.MemoryDatabase; 
+namespace PswManager.Database.DataAccess.MemoryDatabase;
 internal class MemoryConnection : IDBConnection {
 
     readonly Dictionary<string, AccountModel> accounts = new();

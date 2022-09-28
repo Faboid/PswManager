@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace PswManager.Encryption.Cryptography; 
+namespace PswManager.Encryption.Cryptography;
 internal class Versioning {
 
     private string CurrentVersion { get; init; }

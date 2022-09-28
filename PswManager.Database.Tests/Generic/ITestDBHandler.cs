@@ -1,4 +1,4 @@
-﻿namespace PswManager.Database.Tests.Generic; 
+﻿namespace PswManager.Database.Tests.Generic;
 public interface ITestDBHandler : IDisposable {
 
     public ITestDBHandler SetUpDefaultValues();

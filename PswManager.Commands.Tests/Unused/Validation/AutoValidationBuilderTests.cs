@@ -3,7 +3,7 @@ using PswManager.Commands.Validation.Builders;
 using PswManager.Commands.Validation.Models;
 using Xunit;
 
-namespace PswManager.Commands.Tests.Unused.Validation; 
+namespace PswManager.Commands.Tests.Unused.Validation;
 public class AutoValidationBuilderTests {
 
     [Fact]

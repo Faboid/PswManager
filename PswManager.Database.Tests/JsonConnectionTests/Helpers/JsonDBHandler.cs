@@ -2,7 +2,7 @@
 using PswManager.Extensions;
 using PswManager.Database.Tests.Generic;
 
-namespace PswManager.Database.Tests.JsonConnectionTests.Helpers; 
+namespace PswManager.Database.Tests.JsonConnectionTests.Helpers;
 internal class JsonDBHandler : ITestDBHandler {
 
     public JsonDBHandler(string dbName) : this(dbName, 5) { }

@@ -76,7 +76,7 @@ public class AccountFactoryTests {
         var actual = await result.OrderBy(x => x.Name).ToArrayAsync();
 
         Assert.Equal(expected.Length, actual.Length);
-        
+
         for(int i = 0; i < actual.Length; i++) {
             AccountModelAsserts.AssertEqual(expected[i], actual[i]);
         }

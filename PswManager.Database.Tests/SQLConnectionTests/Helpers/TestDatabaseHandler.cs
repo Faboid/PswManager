@@ -1,7 +1,7 @@
 ﻿using PswManager.Utils;
 using PswManager.Database.Tests.Generic;
 
-namespace PswManager.Database.Tests.SQLConnectionTests.Helpers; 
+namespace PswManager.Database.Tests.SQLConnectionTests.Helpers;
 internal class TestDatabaseHandler : ITestDBHandler, IDisposable {
 
     public TestDatabaseHandler(string dbName) : this(dbName, 5) { }

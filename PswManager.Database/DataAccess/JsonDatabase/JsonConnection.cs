@@ -9,14 +9,14 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace PswManager.Database.DataAccess.JsonDatabase; 
+namespace PswManager.Database.DataAccess.JsonDatabase;
 internal class JsonConnection : IDBConnection {
 
     internal JsonConnection() : this("Json") { }
 
     internal JsonConnection(string customFolderName) {
         directoryPath = Path.Combine(PathsBuilder.GetWorkingDirectory, "Data", customFolderName);
-        if(!Directory.Exists(directoryPath)) { 
+        if(!Directory.Exists(directoryPath)) {
             Directory.CreateDirectory(directoryPath);
         }
     }

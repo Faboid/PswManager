@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PswManager.ConsoleUI.Commands; 
+namespace PswManager.ConsoleUI.Commands;
 public class HelpCommand : BaseCommand<HelpCommand.Args> {
 
     private readonly IReadOnlyDictionary<string, ICommand> commands;

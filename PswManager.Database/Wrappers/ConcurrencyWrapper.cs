@@ -41,7 +41,7 @@ internal class ConcurrencyWrapper : IDataConnection {
     public async Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
         using var locker = await _locker.GetLockAsync(model.Name, _millisecondsWaitTime);
         if(!locker.Obtained) {
-            return CreatorResponseCode.UsedElsewhere;        
+            return CreatorResponseCode.UsedElsewhere;
         }
 
         return await _connection.CreateAccountAsync(model);
@@ -59,7 +59,7 @@ internal class ConcurrencyWrapper : IDataConnection {
     public async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
         using var locker = await _locker.GetLockAsync(name, _millisecondsWaitTime);
         if(!locker.Obtained) {
-            return ReaderErrorCode.UsedElsewhere;        
+            return ReaderErrorCode.UsedElsewhere;
         }
 
         return await _connection.GetAccountAsync(name);
@@ -78,7 +78,7 @@ internal class ConcurrencyWrapper : IDataConnection {
         if(name != newModel.Name && !string.IsNullOrWhiteSpace(newModel.Name)) {
             using var newLocker = await _locker.GetLockAsync(newModel.Name, _millisecondsWaitTime);
             if(!newLocker.Obtained) {
-                return EditorResponseCode.NewNameUsedElsewhere;            
+                return EditorResponseCode.NewNameUsedElsewhere;
             }
         }
 

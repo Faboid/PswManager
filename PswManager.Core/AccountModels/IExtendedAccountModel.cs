@@ -8,33 +8,33 @@ namespace PswManager.Core.AccountModels;
 /// </summary>
 public interface IExtendedAccountModel : IReadOnlyAccountModel {
 
-	/// <summary>
-	/// Whether this model's values are encrypted.
-	/// </summary>
-	bool IsEncrypted { get; }
+    /// <summary>
+    /// Whether this model's values are encrypted.
+    /// </summary>
+    bool IsEncrypted { get; }
 
-	/// <summary>
-	/// Whether this model's values are not encrypted.
-	/// </summary>
-	bool IsPlainText { get; }
+    /// <summary>
+    /// Whether this model's values are not encrypted.
+    /// </summary>
+    bool IsPlainText { get; }
 
-	/// <summary>
-	/// Gets a database model with the corresponding <see cref="Name"/>, <see cref="Password"/>, and <see cref="Email"/>.
-	/// </summary>
-	/// <returns></returns>
-	public AccountModel GetUnderlyingModel();
+    /// <summary>
+    /// Gets a database model with the corresponding <see cref="Name"/>, <see cref="Password"/>, and <see cref="Email"/>.
+    /// </summary>
+    /// <returns></returns>
+    public AccountModel GetUnderlyingModel();
 
-	/// <summary>
-	/// Gets a decrypted account. Will return its instance if they're already decrypted, or will decrypt them before returning.
-	/// </summary>
-	/// <returns></returns>
-	public DecryptedAccount GetDecryptedAccount();
+    /// <summary>
+    /// Gets a decrypted account. Will return its instance if they're already decrypted, or will decrypt them before returning.
+    /// </summary>
+    /// <returns></returns>
+    public DecryptedAccount GetDecryptedAccount();
 
-	/// <summary>
-	/// Gets an encrypted account. Will return its instance if they're already encrypted, or will encrypt them before returning.
-	/// </summary>
-	/// <returns></returns>
-	public EncryptedAccount GetEncryptedAccount();
+    /// <summary>
+    /// Gets an encrypted account. Will return its instance if they're already encrypted, or will encrypt them before returning.
+    /// </summary>
+    /// <returns></returns>
+    public EncryptedAccount GetEncryptedAccount();
 
     /// <summary>
     /// Gets a decrypted account asynchronously. Will return its instance if they're already decrypted, or will decrypt them before returning.

@@ -3,7 +3,7 @@ using PswManager.Extensions;
 using System;
 using System.Linq;
 
-namespace PswManager.Commands.Unused.Parsing; 
+namespace PswManager.Commands.Unused.Parsing;
 public class Parser : IParser, IParserReady {
 
     public static IParser CreateInstance() { return new Parser(); }

@@ -18,7 +18,7 @@ internal class ValidationWrapper : IDataConnection {
         if(string.IsNullOrWhiteSpace(name)) {
             return AccountExistsStatus.InvalidName;
         }
-        
+
         return _connection.AccountExist(name);
     }
 

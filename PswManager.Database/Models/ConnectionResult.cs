@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PswManager.Database.Models; 
+namespace PswManager.Database.Models;
 public class ConnectionResult {
     //todo - consider replacing the error message with a result enum
     //doing that will allow the UI to create a custom context-aware message
@@ -44,11 +44,11 @@ public class AccountResult : ConnectionResult<AccountModel> {
 
     public string NameAccount { get; init; }
 
-    public AccountResult(string nameAccount, bool success) : base(success) { 
+    public AccountResult(string nameAccount, bool success) : base(success) {
         NameAccount = nameAccount;
     }
 
-    public AccountResult(string nameAccount, string errorMessage) : base(false, errorMessage) { 
+    public AccountResult(string nameAccount, string errorMessage) : base(false, errorMessage) {
         NameAccount = nameAccount;
     }
 

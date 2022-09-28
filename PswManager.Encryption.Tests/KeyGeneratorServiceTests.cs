@@ -2,7 +2,7 @@
 using PswManager.Extensions;
 using Xunit;
 
-namespace PswManager.Encryption.Tests; 
+namespace PswManager.Encryption.Tests;
 public class KeyGeneratorServiceTests {
 
     [Fact]

@@ -36,7 +36,7 @@ internal class CheckExistenceWrapper : IDBConnection {
         if(await AccountExistAsync(name) is AccountExistsStatus.NotExist or AccountExistsStatus.UsedElsewhere) {
             return DeleterResponseCode.DoesNotExist;
         }
-        
+
         return await _connection.DeleteAccountAsync(name);
     }
 

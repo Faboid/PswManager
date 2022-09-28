@@ -8,24 +8,24 @@ namespace PswManager.Core.Tests.AccountModelsTests;
 
 public class AccountModelFactoryTests {
 
-	public AccountModelFactoryTests() {
-		_cryptoAccountService = ICryptoAccountMocks.GetReversedAndSummingCryptor();
+    public AccountModelFactoryTests() {
+        _cryptoAccountService = ICryptoAccountMocks.GetReversedAndSummingCryptor();
         _sut = new AccountModelFactory(_cryptoAccountService);
-	}
+    }
 
-	private readonly ICryptoAccountService _cryptoAccountService;
+    private readonly ICryptoAccountService _cryptoAccountService;
     private readonly IAccountModelFactory _sut;
 
-	[Fact]
-	public void CreateEncryptedModel() {
+    [Fact]
+    public void CreateEncryptedModel() {
 
-		var encryptedValues = _cryptoAccountService.Encrypt(GetDefault());
+        var encryptedValues = _cryptoAccountService.Encrypt(GetDefault());
 
-		var encryptedModel = _sut.CreateEncryptedAccount(encryptedValues.Name, encryptedValues.Password, encryptedValues.Email);
-		var encryptedModelFromModel = _sut.CreateEncryptedAccount(encryptedValues);
+        var encryptedModel = _sut.CreateEncryptedAccount(encryptedValues.Name, encryptedValues.Password, encryptedValues.Email);
+        var encryptedModelFromModel = _sut.CreateEncryptedAccount(encryptedValues);
 
-		Assert.True(encryptedModel.IsEncrypted);
-		Assert.False(encryptedModel.IsPlainText);
+        Assert.True(encryptedModel.IsEncrypted);
+        Assert.False(encryptedModel.IsPlainText);
         AccountModelAsserts.AssertEqual(encryptedValues, encryptedModel);
         Assert.IsType<EncryptedAccount>(encryptedModel);
 
@@ -36,12 +36,12 @@ public class AccountModelFactoryTests {
 
     }
 
-	[Fact]
-	public void CreateDecryptedModel() {
+    [Fact]
+    public void CreateDecryptedModel() {
 
-		var values = GetDefault();
-		var model = _sut.CreateDecryptedAccount(values.Name, values.Password, values.Email);
-		var modelFromModel = _sut.CreateDecryptedAccount(values);
+        var values = GetDefault();
+        var model = _sut.CreateDecryptedAccount(values.Name, values.Password, values.Email);
+        var modelFromModel = _sut.CreateDecryptedAccount(values);
 
         Assert.False(model.IsEncrypted);
         Assert.True(model.IsPlainText);
@@ -55,6 +55,6 @@ public class AccountModelFactoryTests {
 
     }
 
-	private static AccountModel GetDefault() => AccountModelMocks.GenerateValidFromName("SomeName");
+    private static AccountModel GetDefault() => AccountModelMocks.GenerateValidFromName("SomeName");
 
 }

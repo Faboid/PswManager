@@ -37,7 +37,7 @@ public class DeleteCommand : BaseCommand<DeleteCommandArgs> {
     }
 
     private static CommandResult ResponseToResult(DeleterResponseCode response, string name) {
-        
+
         if(response == DeleterResponseCode.Success) {
             return new($"{name} has been deleted successfully.", true);
         }

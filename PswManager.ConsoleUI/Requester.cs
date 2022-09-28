@@ -6,7 +6,7 @@ using PswManager.ConsoleUI.Attributes;
 using PswManager.Core;
 using PswManager.Extensions;
 
-namespace PswManager.ConsoleUI; 
+namespace PswManager.ConsoleUI;
 public class Requester {
 
     private readonly IReadOnlyCollection<(PropertyInfo prop, RequestAttribute attr)> required;

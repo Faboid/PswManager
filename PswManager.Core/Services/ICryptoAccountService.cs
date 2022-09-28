@@ -7,10 +7,10 @@ public interface ICryptoAccountService {
 
     public ICryptoService GetPassCryptoService();
     public ICryptoService GetEmaCryptoService();
-    
+
     [Pure]
     public (string encryptedPassword, string encryptedEmail) Encrypt(string password, string email);
-    
+
     [Pure]
     public (string decryptedPassword, string decryptedEmail) Decrypt(string encryptedPassword, string encryptedEmail);
 

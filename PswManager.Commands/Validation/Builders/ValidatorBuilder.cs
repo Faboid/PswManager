@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("PswManager.Tests")]
-namespace PswManager.Commands.Validation.Builders; 
+namespace PswManager.Commands.Validation.Builders;
 public class ValidatorBuilder<T> {
 
     readonly List<ICondition<T>> conditions = new();

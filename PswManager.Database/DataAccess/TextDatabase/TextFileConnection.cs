@@ -27,10 +27,10 @@ public class TextFileConnection : IDBConnection {
     /// <returns></returns>
     /// <exception cref="TimeoutException"></exception>
     public AccountExistsStatus AccountExist(string name) {
-        return fileSaver.Exists(name)? AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
+        return fileSaver.Exists(name) ? AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
 
-    public async Task<AccountExistsStatus> AccountExistAsync(string name) { 
+    public async Task<AccountExistsStatus> AccountExistAsync(string name) {
         return await fileSaver.ExistsAsync(name).ConfigureAwait(false) ?
             AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
@@ -40,7 +40,7 @@ public class TextFileConnection : IDBConnection {
         return CreatorResponseCode.Success;
     }
 
-    public async Task<DeleterResponseCode> DeleteAccountAsync(string name) { 
+    public async Task<DeleterResponseCode> DeleteAccountAsync(string name) {
         await fileSaver.DeleteAsync(name);
         return DeleterResponseCode.Success;
     }
@@ -50,11 +50,11 @@ public class TextFileConnection : IDBConnection {
         return account;
     }
 
-    public IAsyncEnumerable<NamedAccountOption> EnumerateAccountsAsync(NamesLocker locker) { 
+    public IAsyncEnumerable<NamedAccountOption> EnumerateAccountsAsync(NamesLocker locker) {
         return fileSaver.GetAllAsync(locker);
     }
 
-    public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) { 
+    public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
         await fileSaver.UpdateAsync(name, newModel).ConfigureAwait(false);
         return EditorResponseCode.Success;
     }

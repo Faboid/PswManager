@@ -47,7 +47,7 @@ public class GetCommandTests {
         yield return NewObj(missingNameMessage, "");
         yield return NewObj(missingNameMessage, null);
         //todo - yield return NewObj(missingNameMessage, "   ");
-        
+
 
     }
 

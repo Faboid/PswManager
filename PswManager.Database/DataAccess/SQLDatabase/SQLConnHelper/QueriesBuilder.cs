@@ -1,7 +1,7 @@
 ﻿using PswManager.Database.Models;
 using System.Data.SQLite;
 
-namespace PswManager.Database.DataAccess.SQLDatabase.SQLConnHelper; 
+namespace PswManager.Database.DataAccess.SQLDatabase.SQLConnHelper;
 internal class QueriesBuilder {
 
     public QueriesBuilder(SQLiteConnection connection) {

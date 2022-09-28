@@ -116,7 +116,7 @@ public abstract class DataReaderGeneric : IDisposable {
 
     }
 
-    private static ReaderErrorCode GetError(Option<AccountModel, ReaderErrorCode> option) 
+    private static ReaderErrorCode GetError(Option<AccountModel, ReaderErrorCode> option)
         => option.Match(some => throw new Exception("Option should not be Some."), error => error, () => throw new Exception("Option should not be None."));
 
     private static void AccountEqual(AccountModel expected, AccountModel actual) {

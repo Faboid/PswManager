@@ -44,11 +44,11 @@ internal class SQLConnection : IDBConnection {
         };
     }
 
-    public async Task<DeleterResponseCode> DeleteAccountAsync(string name) { 
+    public async Task<DeleterResponseCode> DeleteAccountAsync(string name) {
         using var cmd = queriesBuilder.DeleteAccountQuery(name);
         await using var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
         var result = await cmd.ExecuteNonQueryAsync() == 1;
-        return (result)? DeleterResponseCode.Success : DeleterResponseCode.Undefined;
+        return (result) ? DeleterResponseCode.Success : DeleterResponseCode.Undefined;
     }
 
     public async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {

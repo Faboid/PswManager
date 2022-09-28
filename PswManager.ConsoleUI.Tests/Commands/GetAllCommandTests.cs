@@ -93,7 +93,7 @@ public class GetAllCommandTests {
         Assert.False(result.Success);
         Assert.NotEmpty(result.ErrorMessages);
         Assert.Contains(expectedErrorMessage, result.ErrorMessages);
-        
+
         //async
         Assert.False(resultAsync.Success);
         Assert.NotEmpty(resultAsync.ErrorMessages);

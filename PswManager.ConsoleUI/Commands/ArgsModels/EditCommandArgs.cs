@@ -3,7 +3,7 @@ using PswManager.Commands.Validation.Attributes;
 using PswManager.ConsoleUI.Attributes;
 using PswManager.ConsoleUI.Commands.Validation.Attributes;
 
-namespace PswManager.ConsoleUI.Commands.ArgsModels; 
+namespace PswManager.ConsoleUI.Commands.ArgsModels;
 public class EditCommandArgs : ICommandInput {
 
     [Required]

@@ -9,7 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PswManager.Database.DataAccess.TextDatabase.TextFileConnHelper; 
+namespace PswManager.Database.DataAccess.TextDatabase.TextFileConnHelper;
 internal class FileSaver {
 
     public FileSaver() : this("TextSaves") { }
@@ -20,7 +20,7 @@ internal class FileSaver {
         }
 
         directoryPath = Path.Combine(PathsBuilder.GetWorkingDirectory, "Data", customFolderName);
-        if(!Directory.Exists(directoryPath)) { 
+        if(!Directory.Exists(directoryPath)) {
             Directory.CreateDirectory(directoryPath);
         }
     }

@@ -32,7 +32,7 @@ public static class AccountModelMocks {
         while(returns-- > 0) {
             yield return GenerateEncryptedFromName(new string(s), cryptoAccount);
 
-            curr = (curr < 20)? curr++ : 0;
+            curr = (curr < 20) ? curr++ : 0;
             switch((int)s[curr]) {
                 case > 100:
                     s[curr] = '0';

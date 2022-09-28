@@ -28,7 +28,7 @@ public class AddCommand : BaseCommand<AddCommandArgs> {
     }
 
     private static CommandResult MatchResult(CreatorResponseCode result, string name) {
-        
+
         if(result == CreatorResponseCode.Success) {
             return new CommandResult("The account has been created successfully.", true);
         }
