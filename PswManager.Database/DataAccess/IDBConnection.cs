@@ -12,6 +12,6 @@ namespace PswManager.Database.DataAccess;
 /// An internal database connection. Does not validate anything by itself; to use with the wrappers at <see cref="Wrappers"/>.
 /// </summary>
 internal interface IDBConnection : IDataHelper, IDataCreator, IDataEditor, IDataDeleter {
-    Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name);
+    Task<Option<IAccountModel, ReaderErrorCode>> GetAccountAsync(string name);
     IAsyncEnumerable<NamedAccountOption> EnumerateAccountsAsync(NamesLocker locker);
 }

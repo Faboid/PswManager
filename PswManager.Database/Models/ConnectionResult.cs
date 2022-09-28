@@ -40,7 +40,7 @@ public class ConnectionResult<TValue> : ConnectionResult {
 
 }
 
-public class AccountResult : ConnectionResult<AccountModel> {
+public class AccountResult : ConnectionResult<IAccountModel> {
 
     public string NameAccount { get; init; }
 
@@ -52,11 +52,11 @@ public class AccountResult : ConnectionResult<AccountModel> {
         NameAccount = nameAccount;
     }
 
-    public AccountResult(string nameAccount, AccountModel value) : base(true, value) {
+    public AccountResult(string nameAccount, IAccountModel value) : base(true, value) {
         NameAccount = nameAccount;
     }
 
-    public AccountResult(string nameAccount, ConnectionResult<AccountModel> connResult) : base(connResult.Success) {
+    public AccountResult(string nameAccount, ConnectionResult<IAccountModel> connResult) : base(connResult.Success) {
         NameAccount = nameAccount;
         Value = connResult.Value;
         ErrorMessage = connResult.ErrorMessage;

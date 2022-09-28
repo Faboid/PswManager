@@ -35,8 +35,8 @@ internal class MemoryConnection : IDBConnection {
         }
     }
 
-    public Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
-        return Task.FromResult<Option<AccountModel, ReaderErrorCode>>(accounts[name]);
+    public Task<Option<IAccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
+        return Task.FromResult<Option<IAccountModel, ReaderErrorCode>>(accounts[name]);
     }
 
     public Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newModel) {

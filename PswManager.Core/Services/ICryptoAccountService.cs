@@ -21,9 +21,9 @@ public interface ICryptoAccountService {
     public (string decryptedPassword, string decryptedEmail) Decrypt((string encryptedPassword, string encryptedEmail) values);
 
     [Pure]
-    public AccountModel Encrypt(AccountModel model);
+    public IAccountModel Encrypt(IReadOnlyAccountModel model);
 
     [Pure]
-    public AccountModel Decrypt(AccountModel model);
+    public IAccountModel Decrypt(IReadOnlyAccountModel model);
 
 }

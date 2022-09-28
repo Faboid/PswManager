@@ -75,7 +75,7 @@ public abstract class DataReaderGeneric : IDisposable {
 
         //act
         var actual = dataReader.EnumerateAccountsAsync();
-        List<AccountModel> values = await actual
+        var values = await actual
             .Select(x => x.Or(null))
             .ToList()
             .ConfigureAwait(false);
@@ -102,7 +102,7 @@ public abstract class DataReaderGeneric : IDisposable {
 
         //act
         var actual = dataReader.EnumerateAccountsAsync();
-        List<AccountModel> values = await actual.Select(x => x.Or(null)).Take(num).ToList().ConfigureAwait(false);
+        var values = await actual.Select(x => x.Or(null)).Take(num).ToList().ConfigureAwait(false);
         values.Sort((x, y) => x.Name.CompareTo(y.Name));
 
         //assert
@@ -116,10 +116,10 @@ public abstract class DataReaderGeneric : IDisposable {
 
     }
 
-    private static ReaderErrorCode GetError(Option<AccountModel, ReaderErrorCode> option)
+    private static ReaderErrorCode GetError(Option<IAccountModel, ReaderErrorCode> option)
         => option.Match(some => throw new Exception("Option should not be Some."), error => error, () => throw new Exception("Option should not be None."));
 
-    private static void AccountEqual(AccountModel expected, AccountModel actual) {
+    private static void AccountEqual(IReadOnlyAccountModel expected, IReadOnlyAccountModel actual) {
         Assert.Equal(expected.Name, actual.Name);
         Assert.Equal(expected.Password, actual.Password);
         Assert.Equal(expected.Email, actual.Email);

@@ -45,7 +45,7 @@ public class TextFileConnection : IDBConnection {
         return DeleterResponseCode.Success;
     }
 
-    public async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
+    public async Task<Option<IAccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
         var account = await fileSaver.GetAsync(name);
         return account;
     }

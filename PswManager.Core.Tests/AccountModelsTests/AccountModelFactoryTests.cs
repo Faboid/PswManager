@@ -55,6 +55,6 @@ public class AccountModelFactoryTests {
 
     }
 
-    private static AccountModel GetDefault() => AccountModelMocks.GenerateValidFromName("SomeName");
+    private static IAccountModel GetDefault() => AccountModelMocks.GenerateValidFromName("SomeName");
 
 }

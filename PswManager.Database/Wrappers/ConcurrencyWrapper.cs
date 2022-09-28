@@ -56,7 +56,7 @@ internal class ConcurrencyWrapper : IDataConnection {
         return await _connection.DeleteAccountAsync(name);
     }
 
-    public async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
+    public async Task<Option<IAccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
         using var locker = await _locker.GetLockAsync(name, _millisecondsWaitTime);
         if(!locker.Obtained) {
             return ReaderErrorCode.UsedElsewhere;

@@ -83,7 +83,7 @@ internal class JsonConnection : IDBConnection {
         return DeleterResponseCode.Success.AsTask();
     }
 
-    public async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
+    public async Task<Option<IAccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
         var path = BuildFilePath(name);
         using var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
         AccountModel model = await JsonSerializer.DeserializeAsync<AccountModel>(stream).ConfigureAwait(false);
@@ -98,7 +98,7 @@ internal class JsonConnection : IDBConnection {
         foreach(var account in accounts) {
 
             yield return (await account.Item2).Match(
-                some => some,
+                some => new(some),
                 error => (account.x, error),
                 () => NamedAccountOption.None()
             );

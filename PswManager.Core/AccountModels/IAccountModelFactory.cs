@@ -33,7 +33,7 @@ public interface IAccountModelFactory {
     /// <param name="password"></param>
     /// <param name="email"></param>
     /// <returns></returns>
-    DecryptedAccount CreateDecryptedAccount(AccountModel model);
+    DecryptedAccount CreateDecryptedAccount(IReadOnlyAccountModel model);
 
     /// <summary>
     /// Takes in encrypted values to create an encrypted account model.
@@ -42,6 +42,6 @@ public interface IAccountModelFactory {
     /// <param name="password"></param>
     /// <param name="email"></param>
     /// <returns></returns>
-    EncryptedAccount CreateEncryptedAccount(AccountModel model);
+    EncryptedAccount CreateEncryptedAccount(IReadOnlyAccountModel model);
 
 }

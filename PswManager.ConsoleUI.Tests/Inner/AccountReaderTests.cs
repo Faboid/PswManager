@@ -20,7 +20,7 @@ public class AccountReaderTests {
         dataReaderMock
             .Setup(x => x.GetAccountAsync(It.Is<string>(x => !string.IsNullOrWhiteSpace(x))))
             .Returns<string>(x =>
-                Task.FromResult<Option<AccountModel, ReaderErrorCode>>(AccountModelMocks.GenerateEncryptedFromName(x, cryptoAccount))
+                Task.FromResult<Option<IAccountModel, ReaderErrorCode>>(new(AccountModelMocks.GenerateEncryptedFromName(x, cryptoAccount)))
             );
 
         dataReaderMock
@@ -39,7 +39,7 @@ public class AccountReaderTests {
     public async Task ReadAccountCallsDBCorrectlyAsync(string name) {
 
         //arrange
-        AccountModel expected = cryptoAccount.Decrypt(AccountModelMocks.GenerateEncryptedFromName(name, cryptoAccount));
+        IAccountModel expected = cryptoAccount.Decrypt(AccountModelMocks.GenerateEncryptedFromName(name, cryptoAccount));
 
         //act
         var option = await reader.ReadAccountAsync(name);

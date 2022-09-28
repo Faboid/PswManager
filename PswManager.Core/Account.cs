@@ -18,8 +18,8 @@ internal class Account : IAccount {
     private bool _exists = true;
     private EncryptedAccount _encryptedAccount;
     public string Name => _encryptedAccount.Name;
-    public string EncryptedPassword => _encryptedAccount.Password;
-    public string EncryptedEmail => _encryptedAccount.Email;
+    public string Password => _encryptedAccount.Password;
+    public string Email => _encryptedAccount.Email;
 
     public Account(EncryptedAccount model, IDataConnection connection, IAccountValidator accountValidator, ILoggerFactory? loggerFactory = null) {
         _encryptedAccount = model;

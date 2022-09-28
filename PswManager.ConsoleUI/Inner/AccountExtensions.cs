@@ -3,7 +3,7 @@
 namespace PswManager.ConsoleUI.Inner;
 internal static class AccountExtensions {
 
-    public static ValidationResult IsAnyValueNullOrEmpty(this AccountModel account) {
+    public static ValidationResult IsAnyValueNullOrEmpty(this IReadOnlyAccountModel account) {
 
         if(string.IsNullOrWhiteSpace(account.Name)) {
             return ValidationResult.MissingName;

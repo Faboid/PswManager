@@ -5,7 +5,7 @@ using PswManager.Extensions;
 namespace PswManager.Core.Tests.Mocks;
 public static class AccountModelMocks {
 
-    public static AccountModel GenerateValidFromName(string name) {
+    public static IAccountModel GenerateValidFromName(string name) {
         return new AccountModel {
             Name = name,
             Password = new string(name.Reverse().ToArray()),
@@ -13,18 +13,18 @@ public static class AccountModelMocks {
         };
     }
 
-    public static AccountModel GenerateEncryptedFromName(string name, ICryptoAccountService cryptoAccount) {
+    public static IAccountModel GenerateEncryptedFromName(string name, ICryptoAccountService cryptoAccount) {
         return cryptoAccount.Encrypt(GenerateValidFromName(name));
     }
 
-    public static async IAsyncEnumerable<AccountModel> GenerateManyEncryptedAsync(ICryptoAccountService cryptoAccount, int returns = int.MaxValue) {
+    public static async IAsyncEnumerable<IAccountModel> GenerateManyEncryptedAsync(ICryptoAccountService cryptoAccount, int returns = int.MaxValue) {
 
         foreach(var result in GenerateManyEncrypted(cryptoAccount, returns)) {
             yield return await Task.FromResult(result); //kinda terrible, but it works(?)
         }
     }
 
-    public static IEnumerable<AccountModel> GenerateManyEncrypted(ICryptoAccountService cryptoAccount, int returns = int.MaxValue) {
+    public static IEnumerable<IAccountModel> GenerateManyEncrypted(ICryptoAccountService cryptoAccount, int returns = int.MaxValue) {
 
         char[] s = new string('0', 20).ToCharArray();
         int curr = 0;

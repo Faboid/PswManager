@@ -44,7 +44,7 @@ internal class CheckExistenceWrapper : IDBConnection {
         return _connection.EnumerateAccountsAsync(locker);
     }
 
-    public async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
+    public async Task<Option<IAccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
         if(await AccountExistAsync(name) is AccountExistsStatus.NotExist or AccountExistsStatus.UsedElsewhere) {
             return ReaderErrorCode.DoesNotExist;
         }

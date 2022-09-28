@@ -80,14 +80,14 @@ public class AccountTests {
         var connectionMock = new Mock<IDataConnection>();
         connectionMock.Setup(x => x.UpdateAccountAsync("AName", It.IsAny<AccountModel>())).Returns(Task.FromResult(EditorResponseCode.Success));
 
-        var sut = new Account(_accountModelFactory.CreateEncryptedAccount(new("AName", "APassword", "AnEmail")), connectionMock.Object, new AccountValidator());
+        var sut = new Account(_accountModelFactory.CreateEncryptedAccount(new AccountModel("AName", "APassword", "AnEmail")), connectionMock.Object, new AccountValidator());
 
         var actual = await sut.EditAccountAsync(decryptedModel);
 
         Assert.Equal(EditAccountResult.Success, actual);
         Assert.Equal(expected.Name, sut.Name);
-        Assert.Equal(expected.Password, sut.EncryptedPassword);
-        Assert.Equal(expected.Email, sut.EncryptedEmail);
+        Assert.Equal(expected.Password, sut.Password);
+        Assert.Equal(expected.Email, sut.Email);
 
     }
 

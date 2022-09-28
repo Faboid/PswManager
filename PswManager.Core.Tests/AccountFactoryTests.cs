@@ -61,7 +61,7 @@ public class AccountFactoryTests {
     [Fact]
     public async Task LoadAccounts_Loads() {
 
-        var models = new Option<AccountModel, (string name, ReaderErrorCode errorCode)>[] {
+        var models = new Option<IAccountModel, (string name, ReaderErrorCode errorCode)>[] {
             new AccountModel("SomeName", "SomePassword", "SomeEmail"),
             new AccountModel("SomeOtherName", "rwgre", "Email@here.com")
         }.ToAsyncEnumerable();

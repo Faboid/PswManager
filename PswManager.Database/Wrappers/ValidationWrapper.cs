@@ -51,9 +51,9 @@ internal class ValidationWrapper : IDataConnection {
         return _connection.EnumerateAccountsAsync();
     }
 
-    public Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
+    public Task<Option<IAccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
         if(string.IsNullOrWhiteSpace(name)) {
-            return Task.FromResult<Option<AccountModel, ReaderErrorCode>>(ReaderErrorCode.InvalidName);
+            return Task.FromResult<Option<IAccountModel, ReaderErrorCode>>(ReaderErrorCode.InvalidName);
         }
 
         return _connection.GetAccountAsync(name);

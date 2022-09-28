@@ -51,7 +51,7 @@ internal class SQLConnection : IDBConnection {
         return (result) ? DeleterResponseCode.Success : DeleterResponseCode.Undefined;
     }
 
-    public async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
+    public async Task<Option<IAccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
         using var cmd = queriesBuilder.GetAccountQuery(name);
         await using var connection = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
         using var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false);

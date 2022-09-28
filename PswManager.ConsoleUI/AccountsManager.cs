@@ -38,19 +38,19 @@ public class AccountsManager : IAccountsManager {
     readonly IAccountEditor accountEditor;
     readonly IAccountDeleter accountDeleter;
 
-    public CreatorResponseCode CreateAccount(AccountModel model) {
+    public CreatorResponseCode CreateAccount(IReadOnlyAccountModel model) {
         return accountCreator.CreateAccount(model);
     }
 
-    public Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
+    public Task<CreatorResponseCode> CreateAccountAsync(IReadOnlyAccountModel model) {
         return accountCreator.CreateAccountAsync(model);
     }
 
-    public Option<AccountModel, ReaderErrorCode> ReadAccount(string name) {
+    public Option<IAccountModel, ReaderErrorCode> ReadAccount(string name) {
         return accountReader.ReadAccount(name);
     }
 
-    public Task<Option<AccountModel, ReaderErrorCode>> ReadAccountAsync(string name) {
+    public Task<Option<IAccountModel, ReaderErrorCode>> ReadAccountAsync(string name) {
         return accountReader.ReadAccountAsync(name);
     }
 
@@ -62,11 +62,11 @@ public class AccountsManager : IAccountsManager {
         return accountReader.ReadAllAccountsAsync();
     }
 
-    public EditorResponseCode UpdateAccount(string name, AccountModel newValues) {
+    public EditorResponseCode UpdateAccount(string name, IReadOnlyAccountModel newValues) {
         return accountEditor.UpdateAccount(name, newValues);
     }
 
-    public Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newValues) {
+    public Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newValues) {
         return accountEditor.UpdateAccountAsync(name, newValues);
     }
 

@@ -19,6 +19,6 @@ public class AccountModelFactory : IAccountModelFactory {
         return new DecryptedAccount(name, password, email, _cryptoAccountService);
     }
 
-    public DecryptedAccount CreateDecryptedAccount(AccountModel model) => CreateDecryptedAccount(model.Name, model.Password, model.Email);
-    public EncryptedAccount CreateEncryptedAccount(AccountModel model) => CreateEncryptedAccount(model.Name, model.Password, model.Email);
+    public DecryptedAccount CreateDecryptedAccount(IReadOnlyAccountModel model) => CreateDecryptedAccount(model.Name, model.Password, model.Email);
+    public EncryptedAccount CreateEncryptedAccount(IReadOnlyAccountModel model) => CreateEncryptedAccount(model.Name, model.Password, model.Email);
 }
