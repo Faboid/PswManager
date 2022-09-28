@@ -45,7 +45,7 @@ internal class QueriesBuilder {
         return cmd;
     }
 
-    public SQLiteCommand UpdateAccountQuery(string name, AccountModel newModel) {
+    public SQLiteCommand UpdateAccountQuery(string name, IReadOnlyAccountModel newModel) {
         string query = $"update {accountsTable} set " +
             $"Name = case when @NewName is not null then @NewName else Name end, " +
             $"Password = case when @NewPassword is not null then @NewPassword else Password end, " +

@@ -59,7 +59,7 @@ internal class ValidationWrapper : IDataConnection {
         return _connection.GetAccountAsync(name);
     }
 
-    public Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
+    public Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newModel) {
         if(string.IsNullOrWhiteSpace(name)) {
             return Task.FromResult(EditorResponseCode.InvalidName);
         }

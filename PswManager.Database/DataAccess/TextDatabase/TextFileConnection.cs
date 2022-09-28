@@ -54,7 +54,7 @@ public class TextFileConnection : IDBConnection {
         return fileSaver.GetAllAsync(locker);
     }
 
-    public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
+    public async Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newModel) {
         await fileSaver.UpdateAsync(name, newModel).ConfigureAwait(false);
         return EditorResponseCode.Success;
     }

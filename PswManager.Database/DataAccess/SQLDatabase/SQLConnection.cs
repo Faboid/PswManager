@@ -88,7 +88,7 @@ internal class SQLConnection : IDBConnection {
         }
     }
 
-    public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
+    public async Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newModel) {
         using var cmd = queriesBuilder.UpdateAccountQuery(name, newModel);
         await using(var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false)) {
             await cmd.ExecuteNonQueryAsync();

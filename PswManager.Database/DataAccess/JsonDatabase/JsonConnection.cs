@@ -26,7 +26,7 @@ internal class JsonConnection : IDBConnection {
         return Path.Combine(directoryPath, $"{name}.json");
     }
 
-    private static void OverWriteOldModel(AccountModel oldAccount, AccountModel newAccount) {
+    private static void OverWriteOldModel(AccountModel oldAccount, IReadOnlyAccountModel newAccount) {
         if(!string.IsNullOrWhiteSpace(newAccount.Name)) {
             oldAccount.Name = newAccount.Name;
         }
@@ -57,7 +57,7 @@ internal class JsonConnection : IDBConnection {
         return CreatorResponseCode.Success;
     }
 
-    public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
+    public async Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newModel) {
         var path = BuildFilePath(name);
         AccountModel model;
         using(var readStream = new FileStream(path, FileMode.Open)) {

@@ -39,7 +39,7 @@ internal class MemoryConnection : IDBConnection {
         return Task.FromResult<Option<AccountModel, ReaderErrorCode>>(accounts[name]);
     }
 
-    public Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
+    public Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newModel) {
         var account = accounts[name];
 
         if(!string.IsNullOrWhiteSpace(newModel.Password)) {

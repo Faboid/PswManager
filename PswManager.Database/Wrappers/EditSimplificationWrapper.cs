@@ -25,7 +25,7 @@ internal class EditSimplificationWrapper : IDBConnection {
     public Task<DeleterResponseCode> DeleteAccountAsync(string name) => _connection.DeleteAccountAsync(name);
     public IAsyncEnumerable<NamedAccountOption> EnumerateAccountsAsync(NamesLocker locker) => _connection.EnumerateAccountsAsync(locker);
     public Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) => _connection.GetAccountAsync(name);
-    public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
+    public async Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newModel) {
 
         var account = await GetAccountAsync(name);
 

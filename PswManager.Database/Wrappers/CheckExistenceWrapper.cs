@@ -52,7 +52,7 @@ internal class CheckExistenceWrapper : IDBConnection {
         return await _connection.GetAccountAsync(name);
     }
 
-    public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
+    public async Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newModel) {
         if(await AccountExistAsync(name) is AccountExistsStatus.NotExist or AccountExistsStatus.UsedElsewhere) {
             return EditorResponseCode.DoesNotExist;
         }

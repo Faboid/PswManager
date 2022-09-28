@@ -69,7 +69,7 @@ internal class ConcurrencyWrapper : IDataConnection {
         return _connection.EnumerateAccountsAsync(_locker);
     }
 
-    public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
+    public async Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newModel) {
         using var locker = await _locker.GetLockAsync(name, _millisecondsWaitTime);
         if(!locker.Obtained) {
             return EditorResponseCode.UsedElsewhere;
