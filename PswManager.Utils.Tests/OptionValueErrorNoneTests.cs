@@ -3,7 +3,7 @@ using PswManager.Utils.Options;
 using System.Reflection;
 using Xunit;
 
-namespace PswManager.Utils.Tests; 
+namespace PswManager.Utils.Tests;
 public class OptionValueErrorNoneTests {
 
     private static IOption<TValue, TError> GetUnderlyingOption<TValue, TError>(Option<TValue, TError> option) {
@@ -35,13 +35,13 @@ public class OptionValueErrorNoneTests {
         });
 
         //assert
-        
+
         option.Is(OptionResult.Some);
         firstOption.Is(OptionResult.Some);
         none.Is(OptionResult.None);
         noneTwo.Is(OptionResult.None);
         error.Is(OptionResult.Error);
-        
+
         Assert.Equal(0, firstRes);
         Assert.Equal(20, none.Or(20));
         Assert.Equal(50, error.Or(50));

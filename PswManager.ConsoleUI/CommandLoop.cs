@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PswManager.ConsoleUI.Commands;
-using PswManager.Core;
 using PswManager.Core.Services;
 
 namespace PswManager.ConsoleUI;

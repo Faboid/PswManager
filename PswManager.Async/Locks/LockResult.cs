@@ -1,4 +1,4 @@
-﻿namespace PswManager.Async.Locks; 
+﻿namespace PswManager.Async.Locks;
 public class LockResult {
 
     internal LockResult(bool success) {

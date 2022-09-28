@@ -6,7 +6,7 @@ using PswManager.Utils;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PswManager.Database.DataAccess.MemoryDatabase; 
+namespace PswManager.Database.DataAccess.MemoryDatabase;
 internal class MemoryConnection : IDBConnection {
 
     readonly Dictionary<string, AccountModel> accounts = new();
@@ -19,8 +19,8 @@ internal class MemoryConnection : IDBConnection {
         return Task.FromResult(accounts.ContainsKey(name) ? AccountExistsStatus.Exist : AccountExistsStatus.NotExist);
     }
 
-    public Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
-        accounts.Add(model.Name, model);
+    public Task<CreatorResponseCode> CreateAccountAsync(IReadOnlyAccountModel model) {
+        accounts.Add(model.Name, new(model.Name, model.Password, model.Email));
         return Task.FromResult(CreatorResponseCode.Success);
     }
 
@@ -35,11 +35,11 @@ internal class MemoryConnection : IDBConnection {
         }
     }
 
-    public Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
-        return Task.FromResult<Option<AccountModel, ReaderErrorCode>>(accounts[name]);
+    public Task<Option<IAccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
+        return Task.FromResult<Option<IAccountModel, ReaderErrorCode>>(accounts[name]);
     }
 
-    public Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
+    public Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newModel) {
         var account = accounts[name];
 
         if(!string.IsNullOrWhiteSpace(newModel.Password)) {

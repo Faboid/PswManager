@@ -2,7 +2,7 @@
 
 namespace PswManager.Core.Tests.Mocks;
 public static class ICryptoServiceMocks {
-    
+
     public static Mock<ICryptoService> GetReverseCryptor() {
         var output = new Mock<ICryptoService>();
         output

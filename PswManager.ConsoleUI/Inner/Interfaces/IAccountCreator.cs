@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace PswManager.ConsoleUI.Inner.Interfaces;
 public interface IAccountCreator {
 
-    CreatorResponseCode CreateAccount(AccountModel model);
-    Task<CreatorResponseCode> CreateAccountAsync(AccountModel model);
+    CreatorResponseCode CreateAccount(IReadOnlyAccountModel model);
+    Task<CreatorResponseCode> CreateAccountAsync(IReadOnlyAccountModel model);
 
 }

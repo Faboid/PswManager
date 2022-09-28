@@ -5,7 +5,7 @@ using System.Text;
 
 [assembly: InternalsVisibleTo("PswManager.Encryption.Tests")]
 [assembly: InternalsVisibleTo("PswManager.Core.Tests")]
-namespace PswManager.Encryption.Services; 
+namespace PswManager.Encryption.Services;
 public class CryptoService : ICryptoService, IDisposable {
     //This class is built upon a derived version of "A Gazhal"'s answer https://stackoverflow.com/a/27484425/16018958
 
@@ -15,8 +15,8 @@ public class CryptoService : ICryptoService, IDisposable {
     private readonly Key key;
 
     public CryptoService(char[] password) : this(password, currentVersion) { }
-    internal CryptoService(char[] password, string version) : this (new Key(password), version){ }
-    public CryptoService(Key key) : this(key, currentVersion) { } 
+    internal CryptoService(char[] password, string version) : this(new Key(password), version) { }
+    public CryptoService(Key key) : this(key, currentVersion) { }
 
     internal CryptoService(Key key, string version) { //todo - consider whether to clear the given key
         this.key = key;

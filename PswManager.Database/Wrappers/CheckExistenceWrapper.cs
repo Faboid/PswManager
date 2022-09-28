@@ -24,7 +24,7 @@ internal class CheckExistenceWrapper : IDBConnection {
         return _connection.AccountExistAsync(name);
     }
 
-    public async Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
+    public async Task<CreatorResponseCode> CreateAccountAsync(IReadOnlyAccountModel model) {
         if(await AccountExistAsync(model.Name) is AccountExistsStatus.Exist or AccountExistsStatus.UsedElsewhere) {
             return CreatorResponseCode.AccountExistsAlready;
         }
@@ -36,7 +36,7 @@ internal class CheckExistenceWrapper : IDBConnection {
         if(await AccountExistAsync(name) is AccountExistsStatus.NotExist or AccountExistsStatus.UsedElsewhere) {
             return DeleterResponseCode.DoesNotExist;
         }
-        
+
         return await _connection.DeleteAccountAsync(name);
     }
 
@@ -44,7 +44,7 @@ internal class CheckExistenceWrapper : IDBConnection {
         return _connection.EnumerateAccountsAsync(locker);
     }
 
-    public async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
+    public async Task<Option<IAccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
         if(await AccountExistAsync(name) is AccountExistsStatus.NotExist or AccountExistsStatus.UsedElsewhere) {
             return ReaderErrorCode.DoesNotExist;
         }
@@ -52,7 +52,7 @@ internal class CheckExistenceWrapper : IDBConnection {
         return await _connection.GetAccountAsync(name);
     }
 
-    public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
+    public async Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newModel) {
         if(await AccountExistAsync(name) is AccountExistsStatus.NotExist or AccountExistsStatus.UsedElsewhere) {
             return EditorResponseCode.DoesNotExist;
         }

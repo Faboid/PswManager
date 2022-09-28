@@ -25,7 +25,7 @@ public class AddCommandTests {
     public void AddSuccessfully(string name, string password, string email) {
 
         //arrange
-        var obj = ClassBuilder.Build<AddCommand>(new List<string> { password, name, email});
+        var obj = ClassBuilder.Build<AddCommand>(new List<string> { password, name, email });
         CommandResult result;
 
         //act
@@ -61,10 +61,10 @@ public class AddCommandTests {
     }
 
     public static IEnumerable<object[]> ExpectedValidationFailuresData() {
-        static object[] NewObj(string errorMessage, string name, string password, string email) 
-            => new object[] { 
-                errorMessage, 
-                ClassBuilder.Build<AddCommand>(new List<string> { password, name, email}) 
+        static object[] NewObj(string errorMessage, string name, string password, string email)
+            => new object[] {
+                errorMessage,
+                ClassBuilder.Build<AddCommand>(new List<string> { password, name, email})
             };
 
         string validName = "someRandomNonexistentAccountName";
@@ -92,7 +92,7 @@ public class AddCommandTests {
 
         //assert
         Assert.False(valid);
-        
+
         //sync
         Assert.False(result.Success);
         Assert.NotEmpty(result.ErrorMessages);
@@ -102,7 +102,7 @@ public class AddCommandTests {
         Assert.False(resultAsync.Success);
         Assert.NotEmpty(resultAsync.ErrorMessages);
         Assert.Contains(expectedErrorMessage, resultAsync.ErrorMessages);
-    
+
     }
 
 }

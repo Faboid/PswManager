@@ -1,4 +1,4 @@
-﻿namespace PswManager.Async.Locks; 
+﻿namespace PswManager.Async.Locks;
 public class Locker : IDisposable {
 
     public Locker() : this(1) { }
@@ -24,7 +24,7 @@ public class Locker : IDisposable {
 
     public Lock GetLock(int millisecondsTimeout) {
         bool result = semaphore.Wait(millisecondsTimeout);
-        
+
         ThrowIfDisposed();
         return new(result, this);
     }

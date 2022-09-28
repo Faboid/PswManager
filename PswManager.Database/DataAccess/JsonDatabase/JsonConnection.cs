@@ -9,14 +9,14 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace PswManager.Database.DataAccess.JsonDatabase; 
+namespace PswManager.Database.DataAccess.JsonDatabase;
 internal class JsonConnection : IDBConnection {
 
     internal JsonConnection() : this("Json") { }
 
     internal JsonConnection(string customFolderName) {
         directoryPath = Path.Combine(PathsBuilder.GetWorkingDirectory, "Data", customFolderName);
-        if(!Directory.Exists(directoryPath)) { 
+        if(!Directory.Exists(directoryPath)) {
             Directory.CreateDirectory(directoryPath);
         }
     }
@@ -26,7 +26,7 @@ internal class JsonConnection : IDBConnection {
         return Path.Combine(directoryPath, $"{name}.json");
     }
 
-    private static void OverWriteOldModel(AccountModel oldAccount, AccountModel newAccount) {
+    private static void OverWriteOldModel(AccountModel oldAccount, IReadOnlyAccountModel newAccount) {
         if(!string.IsNullOrWhiteSpace(newAccount.Name)) {
             oldAccount.Name = newAccount.Name;
         }
@@ -50,14 +50,14 @@ internal class JsonConnection : IDBConnection {
             AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
 
-    public async Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
+    public async Task<CreatorResponseCode> CreateAccountAsync(IReadOnlyAccountModel model) {
         var path = BuildFilePath(model.Name);
         using var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write);
         await JsonSerializer.SerializeAsync(stream, model).ConfigureAwait(false);
         return CreatorResponseCode.Success;
     }
 
-    public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
+    public async Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newModel) {
         var path = BuildFilePath(name);
         AccountModel model;
         using(var readStream = new FileStream(path, FileMode.Open)) {
@@ -83,7 +83,7 @@ internal class JsonConnection : IDBConnection {
         return DeleterResponseCode.Success.AsTask();
     }
 
-    public async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
+    public async Task<Option<IAccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
         var path = BuildFilePath(name);
         using var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
         AccountModel model = await JsonSerializer.DeserializeAsync<AccountModel>(stream).ConfigureAwait(false);
@@ -98,7 +98,7 @@ internal class JsonConnection : IDBConnection {
         foreach(var account in accounts) {
 
             yield return (await account.Item2).Match(
-                some => some,
+                some => new(some),
                 error => (account.x, error),
                 () => NamedAccountOption.None()
             );

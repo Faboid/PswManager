@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PswManager.Commands.Validation.Validators; 
+namespace PswManager.Commands.Validation.Validators;
 internal class Validator<T> : IValidator<T> {
 
     internal Validator(IReadOnlyCollection<ICondition<T>> conditions, List<IAutoValidator<T>> autoValidator) {

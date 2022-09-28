@@ -4,9 +4,8 @@ using System.Threading.Tasks;
 
 namespace PswManager.Database.Interfaces;
 
-public interface IDataEditor : IDataHelper
-{
+public interface IDataEditor : IDataHelper {
 
-    Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel);
+    Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newModel);
 
 }

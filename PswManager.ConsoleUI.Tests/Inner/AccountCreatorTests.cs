@@ -95,7 +95,7 @@ public class AccountCreatorTests {
 
     }
 
-    private (AccountCreator creator, AccountModel input, AccountModel expected) ArrangeTest(string name, string password, string email) {
+    private (AccountCreator creator, IAccountModel input, IAccountModel expected) ArrangeTest(string name, string password, string email) {
         var creator = new AccountCreator(dataCreatorMock.Object, cryptoAccount);
         var input = new AccountModel(name, password, email);
         var expected = cryptoAccount.Encrypt(input);

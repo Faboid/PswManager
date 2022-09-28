@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PswManager.Commands.Unused.Validation; 
+namespace PswManager.Commands.Unused.Validation;
 public class ValidationCollection<T> : IValidationCollection<T> {
 
     private readonly Dictionary<int, (bool, string)> validatorsDictionary = new();

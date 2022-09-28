@@ -2,7 +2,7 @@
 using System.Data.SQLite;
 using System.IO;
 
-namespace PswManager.Database.DataAccess.SQLDatabase.SQLConnHelper; 
+namespace PswManager.Database.DataAccess.SQLDatabase.SQLConnHelper;
 internal class DatabaseBuilder {
 
     public DatabaseBuilder(string db_name) {
@@ -20,7 +20,7 @@ internal class DatabaseBuilder {
     }
 
     private void SetUpDatabase() {
-        if(!Directory.Exists(dataDirectoryPath)) { 
+        if(!Directory.Exists(dataDirectoryPath)) {
             Directory.CreateDirectory(dataDirectoryPath);
         }
 

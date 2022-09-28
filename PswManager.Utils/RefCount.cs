@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PswManager.Utils; 
+namespace PswManager.Utils;
 public class RefCount<TValue> {
 
     public RefCount(TValue value) {

@@ -3,8 +3,8 @@ using PswManager.Core.AccountModels;
 namespace PswManager.Core.Validators;
 
 public class AccountValidator : IAccountValidator {
-    public AccountValid IsAccountValid(IAccountModel account) {
-        
+    public AccountValid IsAccountValid(IExtendedAccountModel account) {
+
         var nameResult = IsNameValid(account);
         if(nameResult != NameValid.Valid) {
             return nameResult switch {
@@ -32,8 +32,8 @@ public class AccountValidator : IAccountValidator {
         return AccountValid.Valid;
     }
 
-    public EmailValid IsEmailValid(IAccountModel account) {
-        
+    public EmailValid IsEmailValid(IExtendedAccountModel account) {
+
         if(string.IsNullOrWhiteSpace(account.Email)) {
             return EmailValid.EmptyOrNull;
         }
@@ -41,8 +41,8 @@ public class AccountValidator : IAccountValidator {
         return EmailValid.Valid;
     }
 
-    public NameValid IsNameValid(IAccountModel account) {
-        
+    public NameValid IsNameValid(IExtendedAccountModel account) {
+
         if(string.IsNullOrWhiteSpace(account.Name)) {
             return NameValid.EmptyOrNull;
         }
@@ -50,8 +50,8 @@ public class AccountValidator : IAccountValidator {
         return NameValid.Valid;
     }
 
-    public PasswordValid IsPasswordValid(IAccountModel account) {
-        
+    public PasswordValid IsPasswordValid(IExtendedAccountModel account) {
+
         if(string.IsNullOrWhiteSpace(account.Password)) {
             return PasswordValid.EmptyOrNull;
         }

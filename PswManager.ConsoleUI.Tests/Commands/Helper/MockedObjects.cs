@@ -1,6 +1,5 @@
 ﻿using PswManager.Encryption.Services;
 using Moq;
-using PswManager.Core;
 using PswManager.Database.Models;
 using PswManager.Core.Services;
 

@@ -30,8 +30,8 @@ public class EditCommandTests {
 
         var def = new DefaultValues(4);
 
-        yield return NewObj(def.GetValue(1, DefaultValues.TypeValue.Name), 
-            null, "newPassword1", "newEmail1", 
+        yield return NewObj(def.GetValue(1, DefaultValues.TypeValue.Name),
+            null, "newPassword1", "newEmail1",
             $"{def.GetValue(1, DefaultValues.TypeValue.Name)} newPassword1 newEmail1");
 
         yield return NewObj(def.GetValue(2, DefaultValues.TypeValue.Name),

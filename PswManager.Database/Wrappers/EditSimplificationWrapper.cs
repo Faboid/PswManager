@@ -21,11 +21,11 @@ internal class EditSimplificationWrapper : IDBConnection {
 
     public AccountExistsStatus AccountExist(string name) => _connection.AccountExist(name);
     public Task<AccountExistsStatus> AccountExistAsync(string name) => _connection.AccountExistAsync(name);
-    public Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) => _connection.CreateAccountAsync(model);
+    public Task<CreatorResponseCode> CreateAccountAsync(IReadOnlyAccountModel model) => _connection.CreateAccountAsync(model);
     public Task<DeleterResponseCode> DeleteAccountAsync(string name) => _connection.DeleteAccountAsync(name);
     public IAsyncEnumerable<NamedAccountOption> EnumerateAccountsAsync(NamesLocker locker) => _connection.EnumerateAccountsAsync(locker);
-    public Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) => _connection.GetAccountAsync(name);
-    public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
+    public Task<Option<IAccountModel, ReaderErrorCode>> GetAccountAsync(string name) => _connection.GetAccountAsync(name);
+    public async Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newModel) {
 
         var account = await GetAccountAsync(name);
 

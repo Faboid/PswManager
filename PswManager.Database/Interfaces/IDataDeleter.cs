@@ -2,8 +2,7 @@
 using System.Threading.Tasks;
 
 namespace PswManager.Database.Interfaces;
-public interface IDataDeleter : IDataHelper
-{
+public interface IDataDeleter : IDataHelper {
 
     Task<DeleterResponseCode> DeleteAccountAsync(string name);
 

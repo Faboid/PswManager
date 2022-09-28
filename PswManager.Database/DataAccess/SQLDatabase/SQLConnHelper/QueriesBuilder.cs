@@ -1,7 +1,7 @@
 ﻿using PswManager.Database.Models;
 using System.Data.SQLite;
 
-namespace PswManager.Database.DataAccess.SQLDatabase.SQLConnHelper; 
+namespace PswManager.Database.DataAccess.SQLDatabase.SQLConnHelper;
 internal class QueriesBuilder {
 
     public QueriesBuilder(SQLiteConnection connection) {
@@ -11,7 +11,7 @@ internal class QueriesBuilder {
     private readonly SQLiteConnection connection;
     private const string accountsTable = "Accounts";
 
-    public SQLiteCommand CreateAccountQuery(AccountModel model) {
+    public SQLiteCommand CreateAccountQuery(IReadOnlyAccountModel model) {
         string query = $"insert into {accountsTable} " +
             $"values(@Name, @Password, @Email)";
         var cmd = new SQLiteCommand(query, connection);
@@ -45,7 +45,7 @@ internal class QueriesBuilder {
         return cmd;
     }
 
-    public SQLiteCommand UpdateAccountQuery(string name, AccountModel newModel) {
+    public SQLiteCommand UpdateAccountQuery(string name, IReadOnlyAccountModel newModel) {
         string query = $"update {accountsTable} set " +
             $"Name = case when @NewName is not null then @NewName else Name end, " +
             $"Password = case when @NewPassword is not null then @NewPassword else Password end, " +

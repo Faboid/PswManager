@@ -3,7 +3,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-[assembly:InternalsVisibleTo("PswManager.Utils.Tests")]
+[assembly: InternalsVisibleTo("PswManager.Utils.Tests")]
 namespace PswManager.Utils;
 
 public static class Option {
@@ -62,13 +62,13 @@ public struct Option<TValue, TError> : IOption<TValue, TError> {
     private readonly IOption<TValue, TError> _option;
 
     public Option(TValue value) {
-        _option = (value != null)? 
+        _option = (value != null) ?
             new Some<TValue, TError>(value) :
             new None<TValue, TError>();
     }
 
     public Option(TError error) {
-        _option = (error != null)? 
+        _option = (error != null) ?
             new Error<TValue, TError>(error) :
             new None<TValue, TError>();
     }

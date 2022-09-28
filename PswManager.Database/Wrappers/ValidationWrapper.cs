@@ -1,5 +1,6 @@
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
+using PswManager.Database.Models.Extensions;
 using PswManager.Utils;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ internal class ValidationWrapper : IDataConnection {
         if(string.IsNullOrWhiteSpace(name)) {
             return AccountExistsStatus.InvalidName;
         }
-        
+
         return _connection.AccountExist(name);
     }
 
@@ -30,8 +31,8 @@ internal class ValidationWrapper : IDataConnection {
         return _connection.AccountExistAsync(name);
     }
 
-    public Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
-        if(!model.IsAllValid(out var errorCode)) {
+    public Task<CreatorResponseCode> CreateAccountAsync(IReadOnlyAccountModel model) {
+        if(!model.IsValid(out var errorCode)) {
             return Task.FromResult(errorCode.ToCreatorErrorCode());
         }
 
@@ -50,15 +51,15 @@ internal class ValidationWrapper : IDataConnection {
         return _connection.EnumerateAccountsAsync();
     }
 
-    public Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
+    public Task<Option<IAccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
         if(string.IsNullOrWhiteSpace(name)) {
-            return Task.FromResult<Option<AccountModel, ReaderErrorCode>>(ReaderErrorCode.InvalidName);
+            return Task.FromResult<Option<IAccountModel, ReaderErrorCode>>(ReaderErrorCode.InvalidName);
         }
 
         return _connection.GetAccountAsync(name);
     }
 
-    public Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
+    public Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newModel) {
         if(string.IsNullOrWhiteSpace(name)) {
             return Task.FromResult(EditorResponseCode.InvalidName);
         }

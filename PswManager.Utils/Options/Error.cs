@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace PswManager.Utils.Options; 
+namespace PswManager.Utils.Options;
 
 public struct Error<TValue, TError> : IOption<TValue, TError> {
 

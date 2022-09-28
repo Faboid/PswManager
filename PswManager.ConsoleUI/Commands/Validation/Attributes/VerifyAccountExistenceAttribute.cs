@@ -1,7 +1,7 @@
 ﻿using PswManager.Commands.Validation.Attributes;
 using System;
 
-namespace PswManager.ConsoleUI.Commands.Validation.Attributes; 
+namespace PswManager.ConsoleUI.Commands.Validation.Attributes;
 [AttributeUsage(AttributeTargets.Property)]
 public class VerifyAccountExistenceAttribute : RuleAttribute {
 

@@ -1,6 +1,6 @@
 ﻿using PswManager.Database.Models;
 
-namespace PswManager.TestUtils; 
+namespace PswManager.TestUtils;
 /// <summary>
 /// A class to standardize default values to insert in the tests database.
 /// </summary>

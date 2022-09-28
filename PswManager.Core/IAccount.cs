@@ -1,14 +1,15 @@
 ﻿using PswManager.Core.AccountModels;
+using PswManager.Database.Models;
 using System.Threading.Tasks;
 
 namespace PswManager.Core;
-public interface IAccount {
-    string Name { get; }
-    string EncryptedPassword { get; }
-    string EncryptedEmail { get; }
+public interface IAccount : IReadOnlyAccountModel {
+    new string Name { get; } //todo - add documentation
+    new string Password { get; }
+    new string Email { get; }
 
     Task DeleteAccountAsync();
-    Task<EditAccountResult> EditAccountAsync(IAccountModel newValues);
+    Task<EditAccountResult> EditAccountAsync(IExtendedAccountModel newValues);
     DecryptedAccount GetDecryptedModel();
     Task<DecryptedAccount> GetDecryptedModelAsync();
 }

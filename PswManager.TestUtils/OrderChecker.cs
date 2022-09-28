@@ -1,4 +1,4 @@
-﻿namespace PswManager.TestUtils; 
+﻿namespace PswManager.TestUtils;
 
 public class OrderChecker : IDisposable {
 

@@ -18,7 +18,7 @@ public struct None<TValue> : IOption<TValue> {
 public struct None<TValue, TError> : IOption<TValue, TError> {
 
     public None() { }
-    
+
     public OptionResult Result() => OptionResult.None;
     public T Match<T>(Func<TValue, T> some, Func<TError, T> error, Func<T> none) => none.Invoke();
     public Option<T, TError> Bind<T>(Func<TValue, Option<T, TError>> func) => new None<T, TError>();

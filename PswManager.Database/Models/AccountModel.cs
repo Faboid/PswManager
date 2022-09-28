@@ -1,5 +1,6 @@
-﻿namespace PswManager.Database.Models; 
-public class AccountModel {
+﻿namespace PswManager.Database.Models;
+
+public class AccountModel : IAccountModel, IReadOnlyAccountModel {
 
     public AccountModel() {
 
@@ -19,34 +20,4 @@ public class AccountModel {
         return $"{Name} {Password} {Email}";
     }
 
-    internal bool IsAllValid(out AccountValid result) {
-
-        if(string.IsNullOrWhiteSpace(Name)) {
-            result = AccountValid.MissingName;
-            return false;
-        }
-
-        if(string.IsNullOrWhiteSpace(Password)) {
-            result = AccountValid.MissingPassword;
-            return false;
-        }
-
-        if(string.IsNullOrWhiteSpace(Email)) {
-            result = AccountValid.MissingEmail;
-            return false;
-        }
-
-        result = AccountValid.Valid;
-        return true;
-    }
-
 }
-
-internal enum AccountValid {
-    Undefined,
-    Valid,
-    MissingName,
-    MissingPassword,
-    MissingEmail
-}
-

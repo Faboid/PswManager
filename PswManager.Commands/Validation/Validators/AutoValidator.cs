@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace PswManager.Commands.Validation.Validators; 
+namespace PswManager.Commands.Validation.Validators;
 internal class AutoValidator<T> : IAutoValidator<T> {
 
     readonly IReadOnlyList<PropertyInfo> requiredProperties;

@@ -5,6 +5,6 @@ using System.Threading.Tasks;
 
 namespace PswManager.Core;
 public interface IAccountFactory {
-    Task<Option<IAccount, AccountFactory.CreateAccountErrorCode>> CreateAccountAsync(IAccountModel model);
+    Task<Option<IAccount, AccountFactory.CreateAccountErrorCode>> CreateAccountAsync(IExtendedAccountModel model);
     IAsyncEnumerable<IAccount> LoadAccounts();
 }

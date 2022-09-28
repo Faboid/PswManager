@@ -85,7 +85,7 @@ public class AccountEditorTests {
 
     }
 
-    private (AccountEditor editor, AccountModel input, AccountModel expected) ArrangeTest(string name, string password, string email) {
+    private (AccountEditor editor, IAccountModel input, IAccountModel expected) ArrangeTest(string name, string password, string email) {
         var editor = new AccountEditor(dataEditorMock.Object, cryptoAccount);
         var input = new AccountModel(name, password, email);
         var expected = cryptoAccount.Encrypt(input);

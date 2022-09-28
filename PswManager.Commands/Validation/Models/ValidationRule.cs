@@ -1,7 +1,7 @@
 ﻿using PswManager.Commands.Validation.Attributes;
 using System;
 
-namespace PswManager.Commands.Validation.Models; 
+namespace PswManager.Commands.Validation.Models;
 public abstract class ValidationRule {
 
     public Type GetAttributeType;
@@ -28,8 +28,7 @@ public abstract class ValidationRule {
         //InnerLogic should NOT have any logic outside of validation.
         try {
             return InnerLogic(attribute, value);
-        }
-        catch {
+        } catch {
             return false;
         }
     }

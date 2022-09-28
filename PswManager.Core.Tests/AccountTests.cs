@@ -47,7 +47,7 @@ public class AccountTests {
     public async Task EditAccountFailsByValidation(AccountValid accountValid, EditAccountResult expected) {
 
         var validatorMock = new Mock<IAccountValidator>();
-        validatorMock.Setup(x => x.IsAccountValid(It.IsAny<IAccountModel>())).Returns(accountValid);
+        validatorMock.Setup(x => x.IsAccountValid(It.IsAny<IExtendedAccountModel>())).Returns(accountValid);
         var connectionMock = new Mock<IDataConnection>();
 
         var sut = new Account(_accountModelFactory.CreateEncryptedAccount(GetGeneric()), Mock.Of<IDataConnection>(), validatorMock.Object);
@@ -64,7 +64,7 @@ public class AccountTests {
 
         var account = _accountModelFactory.CreateEncryptedAccount(GetGeneric());
         var connectionMock = new Mock<IDataConnection>();
-        connectionMock.Setup(x => x.UpdateAccountAsync(account.Name, It.IsAny<AccountModel>())).Returns(Task.FromResult(errorCode));
+        connectionMock.Setup(x => x.UpdateAccountAsync(account.Name, It.IsAny<IReadOnlyAccountModel>())).Returns(Task.FromResult(errorCode));
 
         var sut = new Account(account, connectionMock.Object, new AccountValidator());
         var actual = await sut.EditAccountAsync(_accountModelFactory.CreateEncryptedAccount(GetGeneric()));
@@ -78,16 +78,16 @@ public class AccountTests {
         var decryptedModel = _accountModelFactory.CreateDecryptedAccount(GetGeneric());
         var expected = await decryptedModel.GetEncryptedAccountAsync();
         var connectionMock = new Mock<IDataConnection>();
-        connectionMock.Setup(x => x.UpdateAccountAsync("AName", It.IsAny<AccountModel>())).Returns(Task.FromResult(EditorResponseCode.Success));
+        connectionMock.Setup(x => x.UpdateAccountAsync("AName", It.IsAny<IReadOnlyAccountModel>())).Returns(Task.FromResult(EditorResponseCode.Success));
 
-        var sut = new Account(_accountModelFactory.CreateEncryptedAccount(new("AName", "APassword", "AnEmail")), connectionMock.Object, new AccountValidator());
+        var sut = new Account(_accountModelFactory.CreateEncryptedAccount(new AccountModel("AName", "APassword", "AnEmail")), connectionMock.Object, new AccountValidator());
 
         var actual = await sut.EditAccountAsync(decryptedModel);
 
         Assert.Equal(EditAccountResult.Success, actual);
         Assert.Equal(expected.Name, sut.Name);
-        Assert.Equal(expected.Password, sut.EncryptedPassword);
-        Assert.Equal(expected.Email, sut.EncryptedEmail);
+        Assert.Equal(expected.Password, sut.Password);
+        Assert.Equal(expected.Email, sut.Email);
 
     }
 

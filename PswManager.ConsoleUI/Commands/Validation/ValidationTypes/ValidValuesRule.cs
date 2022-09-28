@@ -4,7 +4,7 @@ using PswManager.ConsoleUI.Commands.Validation.Attributes;
 using System;
 using System.Linq;
 
-namespace PswManager.ConsoleUI.Commands.Validation.ValidationTypes; 
+namespace PswManager.ConsoleUI.Commands.Validation.ValidationTypes;
 internal class ValidValuesRule : ValidationRule {
 
     public ValidValuesRule() : base(typeof(ValidValuesAttribute), typeof(string)) {

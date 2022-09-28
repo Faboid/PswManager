@@ -43,7 +43,7 @@ public class GetCommand : BaseCommand<GetCommandArgs> {
 
     private static CommandResult FailureResult(ReaderErrorCode errorMessage)
         => new(ErrorToString(errorMessage), false);
-    private static CommandResult SuccessfulResult(AccountModel account)
+    private static CommandResult SuccessfulResult(IAccountModel account)
         => new("The account has been retrieved successfully.", true, $"{account.Name} {account.Password} {account.Email}");
 
     public override string GetDescription() {

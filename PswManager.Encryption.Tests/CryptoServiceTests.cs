@@ -3,7 +3,7 @@ using PswManager.Encryption.Services;
 using System.Reflection;
 using Xunit;
 
-namespace PswManager.Encryption.Tests; 
+namespace PswManager.Encryption.Tests;
 public class CryptoServiceTests {
 
     [Fact]

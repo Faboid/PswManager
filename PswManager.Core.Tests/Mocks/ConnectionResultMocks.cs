@@ -14,10 +14,6 @@ public static class ConnectionResultMocks {
         return new(!isAnyNullOrEmpty.Any(x => x), model);
     }
 
-    public static ConnectionResult<AccountModel> GenerateEncryptedSuccessFromName(string name, ICryptoAccountService cryptoAccount) {
-        return new(true, AccountModelMocks.GenerateEncryptedFromName(name, cryptoAccount));
-    }
-
     public static ConnectionResult<IEnumerable<AccountResult>> GenerateInfiniteEncryptedAccountList(ICryptoAccountService cryptoAccount) {
         return new(true, AccountModelMocks.GenerateManyEncrypted(cryptoAccount).Select(x => new AccountResult(x.Name, x)));
     }

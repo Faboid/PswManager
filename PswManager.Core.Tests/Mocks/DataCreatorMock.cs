@@ -17,9 +17,12 @@ public class DataCreatorMock {
 
     private static CreatorResponseCode ValidateValues(AccountModel model) {
 
-        if(string.IsNullOrWhiteSpace(model.Name)) return CreatorResponseCode.InvalidName;
-        if(string.IsNullOrWhiteSpace(model.Password)) return CreatorResponseCode.MissingPassword;
-        if(string.IsNullOrWhiteSpace(model.Email)) return CreatorResponseCode.MissingEmail;
+        if(string.IsNullOrWhiteSpace(model.Name))
+            return CreatorResponseCode.InvalidName;
+        if(string.IsNullOrWhiteSpace(model.Password))
+            return CreatorResponseCode.MissingPassword;
+        if(string.IsNullOrWhiteSpace(model.Email))
+            return CreatorResponseCode.MissingEmail;
 
         return CreatorResponseCode.Success;
     }

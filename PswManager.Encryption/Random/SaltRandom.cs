@@ -1,4 +1,4 @@
-﻿namespace PswManager.Encryption.Random; 
+﻿namespace PswManager.Encryption.Random;
 internal class SaltRandom {
 
     readonly int seed;

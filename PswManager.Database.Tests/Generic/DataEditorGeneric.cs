@@ -108,7 +108,7 @@ public abstract class DataEditorGeneric : IDisposable {
 
     }
 
-    private static void AssertAccountEqual(AccountModel expected, AccountModel actual) {
+    private static void AssertAccountEqual(IReadOnlyAccountModel expected, IReadOnlyAccountModel actual) {
         Assert.Equal(expected.Name, actual.Name);
         Assert.Equal(expected.Password, actual.Password);
         Assert.Equal(expected.Email, actual.Email);

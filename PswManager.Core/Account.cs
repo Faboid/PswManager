@@ -18,8 +18,8 @@ internal class Account : IAccount {
     private bool _exists = true;
     private EncryptedAccount _encryptedAccount;
     public string Name => _encryptedAccount.Name;
-    public string EncryptedPassword => _encryptedAccount.Password;
-    public string EncryptedEmail => _encryptedAccount.Email;
+    public string Password => _encryptedAccount.Password;
+    public string Email => _encryptedAccount.Email;
 
     public Account(EncryptedAccount model, IDataConnection connection, IAccountValidator accountValidator, ILoggerFactory? loggerFactory = null) {
         _encryptedAccount = model;
@@ -31,7 +31,7 @@ internal class Account : IAccount {
     public DecryptedAccount GetDecryptedModel() => _encryptedAccount.GetDecryptedAccount();
     public Task<DecryptedAccount> GetDecryptedModelAsync() => _encryptedAccount.GetDecryptedAccountAsync();
 
-    public async Task<EditAccountResult> EditAccountAsync(IAccountModel newValues) {
+    public async Task<EditAccountResult> EditAccountAsync(IExtendedAccountModel newValues) {
         using var locker = await _locker.GetLockAsync();
 
         if(!_exists) { return EditAccountResult.DoesNotExist; }
@@ -48,7 +48,7 @@ internal class Account : IAccount {
 
         var encrypted = await newValues.GetEncryptedAccountAsync();
         _logger?.LogInformation("Beginning editing {Name}", Name);
-        var result = await _connection.UpdateAccountAsync(Name, encrypted.GetUnderlyingModel());
+        var result = await _connection.UpdateAccountAsync(Name, encrypted);
         if(result != EditorResponseCode.Success) {
             var output = result switch {
                 EditorResponseCode.NewNameUsedElsewhere => EditAccountResult.NewNameIsOccupied,

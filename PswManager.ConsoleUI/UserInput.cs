@@ -1,9 +1,8 @@
-﻿using PswManager.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PswManager.ConsoleUI; 
+namespace PswManager.ConsoleUI;
 public class UserInput : IUserInput {
 
     public string RequestAnswer() {
@@ -36,7 +35,7 @@ public class UserInput : IUserInput {
             //clears the line
             Console.SetCursorPosition(0, Console.CursorTop);
             Console.Write(new string(' ', Console.BufferWidth));
-            
+
             //fills line with asterisks
             Console.SetCursorPosition(0, Console.CursorTop);
             Console.Write(new string('*', output.Count));

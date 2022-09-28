@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace PswManager.Commands.Unused.Validation; 
+namespace PswManager.Commands.Unused.Validation;
 public interface IValidationCollection<T> {
 
     /// <summary>

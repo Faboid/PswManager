@@ -7,7 +7,7 @@ using System.Text;
 using PswManager.Async.Locks;
 
 [assembly: InternalsVisibleTo("PswManager.Tests")]
-namespace PswManager.Encryption.Services; 
+namespace PswManager.Encryption.Services;
 public class KeyGeneratorService : IAsyncDisposable {
 
     /// <summary>
@@ -23,7 +23,7 @@ public class KeyGeneratorService : IAsyncDisposable {
     /// </summary>
     /// <param name="salt"></param>
     /// <param name="masterKey"></param>
-    public KeyGeneratorService(byte[] salt, char[] masterKey) : this(salt, masterKey, 1000000){ }
+    public KeyGeneratorService(byte[] salt, char[] masterKey) : this(salt, masterKey, 1000000) { }
 
     /// <summary>
     /// Instantiates a <see cref="KeyGeneratorService"/> with a custom <paramref name="salt"/>.
@@ -56,10 +56,10 @@ public class KeyGeneratorService : IAsyncDisposable {
             try {
                 var key = await GenerateNextKeyAsync(channel.Token).ConfigureAwait(false);
                 await channel.WriteAsync(key).ConfigureAwait(false);
-            } catch (OperationCanceledException) {
+            } catch(OperationCanceledException) {
                 //do nothing
                 return;
-            } catch (ObjectDisposedException) {
+            } catch(ObjectDisposedException) {
                 //still do nothing
                 return;
             }
@@ -92,8 +92,7 @@ public class KeyGeneratorService : IAsyncDisposable {
             if(generationTask.IsFaulted) {
                 try {
                     await generationTask.ConfigureAwait(false);
-                }
-                catch(Exception ex) {
+                } catch(Exception ex) {
                     //todo - insert some kind of logging here
                     throw new Exception("The infinite key-generation task has thrown an exception.", ex);
                 }
@@ -126,7 +125,7 @@ public class KeyGeneratorService : IAsyncDisposable {
         if(IsDisposed) {
             return;
         }
-        
+
         channel.Dispose();
         await generationTask.ConfigureAwait(false); //this is to find any exception thrown in there
         rfc.Dispose();

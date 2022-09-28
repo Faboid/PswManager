@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace PswManager.Async.Tests; 
+namespace PswManager.Async.Tests;
 public class ChannelTests {
 
     [Fact]

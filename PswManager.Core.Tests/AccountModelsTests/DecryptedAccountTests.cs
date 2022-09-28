@@ -12,15 +12,6 @@ public class DecryptedAccountTests {
     private DecryptedAccount GetDefault() => new("SomeName", "SomePass", "SomeEma", _cryptoAccountService);
 
     [Fact]
-    public void GetUnderlyingModel() {
-
-        var expected = GetDefault();
-        var actual = expected.GetUnderlyingModel();
-        AccountModelAsserts.AssertEqual(expected, actual);
-
-    }
-
-    [Fact]
     public async Task GetDecryptedModel_ReturnsItself() {
 
         var expected = GetDefault();

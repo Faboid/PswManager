@@ -20,7 +20,7 @@ public class AccountFactoryTests {
     public async Task CreateAccount_FailsValidation(AccountValid validationError, CreateAccountErrorCode expected) {
 
         var validatorMock = new Mock<IAccountValidator>();
-        validatorMock.Setup(x => x.IsAccountValid(It.IsAny<IAccountModel>())).Returns(validationError);
+        validatorMock.Setup(x => x.IsAccountValid(It.IsAny<IExtendedAccountModel>())).Returns(validationError);
         var sut = new AccountFactory(Mock.Of<IDataConnection>(), validatorMock.Object, Mock.Of<IAccountModelFactory>());
 
         var actual = await sut.CreateAccountAsync(CreateDefaultEncrypted());
@@ -38,7 +38,7 @@ public class AccountFactoryTests {
     public async Task CreateAccount_FailsDatabaseSaving(CreatorResponseCode errorCode, CreateAccountErrorCode expected) {
 
         var connectionMock = new Mock<IDataConnection>();
-        connectionMock.Setup(x => x.CreateAccountAsync(It.IsAny<AccountModel>())).Returns(Task.FromResult(errorCode));
+        connectionMock.Setup(x => x.CreateAccountAsync(It.IsAny<IReadOnlyAccountModel>())).Returns(Task.FromResult(errorCode));
         var sut = new AccountFactory(connectionMock.Object, new AccountValidator(), Mock.Of<IAccountModelFactory>());
         var actual = await sut.CreateAccountAsync(CreateDefaultEncrypted());
         Assert.Equal(expected, actual.OrDefaultError());
@@ -49,7 +49,7 @@ public class AccountFactoryTests {
     public async Task CreateAccount_CorrectValues() {
 
         var connectionMock = new Mock<IDataConnection>();
-        connectionMock.Setup(x => x.CreateAccountAsync(It.IsAny<AccountModel>())).Returns(Task.FromResult(CreatorResponseCode.Success));
+        connectionMock.Setup(x => x.CreateAccountAsync(It.IsAny<IReadOnlyAccountModel>())).Returns(Task.FromResult(CreatorResponseCode.Success));
         var sut = new AccountFactory(connectionMock.Object, new AccountValidator(), Mock.Of<IAccountModelFactory>());
         var decrypted = CreateDefaultDecrypted();
         var expected = decrypted.GetEncryptedAccount();
@@ -61,7 +61,7 @@ public class AccountFactoryTests {
     [Fact]
     public async Task LoadAccounts_Loads() {
 
-        var models = new Option<AccountModel, (string name, ReaderErrorCode errorCode)>[] {
+        var models = new Option<IAccountModel, (string name, ReaderErrorCode errorCode)>[] {
             new AccountModel("SomeName", "SomePassword", "SomeEmail"),
             new AccountModel("SomeOtherName", "rwgre", "Email@here.com")
         }.ToAsyncEnumerable();
@@ -76,7 +76,7 @@ public class AccountFactoryTests {
         var actual = await result.OrderBy(x => x.Name).ToArrayAsync();
 
         Assert.Equal(expected.Length, actual.Length);
-        
+
         for(int i = 0; i < actual.Length; i++) {
             AccountModelAsserts.AssertEqual(expected[i], actual[i]);
         }

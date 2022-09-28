@@ -3,10 +3,10 @@
 namespace PswManager.Core.Validators;
 public interface IAccountValidator {
 
-    public NameValid IsNameValid(IAccountModel account);
-    public PasswordValid IsPasswordValid(IAccountModel account);
-    public EmailValid IsEmailValid(IAccountModel account);
-    public AccountValid IsAccountValid(IAccountModel account);
+    public NameValid IsNameValid(IExtendedAccountModel account);
+    public PasswordValid IsPasswordValid(IExtendedAccountModel account);
+    public EmailValid IsEmailValid(IExtendedAccountModel account);
+    public AccountValid IsAccountValid(IExtendedAccountModel account);
 
 }
 

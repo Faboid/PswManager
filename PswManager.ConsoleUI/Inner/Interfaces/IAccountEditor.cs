@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace PswManager.ConsoleUI.Inner.Interfaces;
 public interface IAccountEditor {
 
-    EditorResponseCode UpdateAccount(string name, AccountModel newValues);
-    Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newValues);
+    EditorResponseCode UpdateAccount(string name, IReadOnlyAccountModel newValues);
+    Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newValues);
 
 }

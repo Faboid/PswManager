@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using PswManager.ConsoleUI.Commands.ArgsModels;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.ConsoleUI.Inner.Interfaces;
+using PswManager.Database.Models;
 
 namespace PswManager.ConsoleUI.Commands;
 public sealed class EditCommand : BaseCommand<EditCommandArgs> {
@@ -16,12 +17,12 @@ public sealed class EditCommand : BaseCommand<EditCommandArgs> {
     }
 
     protected override CommandResult RunLogic(EditCommandArgs arguments) {
-        var result = accountEditor.UpdateAccount(arguments.Name, new(arguments.NewName, arguments.NewPassword, arguments.NewEmail));
+        var result = accountEditor.UpdateAccount(arguments.Name, new AccountModel(arguments.NewName, arguments.NewPassword, arguments.NewEmail));
         return ToCommandResult(result, arguments);
     }
 
     protected override async ValueTask<CommandResult> RunLogicAsync(EditCommandArgs arguments) {
-        var result = await accountEditor.UpdateAccountAsync(arguments.Name, new(arguments.NewName, arguments.NewPassword, arguments.NewEmail)).ConfigureAwait(false);
+        var result = await accountEditor.UpdateAccountAsync(arguments.Name, new AccountModel(arguments.NewName, arguments.NewPassword, arguments.NewEmail)).ConfigureAwait(false);
         return ToCommandResult(result, arguments);
     }
 

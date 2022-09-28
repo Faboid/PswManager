@@ -99,12 +99,12 @@ public class GetAllCommand : BaseCommand<GetAllCommandArgs> {
         _ => $"There has been an unknown error when trying to get the account {name}."
     };
 
-    private static string Unwrap(AccountModel result, ValuesToGet toGet) {
+    private static string Unwrap(IAccountModel result, ValuesToGet toGet) {
         var stringRepresenation = Take(result, toGet);
         return Merge(stringRepresenation);
     }
 
-    private static IEnumerable<string> Take(AccountModel account, ValuesToGet toGet) {
+    private static IEnumerable<string> Take(IAccountModel account, ValuesToGet toGet) {
         if(toGet.Names)
             yield return account.Name;
         if(toGet.Passwords)

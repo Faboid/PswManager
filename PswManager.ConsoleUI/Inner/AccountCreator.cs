@@ -16,11 +16,11 @@ public class AccountCreator : IAccountCreator {
     readonly IDataCreator dataCreator;
     readonly ICryptoAccountService cryptoAccount;
 
-    public CreatorResponseCode CreateAccount(AccountModel model) {
+    public CreatorResponseCode CreateAccount(IReadOnlyAccountModel model) {
         return CreateAccountAsync(model).GetAwaiter().GetResult();
     }
 
-    public async Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
+    public async Task<CreatorResponseCode> CreateAccountAsync(IReadOnlyAccountModel model) {
 
         var validationResult = model.IsAnyValueNullOrEmpty();
         if(validationResult != ValidationResult.Success) {

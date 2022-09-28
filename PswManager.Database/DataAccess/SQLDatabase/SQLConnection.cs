@@ -33,7 +33,7 @@ internal class SQLConnection : IDBConnection {
         return await reader.ReadAsync().ConfigureAwait(false) ? AccountExistsStatus.Exist : AccountExistsStatus.NotExist;
     }
 
-    public async Task<CreatorResponseCode> CreateAccountAsync(AccountModel model) {
+    public async Task<CreatorResponseCode> CreateAccountAsync(IReadOnlyAccountModel model) {
         using var cmd = queriesBuilder.CreateAccountQuery(model);
         await using var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
         var result = await cmd.ExecuteNonQueryAsync().ConfigureAwait(false) == 1;
@@ -44,14 +44,14 @@ internal class SQLConnection : IDBConnection {
         };
     }
 
-    public async Task<DeleterResponseCode> DeleteAccountAsync(string name) { 
+    public async Task<DeleterResponseCode> DeleteAccountAsync(string name) {
         using var cmd = queriesBuilder.DeleteAccountQuery(name);
         await using var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
         var result = await cmd.ExecuteNonQueryAsync() == 1;
-        return (result)? DeleterResponseCode.Success : DeleterResponseCode.Undefined;
+        return (result) ? DeleterResponseCode.Success : DeleterResponseCode.Undefined;
     }
 
-    public async Task<Option<AccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
+    public async Task<Option<IAccountModel, ReaderErrorCode>> GetAccountAsync(string name) {
         using var cmd = queriesBuilder.GetAccountQuery(name);
         await using var connection = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false);
         using var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false);
@@ -88,7 +88,7 @@ internal class SQLConnection : IDBConnection {
         }
     }
 
-    public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newModel) {
+    public async Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newModel) {
         using var cmd = queriesBuilder.UpdateAccountQuery(name, newModel);
         await using(var cnn = await cmd.Connection.GetConnectionAsync().ConfigureAwait(false)) {
             await cmd.ExecuteNonQueryAsync();

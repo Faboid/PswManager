@@ -2,7 +2,6 @@
 using PswManager.Commands.AbstractCommands;
 using System.Threading.Tasks;
 using PswManager.ConsoleUI.Commands.ArgsModels;
-using PswManager.Core;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.ConsoleUI.Inner.Interfaces;
 using PswManager.Utils.Options;
@@ -37,7 +36,7 @@ public class DeleteCommand : BaseCommand<DeleteCommandArgs> {
     }
 
     private static CommandResult ResponseToResult(DeleterResponseCode response, string name) {
-        
+
         if(response == DeleterResponseCode.Success) {
             return new($"{name} has been deleted successfully.", true);
         }

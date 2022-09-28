@@ -17,11 +17,11 @@ public class AccountEditor : IAccountEditor {
         this.cryptoAccount = cryptoAccount;
     }
 
-    public EditorResponseCode UpdateAccount(string name, AccountModel newValues) {
+    public EditorResponseCode UpdateAccount(string name, IReadOnlyAccountModel newValues) {
         return UpdateAccountAsync(name, newValues).GetAwaiter().GetResult();
     }
 
-    public async Task<EditorResponseCode> UpdateAccountAsync(string name, AccountModel newValues) {
+    public async Task<EditorResponseCode> UpdateAccountAsync(string name, IReadOnlyAccountModel newValues) {
 
         if(string.IsNullOrWhiteSpace(name)) {
             return EditorResponseCode.InvalidName;
@@ -32,7 +32,7 @@ public class AccountEditor : IAccountEditor {
     }
 
     [Pure]
-    private AccountModel EncryptModel(AccountModel args) {
+    private IAccountModel EncryptModel(IReadOnlyAccountModel args) {
         var output = new AccountModel(args.Name, args.Password, args.Email);
         if(!string.IsNullOrWhiteSpace(output.Password)) {
             output.Password = cryptoAccount.GetPassCryptoService().Encrypt(output.Password);
