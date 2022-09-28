@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace PswManager.Commands; 
+namespace PswManager.Commands;
 #nullable enable
 public class CommandResult {
 

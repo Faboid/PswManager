@@ -8,11 +8,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using PswManager.ConsoleUI.Commands.Validation.ValidationTypes;
 using PswManager.ConsoleUI.Commands.ArgsModels;
-using PswManager.Core.Inner.Interfaces;
 using PswManager.Extensions;
 using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.ConsoleUI.Inner.Interfaces;
 
-namespace PswManager.ConsoleUI.Commands; 
+namespace PswManager.ConsoleUI.Commands;
 public class GetAllCommand : BaseCommand<GetAllCommandArgs> {
 
     static readonly string[] validKeys = new string[] { "names", "passwords", "emails" };
@@ -70,22 +70,18 @@ public class GetAllCommand : BaseCommand<GetAllCommandArgs> {
     protected override CommandResult RunLogic(GetAllCommandArgs arguments) {
         var toGet = new ValuesToGet(arguments);
 
-        return dataReader.ReadAllAccounts()
-            .Bind<IEnumerable<string>>(x => new(GetAllAccountsAsStrings(x, toGet)))
-            .Match(StringListToResult, AllErrorToResult, NoneToResult);
+        var enumerable = dataReader.ReadAllAccounts();
+        var asStrings = GetAllAccountsAsStrings(enumerable, toGet);
+        var asCommandResult = StringListToResult(asStrings);
+        return asCommandResult;
     }
 
     protected override async ValueTask<CommandResult> RunLogicAsync(GetAllCommandArgs args) {
         var toGet = new ValuesToGet(args);
 
-        var option = await dataReader.ReadAllAccountsAsync().ConfigureAwait(false);
-        return await option
-            .Bind<IAsyncEnumerable<string>>(x => new(GetAllAccountsAsStringsAsync(x, toGet)))
-            .Match(
-                StringListToResultAsync, 
-                error => AllErrorToResult(error).AsTask(), 
-                () => NoneToResult().AsTask()
-            );
+        var enumerable = dataReader.ReadAllAccountsAsync();
+        var asStrings = GetAllAccountsAsStringsAsync(enumerable, toGet);
+        return await StringListToResultAsync(asStrings);
     }
 
     public override string GetDescription() {
@@ -96,19 +92,6 @@ public class GetAllCommand : BaseCommand<GetAllCommandArgs> {
         .AddRule<ValidValuesRule>()
         .AddRule<NoDuplicateValuesRule>();
 
-    private static CommandResult NoneToResult() {
-        return new("The get-all query has failed for an unknown reason.", false);
-    }
-
-    private static CommandResult AllErrorToResult(ReaderAllErrorCode errorCode) {
-        var errorMessage = "There has been an error when trying to get all accounts:" + errorCode switch {
-            ReaderAllErrorCode.SomeUsedElsewhere => "Some values are being used elsewhere.",
-            _ => "The query has failed for an unknown reason.",
-        };
-
-        return new(errorMessage, false);
-    }
-
     private static string SingleErrorToMessage(string name, ReaderErrorCode errorCode) => errorCode switch {
         ReaderErrorCode.InvalidName => "Some query has received an invalid name.", //this should never happen, but I'll leave it here just in case
         ReaderErrorCode.UsedElsewhere => $"The account {name} is being used elsewhere, so its values cannot be accessed.",
@@ -116,12 +99,12 @@ public class GetAllCommand : BaseCommand<GetAllCommandArgs> {
         _ => $"There has been an unknown error when trying to get the account {name}."
     };
 
-    private static string Unwrap(AccountModel result, ValuesToGet toGet) {
+    private static string Unwrap(IAccountModel result, ValuesToGet toGet) {
         var stringRepresenation = Take(result, toGet);
         return Merge(stringRepresenation);
     }
 
-    private static IEnumerable<string> Take(AccountModel account, ValuesToGet toGet) {
+    private static IEnumerable<string> Take(IAccountModel account, ValuesToGet toGet) {
         if(toGet.Names)
             yield return account.Name;
         if(toGet.Passwords)

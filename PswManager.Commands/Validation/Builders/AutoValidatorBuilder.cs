@@ -9,7 +9,7 @@ using PswManager.Commands.Validation.Validators;
 using PswManager.Extensions;
 
 [assembly: InternalsVisibleTo("PswManager.Commands.Tests")]
-namespace PswManager.Commands.Validation.Builders; 
+namespace PswManager.Commands.Validation.Builders;
 public class AutoValidatorBuilder<TObj> {
 
     private readonly IReadOnlyList<PropertyInfo> properties;

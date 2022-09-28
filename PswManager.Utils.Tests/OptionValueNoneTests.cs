@@ -3,7 +3,7 @@ using PswManager.Utils.Options;
 using System.Reflection;
 using Xunit;
 
-namespace PswManager.Utils.Tests; 
+namespace PswManager.Utils.Tests;
 public class OptionValueNoneTests {
 
     private static IOption<TValue> GetUnderlyingOption<TValue>(Option<TValue> option) {

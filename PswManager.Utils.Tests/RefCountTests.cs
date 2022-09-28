@@ -1,7 +1,7 @@
 ﻿using Xunit;
 using PswManager.TestUtils;
 
-namespace PswManager.Utils.Tests; 
+namespace PswManager.Utils.Tests;
 public class RefCountTests {
 
     [Fact]

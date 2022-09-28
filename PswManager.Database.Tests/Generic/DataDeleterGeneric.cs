@@ -1,9 +1,8 @@
 ﻿using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.Database.DataAccess.Interfaces;
-using PswManager.Utils.Options;
+using PswManager.Database.Interfaces;
 using Xunit;
 
-namespace PswManager.Database.Tests.Generic; 
+namespace PswManager.Database.Tests.Generic;
 public abstract class DataDeleterGeneric : IDisposable {
 
     public DataDeleterGeneric(ITestDBHandler dbHandler) {
@@ -14,23 +13,6 @@ public abstract class DataDeleterGeneric : IDisposable {
     readonly IDataDeleter dataDeleter;
     readonly ITestDBHandler dbHandler;
     static protected readonly int numValues = 1;
-
-    [Fact]
-    public void DeleteAccountCorrectly() {
-
-        //arrange
-        string name = dbHandler.GetDefaultValues().GetValue(0, DefaultValues.TypeValue.Name);
-
-        //act
-        var exists = dataDeleter.AccountExist(name);
-        var result = dataDeleter.DeleteAccount(name);
-
-        //assert
-        Assert.Equal(AccountExistsStatus.Exist, exists);
-        result.Is(OptionResult.None);
-        Assert.Equal(AccountExistsStatus.NotExist, dataDeleter.AccountExist(name));
-
-    }
 
     [Fact]
     public async Task DeleteAccountCorrectlyAsynchronously() {
@@ -44,7 +26,7 @@ public abstract class DataDeleterGeneric : IDisposable {
 
         //assert
         Assert.Equal(AccountExistsStatus.Exist, exists);
-        result.Is(OptionResult.None);
+        Assert.Equal(DeleterResponseCode.Success, result);
         Assert.Equal(AccountExistsStatus.NotExist, await dataDeleter.AccountExistAsync(name).ConfigureAwait(false));
 
     }
@@ -56,15 +38,10 @@ public abstract class DataDeleterGeneric : IDisposable {
     public async Task DeleteFailure_InvalidName(string name) {
 
         //act
-        var result = dataDeleter.DeleteAccount(name);
-        var resultAsync = await dataDeleter.DeleteAccountAsync(name).ConfigureAwait(false);
+        var result = await dataDeleter.DeleteAccountAsync(name).ConfigureAwait(false);
 
         //assert
-        result.Is(OptionResult.Some);
-        resultAsync.Is(OptionResult.Some);
-
-        Assert.Equal(DeleterErrorCode.InvalidName, result.Or(default));
-        Assert.Equal(DeleterErrorCode.InvalidName, resultAsync.Or(default));
+        Assert.Equal(DeleterResponseCode.InvalidName, result);
 
     }
 
@@ -76,17 +53,11 @@ public abstract class DataDeleterGeneric : IDisposable {
 
         //act
         var exists = dataDeleter.AccountExist(name);
-        var result = dataDeleter.DeleteAccount(name);
-        var resultAsync = await dataDeleter.DeleteAccountAsync(name).ConfigureAwait(false);
+        var result = await dataDeleter.DeleteAccountAsync(name).ConfigureAwait(false);
 
         //assert
         Assert.Equal(AccountExistsStatus.NotExist, exists);
-        result.Is(OptionResult.Some);
-        resultAsync.Is(OptionResult.Some);
-
-
-        Assert.Equal(DeleterErrorCode.DoesNotExist, result.Or(default));
-        Assert.Equal(DeleterErrorCode.DoesNotExist, resultAsync.Or(default));
+        Assert.Equal(DeleterResponseCode.DoesNotExist, result);
 
     }
 

@@ -3,10 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PswManager.Commands.Unused.Parsing.Helpers; 
+namespace PswManager.Commands.Unused.Parsing.Helpers;
 internal class ValueSetter {
 
     public static ValueSetter CreateInstance<TParseable>() where TParseable : new() => new(typeof(TParseable));

@@ -2,7 +2,7 @@
 using PswManager.Extensions;
 using System.Collections.Concurrent;
 
-namespace PswManager.Async; 
+namespace PswManager.Async;
 public class Channel<T> : IDisposable {
 
     public Channel(int length) {
@@ -23,7 +23,7 @@ public class Channel<T> : IDisposable {
     }
 
     private readonly ConcurrentQueue<T> buffer;
-    
+
     private readonly Locker readLocker;
     private readonly Locker writeLocker;
 
@@ -40,9 +40,9 @@ public class Channel<T> : IDisposable {
         if(!lockOwned.Obtained) {
             return (false, default);
         }
-        
+
         bool success = buffer.TryDequeue(out T? value);
-        
+
         //get write lock and free it, so writing threads can write
         writeLocks.TryDequeue(out var writeLock);
         writeLock.Dispose();

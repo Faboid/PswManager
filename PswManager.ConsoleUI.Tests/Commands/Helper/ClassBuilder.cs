@@ -2,7 +2,7 @@
 using PswManager.ConsoleUI.Attributes;
 using System.Reflection;
 
-namespace PswManager.ConsoleUI.Tests.Commands.Helper; 
+namespace PswManager.ConsoleUI.Tests.Commands.Helper;
 internal class ClassBuilder {
 
     //note: this will crash if given a TCommand whose parent doesn't implement a generic.

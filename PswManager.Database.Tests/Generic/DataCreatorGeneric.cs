@@ -1,10 +1,10 @@
 ﻿using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.Database.DataAccess.Interfaces;
+using PswManager.Database.Interfaces;
 using PswManager.Database.Models;
 using PswManager.Utils;
 using Xunit;
 
-namespace PswManager.Database.Tests.Generic; 
+namespace PswManager.Database.Tests.Generic;
 public abstract class DataCreatorGeneric : IDisposable {
 
     public DataCreatorGeneric(ITestDBHandler dbHandler) {
@@ -18,23 +18,6 @@ public abstract class DataCreatorGeneric : IDisposable {
     protected static readonly int numValues = 1;
 
     [Fact]
-    public void CreateAccountCorrectly() {
-
-        //arrange
-        var account = new AccountModel("newLovelyAccount", "ighreiibnivetngi", "this@email.com");
-
-        //act
-        var exist = dataCreator.AccountExist(account.Name);
-        var result = dataCreator.CreateAccount(account);
-
-        //assert
-        Assert.Equal(AccountExistsStatus.NotExist, exist);
-        Assert.True(OptionToSuccess(result));
-        Assert.Equal(AccountExistsStatus.Exist, dataCreator.AccountExist(account.Name));
-
-    }
-
-    [Fact]
     public async Task CreateAccountCorrectlyAsync() {
 
         //arrange
@@ -46,7 +29,7 @@ public abstract class DataCreatorGeneric : IDisposable {
 
         //assert
         Assert.Equal(AccountExistsStatus.NotExist, exist);
-        Assert.True(OptionToSuccess(result));
+        Assert.Equal(CreatorResponseCode.Success, result);
         Assert.Equal(AccountExistsStatus.Exist, await dataCreator.AccountExistAsync(account.Name).ConfigureAwait(false));
 
     }
@@ -59,17 +42,11 @@ public abstract class DataCreatorGeneric : IDisposable {
 
         //act
         var exist = dataCreator.AccountExist(account.Name);
-        var result = dataCreator.CreateAccount(account);
-        var resultAsync = await dataCreator.CreateAccountAsync(account).ConfigureAwait(false);
+        var result = await dataCreator.CreateAccountAsync(account).ConfigureAwait(false);
 
         //assert
         Assert.Equal(AccountExistsStatus.Exist, exist);
-        Assert.False(OptionToSuccess(result));
-        Assert.False(OptionToSuccess(resultAsync));
-
-
-        Assert.Equal(CreatorErrorCode.AccountExistsAlready, result.Or(default));
-        Assert.Equal(CreatorErrorCode.AccountExistsAlready, resultAsync.Or(default));
+        Assert.Equal(CreatorResponseCode.AccountExistsAlready, result);
 
     }
 
@@ -83,16 +60,10 @@ public abstract class DataCreatorGeneric : IDisposable {
         var account = new AccountModel(name, "passhere", "ema@here.com");
 
         //act
-        var result = dataCreator.CreateAccount(account);
-        var resultAsync = await dataCreator.CreateAccountAsync(account);
+        var result = await dataCreator.CreateAccountAsync(account);
 
         //assert
-        Assert.False(OptionToSuccess(result));
-        Assert.False(OptionToSuccess(resultAsync));
-
-
-        Assert.Equal(CreatorErrorCode.InvalidName, result.Or(default));
-        Assert.Equal(CreatorErrorCode.InvalidName, resultAsync.Or(default));
+        Assert.Equal(CreatorResponseCode.InvalidName, result);
 
     }
 
@@ -106,15 +77,10 @@ public abstract class DataCreatorGeneric : IDisposable {
         var account = new AccountModel("veryvalidunusedName", password, "valid@email.com");
 
         //act
-        var result = dataCreator.CreateAccount(account);
-        var resultAsync = await dataCreator.CreateAccountAsync(account);
+        var result = await dataCreator.CreateAccountAsync(account);
 
         //assert
-        Assert.False(OptionToSuccess(result));
-        Assert.False(OptionToSuccess(resultAsync));
-
-        Assert.Equal(CreatorErrorCode.MissingPassword, result.Or(default));
-        Assert.Equal(CreatorErrorCode.MissingPassword, resultAsync.Or(default));
+        Assert.Equal(CreatorResponseCode.MissingPassword, result);
 
     }
 
@@ -128,20 +94,12 @@ public abstract class DataCreatorGeneric : IDisposable {
         var account = new AccountModel("validNamenongriurh", "somepass", email);
 
         //act
-        var result = dataCreator.CreateAccount(account);
-        var resultAsync = await dataCreator.CreateAccountAsync(account);
+        var result = await dataCreator.CreateAccountAsync(account);
 
         //assert
-        Assert.False(OptionToSuccess(result));
-        Assert.False(OptionToSuccess(resultAsync));
-
-
-        Assert.Equal(CreatorErrorCode.MissingEmail, result.Or(default));
-        Assert.Equal(CreatorErrorCode.MissingEmail, resultAsync.Or(default));
+        Assert.Equal(CreatorResponseCode.MissingEmail, result);
 
     }
-
-    private static bool OptionToSuccess(Option<CreatorErrorCode> option) => option.Match(error => false, () => true);
 
     public void Dispose() {
         dbHandler.Dispose();

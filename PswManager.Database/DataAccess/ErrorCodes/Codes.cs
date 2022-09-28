@@ -1,12 +1,14 @@
 ﻿namespace PswManager.Database.DataAccess.ErrorCodes;
 
-public enum CreatorErrorCode {
+public enum CreatorResponseCode {
     Undefined,
+    Success,
     InvalidName,
     MissingPassword,
     MissingEmail,
     AccountExistsAlready,
     UsedElsewhere,
+    GivenModelIsNull,
 }
 
 public enum ReaderErrorCode {
@@ -44,14 +46,15 @@ public enum AccountExistsStatus {
     UsedElsewhere,
 }
 
-public enum DeleterErrorCode {
+public enum DeleterResponseCode {
     Undefined,
     InvalidName,
     UsedElsewhere,
     DoesNotExist,
+    Success,
 }
 
-public enum EditorErrorCode {
+public enum EditorResponseCode {
     /// <summary>
     /// The error is undefined. This could either created with <see langword="default"/> or because an unknown error happened.
     /// </summary>
@@ -76,4 +79,5 @@ public enum EditorErrorCode {
     /// The new name exists already, so the account cannot be use it.
     /// </summary>
     NewNameExistsAlready,
+    Success,
 }

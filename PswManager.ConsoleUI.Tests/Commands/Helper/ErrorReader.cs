@@ -2,7 +2,7 @@
 using PswManager.Commands.Validation.Attributes;
 using System.Reflection;
 
-namespace PswManager.ConsoleUI.Tests.Commands.Helper; 
+namespace PswManager.ConsoleUI.Tests.Commands.Helper;
 internal static class ErrorReader {
     //todo - fix the warnings
     public static string GetRequiredError(this ICommand cmd, string propertyName) {

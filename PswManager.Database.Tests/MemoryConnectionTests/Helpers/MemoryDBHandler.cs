@@ -1,9 +1,8 @@
-﻿using PswManager.Database.DataAccess;
-using PswManager.Database.Models;
+﻿using PswManager.Database.Models;
 using PswManager.Extensions;
 using PswManager.Database.Tests.Generic;
 
-namespace PswManager.Database.Tests.MemoryConnectionTests.Helpers; 
+namespace PswManager.Database.Tests.MemoryConnectionTests.Helpers;
 internal class MemoryDBHandler : ITestDBHandler {
 
     //constructs the class with a default value of five
@@ -22,19 +21,23 @@ internal class MemoryDBHandler : ITestDBHandler {
     readonly IDataConnection dbConnection;
 
     public ITestDBHandler SetUpDefaultValues() {
-        //reset database
-        dbConnection.GetAllAccounts().Match(some => some, error => throw new Exception(), () => throw new Exception())
-            .Select(x => x.Or(null) ?? throw new Exception())
-            .ForEach(x => dbConnection.DeleteAccount(x.Name));
+        return SetUpDefaultValuesAsync().GetAwaiter().GetResult();
+    }
 
-        Enumerable.Range(0, numValues).ForEach(x => {
-            var name = defaultValues.GetValue(x, DefaultValues.TypeValue.Name);
-            var password = defaultValues.GetValue(x, DefaultValues.TypeValue.Password);
-            var email = defaultValues.GetValue(x, DefaultValues.TypeValue.Email);
+    public async Task<ITestDBHandler> SetUpDefaultValuesAsync() {
+        //reset database
+        await foreach(var acc in dbConnection.EnumerateAccountsAsync()) {
+            await dbConnection.DeleteAccountAsync(acc.Match(some => some.Name, error => error.Name, () => throw new Exception()));
+        }
+
+        for(int i = 0; i < numValues; i++) {
+            var name = defaultValues.GetValue(i, DefaultValues.TypeValue.Name);
+            var password = defaultValues.GetValue(i, DefaultValues.TypeValue.Password);
+            var email = defaultValues.GetValue(i, DefaultValues.TypeValue.Email);
 
             var model = new AccountModel(name, password, email);
-            dbConnection.CreateAccount(model);
-        });
+            await dbConnection.CreateAccountAsync(model);
+        }
 
         return this;
     }

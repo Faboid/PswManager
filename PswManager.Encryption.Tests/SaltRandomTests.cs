@@ -1,7 +1,7 @@
 ﻿using PswManager.Encryption.Random;
 using Xunit;
 
-namespace PswManager.Encryption.Tests; 
+namespace PswManager.Encryption.Tests;
 public class SaltRandomTests {
 
     [Fact]

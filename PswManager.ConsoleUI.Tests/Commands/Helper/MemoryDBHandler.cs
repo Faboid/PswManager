@@ -1,10 +1,8 @@
 ﻿using PswManager.Database;
-using PswManager.Database.DataAccess;
 using PswManager.Database.Models;
-using PswManager.Extensions;
 using PswManager.TestUtils;
 
-namespace PswManager.ConsoleUI.Tests.Commands.Helper; 
+namespace PswManager.ConsoleUI.Tests.Commands.Helper;
 internal class MemoryDBHandler {
 
     //constructs the class with a default value of five
@@ -23,19 +21,23 @@ internal class MemoryDBHandler {
     readonly IDataConnection dbConnection;
 
     public MemoryDBHandler SetUpDefaultValues() {
-        //reset database
-        dbConnection.GetAllAccounts().Match(some => some, error => throw new System.Exception(), () => throw new System.Exception())
-            .Select(x => x.Or(null) ?? throw new System.Exception())
-            .ForEach(x => dbConnection.DeleteAccount(x.Name));
+        return SetUpDefaultValuesAsync().GetAwaiter().GetResult();
+    }
 
-        Enumerable.Range(0, numValues).ForEach(x => {
-            var name = defaultValues.GetValue(x, DefaultValues.TypeValue.Name);
-            var password = defaultValues.GetValue(x, DefaultValues.TypeValue.Password);
-            var email = defaultValues.GetValue(x, DefaultValues.TypeValue.Email);
+    public async Task<MemoryDBHandler> SetUpDefaultValuesAsync() {
+        //reset database
+        await foreach(var acc in dbConnection.EnumerateAccountsAsync()) {
+            await dbConnection.DeleteAccountAsync(acc.Match(some => some.Name, error => error.Name, () => throw new Exception()));
+        }
+
+        for(int i = 0; i < numValues; i++) {
+            var name = defaultValues.GetValue(i, DefaultValues.TypeValue.Name);
+            var password = defaultValues.GetValue(i, DefaultValues.TypeValue.Password);
+            var email = defaultValues.GetValue(i, DefaultValues.TypeValue.Email);
 
             var model = new AccountModel(name, password, email);
-            dbConnection.CreateAccount(model);
-        });
+            await dbConnection.CreateAccountAsync(model);
+        }
 
         return this;
     }
@@ -43,6 +45,7 @@ internal class MemoryDBHandler {
     public IDataFactory GetDBFactory() {
         return factory;
     }
+
     public DefaultValues GetDefaultValues() {
         return defaultValues;
     }

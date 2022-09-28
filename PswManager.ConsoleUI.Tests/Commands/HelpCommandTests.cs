@@ -2,9 +2,8 @@
 using PswManager.Commands;
 using PswManager.ConsoleUI.Commands;
 using PswManager.ConsoleUI.Tests.Commands.Helper;
-using Xunit;
 
-namespace PswManager.ConsoleUI.Tests.Commands; 
+namespace PswManager.ConsoleUI.Tests.Commands;
 public class HelpCommandTests {
 
     public HelpCommandTests() {
@@ -117,7 +116,7 @@ public class HelpCommandTests {
         Assert.False(result.Success);
         Assert.NotEmpty(result.ErrorMessages);
         Assert.Contains(expectedErrorMessage, result.ErrorMessages);
-        
+
         //async
         Assert.False(resultAsync.Success);
         Assert.NotEmpty(resultAsync.ErrorMessages);

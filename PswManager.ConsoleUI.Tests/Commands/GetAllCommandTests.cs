@@ -1,15 +1,15 @@
 ﻿using PswManager.Commands;
 using PswManager.ConsoleUI.Commands;
+using PswManager.ConsoleUI.Inner;
 using PswManager.ConsoleUI.Tests.Commands.Helper;
 using PswManager.TestUtils;
-using Xunit;
 
-namespace PswManager.ConsoleUI.Tests.Commands; 
+namespace PswManager.ConsoleUI.Tests.Commands;
 public class GetAllCommandTests {
 
     public GetAllCommandTests() {
         var dbFactory = new MemoryDBHandler(numValues).SetUpDefaultValues().GetDBFactory();
-        getAllCommand = new GetAllCommand(new Core.Inner.AccountReader(dbFactory.GetDataReader(), MockedObjects.GetEmptyCryptoAccount()));
+        getAllCommand = new GetAllCommand(new AccountReader(dbFactory.GetDataReader(), MockedObjects.GetEmptyCryptoAccount()));
     }
 
     const int numValues = 5;
@@ -93,7 +93,7 @@ public class GetAllCommandTests {
         Assert.False(result.Success);
         Assert.NotEmpty(result.ErrorMessages);
         Assert.Contains(expectedErrorMessage, result.ErrorMessages);
-        
+
         //async
         Assert.False(resultAsync.Success);
         Assert.NotEmpty(resultAsync.ErrorMessages);

@@ -3,7 +3,7 @@ using PswManager.Commands.Validation.Models;
 using PswManager.ConsoleUI.Commands.Validation.Attributes;
 using System.Linq;
 
-namespace PswManager.ConsoleUI.Commands.Validation.ValidationTypes; 
+namespace PswManager.ConsoleUI.Commands.Validation.ValidationTypes;
 public class NoDuplicateValuesRule : ValidationRule {
 
     public NoDuplicateValuesRule() : base(typeof(NoDuplicateValuesAttribute), typeof(string)) { }

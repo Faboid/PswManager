@@ -1,7 +1,7 @@
 ﻿using PswManager.Async.Locks;
 using Xunit;
 
-namespace PswManager.Async.Tests.Locks; 
+namespace PswManager.Async.Tests.Locks;
 public class LockerTests {
 
     [Fact]

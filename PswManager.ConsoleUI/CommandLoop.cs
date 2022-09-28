@@ -1,14 +1,13 @@
 ﻿using PswManager.Commands;
 using PswManager.Database;
-using PswManager.Core.Cryptography;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PswManager.ConsoleUI.Commands;
-using PswManager.Core;
+using PswManager.Core.Services;
 
-namespace PswManager.ConsoleUI; 
+namespace PswManager.ConsoleUI;
 //todo - this class is doing too much. Split it into multiple classes and use proper DI
 public class CommandLoop {
 
@@ -16,14 +15,14 @@ public class CommandLoop {
     private readonly IUserInput userInput;
     private CommandQuery query;
 
-    public CommandLoop(IUserInput userInput, ICryptoAccount cryptoAccount, IReadOnlyDictionary<string, ICommand> extraCommands = null) {
+    public CommandLoop(IUserInput userInput, ICryptoAccountService cryptoAccount, IReadOnlyDictionary<string, ICommand> extraCommands = null) {
         extraCommands ??= new Dictionary<string, ICommand>();
 
         this.userInput = userInput;
         SetUp(cryptoAccount, extraCommands);
     }
 
-    private void SetUp(ICryptoAccount cryptoAccount, IReadOnlyDictionary<string, ICommand> extraCommands) {
+    private void SetUp(ICryptoAccountService cryptoAccount, IReadOnlyDictionary<string, ICommand> extraCommands) {
 
         var dbType = DatabaseType.TextFile;
 
