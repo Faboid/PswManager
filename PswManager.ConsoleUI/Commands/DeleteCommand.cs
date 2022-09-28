@@ -2,7 +2,6 @@
 using PswManager.Commands.AbstractCommands;
 using System.Threading.Tasks;
 using PswManager.ConsoleUI.Commands.ArgsModels;
-using PswManager.Core;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.ConsoleUI.Inner.Interfaces;
 using PswManager.Utils.Options;
