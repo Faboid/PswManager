@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Hosting;
 using PswManager.UI.WPF.HostBuilders;
 using PswManager.UI.WPF.Services;
+using PswManager.UI.WPF.Stores;
+using PswManager.UI.WPF.ViewModels;
 using Serilog;
 using System.Windows;
 
@@ -22,14 +24,19 @@ public partial class App : Application {
 					.WriteTo.File("Log.txt", rollingInterval: RollingInterval.Hour); //todo - put a centralized path
 
 			})
+			.AddIOAbstractions()
+			.AddAccountsPipeline(Database.DatabaseType.InMemory) //todo - use sql db
 			.AddUIComponents()
 			.AddStores()
+			.AddViewModels()
 			.AddMainWindow()
 			.Build();
 	}
 
 	protected override void OnStartup(StartupEventArgs e) {
 		_host.Start();
+
+		_host.Services.GetRequiredService<NavigationStore>().CurrentViewModel = _host.Services.GetRequiredService<FirstTimeLoginViewModel>();
 
 		MainWindow = _host.Services.GetRequiredService<MainWindow>();
 		MainWindow.Show();

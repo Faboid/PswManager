@@ -25,4 +25,13 @@ public static class AddViewModelsHostBuilderExtensions {
     }
 
 
+    public static IHostBuilder AddViewModels(this IHostBuilder hostBuilder) {
+        return hostBuilder.ConfigureServices(services => {
+
+            services.AddTransient<FirstTimeLoginViewModel>();
+
+        });
+    }
+
+
 }
