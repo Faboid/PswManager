@@ -58,9 +58,28 @@ public class AccountFactoryTests {
 
     }
 
-    [Fact(Skip = "LoadAccounts() might soon receive a change(from the DB), so this test is currently not implemented.")]
-    public Task LoadAccounts_Loads() {
-        throw new NotImplementedException();
+    [Fact]
+    public async Task LoadAccounts_Loads() {
+
+        var models = new Option<AccountModel, (string name, ReaderErrorCode errorCode)>[] {
+            new AccountModel("SomeName", "SomePassword", "SomeEmail"),
+            new AccountModel("SomeOtherName", "rwgre", "Email@here.com")
+        }.ToAsyncEnumerable();
+
+        var connectionMock = new Mock<IDataConnection>();
+        connectionMock.Setup(x => x.EnumerateAccountsAsync()).Returns(models);
+        var sut = new AccountFactory(connectionMock.Object, new AccountValidator(), new AccountModelFactory(ICryptoAccountMocks.GetReversedAndSummingCryptor()));
+
+        var result = sut.LoadAccounts();
+
+        var expected = await models.Select(x => x.OrDefault()).Where(x => x != null).OrderBy(x => x.Name).ToArrayAsync();
+        var actual = await result.OrderBy(x => x.Name).ToArrayAsync();
+
+        Assert.Equal(expected.Length, actual.Length);
+        
+        for(int i = 0; i < actual.Length; i++) {
+            AccountModelAsserts.AssertEqual(expected[i], actual[i]);
+        }
     }
 
     private static EncryptedAccount CreateDefaultEncrypted() => new("SomeName", "SomePassword", "AnEmail@com", ICryptoAccountMocks.GetReversedAndSummingCryptor());

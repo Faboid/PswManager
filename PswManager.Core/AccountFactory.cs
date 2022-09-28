@@ -5,9 +5,7 @@ using PswManager.Core.Validators;
 using PswManager.Database;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Utils;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PswManager.Core;
@@ -65,7 +63,7 @@ public class AccountFactory : IAccountFactory {
     public async IAsyncEnumerable<IAccount> LoadAccounts() {
         var enumerable = _connection.EnumerateAccountsAsync();
         await foreach(var option in enumerable) {
-            var info = option.OrDefault();
+            var info = option.OrDefault(); //todo - turn corrupted accounts into valid warnings
             if(info != null) {
                 yield return NewAccount(_accountModelFactory.CreateEncryptedAccount(info.Name, info.Password, info.Email));
             }

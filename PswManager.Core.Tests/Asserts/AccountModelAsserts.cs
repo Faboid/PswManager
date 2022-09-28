@@ -39,4 +39,11 @@ public class AccountModelAsserts {
         return true;
     }
 
+    public static bool AssertEqual(AccountModel expected, IAccount actual) {
+        Assert.Equal(expected.Name, actual.Name);
+        Assert.Equal(expected.Password, actual.EncryptedPassword);
+        Assert.Equal(expected.Email, actual.EncryptedEmail);
+        return true;
+    }
+
 }
