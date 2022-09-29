@@ -34,8 +34,8 @@ public class SignUpViewModel : ViewModelBase, INotifyDataErrorInfo {
 
 	public SignUpAsyncCommand SendCommand { get; }
 
-	public SignUpViewModel(CryptoContainerService cryptoContainerService, INotificationService notificationService, ITokenService tokenService, NavigationService<AccountsListingViewModel> navigationToListingViewModel, ILoggerFactory? loggerFactory = null) {
-		SendCommand = new SignUpAsyncCommand(() => Password, notificationService, cryptoContainerService, tokenService, navigationToListingViewModel, loggerFactory);
+	public SignUpViewModel(CryptoContainerService cryptoContainerService, INotificationService notificationService, ICryptoAccountServiceFactory cryptoAccountServiceFactory, NavigationService<AccountsListingViewModel> navigationToListingViewModel, ILoggerFactory? loggerFactory = null) {
+		SendCommand = new SignUpAsyncCommand(() => Password, notificationService, cryptoContainerService, cryptoAccountServiceFactory, navigationToListingViewModel);
 		_errorsViewModel.ErrorsChanged += OnErrorsChanged;
 
 #if DEBUG

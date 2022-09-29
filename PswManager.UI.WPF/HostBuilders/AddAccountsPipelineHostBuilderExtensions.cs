@@ -21,6 +21,7 @@ public static class AddAccountsPipelineHostBuilderExtensions {
             services.AddSingleton<PathsHandler>();
             services.AddSingleton<TokenServiceFactory>();
             services.AddSingleton(s => s.GetRequiredService<TokenServiceFactory>().CreateTokenService("a99521fb-a649-4066-bba1-22414444d227"));
+            services.AddSingleton<ICryptoAccountServiceFactory, CryptoAccountServiceFactory>();
 
             services.AddSingleton<CryptoContainerService>();
             services.AddSingleton<IAccountModelFactory, AccountModelFactory>(InitializeModelFactory);
