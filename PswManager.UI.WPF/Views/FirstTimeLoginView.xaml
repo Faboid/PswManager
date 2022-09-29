@@ -62,6 +62,7 @@
         <Button
             Content="Send"
             Command="{Binding SendCommand}"
+            IsEnabled="{Binding CanSignUp}"
             FontSize="23"
             Padding="120, 18"
             Grid.Row="4"
