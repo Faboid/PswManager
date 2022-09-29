@@ -28,7 +28,12 @@ public static class AddViewModelsHostBuilderExtensions {
     public static IHostBuilder AddViewModels(this IHostBuilder hostBuilder) {
         return hostBuilder.ConfigureServices(services => {
 
+            services.AddSingleton<Func<AccountsListingViewModel>>(s => () => s.GetRequiredService<AccountsListingViewModel>());
+
+            services.AddSingleton<NavigationService<AccountsListingViewModel>>();
+
             services.AddTransient<FirstTimeLoginViewModel>();
+            services.AddTransient<AccountsListingViewModel>();
 
         });
     }
