@@ -114,8 +114,8 @@
                 <DataTemplate DataType="{x:Type vms:LoginViewModel}">
                     <views:LoginView/>
                 </DataTemplate>
-                <DataTemplate DataType="{x:Type vms:FirstTimeLoginViewModel}">
-                    <views:FirstTimeLoginView/>
+                <DataTemplate DataType="{x:Type vms:SignUpViewModel}">
+                    <views:SignUpView/>
                 </DataTemplate>
             </DockPanel.Resources>
 

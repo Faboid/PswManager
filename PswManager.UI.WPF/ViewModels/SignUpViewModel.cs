@@ -8,7 +8,7 @@ using System.ComponentModel;
 
 namespace PswManager.UI.WPF.ViewModels;
 
-public class FirstTimeLoginViewModel : ViewModelBase, INotifyDataErrorInfo {
+public class SignUpViewModel : ViewModelBase, INotifyDataErrorInfo {
 
 	private readonly ErrorsViewModel _errorsViewModel = new();
 
@@ -34,7 +34,7 @@ public class FirstTimeLoginViewModel : ViewModelBase, INotifyDataErrorInfo {
 
 	public SignUpAsyncCommand SendCommand { get; }
 
-	public FirstTimeLoginViewModel(CryptoContainerService cryptoContainerService, INotificationService notificationService, ITokenService tokenService, NavigationService<AccountsListingViewModel> navigationToListingViewModel, ILoggerFactory? loggerFactory = null) {
+	public SignUpViewModel(CryptoContainerService cryptoContainerService, INotificationService notificationService, ITokenService tokenService, NavigationService<AccountsListingViewModel> navigationToListingViewModel, ILoggerFactory? loggerFactory = null) {
 		SendCommand = new SignUpAsyncCommand(() => Password, notificationService, cryptoContainerService, tokenService, navigationToListingViewModel, loggerFactory);
 		_errorsViewModel.ErrorsChanged += OnErrorsChanged;
     }

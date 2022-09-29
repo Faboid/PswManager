@@ -32,7 +32,7 @@ public static class AddViewModelsHostBuilderExtensions {
 
             services.AddSingleton<NavigationService<AccountsListingViewModel>>();
 
-            services.AddTransient<FirstTimeLoginViewModel>();
+            services.AddTransient<SignUpViewModel>();
             services.AddTransient<AccountsListingViewModel>();
 
         });

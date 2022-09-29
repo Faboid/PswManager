@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="PswManager.UI.WPF.Views.FirstTimeLoginView"
+﻿<UserControl x:Class="PswManager.UI.WPF.Views.SignUpView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:PswManager.UI.WPF.Views"
              mc:Ignorable="d" 
              xmlns:viewmodels="clr-namespace:PswManager.UI.WPF.ViewModels" xmlns:components="clr-namespace:PswManager.UI.WPF.Components"
-             d:DataContext="{d:DesignInstance Type=viewmodels:FirstTimeLoginViewModel}"
+             d:DataContext="{d:DesignInstance Type=viewmodels:SignUpViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid
         Background="#FF272121"

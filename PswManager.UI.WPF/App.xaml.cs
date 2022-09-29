@@ -36,7 +36,7 @@ public partial class App : Application {
 	protected override void OnStartup(StartupEventArgs e) {
 		_host.Start();
 
-		_host.Services.GetRequiredService<NavigationStore>().CurrentViewModel = _host.Services.GetRequiredService<FirstTimeLoginViewModel>();
+		_host.Services.GetRequiredService<NavigationStore>().CurrentViewModel = _host.Services.GetRequiredService<SignUpViewModel>();
 
 		MainWindow = _host.Services.GetRequiredService<MainWindow>();
 		MainWindow.Show();
