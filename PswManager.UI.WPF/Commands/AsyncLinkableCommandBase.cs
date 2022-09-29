@@ -1,16 +1,18 @@
-using PswManager.UI.WPF.Services;
+﻿using PswManager.UI.WPF.Services;
+using System.Threading.Tasks;
+
 namespace PswManager.UI.WPF.Commands;
 
 /// <summary>
 /// Provides the basic functionality of <see cref="CommandBase"/> and support for linking multiple commands:
 /// </br> Linked commands can execute only one at a time.
 /// </summary>
-public abstract class LinkableCommandBase : DisposableCommandBase {
+public abstract class AsyncLinkableCommandBase : DisposableCommandBase {
 
     private readonly BusyService _busyService;
 
-    public LinkableCommandBase() : this(new()) { }
-    protected LinkableCommandBase(BusyService busyService) {
+    public AsyncLinkableCommandBase() : this(new()) { }
+    protected AsyncLinkableCommandBase(BusyService busyService) {
         _busyService = busyService;
         _busyService.BusyChanged += OnCanExecuteChanged;
     }
@@ -19,9 +21,9 @@ public abstract class LinkableCommandBase : DisposableCommandBase {
         return _busyService.IsFree && base.CanExecute(parameter);
     }
 
-    public override sealed void Execute(object? parameter) {
+    public override sealed async void Execute(object? parameter) {
         using var busy = _busyService.GetBusy();
-        ExecuteLinked(parameter);
+        await ExecuteLinkedAsync(parameter);
     }
 
     /// <summary>
@@ -29,10 +31,11 @@ public abstract class LinkableCommandBase : DisposableCommandBase {
     /// <br/> Commands that share <see cref="BusyService"/> can execute this method only one at a time.
     /// </summary>
     /// <param name="parameter">Data used by the command. If the command does not require data to be passed, this object can be set to <see langword="null"/>.</param>
-    public abstract void ExecuteLinked(object? parameter);
+    public abstract Task ExecuteLinkedAsync(object? parameter);
 
     protected override void Dispose(bool disposing) {
         _busyService.BusyChanged -= OnCanExecuteChanged;
         base.Dispose(disposing);
     }
+
 }

@@ -33,7 +33,7 @@ public class SignUpAsyncCommand : AsyncCommandBase {
     protected override async Task ExecuteAsync(object? parameter) {
 
         var password = _getPassword.Invoke();
-
+        
         KeyGeneratorService generatorService = new(password.ToCharArray());
         _notificationService.Send("Setting up everything. This might take a few seconds.");
         var masterKey = await generatorService.GenerateKeyAsync().ConfigureAwait(false);

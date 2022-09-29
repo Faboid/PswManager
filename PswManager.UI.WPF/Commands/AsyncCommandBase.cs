@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 
 namespace PswManager.UI.WPF.Commands;
 
-public abstract class AsyncCommandBase : LinkableCommandBase {
+public abstract class AsyncCommandBase : AsyncLinkableCommandBase {
 
     public AsyncCommandBase() { }
     public AsyncCommandBase(BusyService busyService) : base(busyService) { }
 
-    public override async void ExecuteLinked(object? parameter) {
+    public override async Task ExecuteLinkedAsync(object? parameter) {
         await ExecuteAsync(parameter);
     }
 
