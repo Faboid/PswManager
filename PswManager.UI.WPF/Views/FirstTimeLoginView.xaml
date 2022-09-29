@@ -37,7 +37,7 @@
                 />
 
             <components:BindablePasswordBox
-                Password="{Binding Password, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                Password="{Binding Password}"
                 />
 
         </StackPanel>
@@ -53,7 +53,7 @@
                 />
 
             <components:BindablePasswordBox
-                Password="{Binding RepeatPassword, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                Password="{Binding RepeatPassword}"
                 />
 
         </StackPanel>

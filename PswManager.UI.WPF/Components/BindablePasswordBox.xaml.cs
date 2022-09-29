@@ -1,5 +1,10 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace PswManager.UI.WPF.Components;
 /// <summary>
@@ -12,9 +17,12 @@ public partial class BindablePasswordBox : UserControl {
         set { SetValue(PasswordProperty, value); }
     }
 
+    private const FrameworkPropertyMetadataOptions options = FrameworkPropertyMetadataOptions.BindsTwoWayByDefault;
+    private const UpdateSourceTrigger updateTrigger = UpdateSourceTrigger.PropertyChanged;
+
     // Using a DependencyProperty as the backing store for Password.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty PasswordProperty =
-        DependencyProperty.Register("Password", typeof(string), typeof(BindablePasswordBox), new PropertyMetadata(string.Empty, PasswordChangedFromSource));
+        DependencyProperty.Register("Password", typeof(string), typeof(BindablePasswordBox), new FrameworkPropertyMetadata(string.Empty, options, PasswordChangedFromSource, null, false, updateTrigger));
 
     private static void PasswordChangedFromSource(DependencyObject d, DependencyPropertyChangedEventArgs e) {
         if(d is BindablePasswordBox box) {
@@ -31,6 +39,7 @@ public partial class BindablePasswordBox : UserControl {
     private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e) {
         _isPasswordChanging = true;
         Password = _passwordBox.Password;
+        UpdateErrors();
         _isPasswordChanging = false;
     }
 
@@ -39,4 +48,9 @@ public partial class BindablePasswordBox : UserControl {
             _passwordBox.Password = Password;
         }
     }
+
+    private void UpdateErrors() {
+        _errorsItemControl.ItemsSource = Validation.GetErrors(this).Select(x => x.ErrorContent.ToString());
+    }
+
 }
