@@ -37,7 +37,13 @@ public class SignUpViewModel : ViewModelBase, INotifyDataErrorInfo {
 	public SignUpViewModel(CryptoContainerService cryptoContainerService, INotificationService notificationService, ITokenService tokenService, NavigationService<AccountsListingViewModel> navigationToListingViewModel, ILoggerFactory? loggerFactory = null) {
 		SendCommand = new SignUpAsyncCommand(() => Password, notificationService, cryptoContainerService, tokenService, navigationToListingViewModel, loggerFactory);
 		_errorsViewModel.ErrorsChanged += OnErrorsChanged;
-    }
+
+#if DEBUG
+		var standardizedPassword = "ThisisAValidPassword, Only to be used for debugging";
+		Password = standardizedPassword;
+		RepeatPassword = standardizedPassword;
+#endif
+	}
 
     private void OnErrorsChanged(object? sender, DataErrorsChangedEventArgs e) {
         ErrorsChanged?.Invoke(this, e);
