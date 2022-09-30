@@ -16,6 +16,7 @@ public static class AddAccountsPipelineHostBuilderExtensions {
         return hostBuilder.ConfigureServices(services => {
 
             services.AddSingleton<IDataFactory, DataFactory>(s => new(dbType));
+            services.AddSingleton(s => s.GetRequiredService<IDataFactory>().GetDataConnection());
             services.AddSingleton<IAccountValidator, AccountValidator>();
 
             services.AddSingleton<PathsHandler>();
