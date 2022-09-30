@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PswManager.Core.Services;
 using PswManager.UI.WPF.HostBuilders;
 using PswManager.UI.WPF.Services;
 using PswManager.UI.WPF.Stores;
@@ -36,7 +37,17 @@ public partial class App : Application {
 	protected override void OnStartup(StartupEventArgs e) {
 		_host.Start();
 
-		_host.Services.GetRequiredService<NavigationStore>().CurrentViewModel = _host.Services.GetRequiredService<SignUpViewModel>();
+		var tokenService = _host.Services.GetRequiredService<ITokenService>();
+
+		ViewModelBase startingVm;
+		if(tokenService.IsSet()) {
+			startingVm = _host.Services.GetRequiredService<LoginViewModel>();
+        } else {
+			startingVm = _host.Services.GetRequiredService<SignUpViewModel>();
+        }
+
+		_host.Services.GetRequiredService<NavigationStore>().CurrentViewModel = startingVm;
+
 
 		MainWindow = _host.Services.GetRequiredService<MainWindow>();
 		MainWindow.Show();
