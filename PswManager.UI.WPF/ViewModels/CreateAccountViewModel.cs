@@ -9,7 +9,7 @@ using PswManager.Core.AccountModels;
 
 namespace PswManager.UI.WPF.ViewModels;
 
-public class CreateAccountViewModel : ViewModelBase {
+public class CreateAccountViewModel : ViewModelBase, INotifyDataErrorInfo {
 
     private readonly AccountsStore _accountsStore;
     private readonly ErrorsViewModel _errorsViewModel;
