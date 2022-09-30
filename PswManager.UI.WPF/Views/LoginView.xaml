@@ -5,10 +5,53 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PswManager.UI.WPF.Views"
              mc:Ignorable="d" 
-             xmlns:viewmodels="clr-namespace:PswManager.UI.WPF.ViewModels" 
+             xmlns:viewmodels="clr-namespace:PswManager.UI.WPF.ViewModels" xmlns:components="clr-namespace:PswManager.UI.WPF.Components"
              d:DataContext="{d:DesignInstance Type=viewmodels:LoginViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
+    <Grid
+        Background="#FF272121"
+        >
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="15"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="15"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="15"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="15"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="20, 20"
+            >
+
+            <Label
+                Content="Master Key:"
+                />
+
+            <components:BindablePasswordBox
+                Password="{Binding Password}"
+                />
+
+        </StackPanel>
+
+        <Button
+            Content="Log In"
+            Command="{Binding LoginCommand}"
+            IsEnabled="{Binding CanLogin}"
+            FontSize="23"
+            Padding="120, 18"
+            Grid.Row="3"
+            Grid.Column="1"
+            Margin="20"
+            HorizontalAlignment="Right"
+            />
+
     </Grid>
 </UserControl>

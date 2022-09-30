@@ -33,7 +33,9 @@ public static class AddViewModelsHostBuilderExtensions {
             services.AddSingleton<NavigationService<AccountsListingViewModel>>();
 
             services.AddTransient<SignUpViewModel>();
+            services.AddTransient<LoginViewModel>();
             services.AddTransient<AccountsListingViewModel>();
+
 
         });
     }
