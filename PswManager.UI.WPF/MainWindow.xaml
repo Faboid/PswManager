@@ -100,7 +100,7 @@
 
             <DockPanel.Resources>
                 <DataTemplate DataType="{x:Type vms:AccountsListingViewModel}">
-                    <views:AccountsListingView/>
+                    <views:AccountsListingView LoadAccountsCommand="{Binding LoadAccountsCommand}"/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type vms:CreateAccountViewModel}">
                     <views:CreateAccountView/>
