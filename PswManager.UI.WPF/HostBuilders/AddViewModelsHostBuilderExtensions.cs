@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PswManager.Core;
 using PswManager.UI.WPF.Services;
 using PswManager.UI.WPF.Stores;
 using PswManager.UI.WPF.ViewModels;
@@ -28,14 +29,17 @@ public static class AddViewModelsHostBuilderExtensions {
     public static IHostBuilder AddViewModels(this IHostBuilder hostBuilder) {
         return hostBuilder.ConfigureServices(services => {
 
+            services.AddSingleton<Func<CreateAccountViewModel>>(s => () => s.GetRequiredService<CreateAccountViewModel>());
             services.AddSingleton<Func<AccountsListingViewModel>>(s => () => s.GetRequiredService<AccountsListingViewModel>());
+            services.AddSingleton<Func<IAccount, AccountViewModel>>(s => account => new(account));
 
             services.AddSingleton<NavigationService<AccountsListingViewModel>>();
+            services.AddSingleton<NavigationService<CreateAccountViewModel>>();
 
             services.AddTransient<SignUpViewModel>();
             services.AddTransient<LoginViewModel>();
             services.AddTransient<AccountsListingViewModel>();
-
+            services.AddTransient<CreateAccountViewModel>();
 
         });
     }

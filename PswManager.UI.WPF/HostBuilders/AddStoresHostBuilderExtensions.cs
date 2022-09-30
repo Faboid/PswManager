@@ -10,6 +10,7 @@ public static class AddStoresHostBuilderExtensions {
 
         return hostBuilder.ConfigureServices(services => {
             services.AddSingleton<NavigationStore>();
+            services.AddSingleton<AccountsStore>();
         });
 
     }
