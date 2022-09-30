@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using PswManager.Core.Services;
 using PswManager.UI.WPF.Commands;
+using PswManager.UI.WPF.ConstantValues;
 using PswManager.UI.WPF.Services;
 using System;
 using System.Collections;
@@ -39,9 +40,8 @@ public class SignUpViewModel : ViewModelBase, INotifyDataErrorInfo {
 		_errorsViewModel.ErrorsChanged += OnErrorsChanged;
 
 #if DEBUG
-		var standardizedPassword = "ThisisAValidPassword, Only to be used for debugging";
-		Password = standardizedPassword;
-		RepeatPassword = standardizedPassword;
+		Password = Debugging.MasterKey;
+		RepeatPassword = Debugging.MasterKey;
 #endif
 	}
 
