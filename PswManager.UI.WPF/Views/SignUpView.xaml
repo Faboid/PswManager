@@ -33,7 +33,7 @@
             >
 
             <Label
-                Content="Password:"
+                Content="Master Key:"
                 />
 
             <components:BindablePasswordBox
@@ -49,7 +49,7 @@
             >
 
             <Label
-                Content="Repeat Password:"
+                Content="Repeat Master Key:"
                 />
 
             <components:BindablePasswordBox
