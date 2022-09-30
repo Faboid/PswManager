@@ -1,11 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PswManager.Core;
 using PswManager.Core.Services;
 using PswManager.UI.WPF.HostBuilders;
 using PswManager.UI.WPF.Services;
 using PswManager.UI.WPF.Stores;
 using PswManager.UI.WPF.ViewModels;
 using Serilog;
+using System.IO;
 using System.Windows;
 
 namespace PswManager.UI.WPF;
@@ -22,7 +24,7 @@ public partial class App : Application {
 				loggerConfiguration
 					.MinimumLevel.Debug()
 					.WriteTo.Debug()
-					.WriteTo.File("Log.txt", rollingInterval: RollingInterval.Hour); //todo - put a centralized path
+					.WriteTo.File(Path.Combine(DefaultPaths.LogsDirectory, "Logs.txt"), rollingInterval: RollingInterval.Hour);
 
 			})
 			.AddIOAbstractions()
@@ -49,7 +51,7 @@ public partial class App : Application {
 		_host.Services.GetRequiredService<NavigationStore>().CurrentViewModel = startingVm;
 
 
-		MainWindow = _host.Services.GetRequiredService<MainWindow>();
+        MainWindow = _host.Services.GetRequiredService<MainWindow>();
 		MainWindow.Show();
 
 		base.OnStartup(e);
