@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PswManager.UI.WPF.Views"
              mc:Ignorable="d" 
-             xmlns:viewmodels="clr-namespace:PswManager.UI.WPF.ViewModels" xmlns:components="clr-namespace:PswManager.UI.WPF.Components"
+             xmlns:viewmodels="clr-namespace:PswManager.UI.WPF.ViewModels"
              d:DataContext="{d:DesignInstance Type=viewmodels:CreateAccountViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
 
@@ -64,10 +64,10 @@
             Content="Password: "
             />
 
-        <components:BindablePasswordBox
+        <TextBox
             Grid.Row="2"
             Grid.Column="2"
-            Password="{Binding Password}"
+            Text="{Binding Password}"
             />
 
         <Label
