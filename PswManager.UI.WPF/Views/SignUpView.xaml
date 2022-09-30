@@ -60,7 +60,7 @@
 
 
         <Button
-            Content="Send"
+            Content="Sign Up"
             Command="{Binding SendCommand}"
             IsEnabled="{Binding CanSignUp}"
             FontSize="23"
