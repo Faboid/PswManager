@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using PswManager.Core;
+using PswManager.Core.AccountModels;
 using PswManager.UI.WPF.Services;
 using PswManager.UI.WPF.Stores;
 using PswManager.UI.WPF.ViewModels;
@@ -31,10 +33,20 @@ public static class AddViewModelsHostBuilderExtensions {
 
             services.AddSingleton<Func<CreateAccountViewModel>>(s => () => s.GetRequiredService<CreateAccountViewModel>());
             services.AddSingleton<Func<AccountsListingViewModel>>(s => () => s.GetRequiredService<AccountsListingViewModel>());
-            services.AddSingleton<Func<IAccount, AccountViewModel>>(s => account => new(account));
+            services.AddSingleton<Func<IAccount, AccountViewModel>>(s => {
+                return account => new AccountViewModel(account, s.GetRequiredService<IAccountModelFactory>(), s.GetRequiredService<NavigationService<EditAccountViewModel, DecryptedAccount>>());
+            });
+
+            services.AddSingleton<Func<DecryptedAccount, EditAccountViewModel>>(s => {
+                return account => new EditAccountViewModel(
+                    account, s.GetRequiredService<AccountsStore>(), s.GetRequiredService<IAccountModelFactory>(),
+                    s.GetRequiredService<INotificationService>(), s.GetRequiredService<NavigationService<AccountsListingViewModel>>(), 
+                    s.GetRequiredService<ILoggerFactory>());
+            });
 
             services.AddSingleton<NavigationService<AccountsListingViewModel>>();
             services.AddSingleton<NavigationService<CreateAccountViewModel>>();
+            services.AddSingleton<NavigationService<EditAccountViewModel, DecryptedAccount>>();
 
             services.AddTransient<SignUpViewModel>();
             services.AddTransient<LoginViewModel>();
