@@ -26,3 +26,25 @@ public class NavigationService<T> where T : ViewModelBase {
     }
 
 }
+
+public class NavigationService<TViewModel, TArgument> where TViewModel : ViewModelBase {
+
+    private readonly ILogger _logger = Log.Logger;
+    private readonly NavigationStore _navigationStore;
+    private readonly Func<TArgument, TViewModel> _navigationFunction;
+
+    public NavigationService(NavigationStore navigationStore, Func<TArgument, TViewModel> navigationFunction) {
+        _navigationStore = navigationStore;
+        _navigationFunction = navigationFunction;
+    }
+
+    public void Navigate(TArgument argument, bool disposeCurrent) {
+        if(disposeCurrent) {
+            _navigationStore.CurrentViewModel?.Dispose();
+        }
+        var newVM = _navigationFunction.Invoke(argument);
+        _logger.Debug("Navigating from {Current}, to {New}", _navigationStore.CurrentViewModel?.GetType().Name, newVM.GetType().Name);
+        _navigationStore.CurrentViewModel = newVM;
+    }
+
+}

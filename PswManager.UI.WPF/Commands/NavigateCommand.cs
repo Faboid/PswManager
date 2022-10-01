@@ -1,5 +1,6 @@
 ﻿using PswManager.UI.WPF.Services;
 using PswManager.UI.WPF.ViewModels;
+using System;
 
 namespace PswManager.UI.WPF.Commands;
 
@@ -20,5 +21,40 @@ public class NavigateCommand<T> : LinkableCommandBase where T : ViewModelBase {
 
     public override void ExecuteLinked(object? parameter) {
         _navigationService.Navigate(_disposeCurrent);
+    }
+}
+
+public class NavigateCommand<TViewModel, TArgument> : LinkableCommandBase where TViewModel : ViewModelBase {
+
+    private readonly Func<TArgument> _getArgument;
+    private readonly NavigationService<TViewModel, TArgument> _navigationService;
+    private readonly bool _disposeCurrent;
+
+    public NavigateCommand(Func<TArgument> lazyArgument, bool disposeCurrent, NavigationService<TViewModel, TArgument> navigationService) {
+        _navigationService = navigationService;
+        _disposeCurrent = disposeCurrent;
+        _getArgument = lazyArgument;
+    }
+
+    public NavigateCommand(Func<TArgument> lazyArgument, bool disposeCurrent, NavigationService<TViewModel, TArgument> navigationService, BusyService busyService) : base(busyService) {
+        _navigationService = navigationService;
+        _disposeCurrent = disposeCurrent;
+        _getArgument = lazyArgument;
+    }
+
+    public NavigateCommand(TArgument argument, bool disposeCurrent, NavigationService<TViewModel, TArgument> navigationService) {
+        _navigationService = navigationService;
+        _disposeCurrent = disposeCurrent;
+        _getArgument = () => argument;
+    }
+
+    public NavigateCommand(TArgument argument, bool disposeCurrent, NavigationService<TViewModel, TArgument> navigationService, BusyService busyService) : base(busyService) {
+        _navigationService = navigationService;
+        _disposeCurrent = disposeCurrent;
+        _getArgument = () => argument;
+    }
+
+    public override void ExecuteLinked(object? parameter) {
+        _navigationService.Navigate(_getArgument.Invoke(), _disposeCurrent);
     }
 }
