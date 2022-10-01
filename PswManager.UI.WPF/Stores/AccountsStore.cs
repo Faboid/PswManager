@@ -61,7 +61,28 @@ public class AccountsStore {
         );
     }
 
+    public async Task<UpdateAccountResponse> UpdateAccountAsync(string name, IExtendedAccountModel model) {
 
+        if(string.IsNullOrWhiteSpace(name)) {
+            return UpdateAccountResponse.NameIsEmpty;
+        }
+
+        if(!_accounts.TryGetValue(name, out var account)) {
+            return UpdateAccountResponse.AccountNotFound;
+        }
+
+        var result = await account.EditAccountAsync(model);
+
+        return result switch {
+            EditAccountResult.Success => UpdateAccountResponse.Success,
+            EditAccountResult.NameCannotBeEmpty => UpdateAccountResponse.NewNameIsEmpty,
+            EditAccountResult.PasswordCannotBeEmpty => UpdateAccountResponse.PasswordEmpty,
+            EditAccountResult.EmailCannotBeEmpty => UpdateAccountResponse.EmailEmpty,
+            EditAccountResult.NewNameIsOccupied => UpdateAccountResponse.NewNameIsOccupied,
+            EditAccountResult.DoesNotExist => UpdateAccountResponse.AccountNotFound,
+            _ => UpdateAccountResponse.Unknown,
+        };
+    }
 
 }
 
@@ -73,4 +94,15 @@ public enum CreateAccountResponse {
     PasswordEmpty,
     EmailEmpty,
     NameIsOccupied,
+}
+
+public enum UpdateAccountResponse {
+    Unknown,
+    Success,
+    NewNameIsEmpty,
+    AccountNotFound,
+    PasswordEmpty,
+    EmailEmpty,
+    NewNameIsOccupied,
+    NameIsEmpty,
 }
