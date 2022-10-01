@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using PswManager.Core;
+using PswManager.Extensions;
 using PswManager.UI.WPF.Commands;
 using PswManager.UI.WPF.Services;
 using PswManager.UI.WPF.Stores;
@@ -29,6 +30,17 @@ public class AccountsListingViewModel : ViewModelBase {
         }
     }
 
+    private AccountViewModel? _closeUpViewModel = null;
+    public AccountViewModel? CloseUpViewModel {
+        get => _closeUpViewModel;
+        set {
+            SetAndRaise(nameof(CloseUpViewModel), ref _closeUpViewModel, value);
+            OnPropertyChanged(nameof(ShowDetails));
+        }
+    }
+
+    public bool ShowDetails => CloseUpViewModel?.VisibleDetails ?? false;
+
     public ICommand? SettingsCommand { get; }
     public ICommand CreateAccountCommand { get; }
     public ICommand LoadAccountsCommand { get; }
@@ -51,12 +63,22 @@ public class AccountsListingViewModel : ViewModelBase {
     private void LoadAccounts(IEnumerable<IAccount> accounts) {
         _accounts.Clear();
         foreach(var account in accounts) {
-            _accounts.Add(_createAccountViewModel.Invoke(account));
+            var vm = _createAccountViewModel.Invoke(account);
+            vm.ShowDetails += ShowAccountDetails;
+            vm.CloseDetails += CloseAccountDetails;
+            _accounts.Add(vm);
         }
     }
 
+    private void ShowAccountDetails(AccountViewModel obj) => CloseUpViewModel = obj;
+    private void CloseAccountDetails() => CloseUpViewModel = null;
+
     protected override void Dispose(bool disposed) {
         _accountsStore.AccountsChanged -= LoadAccounts;
+        _accounts.ForEach(x => {
+            x.ShowDetails -= ShowAccountDetails;
+            x.CloseDetails -= CloseAccountDetails;
+        });
         _collectionView.Filter -= AccountsFilter;
         base.Dispose(disposed);
     }
