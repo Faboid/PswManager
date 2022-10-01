@@ -28,7 +28,7 @@ public partial class App : Application {
 
 			})
 			.AddIOAbstractions()
-			.AddAccountsPipeline(Database.DatabaseType.InMemory) //todo - use sql db
+			.AddAccountsPipeline(Database.DatabaseType.TextFile) //todo - use sql db
 			.AddUIComponents()
 			.AddStores()
 			.AddViewModels()
