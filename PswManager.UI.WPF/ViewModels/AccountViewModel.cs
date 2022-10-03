@@ -23,8 +23,10 @@ public class AccountViewModel : ViewModelBase {
     public string EncryptedEmail => _account.Email;
 
     private IExtendedAccountModel _extendedAccount;
-    public string Password => _extendedAccount.Password;
-    public string Email => _extendedAccount.Email;
+    public string Password => IsDecrypted? _extendedAccount.Password : "Loading...";
+    public string Email => IsDecrypted? _extendedAccount.Email : "Loading...";
+
+    public bool IsDecrypted => !_extendedAccount.IsEncrypted;
 
     private bool _visibleDetails = false;
     public bool VisibleDetails {
@@ -34,7 +36,6 @@ public class AccountViewModel : ViewModelBase {
 
     public ICommand DetailsCommand { get; }
     public ICommand CloseDetailsCommand { get; }
-    public ICommand DecryptCommand { get; }
     
     private ICommand _editCommand;
     public ICommand EditCommand { get => _editCommand; private set => SetAndRaise(nameof(EditCommand), ref _editCommand, value); }
@@ -43,9 +44,8 @@ public class AccountViewModel : ViewModelBase {
         _account = account;
         _accountModelFactory = accountModelFactory;
         _toEditViewModelNavigationService = toEditAccountViewModel;
-        DetailsCommand = new RelayCommand(OnShowDetails);
+        DetailsCommand = new AsyncRelayCommand(OnShowDetails);
         CloseDetailsCommand = new RelayCommand(OnCloseDetails);
-        DecryptCommand = new AsyncRelayCommand(DecryptAsync);
         Reset();
     }
 
@@ -58,15 +58,12 @@ public class AccountViewModel : ViewModelBase {
         EditCommand = new NavigateCommand<EditAccountViewModel, DecryptedAccount>(() => _extendedAccount.GetDecryptedAccount(), true, _toEditViewModelNavigationService);
     }
 
-    private async Task DecryptAsync() {
+    private async Task OnShowDetails() {
+        VisibleDetails = true;
+        ShowDetails?.Invoke(this);
         _extendedAccount = await _extendedAccount.GetDecryptedAccountAsync();
         OnPropertyChanged(nameof(Password));
         OnPropertyChanged(nameof(Email));
-    }
-
-    private void OnShowDetails() {
-        VisibleDetails = true;
-        ShowDetails?.Invoke(this);
     }
 
     private void OnCloseDetails() {

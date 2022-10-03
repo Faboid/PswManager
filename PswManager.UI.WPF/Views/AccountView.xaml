@@ -11,81 +11,87 @@
              VerticalAlignment="Center"
              HorizontalAlignment="Center">
 
-    <Grid
-        Margin="5"
-        Background="#FF272121"
-        >
+    <Border 
+        BorderBrush="Black"
+        Background="#443737"
+        BorderThickness="5"
+        Padding="5">
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-        </Grid.RowDefinitions>
-
-        <Rectangle
-                Grid.RowSpan="5"
-                Fill="Black"
-                Opacity="0.4"
-                />
-
-        <Label
-            Grid.Row="0"
-            Content="{Binding Name}"
-            />
-
-        <Label
-            Grid.Row="1"
-            Content="{Binding Password}"
-            />
-
-        <Label
-            Grid.Row="2"
-            Content="{Binding Email}"
-            />
-
-        <Grid
-            Margin="10"
-            Grid.Row="4"
-            >
+        <Grid>
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/> <!--Name-->
+                <RowDefinition Height="auto"/> <!--Password-->
+                <RowDefinition Height="auto"/> <!--Email-->
+                <RowDefinition Height="15"/>   <!--Empty Space-->
+                <RowDefinition Height="auto"/> <!--Buttons-->
             </Grid.RowDefinitions>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="10"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="10"/>
-            </Grid.ColumnDefinitions>
+            <Grid
+                Grid.Row="0"
+                >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/> <!--Name Text-->
+                    <ColumnDefinition Width="20"/> <!--Empty Space-->
+                    <ColumnDefinition Width="*"/> <!--Close Button-->
+                </Grid.ColumnDefinitions>
 
-            <Button
+                <Label
+                    Grid.Column="0"
+                    Content="{Binding Name}"
+                    />
+
+                <Button
+                    Grid.Column="2"
+                    Content="Close"
+                    VerticalAlignment="Center"
+                    Command="{Binding CloseDetailsCommand}"
+                    />
+
+            </Grid>
+
+            <Label
                 Grid.Row="1"
-                Grid.Column="1"
-                Content="See Decrypted"
-                Command="{Binding DecryptCommand}"
+                Content="{Binding Password}"
                 />
 
-            <Button
-                Grid.Row="1"
-                Grid.Column="2"
-                Content="Edit"
-                Command="{Binding EditCommand}"
+            <Label
+                Grid.Row="2"
+                Content="{Binding Email}"
                 />
 
-            <Button
-                Grid.Row="1"
-                Grid.Column="3"
-                Content="Delete"
-                Command="{Binding DeleteCommand}"
-                />
+            <Grid
+                Margin="10"
+                Grid.Row="4"
+                >
 
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="50" Width="*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition MinWidth="50" Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Content="Edit"
+                    Command="{Binding EditCommand}"
+                    />
+
+                <Button
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    Content="Delete"
+                    Command="{Binding DeleteCommand}"
+                    />
+
+            </Grid>
         </Grid>
-
-    </Grid>
+    </Border>
 </UserControl>
