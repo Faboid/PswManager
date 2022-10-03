@@ -39,8 +39,11 @@ public class AccountViewModel : ViewModelBase {
     public ICommand DetailsCommand { get; }
     public ICommand CloseDetailsCommand { get; }
     
-    private ICommand _editCommand;
-    public ICommand EditCommand { get => _editCommand; private set => SetAndRaise(nameof(EditCommand), ref _editCommand, value); }
+    private ICommand? _editCommand;
+    public ICommand EditCommand {
+        get => _editCommand!;
+        private set => SetAndRaise(nameof(EditCommand), ref _editCommand, value);
+    }
 
     public AccountViewModel(IAccount account, IAccountModelFactory accountModelFactory, NavigationService<EditAccountViewModel, DecryptedAccount> toEditAccountViewModel) {
         _account = account;
@@ -53,7 +56,7 @@ public class AccountViewModel : ViewModelBase {
         Reset();
     }
 
-    [MemberNotNull(nameof(_extendedAccount), nameof(_editCommand))]
+    [MemberNotNull(nameof(_extendedAccount), nameof(EditCommand))]
     private void Reset() {
         _extendedAccount = _accountModelFactory.CreateEncryptedAccount(_account);
         OnPropertyChanged(nameof(Password));
