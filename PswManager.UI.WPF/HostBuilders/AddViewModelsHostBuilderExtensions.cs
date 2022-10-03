@@ -36,8 +36,9 @@ public static class AddViewModelsHostBuilderExtensions {
                 return new DeleteAccountCommand(name, s.GetRequiredService<AccountsStore>(), s.GetRequiredService<INotificationService>(), s.GetRequiredService<ILoggerFactory>());
             });
 
-            services.AddSingleton<Func<CreateAccountViewModel>>(s => () => s.GetRequiredService<CreateAccountViewModel>());
-            services.AddSingleton<Func<AccountsListingViewModel>>(s => () => s.GetRequiredService<AccountsListingViewModel>());
+            services.AddSingleton<Func<SettingsViewModel>>(s => s.GetRequiredService<SettingsViewModel>);
+            services.AddSingleton<Func<CreateAccountViewModel>>(s => s.GetRequiredService<CreateAccountViewModel>);
+            services.AddSingleton<Func<AccountsListingViewModel>>(s => s.GetRequiredService<AccountsListingViewModel>);
             services.AddSingleton<Func<IAccount, AccountViewModel>>(s => {
                 return account => new AccountViewModel(
                     account, s.GetRequiredService<IAccountModelFactory>(), 
@@ -52,6 +53,7 @@ public static class AddViewModelsHostBuilderExtensions {
                     s.GetRequiredService<ILoggerFactory>());
             });
 
+            services.AddSingleton<NavigationService<SettingsViewModel>>();
             services.AddSingleton<NavigationService<AccountsListingViewModel>>();
             services.AddSingleton<NavigationService<CreateAccountViewModel>>();
             services.AddSingleton<NavigationService<EditAccountViewModel, DecryptedAccount>>();
@@ -60,6 +62,7 @@ public static class AddViewModelsHostBuilderExtensions {
             services.AddTransient<LoginViewModel>();
             services.AddTransient<AccountsListingViewModel>();
             services.AddTransient<CreateAccountViewModel>();
+            services.AddTransient<SettingsViewModel>();
 
         });
     }

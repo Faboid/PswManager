@@ -41,15 +41,17 @@ public class AccountsListingViewModel : ViewModelBase {
 
     public bool ShowDetails => CloseUpViewModel?.VisibleDetails ?? false;
 
-    public ICommand? SettingsCommand { get; }
+    public ICommand SettingsCommand { get; }
     public ICommand CreateAccountCommand { get; }
     public ICommand LoadAccountsCommand { get; }
 
     public AccountsListingViewModel(AccountsStore accountsStore, INotificationService notificationService, 
-                                    Func<IAccount, AccountViewModel> createAccountViewModel, NavigationService<CreateAccountViewModel> navigationServiceToCreateAccountViewModel, 
+                                    Func<IAccount, AccountViewModel> createAccountViewModel, 
+                                    NavigationService<SettingsViewModel> navigationServiceToSettingsViewModel, NavigationService<CreateAccountViewModel> navigationServiceToCreateAccountViewModel, 
                                     ILoggerFactory? loggerFactory = null) {
         _createAccountViewModel = createAccountViewModel;
         _accountsStore = accountsStore;
+        SettingsCommand = new NavigateCommand<SettingsViewModel>(true, navigationServiceToSettingsViewModel);
         CreateAccountCommand = new NavigateCommand<CreateAccountViewModel>(true, navigationServiceToCreateAccountViewModel);
         LoadAccountsCommand = new LoadAccountsCommand(accountsStore, notificationService, LoadAccounts, loggerFactory);
         _accountsStore.AccountsChanged += LoadAccounts;
