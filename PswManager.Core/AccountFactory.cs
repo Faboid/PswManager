@@ -7,6 +7,7 @@ using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Utils;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static PswManager.Core.IAccountFactory;
 
 namespace PswManager.Core;
 
@@ -71,13 +72,5 @@ public class AccountFactory : IAccountFactory {
     }
 
     private Account NewAccount(EncryptedAccount info) => new(info, _connection, _accountValidator, _loggerFactory);
-
-    public enum CreateAccountErrorCode {
-        Unknown,
-        NameEmptyOrNull,
-        PasswordEmptyOrNull,
-        EmailEmptyOrNull,
-        NameIsOccupied,
-    }
 
 }

@@ -4,6 +4,7 @@ using PswManager.Core.AccountModels;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static PswManager.Core.IAccountFactory;
 
 namespace PswManager.UI.WPF.Stores;
 
@@ -58,10 +59,10 @@ public class AccountsStore {
 
                 _logger?.LogInformation("The creation of {Name} has failed with the error of {ErrorCode}", accountModel.Name, error);
                 return error switch {
-                    AccountFactory.CreateAccountErrorCode.NameEmptyOrNull => CreateAccountResponse.NameEmpty,
-                    AccountFactory.CreateAccountErrorCode.PasswordEmptyOrNull => CreateAccountResponse.PasswordEmpty,
-                    AccountFactory.CreateAccountErrorCode.EmailEmptyOrNull => CreateAccountResponse.EmailEmpty,
-                    AccountFactory.CreateAccountErrorCode.NameIsOccupied => CreateAccountResponse.NameIsOccupied,
+                    CreateAccountErrorCode.NameEmptyOrNull => CreateAccountResponse.NameEmpty,
+                    CreateAccountErrorCode.PasswordEmptyOrNull => CreateAccountResponse.PasswordEmpty,
+                    CreateAccountErrorCode.EmailEmptyOrNull => CreateAccountResponse.EmailEmpty,
+                    CreateAccountErrorCode.NameIsOccupied => CreateAccountResponse.NameIsOccupied,
                     _ => CreateAccountResponse.Unknown,
                 };
             },

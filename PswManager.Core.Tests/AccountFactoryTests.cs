@@ -1,5 +1,5 @@
 using PswManager.Core.Validators;
-using static PswManager.Core.AccountFactory;
+using static PswManager.Core.IAccountFactory;
 using PswManager.Core.AccountModels;
 using PswManager.Core.Tests.Mocks;
 using PswManager.Database.DataAccess.ErrorCodes;
