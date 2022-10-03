@@ -2,6 +2,7 @@ using PswManager.Core;
 using PswManager.Core.AccountModels;
 using PswManager.UI.WPF.Commands;
 using PswManager.UI.WPF.Services;
+using PswManager.UI.WPF.Stores;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -34,6 +35,7 @@ public class AccountViewModel : ViewModelBase {
         set { SetAndRaise(nameof(VisibleDetails), ref _visibleDetails, value); }
     }
 
+    public ICommand DeleteCommand { get; }
     public ICommand CopyPasswordToClipboard { get; }
     public ICommand CopyEmailToClipboard { get; }
     public ICommand DetailsCommand { get; }
@@ -45,11 +47,12 @@ public class AccountViewModel : ViewModelBase {
         private set => SetAndRaise(nameof(EditCommand), ref _editCommand, value);
     }
 
-    public AccountViewModel(IAccount account, IAccountModelFactory accountModelFactory, NavigationService<EditAccountViewModel, DecryptedAccount> toEditAccountViewModel) {
+    public AccountViewModel(IAccount account, IAccountModelFactory accountModelFactory, Func<string, DeleteAccountCommand> createDeleteAccountCommand, NavigationService<EditAccountViewModel, DecryptedAccount> toEditAccountViewModel) {
         _account = account;
         _accountModelFactory = accountModelFactory;
         _toEditViewModelNavigationService = toEditAccountViewModel;
         DetailsCommand = new AsyncRelayCommand(OnShowDetails);
+        DeleteCommand = createDeleteAccountCommand.Invoke(Name);
         CloseDetailsCommand = new RelayCommand(OnCloseDetails);
         CopyPasswordToClipboard = new AsyncRelayCommand(PasswordToClipboard);
         CopyEmailToClipboard = new AsyncRelayCommand(EmailToClipboard);

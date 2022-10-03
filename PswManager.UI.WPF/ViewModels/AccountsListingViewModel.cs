@@ -61,6 +61,8 @@ public class AccountsListingViewModel : ViewModelBase {
     private bool AccountsFilter(object obj) => obj is AccountViewModel account && account.Name.Contains(_search);
     private void LoadAccounts() => LoadAccounts(_accountsStore.Accounts);
     private void LoadAccounts(IEnumerable<IAccount> accounts) {
+        CloseAccountDetails();
+        UnsubscribeFromAccounts();
         _accounts.Clear();
         foreach(var account in accounts) {
             var vm = _createAccountViewModel.Invoke(account);
@@ -73,12 +75,16 @@ public class AccountsListingViewModel : ViewModelBase {
     private void ShowAccountDetails(AccountViewModel obj) => CloseUpViewModel = obj;
     private void CloseAccountDetails() => CloseUpViewModel = null;
 
-    protected override void Dispose(bool disposed) {
-        _accountsStore.AccountsChanged -= LoadAccounts;
+    private void UnsubscribeFromAccounts() {
         _accounts.ForEach(x => {
             x.ShowDetails -= ShowAccountDetails;
             x.CloseDetails -= CloseAccountDetails;
         });
+    }
+
+    protected override void Dispose(bool disposed) {
+        _accountsStore.AccountsChanged -= LoadAccounts;
+        UnsubscribeFromAccounts();
         _collectionView.Filter -= AccountsFilter;
         base.Dispose(disposed);
     }

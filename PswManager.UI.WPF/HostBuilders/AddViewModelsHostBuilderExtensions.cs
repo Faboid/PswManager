@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PswManager.Core;
 using PswManager.Core.AccountModels;
+using PswManager.UI.WPF.Commands;
 using PswManager.UI.WPF.Services;
 using PswManager.UI.WPF.Stores;
 using PswManager.UI.WPF.ViewModels;
@@ -31,10 +32,17 @@ public static class AddViewModelsHostBuilderExtensions {
     public static IHostBuilder AddViewModels(this IHostBuilder hostBuilder) {
         return hostBuilder.ConfigureServices(services => {
 
+            services.AddSingleton<Func<string, DeleteAccountCommand>>(s => name => {
+                return new DeleteAccountCommand(name, s.GetRequiredService<AccountsStore>(), s.GetRequiredService<INotificationService>(), s.GetRequiredService<ILoggerFactory>());
+            });
+
             services.AddSingleton<Func<CreateAccountViewModel>>(s => () => s.GetRequiredService<CreateAccountViewModel>());
             services.AddSingleton<Func<AccountsListingViewModel>>(s => () => s.GetRequiredService<AccountsListingViewModel>());
             services.AddSingleton<Func<IAccount, AccountViewModel>>(s => {
-                return account => new AccountViewModel(account, s.GetRequiredService<IAccountModelFactory>(), s.GetRequiredService<NavigationService<EditAccountViewModel, DecryptedAccount>>());
+                return account => new AccountViewModel(
+                    account, s.GetRequiredService<IAccountModelFactory>(), 
+                    s.GetRequiredService<Func<string, DeleteAccountCommand>>(),
+                    s.GetRequiredService<NavigationService<EditAccountViewModel, DecryptedAccount>>());
             });
 
             services.AddSingleton<Func<DecryptedAccount, EditAccountViewModel>>(s => {

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using PswManager.Core;
 using PswManager.Core.AccountModels;
 using System;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 namespace PswManager.UI.WPF.Stores;
 
 public class AccountsStore {
-    
+
     private readonly ILogger<AccountsStore>? _logger;
     private readonly IAccountFactory _accountFactory;
     private readonly Dictionary<string, IAccount> _accounts = new();
@@ -101,6 +102,31 @@ public class AccountsStore {
         };
     }
 
+    public async Task<DeleteAccountResponse> DeleteAccountAsync(string name) {
+
+        if(string.IsNullOrWhiteSpace(name)) {
+            return DeleteAccountResponse.NameCannotBeEmptyOrNull;
+        }
+
+        if(!_accounts.TryGetValue(name, out var account)) {
+            return DeleteAccountResponse.AccountNotFound;
+        }
+
+        try {
+            await account.DeleteAccountAsync();
+            _accounts.Remove(name);
+            OnAccountsChanged();
+            return DeleteAccountResponse.Success;
+
+        } catch(Exception ex) {
+
+            _logger?.LogError(ex, "An exception has been thrown when trying to delete {Name}", name);
+            return DeleteAccountResponse.Failure;
+
+        }
+        
+    }
+
 }
 
 public enum CreateAccountResponse {
@@ -122,4 +148,12 @@ public enum UpdateAccountResponse {
     EmailEmpty,
     NewNameIsOccupied,
     NameIsEmpty,
+}
+
+public enum DeleteAccountResponse {
+    Unknown,
+    Success,
+    NameCannotBeEmptyOrNull,
+    AccountNotFound,
+    Failure
 }
