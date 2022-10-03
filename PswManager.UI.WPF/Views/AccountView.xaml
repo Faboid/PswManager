@@ -21,12 +21,12 @@
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/> <!--Name-->
-                <RowDefinition Height="auto"/> <!--Password-->
-                <RowDefinition Height="auto"/> <!--Email-->
+                <RowDefinition Height="auto"/> <!--Password, Email-->
                 <RowDefinition Height="15"/>   <!--Empty Space-->
                 <RowDefinition Height="auto"/> <!--Buttons-->
             </Grid.RowDefinitions>
 
+            <!--Name, Close Button-->
             <Grid
                 Grid.Row="0"
                 >
@@ -46,23 +46,64 @@
                     Content="Close"
                     VerticalAlignment="Center"
                     Command="{Binding CloseDetailsCommand}"
+                    Style="{StaticResource CloseButton}"
                     />
 
             </Grid>
 
-            <Label
+            <!--Password, Email, Copy Buttons-->
+            <Grid
                 Grid.Row="1"
-                Content="{Binding Password}"
-                />
+                >
 
-            <Label
-                Grid.Row="2"
-                Content="{Binding Email}"
-                />
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <!--Field Text-->
+                    <ColumnDefinition Width="20"/>
+                    <!--Empty Space-->
+                    <ColumnDefinition MinWidth="40" Width="*"/>
+                    <!--Copy Buttons-->
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <Label
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    Content="{Binding Password}"
+                    />
+
+                <Button
+                    Grid.Column="2"
+                    Grid.Row="0"
+                    Content="Copy"
+                    VerticalAlignment="Center"
+                    Command="{Binding CopyPasswordToClipboard}"
+                    />
+
+                <Label
+                    Grid.Column="0"
+                    Grid.Row="2"
+                    Content="{Binding Email}"
+                    />
+
+                <Button
+                    Grid.Column="2"
+                    Grid.Row="2"
+                    Content="Copy"
+                    VerticalAlignment="Center"
+                    Command="{Binding CopyEmailToClipboard}"
+                    />
+
+            </Grid>
 
             <Grid
                 Margin="10"
-                Grid.Row="4"
+                Grid.Row="3"
                 >
 
                 <Grid.RowDefinitions>

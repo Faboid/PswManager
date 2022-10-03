@@ -34,6 +34,8 @@ public class AccountViewModel : ViewModelBase {
         set { SetAndRaise(nameof(VisibleDetails), ref _visibleDetails, value); }
     }
 
+    public ICommand CopyPasswordToClipboard { get; }
+    public ICommand CopyEmailToClipboard { get; }
     public ICommand DetailsCommand { get; }
     public ICommand CloseDetailsCommand { get; }
     
@@ -46,6 +48,8 @@ public class AccountViewModel : ViewModelBase {
         _toEditViewModelNavigationService = toEditAccountViewModel;
         DetailsCommand = new AsyncRelayCommand(OnShowDetails);
         CloseDetailsCommand = new RelayCommand(OnCloseDetails);
+        CopyPasswordToClipboard = new AsyncRelayCommand(PasswordToClipboard);
+        CopyEmailToClipboard = new AsyncRelayCommand(EmailToClipboard);
         Reset();
     }
 
@@ -71,4 +75,15 @@ public class AccountViewModel : ViewModelBase {
         CloseDetails?.Invoke();
         Reset();
     }
+
+    private async Task PasswordToClipboard() {
+        var result = await _extendedAccount.GetDecryptedAccountAsync();
+        System.Windows.Clipboard.SetText(result.Password);
+    }
+
+    private async Task EmailToClipboard() {
+        var result = await _extendedAccount.GetDecryptedAccountAsync();
+        System.Windows.Clipboard.SetText(result.Email);
+    }
+
 }
