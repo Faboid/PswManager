@@ -55,7 +55,7 @@ public class AccountViewModel : ViewModelBase {
         OnPropertyChanged(nameof(Password));
         OnPropertyChanged(nameof(Email));
 
-        EditCommand = new NavigateCommand<EditAccountViewModel, DecryptedAccount>(() => _extendedAccount.GetDecryptedAccount(), true, _toEditViewModelNavigationService);
+        EditCommand = new AsyncNavigateCommand<EditAccountViewModel, DecryptedAccount>(() => _extendedAccount.GetDecryptedAccountAsync(), true, _toEditViewModelNavigationService);
     }
 
     private async Task OnShowDetails() {
