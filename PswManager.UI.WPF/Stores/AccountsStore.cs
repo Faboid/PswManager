@@ -8,6 +8,7 @@ namespace PswManager.UI.WPF.Stores;
 
 public class AccountsStore {
     
+    private readonly ILogger<AccountsStore>? _logger;
     private readonly IAccountFactory _accountFactory;
     private readonly Dictionary<string, IAccount> _accounts = new();
     public IEnumerable<IAccount> Accounts => _accounts.Values;
@@ -15,8 +16,9 @@ public class AccountsStore {
 
     public event Action? AccountsChanged;
 
-    public AccountsStore(IAccountFactory accountFactory) {
+    public AccountsStore(IAccountFactory accountFactory, ILoggerFactory? loggerFactory = null) {
         _initializationTask = new(Initialize);
+        _logger = loggerFactory?.CreateLogger<AccountsStore>();
         _accountFactory = accountFactory;
     }
 
@@ -32,6 +34,7 @@ public class AccountsStore {
             _accounts.Add(account.Name, account);
         }
         OnAccountsChanged();
+        _logger?.LogInformation("The accounts have been loaded.");
     }
 
     public bool AccountExists(string name) => _accounts.ContainsKey(name);
@@ -40,15 +43,19 @@ public class AccountsStore {
 
         if(AccountExists(accountModel.Name)) { return CreateAccountResponse.NameIsOccupied; }
 
+        _logger?.LogInformation("Beginning to create {Name} account.", accountModel.Name);
         var optionResult = await _accountFactory.CreateAccountAsync(accountModel);
 
         return optionResult.Match(
             some => {
                 _accounts.Add(some.Name, some);
                 OnAccountsChanged();
+                _logger?.LogInformation("{Name} has been created successfully.", accountModel.Name);
                 return CreateAccountResponse.Success;
             },
             error => {
+
+                _logger?.LogInformation("The creation of {Name} has failed with the error of {ErrorCode}", accountModel.Name, error);
                 return error switch {
                     AccountFactory.CreateAccountErrorCode.NameEmptyOrNull => CreateAccountResponse.NameEmpty,
                     AccountFactory.CreateAccountErrorCode.PasswordEmptyOrNull => CreateAccountResponse.PasswordEmpty,
@@ -57,8 +64,10 @@ public class AccountsStore {
                     _ => CreateAccountResponse.Unknown,
                 };
             },
-            () => CreateAccountResponse.Unknown
-        );
+            () => {
+                _logger?.LogWarning("The creation of {Name} has failed with a return of None.", accountModel.Name);
+                return CreateAccountResponse.Unknown;
+            });
     }
 
     public async Task<UpdateAccountResponse> UpdateAccountAsync(string name, IExtendedAccountModel model) {
@@ -71,7 +80,15 @@ public class AccountsStore {
             return UpdateAccountResponse.AccountNotFound;
         }
 
+        _logger?.LogInformation("Beginning to edit the account {Name}", name);
         var result = await account.EditAccountAsync(model);
+
+        if(result is EditAccountResult.Success) {
+            OnAccountsChanged();
+            _logger?.LogInformation("{Name}, now {NewName}, has been edited successfully.", name, model.Name);
+        } else {
+            _logger?.LogInformation("The editing of {Name} has failed with the error code {ErrorCode}", name, result);
+        }
 
         return result switch {
             EditAccountResult.Success => UpdateAccountResponse.Success,
