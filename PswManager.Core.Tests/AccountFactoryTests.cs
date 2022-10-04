@@ -82,6 +82,34 @@ public class AccountFactoryTests {
         }
     }
 
+    public static IEnumerable<object[]> GetCorruptedData() {
+        static object[] NewObject(string name, ReaderErrorCode errorCode, string expectedMessage) => new object[] { name, errorCode, expectedMessage };
+        yield return NewObject("SomeName", ReaderErrorCode.UsedElsewhere, "SomeName couldn't be loaded because it was used elsewhere.");
+        yield return NewObject("Anotherone", ReaderErrorCode.Undefined, "There has been an unknown error trying to load Anotherone");
+    }
+
+    [Theory]
+    [MemberData(nameof(GetCorruptedData))]
+    public async Task LoadAccounts_LoadCorrupted(string name, ReaderErrorCode errorCode, string expectedMessage) {
+
+        var models = new Option<IAccountModel, (string name, ReaderErrorCode errorCode)>[] {
+            (name, errorCode),
+        }.ToAsyncEnumerable();
+
+        var connectionMock = new Mock<IDataConnection>();
+        connectionMock.Setup(x => x.EnumerateAccountsAsync()).Returns(models);
+        var sut = new AccountFactory(connectionMock.Object, new AccountValidator(), new AccountModelFactory(ICryptoAccountMocks.GetReversedAndSummingCryptor()));
+
+        var result = sut.LoadAccounts();
+
+        var account = await result.SingleAsync();
+
+        Assert.Equal(name, account.Name);
+        Assert.Equal(expectedMessage, account.Password);
+        Assert.Equal(expectedMessage, account.Email);
+    
+    }
+
     private static EncryptedAccount CreateDefaultEncrypted() => new("SomeName", "SomePassword", "AnEmail@com", ICryptoAccountMocks.GetReversedAndSummingCryptor());
     private static DecryptedAccount CreateDefaultDecrypted() => new("SomeName", "SomePassword", "AnEmail@com", ICryptoAccountMocks.GetReversedAndSummingCryptor());
 

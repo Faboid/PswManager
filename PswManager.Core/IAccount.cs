@@ -59,4 +59,5 @@ public enum EditAccountResult {
     EmailCannotBeEmpty,
     NewNameIsOccupied,
     DoesNotExist,
+    ValuesCorrupted,
 }

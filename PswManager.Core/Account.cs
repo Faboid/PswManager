@@ -10,9 +10,9 @@ internal class Account : IAccount {
 
     private readonly ILogger<Account>? _logger;
     private readonly IDataConnection _connection;
-    private readonly IAccountHolder _accountHolder;
     private readonly Locker _locker = new();
 
+    private readonly IAccountHolder _accountHolder;
     private bool _exists = true;
     public string Name => _accountHolder.Name;
     public string Password => _accountHolder.Password;

@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic;
 using PswManager.Async.Locks;
 using PswManager.Core.AccountModels;
 using PswManager.Core.Validators;
 using PswManager.Database;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Utils;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static PswManager.Core.IAccountFactory;
@@ -57,21 +59,37 @@ public class AccountFactory : IAccountFactory {
         }
 
         _logger?.LogInformation("A new account, {Name}, has been created successfully.", encrypted.Name);
-        var account = NewWorkingAccount(encrypted);
+        var holder = NewValidHolder(encrypted);
+        var account = NewWorkingAccount(holder);
         return account;
     }
 
     public async IAsyncEnumerable<IAccount> LoadAccounts() {
         var enumerable = _connection.EnumerateAccountsAsync();
         await foreach(var option in enumerable) {
-            var info = option.OrDefault(); //todo - turn corrupted accounts into valid warnings
-            if(info != null) {
-                yield return NewWorkingAccount(_accountModelFactory.CreateEncryptedAccount(info.Name, info.Password, info.Email));
+
+            if(option.Result() is Utils.Options.OptionResult.None) {
+                _logger?.LogError("EnumerateAccountsAsync has returned a None.");
+                continue;
             }
+
+            yield return option.Match(
+                some => {
+                    var holder = NewValidHolder(_accountModelFactory.CreateEncryptedAccount(some));
+                    return NewWorkingAccount(holder);
+                },
+                error => {
+                    var holder = NewCorruptedHolder(error.Name, error.ErrorCode);
+                    return NewWorkingAccount(holder);
+                },
+                () => throw new NotSupportedException("Tried to initialize a None account.")
+            );
+           
         }
     }
 
-    private Account NewWorkingAccount(EncryptedAccount info) => new(NewValidHolder(info), _connection, _loggerFactory);
+    private Account NewWorkingAccount(IAccountHolder holder) => new(holder, _connection, _loggerFactory);
     private IAccountHolder NewValidHolder(EncryptedAccount info) => new AccountHolder(info, _accountValidator, _connection, _loggerFactory);
+    private IAccountHolder NewCorruptedHolder(string name, ReaderErrorCode errorCode) => new CorruptedAccountHolder(name, errorCode, _accountModelFactory);
 
 }
