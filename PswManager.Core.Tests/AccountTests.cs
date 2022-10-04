@@ -5,7 +5,6 @@ using PswManager.Core.Validators;
 using PswManager.Database;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
-using PswManager.Utils;
 
 namespace PswManager.Core.Tests;
 
@@ -22,7 +21,7 @@ public class AccountTests {
     [Fact]
     public async Task EditingAfterDeletingReturns_DoesNotExist() {
 
-        var sut = new Account(_accountModelFactory.CreateEncryptedAccount(GetGeneric()), Mock.Of<IDataConnection>(), Mock.Of<IAccountValidator>());
+        var sut = CreateAccount(_accountModelFactory.CreateEncryptedAccount(GetGeneric()), Mock.Of<IDataConnection>(), Mock.Of<IAccountValidator>());
         await sut.DeleteAccountAsync();
         var actual = await sut.EditAccountAsync(_accountModelFactory.CreateEncryptedAccount(GetGeneric()));
         Assert.Equal(EditAccountResult.DoesNotExist, actual);
@@ -33,7 +32,7 @@ public class AccountTests {
     public async Task DeleteAccountCallsConnection() {
 
         var connectionMock = new Mock<IDataConnection>();
-        var sut = new Account(_accountModelFactory.CreateEncryptedAccount(GetGeneric()), connectionMock.Object, Mock.Of<IAccountValidator>());
+        var sut = CreateAccount(_accountModelFactory.CreateEncryptedAccount(GetGeneric()), connectionMock.Object, Mock.Of<IAccountValidator>());
         await sut.DeleteAccountAsync();
         connectionMock.Verify(x => x.DeleteAccountAsync(sut.Name));
 
@@ -50,7 +49,7 @@ public class AccountTests {
         validatorMock.Setup(x => x.IsAccountValid(It.IsAny<IExtendedAccountModel>())).Returns(accountValid);
         var connectionMock = new Mock<IDataConnection>();
 
-        var sut = new Account(_accountModelFactory.CreateEncryptedAccount(GetGeneric()), Mock.Of<IDataConnection>(), validatorMock.Object);
+        var sut = CreateAccount(_accountModelFactory.CreateEncryptedAccount(GetGeneric()), Mock.Of<IDataConnection>(), validatorMock.Object);
         var actual = await sut.EditAccountAsync(_accountModelFactory.CreateEncryptedAccount(GetGeneric()));
         Assert.Equal(expected, actual);
 
@@ -66,7 +65,7 @@ public class AccountTests {
         var connectionMock = new Mock<IDataConnection>();
         connectionMock.Setup(x => x.UpdateAccountAsync(account.Name, It.IsAny<IReadOnlyAccountModel>())).Returns(Task.FromResult(errorCode));
 
-        var sut = new Account(account, connectionMock.Object, new AccountValidator());
+        var sut = CreateAccount(account, connectionMock.Object, new AccountValidator());
         var actual = await sut.EditAccountAsync(_accountModelFactory.CreateEncryptedAccount(GetGeneric()));
         Assert.Equal(expected, actual);
 
@@ -80,7 +79,7 @@ public class AccountTests {
         var connectionMock = new Mock<IDataConnection>();
         connectionMock.Setup(x => x.UpdateAccountAsync("AName", It.IsAny<IReadOnlyAccountModel>())).Returns(Task.FromResult(EditorResponseCode.Success));
 
-        var sut = new Account(_accountModelFactory.CreateEncryptedAccount(new AccountModel("AName", "APassword", "AnEmail")), connectionMock.Object, new AccountValidator());
+        var sut = CreateAccount(_accountModelFactory.CreateEncryptedAccount(new AccountModel("AName", "APassword", "AnEmail")), connectionMock.Object, new AccountValidator());
 
         var actual = await sut.EditAccountAsync(decryptedModel);
 
@@ -92,5 +91,10 @@ public class AccountTests {
     }
 
     private static AccountModel GetGeneric() => new("SomeName", "SomePassword", "SomeEmail");
+
+    private static IAccount CreateAccount(EncryptedAccount encryptedAccount, IDataConnection _connection, IAccountValidator _validator) {
+        var accountHolder = new AccountHolder(encryptedAccount, _validator, _connection);
+        return new Account(accountHolder, _connection);
+    }
 
 }

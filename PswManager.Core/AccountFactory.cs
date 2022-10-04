@@ -57,7 +57,7 @@ public class AccountFactory : IAccountFactory {
         }
 
         _logger?.LogInformation("A new account, {Name}, has been created successfully.", encrypted.Name);
-        var account = NewAccount(encrypted);
+        var account = NewWorkingAccount(encrypted);
         return account;
     }
 
@@ -66,11 +66,12 @@ public class AccountFactory : IAccountFactory {
         await foreach(var option in enumerable) {
             var info = option.OrDefault(); //todo - turn corrupted accounts into valid warnings
             if(info != null) {
-                yield return NewAccount(_accountModelFactory.CreateEncryptedAccount(info.Name, info.Password, info.Email));
+                yield return NewWorkingAccount(_accountModelFactory.CreateEncryptedAccount(info.Name, info.Password, info.Email));
             }
         }
     }
 
-    private Account NewAccount(EncryptedAccount info) => new(info, _connection, _accountValidator, _loggerFactory);
+    private Account NewWorkingAccount(EncryptedAccount info) => new(NewValidHolder(info), _connection, _loggerFactory);
+    private IAccountHolder NewValidHolder(EncryptedAccount info) => new AccountHolder(info, _accountValidator, _connection, _loggerFactory);
 
 }
