@@ -1,7 +1,7 @@
 ﻿using PswManager.Utils;
 using PswManager.Utils.Options;
 
-namespace PswManager.TestUtils; 
+namespace PswManager.TestUtils;
 
 public static class OptionAsserts {
 

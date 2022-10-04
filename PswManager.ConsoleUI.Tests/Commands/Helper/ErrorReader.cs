@@ -2,16 +2,18 @@
 using PswManager.Commands.Validation.Attributes;
 using System.Reflection;
 
-namespace PswManager.ConsoleUI.Tests.Commands.Helper; 
+namespace PswManager.ConsoleUI.Tests.Commands.Helper;
 internal static class ErrorReader {
-    //todo - fix the warnings
+
+    //all nullables are ignored. Since this is for tests, it's fine for it to throw an exception on null
+
     public static string GetRequiredError(this ICommand cmd, string propertyName) {
         var prop = cmd
             .GetCommandInputType
             .TryGetProperty(propertyName);
 
         return prop
-            .GetCustomAttribute<RequiredAttribute>()
+            .GetCustomAttribute<RequiredAttribute>()!
             .GetErrorMessage(prop);
     }
 
@@ -19,7 +21,7 @@ internal static class ErrorReader {
         return cmd
             .GetCommandInputType
             .TryGetProperty(propertyName)
-            .GetCustomAttribute<TAttribute>()
+            .GetCustomAttribute<TAttribute>()!
             .ErrorMessage;
     }
 
@@ -28,7 +30,7 @@ internal static class ErrorReader {
             .GetProperty<TCommand>();
 
         return prop
-            .GetCustomAttribute<RequiredAttribute>()
+            .GetCustomAttribute<RequiredAttribute>()!
             .GetErrorMessage(prop);
     }
 
@@ -38,14 +40,14 @@ internal static class ErrorReader {
 
         return propertyName
             .GetProperty<TCommand>()
-            .GetCustomAttribute<TAttribute>()
+            .GetCustomAttribute<TAttribute>()!
             .ErrorMessage;
     }
 
     private static PropertyInfo GetProperty<TCommand>(this string propertyName) {
         try {
 
-            return typeof(TCommand).BaseType //get parent object
+            return typeof(TCommand).BaseType! //get parent object
                 .GetGenericArguments()[0] //get the generic given to the parent object; the ICommandInput type
                 .TryGetProperty(propertyName); //get the specific property
 

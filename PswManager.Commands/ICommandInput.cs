@@ -1,3 +1,3 @@
-﻿namespace PswManager.Commands; 
+﻿namespace PswManager.Commands;
 public interface ICommandInput {
 }

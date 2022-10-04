@@ -1,14 +1,8 @@
-﻿using Moq;
-using PswManager.Encryption.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PswManager.Encryption.Services;
 
-namespace PswManager.Core.Tests.Mocks; 
+namespace PswManager.Core.Tests.Mocks;
 public static class ICryptoServiceMocks {
-    
+
     public static Mock<ICryptoService> GetReverseCryptor() {
         var output = new Mock<ICryptoService>();
         output

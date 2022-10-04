@@ -3,10 +3,10 @@ using PswManager.Commands.AbstractCommands;
 using PswManager.Database.Models;
 using System.Threading.Tasks;
 using PswManager.ConsoleUI.Commands.ArgsModels;
-using PswManager.Core.Inner.Interfaces;
 using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.ConsoleUI.Inner.Interfaces;
 
-namespace PswManager.ConsoleUI.Commands; 
+namespace PswManager.ConsoleUI.Commands;
 public class GetCommand : BaseCommand<GetCommandArgs> {
 
     private readonly IAccountReader dataReader;
@@ -43,7 +43,7 @@ public class GetCommand : BaseCommand<GetCommandArgs> {
 
     private static CommandResult FailureResult(ReaderErrorCode errorMessage)
         => new(ErrorToString(errorMessage), false);
-    private static CommandResult SuccessfulResult(AccountModel account)
+    private static CommandResult SuccessfulResult(IAccountModel account)
         => new("The account has been retrieved successfully.", true, $"{account.Name} {account.Password} {account.Email}");
 
     public override string GetDescription() {

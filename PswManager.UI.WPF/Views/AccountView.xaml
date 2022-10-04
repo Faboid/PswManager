@@ -1,0 +1,138 @@
+﻿<UserControl x:Class="PswManager.UI.WPF.Views.AccountView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PswManager.UI.WPF.Views" 
+             xmlns:viewmodels="clr-namespace:PswManager.UI.WPF.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewmodels:AccountViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800"
+             VerticalAlignment="Center"
+             HorizontalAlignment="Center">
+
+    <Border 
+        BorderBrush="Black"
+        Background="#443737"
+        BorderThickness="5"
+        Padding="5">
+
+        <Grid>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/> <!--Name-->
+                <RowDefinition Height="auto"/> <!--Password, Email-->
+                <RowDefinition Height="15"/>   <!--Empty Space-->
+                <RowDefinition Height="auto"/> <!--Buttons-->
+            </Grid.RowDefinitions>
+
+            <!--Name, Close Button-->
+            <Grid
+                Grid.Row="0"
+                >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/> <!--Name Text-->
+                    <ColumnDefinition Width="20"/> <!--Empty Space-->
+                    <ColumnDefinition Width="*"/> <!--Close Button-->
+                </Grid.ColumnDefinitions>
+
+                <Label
+                    Grid.Column="0"
+                    Content="{Binding Name}"
+                    />
+
+                <Button
+                    Grid.Column="2"
+                    Content="Close"
+                    VerticalAlignment="Center"
+                    Command="{Binding CloseDetailsCommand}"
+                    Style="{StaticResource CloseButton}"
+                    />
+
+            </Grid>
+
+            <!--Password, Email, Copy Buttons-->
+            <Grid
+                Grid.Row="1"
+                >
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <!--Field Text-->
+                    <ColumnDefinition Width="20"/>
+                    <!--Empty Space-->
+                    <ColumnDefinition MinWidth="40" Width="*"/>
+                    <!--Copy Buttons-->
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <Label
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    Content="{Binding Password}"
+                    />
+
+                <Button
+                    Grid.Column="2"
+                    Grid.Row="0"
+                    Content="Copy"
+                    VerticalAlignment="Center"
+                    Command="{Binding CopyPasswordToClipboard}"
+                    />
+
+                <Label
+                    Grid.Column="0"
+                    Grid.Row="2"
+                    Content="{Binding Email}"
+                    />
+
+                <Button
+                    Grid.Column="2"
+                    Grid.Row="2"
+                    Content="Copy"
+                    VerticalAlignment="Center"
+                    Command="{Binding CopyEmailToClipboard}"
+                    />
+
+            </Grid>
+
+            <Grid
+                Margin="10"
+                Grid.Row="3"
+                >
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="50" Width="*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition MinWidth="50" Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Content="Edit"
+                    Command="{Binding EditCommand}"
+                    />
+
+                <Button
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    Content="Delete"
+                    Command="{Binding DeleteCommand}"
+                    />
+
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

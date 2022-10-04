@@ -1,4 +1,4 @@
-﻿namespace PswManager.ConsoleUI.Tests.Commands.Helper; 
+﻿namespace PswManager.ConsoleUI.Tests.Commands.Helper;
 internal class ExceptionsFactory {
 
     public static ArgumentException CreateArgException(string propertyName) {

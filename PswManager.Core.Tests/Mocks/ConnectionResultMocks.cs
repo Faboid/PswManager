@@ -1,9 +1,8 @@
 ﻿using PswManager.Core.Services;
 using PswManager.Database.Models;
-using PswManager.Extensions;
 
 namespace PswManager.Core.Tests.Mocks;
-internal static class ConnectionResultMocks {
+public static class ConnectionResultMocks {
 
     public static ConnectionResult<AccountModel> SuccessIfAllValuesAreNotEmpty(AccountModel model) {
         bool[] isAnyNullOrEmpty = new bool[] {
@@ -13,10 +12,6 @@ internal static class ConnectionResultMocks {
         };
 
         return new(!isAnyNullOrEmpty.Any(x => x), model);
-    }
-
-    public static ConnectionResult<AccountModel> GenerateEncryptedSuccessFromName(string name, ICryptoAccountService cryptoAccount) {
-        return new(true, AccountModelMocks.GenerateEncryptedFromName(name, cryptoAccount));
     }
 
     public static ConnectionResult<IEnumerable<AccountResult>> GenerateInfiniteEncryptedAccountList(ICryptoAccountService cryptoAccount) {

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PswManager.Commands.AbstractCommands; 
+namespace PswManager.Commands.AbstractCommands;
 /// <summary>
 /// Represents a command that uses complex objects as input values.
 /// </summary>

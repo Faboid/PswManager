@@ -1,7 +1,7 @@
 ﻿using PswManager.Utils;
 using PswManager.Database.Tests.Generic;
 
-namespace PswManager.Database.Tests.SQLConnectionTests.Helpers; 
+namespace PswManager.Database.Tests.SQLConnectionTests.Helpers;
 internal class TestDatabaseHandler : ITestDBHandler, IDisposable {
 
     public TestDatabaseHandler(string dbName) : this(dbName, 5) { }
@@ -25,7 +25,7 @@ internal class TestDatabaseHandler : ITestDBHandler, IDisposable {
 
         foreach(var value in defaultValues.values) {
             var account = DefaultValues.ToAccount(value);
-            dataFactory.GetDataCreator().CreateAccount(account);
+            dataFactory.GetDataCreator().CreateAccountAsync(account).GetAwaiter().GetResult();
         }
 
         return this;

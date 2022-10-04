@@ -46,7 +46,6 @@ public class CryptoAccountService : ICryptoAccountService {
     public Task<ICryptoService> GetPassCryptoServiceAsync() => EmaCryptoString.Value;
     public Task<ICryptoService> GetEmaCryptoServiceAsync() => PassCryptoString.Value;
 
-
     public (string encryptedPassword, string encryptedEmail) Encrypt(string password, string email) {
         return (GetPassCryptoService().Encrypt(password), GetEmaCryptoService().Encrypt(email));
     }
@@ -56,10 +55,11 @@ public class CryptoAccountService : ICryptoAccountService {
     }
 
     public (string encryptedPassword, string encryptedEmail) Encrypt((string password, string email) values) => Encrypt(values.password, values.email);
+
     public (string decryptedPassword, string decryptedEmail) Decrypt((string encryptedPassword, string encryptedEmail) values) => Decrypt(values.encryptedPassword, values.encryptedEmail);
 
     //todo - unit test these two methods
-    public AccountModel Encrypt(AccountModel model) {
+    public IAccountModel Encrypt(IReadOnlyAccountModel model) {
         AccountModel output = new(model.Name, model.Password, model.Email);
 
         if(!string.IsNullOrWhiteSpace(output.Password)) {
@@ -72,7 +72,7 @@ public class CryptoAccountService : ICryptoAccountService {
         return output;
     }
 
-    public AccountModel Decrypt(AccountModel model) {
+    public IAccountModel Decrypt(IReadOnlyAccountModel model) {
         AccountModel output = new(model.Name, model.Password, model.Email);
 
         if(!string.IsNullOrWhiteSpace(output.Password)) {

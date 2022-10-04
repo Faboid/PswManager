@@ -37,11 +37,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Database.Tests",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Extensions.Tests", "PswManager.Extensions.Tests\PswManager.Extensions.Tests.csproj", "{BB407DB9-331E-4187-85E9-82CD18CFABB3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManager.Async.Tests", "PswManager.Async.Tests\PswManager.Async.Tests.csproj", "{2D0F8BBC-CF46-4CE7-BAD3-14AFD5EAADBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Async.Tests", "PswManager.Async.Tests\PswManager.Async.Tests.csproj", "{2D0F8BBC-CF46-4CE7-BAD3-14AFD5EAADBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManager.Encryption.Tests", "PswManager.Encryption.Tests\PswManager.Encryption.Tests.csproj", "{F0DEFE64-2EE4-4A9D-9702-D4C5809BD731}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Encryption.Tests", "PswManager.Encryption.Tests\PswManager.Encryption.Tests.csproj", "{F0DEFE64-2EE4-4A9D-9702-D4C5809BD731}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManager.Commands.Tests", "PswManager.Commands.Tests\PswManager.Commands.Tests.csproj", "{6C2374C6-A002-4016-97BD-3740CAE2CE49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Commands.Tests", "PswManager.Commands.Tests\PswManager.Commands.Tests.csproj", "{6C2374C6-A002-4016-97BD-3740CAE2CE49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManager.UI.WPF", "PswManager.UI.WPF\PswManager.UI.WPF.csproj", "{FF16A93E-01EC-468A-925A-7A52CFF29F33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -117,6 +119,10 @@ Global
 		{6C2374C6-A002-4016-97BD-3740CAE2CE49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C2374C6-A002-4016-97BD-3740CAE2CE49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C2374C6-A002-4016-97BD-3740CAE2CE49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF16A93E-01EC-468A-925A-7A52CFF29F33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF16A93E-01EC-468A-925A-7A52CFF29F33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF16A93E-01EC-468A-925A-7A52CFF29F33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF16A93E-01EC-468A-925A-7A52CFF29F33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

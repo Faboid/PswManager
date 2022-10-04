@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PswManager.ConsoleUI.Attributes; 
+namespace PswManager.ConsoleUI.Attributes;
 [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
 public class RequestAttribute : Attribute {
 

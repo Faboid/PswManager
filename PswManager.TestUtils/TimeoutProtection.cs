@@ -1,4 +1,4 @@
-﻿namespace PswManager.TestUtils; 
+﻿namespace PswManager.TestUtils;
 public static class TimeoutProtection {
 
     public static async Task<T> ThrowIfTakesOver<T>(this Task<T> task, int milliseconds) {

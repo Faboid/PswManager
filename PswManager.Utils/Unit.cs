@@ -1,5 +1,5 @@
 ﻿using System.Runtime.InteropServices;
-namespace PswManager.Utils; 
+namespace PswManager.Utils;
 
 /// <summary>
 /// Represents void.

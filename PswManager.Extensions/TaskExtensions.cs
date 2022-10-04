@@ -1,4 +1,4 @@
-﻿namespace PswManager.Extensions; 
+﻿namespace PswManager.Extensions;
 
 public static class TaskExtensions {
 

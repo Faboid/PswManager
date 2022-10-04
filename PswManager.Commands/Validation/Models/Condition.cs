@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PswManager.Commands.Validation.Models; 
+namespace PswManager.Commands.Validation.Models;
 public class Condition<T> : ICondition<T> {
 
     public Condition(IndexHelper index, Func<T, bool> logic, string errorMessage) {
@@ -32,8 +32,7 @@ public class Condition<T> : ICondition<T> {
             if(Logic.Invoke(obj)) {
                 return true;
             }
-        }
-        catch {
+        } catch {
             return false;
         }
 

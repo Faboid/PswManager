@@ -2,7 +2,7 @@
 using PswManager.Commands.Unused.Parsing.Attributes;
 using Xunit;
 
-namespace PswManager.Commands.Tests.Unused.Parsing; 
+namespace PswManager.Commands.Tests.Unused.Parsing;
 public class ParserTests {
 
     [Fact]

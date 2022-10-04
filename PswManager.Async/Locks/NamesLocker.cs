@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using PswManager.Utils;
 
-namespace PswManager.Async.Locks; 
+namespace PswManager.Async.Locks;
 public class NamesLocker : IDisposable {
 
     readonly ConcurrentDictionary<string, RefCount<Locker>> lockers = new();
@@ -203,7 +203,7 @@ public class NamesLocker : IDisposable {
         private bool isDisposed = false;
 
         public bool Obtained { get; init; }
-        
+
         internal MainLock(NamesLocker locker) {
             Obtained = false;
             this.locker = locker;

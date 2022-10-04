@@ -1,10 +1,10 @@
 ﻿using PswManager.Commands.Validation.Attributes;
 using PswManager.Commands.Validation.Models;
-using PswManager.Database.DataAccess.Interfaces;
 using PswManager.ConsoleUI.Commands.Validation.Attributes;
 using PswManager.Database.DataAccess.ErrorCodes;
+using PswManager.Database.Interfaces;
 
-namespace PswManager.ConsoleUI.Commands.Validation.ValidationTypes; 
+namespace PswManager.ConsoleUI.Commands.Validation.ValidationTypes;
 public class VerifyAccountExistenceRule : ValidationRule {
 
     private readonly IDataHelper dataHelper;

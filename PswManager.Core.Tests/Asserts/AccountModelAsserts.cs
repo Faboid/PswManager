@@ -1,10 +1,10 @@
-﻿using PswManager.Database.Models;
-using Xunit;
+﻿using PswManager.Core.AccountModels;
+using PswManager.Database.Models;
 
-namespace PswManager.Core.Tests.Asserts; 
-internal class AccountModelAsserts {
+namespace PswManager.Core.Tests.Asserts;
+public class AccountModelAsserts {
 
-    public static bool AssertEqual(AccountModel expected, AccountModel actual) {
+    public static bool AssertEqual(IReadOnlyAccountModel expected, IReadOnlyAccountModel actual) {
         Assert.Equal(expected.Name, actual.Name);
         Assert.Equal(expected.Password, actual.Password);
         Assert.Equal(expected.Email, actual.Email);

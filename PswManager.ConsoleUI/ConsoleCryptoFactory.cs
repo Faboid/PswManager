@@ -2,12 +2,11 @@
 using PswManager.Core.Services;
 using PswManager.Encryption.Cryptography;
 using PswManager.Encryption.Services;
-using PswManager.Utils;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PswManager.Core.Cryptography;
+namespace PswManager.ConsoleUI;
 public class ConsoleCryptoFactory {
     //todo - split/organize this class
     //todo - properly test this class
@@ -84,7 +83,7 @@ public class ConsoleCryptoFactory {
             userInput.SendMessage("Verifying password...");
             var key = await generator.GenerateKeyAsync().ConfigureAwait(false);
             var cryptoService = new CryptoService(key);
-            
+
             //if the password is correct, exit
             if(_tokenService.VerifyToken(cryptoService) == ITokenService.TokenResult.Success) {
                 break;
@@ -109,7 +108,7 @@ public class ConsoleCryptoFactory {
     }
 
     private static async Task<Key> GenerateKeyAndDisposeGenerator(KeyGeneratorService generator, RefCount<Locker> lockerRef) {
-        
+
         try {
             using var reference = lockerRef.GetRef();
             using var lockhere = await reference.Value.GetLockAsync().ConfigureAwait(false);

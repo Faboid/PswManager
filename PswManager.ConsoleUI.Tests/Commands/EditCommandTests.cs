@@ -1,12 +1,10 @@
 ﻿using PswManager.Commands;
 using PswManager.ConsoleUI.Commands;
-using PswManager.ConsoleUI.Commands.Validation.Attributes;
+using PswManager.ConsoleUI.Inner;
 using PswManager.ConsoleUI.Tests.Commands.Helper;
-using PswManager.Core.Inner;
 using PswManager.TestUtils;
-using Xunit;
 
-namespace PswManager.ConsoleUI.Tests.Commands; 
+namespace PswManager.ConsoleUI.Tests.Commands;
 public class EditCommandTests {
 
     public EditCommandTests() {
@@ -32,8 +30,8 @@ public class EditCommandTests {
 
         var def = new DefaultValues(4);
 
-        yield return NewObj(def.GetValue(1, DefaultValues.TypeValue.Name), 
-            null, "newPassword1", "newEmail1", 
+        yield return NewObj(def.GetValue(1, DefaultValues.TypeValue.Name),
+            null, "newPassword1", "newEmail1",
             $"{def.GetValue(1, DefaultValues.TypeValue.Name)} newPassword1 newEmail1");
 
         yield return NewObj(def.GetValue(2, DefaultValues.TypeValue.Name),
