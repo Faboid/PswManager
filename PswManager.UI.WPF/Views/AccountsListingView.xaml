@@ -38,10 +38,12 @@
             Grid.Row="1"
             Content="Settings"
             Command="{Binding SettingsCommand}"
+            Visibility="Collapsed"
             />
 
         <components:TextBoxWithButton
-            Grid.Column="2"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
             Grid.Row="1"
             Padding="2"
             FontSize="14"
