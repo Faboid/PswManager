@@ -90,6 +90,20 @@ public class AccountTests {
 
     }
 
+    [Fact]
+    public async Task CorruptedAccount_DoesNotEdit() {
+
+        var holder = new CorruptedAccountHolder("AName", ReaderErrorCode.Undefined, _accountModelFactory);
+        var account = new Account(holder, Mock.Of<IDataConnection>());
+        var editingValues = _accountModelFactory.CreateDecryptedAccount("name", "pass", "ema");
+        var result = await account.EditAccountAsync(editingValues);
+        var holderResult = await holder.EditAccountAsync(editingValues);
+
+        Assert.Equal(EditAccountResult.ValuesCorrupted, result);
+        Assert.Equal(EditAccountResult.ValuesCorrupted, holderResult);
+
+    }
+
     private static AccountModel GetGeneric() => new("SomeName", "SomePassword", "SomeEmail");
 
     private static IAccount CreateAccount(EncryptedAccount encryptedAccount, IDataConnection _connection, IAccountValidator _validator) {
