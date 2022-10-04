@@ -1,5 +1,5 @@
 using PswManager.Core.Validators;
-using static PswManager.Core.AccountFactory;
+using static PswManager.Core.IAccountFactory;
 using PswManager.Core.AccountModels;
 using PswManager.Core.Tests.Mocks;
 using PswManager.Database.DataAccess.ErrorCodes;
@@ -80,6 +80,34 @@ public class AccountFactoryTests {
         for(int i = 0; i < actual.Length; i++) {
             AccountModelAsserts.AssertEqual(expected[i], actual[i]);
         }
+    }
+
+    public static IEnumerable<object[]> GetCorruptedData() {
+        static object[] NewObject(string name, ReaderErrorCode errorCode, string expectedMessage) => new object[] { name, errorCode, expectedMessage };
+        yield return NewObject("SomeName", ReaderErrorCode.UsedElsewhere, "SomeName couldn't be loaded because it was used elsewhere.");
+        yield return NewObject("Anotherone", ReaderErrorCode.Undefined, "There has been an unknown error trying to load Anotherone");
+    }
+
+    [Theory]
+    [MemberData(nameof(GetCorruptedData))]
+    public async Task LoadAccounts_LoadCorrupted(string name, ReaderErrorCode errorCode, string expectedMessage) {
+
+        var models = new Option<IAccountModel, (string name, ReaderErrorCode errorCode)>[] {
+            (name, errorCode),
+        }.ToAsyncEnumerable();
+
+        var connectionMock = new Mock<IDataConnection>();
+        connectionMock.Setup(x => x.EnumerateAccountsAsync()).Returns(models);
+        var sut = new AccountFactory(connectionMock.Object, new AccountValidator(), new AccountModelFactory(ICryptoAccountMocks.GetReversedAndSummingCryptor()));
+
+        var result = sut.LoadAccounts();
+
+        var account = await result.SingleAsync();
+
+        Assert.Equal(name, account.Name);
+        Assert.Equal(expectedMessage, account.Password);
+        Assert.Equal(expectedMessage, account.Email);
+    
     }
 
     private static EncryptedAccount CreateDefaultEncrypted() => new("SomeName", "SomePassword", "AnEmail@com", ICryptoAccountMocks.GetReversedAndSummingCryptor());
