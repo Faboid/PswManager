@@ -2,6 +2,7 @@
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.SQLDatabase.SQLConnHelper;
 using PswManager.Database.Models;
+using PswManager.Paths;
 using PswManager.Utils;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,10 +13,10 @@ internal class SQLConnection : IDBConnection {
     readonly DatabaseBuilder database;
     readonly QueriesBuilder queriesBuilder;
 
-    internal SQLConnection() : this("PswManagerDB") { }
+    internal SQLConnection() : this(new PathsBuilder()) { }
 
-    internal SQLConnection(string databaseName) {
-        database = new DatabaseBuilder(databaseName);
+    internal SQLConnection(IPathsBuilder pathsBuilder) {
+        database = new DatabaseBuilder(pathsBuilder);
         queriesBuilder = new QueriesBuilder(database.GetConnection());
     }
 

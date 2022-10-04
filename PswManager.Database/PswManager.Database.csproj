@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PswManager.Async\PswManager.Async.csproj" />
+    <ProjectReference Include="..\PswManager.Paths\PswManager.Paths.csproj" />
     <ProjectReference Include="..\PswManager.Utils\PswManager.Utils.csproj" />
   </ItemGroup>
 

@@ -2,7 +2,7 @@
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
 using PswManager.Extensions;
-using PswManager.Utils;
+using PswManager.Paths;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,17 +12,9 @@ using System.Threading.Tasks;
 namespace PswManager.Database.DataAccess.TextDatabase.TextFileConnHelper;
 internal class FileSaver {
 
-    public FileSaver() : this("TextSaves") { }
-
-    public FileSaver(string customFolderName) {
-        if(string.IsNullOrWhiteSpace(customFolderName)) {
-            throw new ArgumentException("Given custom folder name is null or white spaces.", nameof(customFolderName));
-        }
-
-        directoryPath = Path.Combine(PathsBuilder.GetWorkingDirectory, "Data", customFolderName);
-        if(!Directory.Exists(directoryPath)) {
-            Directory.CreateDirectory(directoryPath);
-        }
+    public FileSaver(IPathsBuilder pathsBuilder) {
+        directoryPath = pathsBuilder.GetTextDatabaseDirectory();
+        Directory.CreateDirectory(directoryPath);
     }
 
     readonly string directoryPath;
