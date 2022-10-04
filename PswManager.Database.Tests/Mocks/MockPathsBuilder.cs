@@ -24,5 +24,6 @@ public class MockPathsBuilder : IPathsBuilder {
     public string GetTextDatabaseDirectory() => Path.Combine(GetDatabaseDirectory(), "TextDB", _guid);
     public string GetDatabaseDirectory() => Path.Combine(_pathsBuilder.GetDataDirectory(), "Saves", _guid);
     public string GetWorkingDirectory() => _pathsBuilder.GetWorkingDirectory();
-
+    public string GetLogsDirectory() => throw new NotSupportedException();
+    public string GetTokenPath() => throw new NotSupportedException();
 }

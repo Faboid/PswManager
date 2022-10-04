@@ -1,14 +1,14 @@
-using System.IO;
+using PswManager.Paths;
 using System.IO.Abstractions;
 
 namespace PswManager.Core.Services;
 
 public class TokenServiceFactory {
 
-    private readonly PathsHandler _pathsHandler;
+    private readonly IPathsBuilder _pathsHandler;
     private readonly IFileInfoFactory _fileInfoFactory;
 
-    public TokenServiceFactory(PathsHandler pathsHandler, IFileInfoFactory fileInfoFactory) {
+    public TokenServiceFactory(IPathsBuilder pathsHandler, IFileInfoFactory fileInfoFactory) {
         _pathsHandler = pathsHandler;
         _fileInfoFactory = fileInfoFactory;
     }
