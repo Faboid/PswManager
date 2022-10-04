@@ -12,7 +12,7 @@ public interface IAccount : IReadOnlyAccountModel {
     /// <summary>
     /// The name of the account.
     /// </summary>
-    new string Name { get; } 
+    new string Name { get; }
 
     /// <summary>
     /// The encrypted password of the account.
