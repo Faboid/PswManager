@@ -1,27 +1,26 @@
-﻿using PswManager.Utils;
+﻿using PswManager.Paths;
 using System.Data.SQLite;
 using System.IO;
 
 namespace PswManager.Database.DataAccess.SQLDatabase.SQLConnHelper;
 internal class DatabaseBuilder {
 
-    public DatabaseBuilder(string db_name) {
-        dataDirectoryPath = Path.Combine(WorkingDirectory, "Data");
-        dbPath = Path.Combine(dataDirectoryPath, $"{db_name}.db");
+    public DatabaseBuilder(IPathsBuilder pathsBuilder) {
+        _dataDirectoryPath = pathsBuilder.GetSQLDatabaseDirectory();
+        _dbPath = pathsBuilder.GetSQLDatabaseFile();
         SetUpDatabase();
     }
 
-    private static readonly string WorkingDirectory = PathsBuilder.GetWorkingDirectory;
-    private readonly string dataDirectoryPath;
-    private readonly string dbPath;
+    private readonly string _dataDirectoryPath;
+    private readonly string _dbPath;
 
     public SQLiteConnection GetConnection() {
-        return new($"Data Source={dbPath}; Version=3;");
+        return new($"Data Source={_dbPath}; Version=3;");
     }
 
     private void SetUpDatabase() {
-        if(!Directory.Exists(dataDirectoryPath)) {
-            Directory.CreateDirectory(dataDirectoryPath);
+        if(!Directory.Exists(_dataDirectoryPath)) {
+            Directory.CreateDirectory(_dataDirectoryPath);
         }
 
         using var cnn = GetConnection();

@@ -1,6 +1,6 @@
-﻿using PswManager.Utils;
-using PswManager.Extensions;
+﻿using PswManager.Extensions;
 using PswManager.Database.Tests.Generic;
+using PswManager.Database.Tests.Mocks;
 
 namespace PswManager.Database.Tests.JsonConnectionTests.Helpers;
 internal class JsonDBHandler : ITestDBHandler {
@@ -9,8 +9,9 @@ internal class JsonDBHandler : ITestDBHandler {
 
     public JsonDBHandler(string dbName, int numValues) {
         DatabaseName = $"JsonTestsDB_{dbName}";
-        dbPath = Path.Combine(PathsBuilder.GetWorkingDirectory, "Data", DatabaseName);
-        factory = new DataFactory(DatabaseType.Json, DatabaseName);
+        var pathBuilderMock = new MockPathsBuilder(DatabaseName);
+        dbPath = pathBuilderMock.GetJsonDatabaseDirectory();
+        factory = new DataFactory(DatabaseType.Json, pathBuilderMock);
         defaultValues = new DefaultValues(numValues);
     }
 

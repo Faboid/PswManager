@@ -1,6 +1,6 @@
-﻿using PswManager.Utils;
-using PswManager.Database.Tests.Generic;
+﻿using PswManager.Database.Tests.Generic;
 using PswManager.Database.Interfaces;
+using PswManager.Database.Tests.Mocks;
 
 namespace PswManager.Database.Tests.TextFileConnectionTests.Helpers;
 internal class TextDatabaseHandler : ITestDBHandler, IDisposable {
@@ -9,10 +9,11 @@ internal class TextDatabaseHandler : ITestDBHandler, IDisposable {
 
     public TextDatabaseHandler(string dbName, int numValues) {
         DatabaseName = $"TextTestDB_{dbName}";
+        var mockPathsBuilder = new MockPathsBuilder(DatabaseName);
         defaultValues = new DefaultValues(numValues);
-        factory = new DataFactory(DatabaseType.TextFile, DatabaseName);
+        factory = new DataFactory(DatabaseType.TextFile, mockPathsBuilder);
         dataCreator = factory.GetDataCreator();
-        folderDB = Path.Combine(PathsBuilder.GetWorkingDirectory, "Data", DatabaseName);
+        folderDB = mockPathsBuilder.GetTextDatabaseDirectory();
     }
 
     private readonly DefaultValues defaultValues;

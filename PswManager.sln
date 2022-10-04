@@ -43,7 +43,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Encryption.Tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Commands.Tests", "PswManager.Commands.Tests\PswManager.Commands.Tests.csproj", "{6C2374C6-A002-4016-97BD-3740CAE2CE49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManager.UI.WPF", "PswManager.UI.WPF\PswManager.UI.WPF.csproj", "{FF16A93E-01EC-468A-925A-7A52CFF29F33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.UI.WPF", "PswManager.UI.WPF\PswManager.UI.WPF.csproj", "{FF16A93E-01EC-468A-925A-7A52CFF29F33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManager.Paths", "PswManager.Paths\PswManager.Paths.csproj", "{CC2EF4FE-C156-4C5F-B537-060E6AED8B5D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -123,6 +125,10 @@ Global
 		{FF16A93E-01EC-468A-925A-7A52CFF29F33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF16A93E-01EC-468A-925A-7A52CFF29F33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF16A93E-01EC-468A-925A-7A52CFF29F33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC2EF4FE-C156-4C5F-B537-060E6AED8B5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC2EF4FE-C156-4C5F-B537-060E6AED8B5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC2EF4FE-C156-4C5F-B537-060E6AED8B5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC2EF4FE-C156-4C5F-B537-060E6AED8B5D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

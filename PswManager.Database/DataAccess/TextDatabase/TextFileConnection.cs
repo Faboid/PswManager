@@ -2,6 +2,7 @@
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.DataAccess.TextDatabase.TextFileConnHelper;
 using PswManager.Database.Models;
+using PswManager.Paths;
 using PswManager.Utils;
 using System;
 using System.Collections.Generic;
@@ -10,12 +11,10 @@ using System.Threading.Tasks;
 namespace PswManager.Database.DataAccess.TextDatabase;
 public class TextFileConnection : IDBConnection {
 
-    internal TextFileConnection() {
-        fileSaver = new();
-    }
+    internal TextFileConnection() : this(new PathsBuilder()) { }
 
-    internal TextFileConnection(string customDB) {
-        fileSaver = new(customDB);
+    internal TextFileConnection(IPathsBuilder pathsBuilder) {
+        fileSaver = new(pathsBuilder);
     }
 
     readonly FileSaver fileSaver;

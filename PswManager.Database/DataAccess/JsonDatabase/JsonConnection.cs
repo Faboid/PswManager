@@ -2,6 +2,7 @@
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
 using PswManager.Extensions;
+using PswManager.Paths;
 using PswManager.Utils;
 using System.Collections.Generic;
 using System.IO;
@@ -12,13 +13,11 @@ using System.Threading.Tasks;
 namespace PswManager.Database.DataAccess.JsonDatabase;
 internal class JsonConnection : IDBConnection {
 
-    internal JsonConnection() : this("Json") { }
+    internal JsonConnection() : this(new PathsBuilder()) { }
 
-    internal JsonConnection(string customFolderName) {
-        directoryPath = Path.Combine(PathsBuilder.GetWorkingDirectory, "Data", customFolderName);
-        if(!Directory.Exists(directoryPath)) {
-            Directory.CreateDirectory(directoryPath);
-        }
+    internal JsonConnection(IPathsBuilder pathsBuilder) {
+        directoryPath = pathsBuilder.GetJsonDatabaseDirectory();
+        Directory.CreateDirectory(directoryPath);
     }
 
     readonly string directoryPath;
