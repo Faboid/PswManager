@@ -29,7 +29,7 @@ public partial class App : Application {
 
 			})
 			.AddIOAbstractions()
-			.AddAccountsPipeline(Database.DatabaseType.TextFile) //todo - use sql db
+			.AddAccountsPipeline(Database.DatabaseType.Sql)
 			.AddUIComponents()
 			.AddStores()
 			.AddViewModels()
