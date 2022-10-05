@@ -4,6 +4,10 @@ using PswManager.ConsoleUI.Commands.Validation.Attributes;
 using System.Linq;
 
 namespace PswManager.ConsoleUI.Commands.Validation.ValidationTypes;
+
+/// <summary>
+/// Splits the property string with ' ', then ensures that the split parts do not hold any duplicate.
+/// </summary>
 public class NoDuplicateValuesRule : ValidationRule {
 
     public NoDuplicateValuesRule() : base(typeof(NoDuplicateValuesAttribute), typeof(string)) { }
