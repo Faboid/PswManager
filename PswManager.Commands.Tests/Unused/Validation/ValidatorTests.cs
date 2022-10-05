@@ -16,7 +16,7 @@ public class ValidatorTests {
             .AddRule(new ValidateLessThanOneHundred())
             .Build();
 
-        ICondition<TestObject> ageCondition = new AgeCondition(2);
+        ICondition<TestObject> ageCondition = new AgeCondition();
         minimumAgeMessage = ageCondition.GetErrorMessage();
 
         validator = new ValidatorBuilder<TestObject>()
@@ -113,32 +113,10 @@ public class TestObject {
 
 public class AgeCondition : ICondition<TestObject> {
 
-    public AgeCondition(int index) {
-        this.index = index;
-    }
-
-    private readonly int index;
-
     public string GetErrorMessage() => "The minimum required age is 13.";
 
-    public bool IsValid(TestObject obj) => IsValid(obj, new List<int>());
+    public bool IsValid(TestObject obj) => obj.Age > 13;
 
-    public bool IsValid(TestObject obj, IList<int> failedConditions) {
-
-        try {
-
-            //if the validation passes, return true
-            if(obj.Age > 13) {
-                return true;
-            }
-        } catch {
-
-            return false;
-        }
-
-        failedConditions.Add(index);
-        return false;
-    }
 }
 
 public class ValidateNotEmpty : ValidationRule {
