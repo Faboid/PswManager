@@ -1,5 +1,8 @@
 ﻿namespace PswManager.Paths;
 
+/// <summary>
+/// Provides a collection of static paths.
+/// </summary>
 public static class DefaultPaths {
 
     /// <summary>
