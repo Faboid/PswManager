@@ -7,6 +7,8 @@ public class IntRangeTests {
     [Theory]
     [InlineData(0, 10, 12, 2)]
     [InlineData(-50, 50, 130, -20)]
+    [InlineData(0, 20, -5, 15)]
+    [InlineData(0, 20, -25, 15)]
     public void CorrectValue(int min, int max, int toAdd, int expectedValue) {
 
         //arrange

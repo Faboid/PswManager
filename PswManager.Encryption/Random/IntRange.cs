@@ -34,6 +34,8 @@ internal class IntRange {
         var summedValue = Value + remainder;
         if(summedValue > max) {
             summedValue -= range;
+        } else if(summedValue < min) {
+            summedValue += range;
         }
         Value = summedValue;
 
