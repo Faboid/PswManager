@@ -2,10 +2,24 @@
 using System.Threading.Tasks;
 
 namespace PswManager.Database.Interfaces;
+
+/// <summary>
+/// Provides methods to check whether the account exists.
+/// </summary>
 public interface IDataHelper {
 
-    //todo - consider whether to leave it as enum-only or to use Option<bool, AccountExistsErrorCode> with a less comprehensive code set
+    /// <summary>
+    /// Checks whether the account exists.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     AccountExistsStatus AccountExist(string name);
+
+    /// <summary>
+    /// Checks whether the account exists asynchonously.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     Task<AccountExistsStatus> AccountExistAsync(string name);
 
 }

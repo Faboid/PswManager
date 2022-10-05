@@ -9,6 +9,12 @@ using System.Threading.Tasks;
 
 namespace PswManager.Database.Wrappers;
 
+/// <summary>
+/// Ensures that the same account is accessed only once at a time by using a <see cref="NamesLocker"/>. 
+/// </summary>
+/// <remarks>
+/// For <see cref="EnumerateAccountsAsync"/>, which would need a "main lock", it passes through the request with the <see cref="NamesLocker"/> to allow more fine-tuning during the request.
+/// </remarks>
 internal class ConcurrencyWrapper : IDataConnection {
 
     private readonly IDBConnection _connection;

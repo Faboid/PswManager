@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace PswManager.Database.Wrappers;
 
+/// <summary>
+/// Validates all the requests. Will return an errorstatus/code on failure, but will pass through all requests that satisfy the validation.
+/// </summary>
 internal class ValidationWrapper : IDataConnection {
 
     private readonly IDataConnection _connection;

@@ -2,9 +2,7 @@
 
 public class AccountModel : IAccountModel, IReadOnlyAccountModel {
 
-    public AccountModel() {
-
-    }
+    public AccountModel() { }
 
     public AccountModel(string name, string password, string email) {
         Name = name;
