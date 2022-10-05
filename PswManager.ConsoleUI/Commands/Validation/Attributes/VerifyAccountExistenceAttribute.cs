@@ -2,6 +2,10 @@
 using System;
 
 namespace PswManager.ConsoleUI.Commands.Validation.Attributes;
+
+/// <summary>
+/// Metadata on whether the account is expected to exist.
+/// </summary>
 [AttributeUsage(AttributeTargets.Property)]
 public class VerifyAccountExistenceAttribute : RuleAttribute {
 

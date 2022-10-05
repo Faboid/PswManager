@@ -5,6 +5,10 @@ using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Interfaces;
 
 namespace PswManager.ConsoleUI.Commands.Validation.ValidationTypes;
+
+/// <summary>
+/// Verifies if the account's existence is the expected.
+/// </summary>
 public class VerifyAccountExistenceRule : ValidationRule {
 
     private readonly IDataHelper dataHelper;
