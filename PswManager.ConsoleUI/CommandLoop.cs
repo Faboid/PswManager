@@ -13,16 +13,11 @@ public class CommandLoop {
 
     private readonly Dictionary<Type, Requester> cachedRequesters = new();
     private readonly IUserInput userInput;
-    private CommandQuery query;
+    private readonly CommandQuery query;
 
     public CommandLoop(IUserInput userInput, ICryptoAccountService cryptoAccount, IReadOnlyDictionary<string, ICommand> extraCommands = null) {
         extraCommands ??= new Dictionary<string, ICommand>();
-
         this.userInput = userInput;
-        SetUp(cryptoAccount, extraCommands);
-    }
-
-    private void SetUp(ICryptoAccountService cryptoAccount, IReadOnlyDictionary<string, ICommand> extraCommands) {
 
         var dbType = DatabaseType.TextFile;
 
