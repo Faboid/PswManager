@@ -7,6 +7,10 @@ using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.ConsoleUI.Inner.Interfaces;
 
 namespace PswManager.ConsoleUI.Commands;
+
+/// <summary>
+/// Command used to create an account.
+/// </summary>
 public class AddCommand : BaseCommand<AddCommandArgs> {
 
     private readonly IAccountCreator dataCreator;

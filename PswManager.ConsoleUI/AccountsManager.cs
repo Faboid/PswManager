@@ -8,6 +8,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PswManager.ConsoleUI;
+
+/// <summary>
+/// A wrapper of <see cref="IAccountCreator"/>, <see cref="IAccountReader"/>, <see cref="IAccountDeleter"/>, and <see cref="IAccountEditor"/>.
+/// </summary>
 public class AccountsManager : IAccountsManager {
 
     public AccountsManager(IDataFactory dbFactory, ICryptoAccountService cryptoAccount) {

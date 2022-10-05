@@ -4,9 +4,11 @@ using System.Threading.Tasks;
 using PswManager.ConsoleUI.Commands.ArgsModels;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.ConsoleUI.Inner.Interfaces;
-using PswManager.Utils.Options;
-
 namespace PswManager.ConsoleUI.Commands;
+
+/// <summary>
+/// Command used to delete an account.
+/// </summary>
 public class DeleteCommand : BaseCommand<DeleteCommandArgs> {
 
     readonly IUserInput userInput;

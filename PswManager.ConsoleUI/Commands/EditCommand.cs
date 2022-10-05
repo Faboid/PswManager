@@ -7,6 +7,10 @@ using PswManager.ConsoleUI.Inner.Interfaces;
 using PswManager.Database.Models;
 
 namespace PswManager.ConsoleUI.Commands;
+
+/// <summary>
+/// Command used to edit an account.
+/// </summary>
 public sealed class EditCommand : BaseCommand<EditCommandArgs> {
 
     private readonly IAccountEditor accountEditor;
