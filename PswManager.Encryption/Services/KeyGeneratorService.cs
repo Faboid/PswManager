@@ -8,6 +8,10 @@ using PswManager.Async.Locks;
 
 [assembly: InternalsVisibleTo("PswManager.Tests")]
 namespace PswManager.Encryption.Services;
+
+/// <summary>
+/// Provides methods to generate a number of keys. The keys will be consistent across instances as long as they use the same master key.
+/// </summary>
 public class KeyGeneratorService : IAsyncDisposable {
 
     /// <summary>
@@ -23,7 +27,7 @@ public class KeyGeneratorService : IAsyncDisposable {
     /// </summary>
     /// <param name="salt"></param>
     /// <param name="masterKey"></param>
-    public KeyGeneratorService(byte[] salt, char[] masterKey) : this(salt, masterKey, 1000000) { }
+    internal KeyGeneratorService(byte[] salt, char[] masterKey) : this(salt, masterKey, 1000000) { }
 
     /// <summary>
     /// Instantiates a <see cref="KeyGeneratorService"/> with a custom <paramref name="salt"/>.
@@ -67,10 +71,12 @@ public class KeyGeneratorService : IAsyncDisposable {
     }
 
     /// <summary>
-    /// Generates a finite amount of keys.
-    /// <br/>As long as the given <see cref="salt"/> and <see cref="masterKey"/> are the same, 
-    /// the generated series will be the same across instances.
+    /// Generates <paramref name="num"/> of keys asynchonously.
     /// </summary>
+    /// <remarks>
+    /// As long as the given <see cref="salt"/> and <see cref="masterKey"/> are the same, 
+    /// the generated series will be the same across instances.
+    /// </remarks>
     /// <param name="num"></param>
     /// <returns></returns>
     public async Task<List<Key>> GenerateKeysAsync(int num) {
@@ -84,6 +90,16 @@ public class KeyGeneratorService : IAsyncDisposable {
         return keys;
     }
 
+    /// <summary>
+    /// Generates a single key.
+    /// </summary>
+    /// <remarks>
+    /// As long as the given <see cref="salt"/> and <see cref="masterKey"/> are the same, 
+    /// the generated series will be the same across instances.
+    /// </remarks>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    /// <exception cref="ObjectDisposedException"></exception>
     public async Task<Key> GenerateKeyAsync() {
         using var lockhere = await locker.GetLockAsync().ConfigureAwait(false);
         do {
