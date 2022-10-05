@@ -1,0 +1,1 @@
+This namespace stores classes with interesting ideas that are incomplete or unused.
