@@ -87,11 +87,9 @@ public class AccountReaderTests {
     public void ReadAllDecryptsCorrectly() {
 
         //assert
-        var expected = ConnectionResultMocks
-            .GenerateInfiniteEncryptedAccountList(cryptoAccount)
-            .Value
+        var expected = AccountModelMocks.GenerateManyEncrypted(cryptoAccount)
             .Take(10)
-            .Select(x => cryptoAccount.Decrypt(x.Value))
+            .Select(x => cryptoAccount.Decrypt(x))
             .ToList();
 
         //act
@@ -107,11 +105,9 @@ public class AccountReaderTests {
     public async Task ReadAllDecryptsCorrectlyAsync() {
 
         //assert
-        var expected = ConnectionResultMocks
-            .GenerateInfiniteEncryptedAccountList(cryptoAccount)
-            .Value
+        var expected = AccountModelMocks.GenerateManyEncrypted(cryptoAccount)
             .Take(10)
-            .Select(x => cryptoAccount.Decrypt(x.Value))
+            .Select(x => cryptoAccount.Decrypt(x))
             .ToList();
 
         //act
