@@ -15,8 +15,10 @@ var directoryInfoFactory = fileSystem.DirectoryInfo;
 var fileInfoFactory = fileSystem.FileInfo;
 var pathsHandler = new PathsBuilder(directoryInfoFactory);
 var tokenFactory = new TokenServiceFactory(pathsHandler, fileInfoFactory);
-var cryptoFactory = new ConsoleCryptoFactory(userInput, tokenFactory.CreateTokenService(token));
-var cryptoAccount = await cryptoFactory.AskUserPasswordsAsync();
+var tokenService = tokenFactory.CreateTokenService(token);
+var cryptoFactory = new CryptoAccountServiceFactory(tokenService);
+var logInService = new LogInService(userInput, tokenService, cryptoFactory);
+var cryptoAccount = await logInService.AskUserPasswordsAsync();
 
 Console.WriteLine("Welcome to PswManager! Please insert a command.");
 var cmdLoop = new CommandLoop(userInput, cryptoAccount);
