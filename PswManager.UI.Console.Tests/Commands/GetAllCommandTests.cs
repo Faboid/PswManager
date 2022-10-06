@@ -1,10 +1,10 @@
 ﻿using PswManager.Commands;
-using PswManager.ConsoleUI.Commands;
-using PswManager.ConsoleUI.Inner;
-using PswManager.ConsoleUI.Tests.Commands.Helper;
 using PswManager.TestUtils;
+using PswManager.UI.Console.Tests.Commands.Helper;
+using PswManager.UI.Console.Commands;
+using PswManager.UI.Console.Inner;
 
-namespace PswManager.ConsoleUI.Tests.Commands;
+namespace PswManager.UI.Console.Tests.Commands;
 public class GetAllCommandTests {
 
     public GetAllCommandTests() {

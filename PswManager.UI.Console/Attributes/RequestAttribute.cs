@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PswManager.ConsoleUI.Attributes;
+namespace PswManager.UI.Console.Attributes;
 
 /// <summary>
 /// Requests <see cref="Requester"/> to ask for property to the console.

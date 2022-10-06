@@ -2,11 +2,11 @@
 using PswManager.Commands.AbstractCommands;
 using PswManager.Database.Models;
 using System.Threading.Tasks;
-using PswManager.ConsoleUI.Commands.ArgsModels;
 using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.ConsoleUI.Inner.Interfaces;
+using PswManager.UI.Console.Commands.ArgsModels;
+using PswManager.UI.Console.Inner.Interfaces;
 
-namespace PswManager.ConsoleUI.Commands;
+namespace PswManager.UI.Console.Commands;
 
 /// <summary>
 /// A command to get a single account.

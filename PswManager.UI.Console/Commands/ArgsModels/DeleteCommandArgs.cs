@@ -1,9 +1,9 @@
 ﻿using PswManager.Commands;
 using PswManager.Commands.Validation.Attributes;
-using PswManager.ConsoleUI.Attributes;
-using PswManager.ConsoleUI.Commands.Validation.Attributes;
+using PswManager.UI.Console.Attributes;
+using PswManager.UI.Console.Commands.Validation.Attributes;
 
-namespace PswManager.ConsoleUI.Commands.ArgsModels;
+namespace PswManager.UI.Console.Commands.ArgsModels;
 
 /// <summary>
 /// Represents the arguments used to delete an account.

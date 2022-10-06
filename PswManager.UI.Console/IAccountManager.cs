@@ -1,6 +1,6 @@
-﻿using PswManager.ConsoleUI.Inner.Interfaces;
+﻿using PswManager.UI.Console.Inner.Interfaces;
 
-namespace PswManager.ConsoleUI;
+namespace PswManager.UI.Console;
 
 /// <summary>
 /// Provides methods for the creation, deletion, editing, and retrieving of accounts.

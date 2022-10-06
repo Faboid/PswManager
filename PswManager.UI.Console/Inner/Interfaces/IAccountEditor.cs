@@ -2,7 +2,7 @@
 using PswManager.Database.Models;
 using System.Threading.Tasks;
 
-namespace PswManager.ConsoleUI.Inner.Interfaces;
+namespace PswManager.UI.Console.Inner.Interfaces;
 
 /// <summary>
 /// Provides methods to edit accounts.

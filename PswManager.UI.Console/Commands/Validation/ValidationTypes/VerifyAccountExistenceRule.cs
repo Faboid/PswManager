@@ -1,10 +1,10 @@
 ﻿using PswManager.Commands.Validation.Attributes;
 using PswManager.Commands.Validation.Models;
-using PswManager.ConsoleUI.Commands.Validation.Attributes;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Interfaces;
+using PswManager.UI.Console.Commands.Validation.Attributes;
 
-namespace PswManager.ConsoleUI.Commands.Validation.ValidationTypes;
+namespace PswManager.UI.Console.Commands.Validation.ValidationTypes;
 
 /// <summary>
 /// Verifies if the account's existence is the expected.

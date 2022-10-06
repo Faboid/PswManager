@@ -1,11 +1,11 @@
 ﻿using PswManager.Commands;
-using PswManager.ConsoleUI.Attributes;
-using PswManager.ConsoleUI.Commands.Validation.Attributes;
+using PswManager.UI.Console.Attributes;
+using PswManager.UI.Console.Commands.Validation.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PswManager.ConsoleUI.Commands.ArgsModels;
+namespace PswManager.UI.Console.Commands.ArgsModels;
 
 /// <summary>
 /// Represents the arguments given to get all accounts.

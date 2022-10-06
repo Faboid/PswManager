@@ -1,10 +1,10 @@
 ﻿using Moq;
-using PswManager.ConsoleUI.Inner;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Interfaces;
 using PswManager.Extensions;
+using PswManager.UI.Console.Inner;
 
-namespace PswManager.ConsoleUI.Tests.Inner;
+namespace PswManager.UI.Console.Tests.Inner;
 public class AccountDeleterTests {
 
     public AccountDeleterTests() {

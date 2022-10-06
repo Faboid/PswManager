@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using PswManager.ConsoleUI.Commands;
 using PswManager.Core.Services;
+using PswManager.UI.Console.Commands;
 
 //todo - this class is doing too much. Split it into multiple classes and use proper DI
-namespace PswManager.ConsoleUI;
+namespace PswManager.UI.Console;
 
 /// <summary>
 /// Provides a loop for the execution of the command application's main loop.

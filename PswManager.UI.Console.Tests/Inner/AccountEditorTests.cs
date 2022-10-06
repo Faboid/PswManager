@@ -1,5 +1,4 @@
 ﻿using Moq;
-using PswManager.ConsoleUI.Inner;
 using PswManager.Core.Services;
 using PswManager.Core.Tests.Asserts;
 using PswManager.Core.Tests.Mocks;
@@ -7,8 +6,9 @@ using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Interfaces;
 using PswManager.Database.Models;
 using PswManager.Extensions;
+using PswManager.UI.Console.Inner;
 
-namespace PswManager.ConsoleUI.Tests.Inner;
+namespace PswManager.UI.Console.Tests.Inner;
 public class AccountEditorTests {
 
     public AccountEditorTests() {

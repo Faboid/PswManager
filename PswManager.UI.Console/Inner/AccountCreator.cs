@@ -1,11 +1,11 @@
-﻿using PswManager.ConsoleUI.Inner.Interfaces;
-using PswManager.Core.Services;
+﻿using PswManager.Core.Services;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Interfaces;
 using PswManager.Database.Models;
 using System.Threading.Tasks;
+using PswManager.UI.Console.Inner.Interfaces;
 
-namespace PswManager.ConsoleUI.Inner;
+namespace PswManager.UI.Console.Inner;
 public class AccountCreator : IAccountCreator {
 
     public AccountCreator(IDataCreator dataCreator, ICryptoAccountService cryptoAccount) {

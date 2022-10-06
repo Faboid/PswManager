@@ -1,12 +1,12 @@
 ﻿using PswManager.Commands;
 using PswManager.Commands.AbstractCommands;
 using System.Threading.Tasks;
-using PswManager.ConsoleUI.Commands.ArgsModels;
 using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.ConsoleUI.Inner.Interfaces;
 using PswManager.Database.Models;
+using PswManager.UI.Console.Inner.Interfaces;
+using PswManager.UI.Console.Commands.ArgsModels;
 
-namespace PswManager.ConsoleUI.Commands;
+namespace PswManager.UI.Console.Commands;
 
 /// <summary>
 /// Command used to edit an account.

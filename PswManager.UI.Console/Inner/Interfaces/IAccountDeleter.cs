@@ -1,7 +1,7 @@
 ﻿using PswManager.Database.DataAccess.ErrorCodes;
 using System.Threading.Tasks;
 
-namespace PswManager.ConsoleUI.Inner.Interfaces;
+namespace PswManager.UI.Console.Inner.Interfaces;
 /// <summary>
 /// Provides methods to delete accounts.
 /// </summary>

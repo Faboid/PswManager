@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace PswManager.ConsoleUI;
+namespace PswManager.UI.Console;
 public class UserInput : IUserInput {
 
     public string RequestAnswer() {
-        return Console.ReadLine();
+        return System.Console.ReadLine();
     }
 
     public string RequestAnswer(string message) {
-        Console.WriteLine(message);
+        System.Console.WriteLine(message);
         return RequestAnswer();
     }
 
@@ -20,7 +19,7 @@ public class UserInput : IUserInput {
         char asChar;
         int asNum;
         do {
-            asChar = Console.ReadKey().KeyChar;
+            asChar = System.Console.ReadKey().KeyChar;
             asNum = asChar;
 
             //between space and tilde
@@ -33,40 +32,40 @@ public class UserInput : IUserInput {
             }
 
             //clears the line
-            Console.SetCursorPosition(0, Console.CursorTop);
-            Console.Write(new string(' ', Console.BufferWidth));
+            System.Console.SetCursorPosition(0, System.Console.CursorTop);
+            System.Console.Write(new string(' ', System.Console.BufferWidth));
 
             //fills line with asterisks
-            Console.SetCursorPosition(0, Console.CursorTop);
-            Console.Write(new string('*', output.Count));
+            System.Console.SetCursorPosition(0, System.Console.CursorTop);
+            System.Console.Write(new string('*', output.Count));
 
             //while it's not enter
         } while(asNum != 13);
 
-        Console.WriteLine();
+        System.Console.WriteLine();
         return output.ToArray();
     }
 
     public void SendMessage(string message) {
-        Console.WriteLine(message);
+        System.Console.WriteLine(message);
     }
 
     public bool YesOrNo(string question) {
 
-        Console.WriteLine(question);
-        Console.WriteLine("Y/N");
+        System.Console.WriteLine(question);
+        System.Console.WriteLine("Y/N");
 
         //this loop is broken only by a return given by the user's answer.
         while(true) {
 
-            string answer = Console.ReadLine();
+            string answer = System.Console.ReadLine();
 
             if(new[] { "y", "yes" }.Any(x => x == answer.ToLowerInvariant())) {
                 return true;
             } else if(new[] { "n", "no" }.Any(x => x == answer.ToLowerInvariant())) {
                 return false;
             } else {
-                Console.WriteLine("Invalid response. Please write either \"yes\" or \"no\"");
+                System.Console.WriteLine("Invalid response. Please write either \"yes\" or \"no\"");
             }
 
         }

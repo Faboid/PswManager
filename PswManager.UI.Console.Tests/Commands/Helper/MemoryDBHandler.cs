@@ -2,7 +2,7 @@
 using PswManager.Database.Models;
 using PswManager.TestUtils;
 
-namespace PswManager.ConsoleUI.Tests.Commands.Helper;
+namespace PswManager.UI.Console.Tests.Commands.Helper;
 internal class MemoryDBHandler {
 
     //constructs the class with a default value of five

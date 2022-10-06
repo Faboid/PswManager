@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
-using PswManager.ConsoleUI;
 using PswManager.Core.Services;
 using System.IO.Abstractions;
 using PswManager.Paths;
+using PswManager.UI.Console;
 
 UserInput userInput = new();
 

@@ -3,7 +3,7 @@ using Moq;
 using PswManager.Database.Models;
 using PswManager.Core.Services;
 
-namespace PswManager.ConsoleUI.Tests.Commands.Helper;
+namespace PswManager.UI.Console.Tests.Commands.Helper;
 internal static class MockedObjects {
 
     /// <summary>

@@ -1,9 +1,9 @@
-﻿using PswManager.ConsoleUI.Inner.Interfaces;
-using PswManager.Database.DataAccess.ErrorCodes;
+﻿using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Interfaces;
 using System.Threading.Tasks;
+using PswManager.UI.Console.Inner.Interfaces;
 
-namespace PswManager.ConsoleUI.Inner;
+namespace PswManager.UI.Console.Inner;
 public class AccountDeleter : IAccountDeleter {
 
     private readonly IDataDeleter dataDeleter;

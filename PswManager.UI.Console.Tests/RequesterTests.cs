@@ -1,6 +1,6 @@
-﻿using PswManager.ConsoleUI.Attributes;
+﻿using PswManager.UI.Console.Attributes;
 
-namespace PswManager.ConsoleUI.Tests;
+namespace PswManager.UI.Console.Tests;
 public class RequesterTests {
 
     [Fact]

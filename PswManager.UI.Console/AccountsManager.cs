@@ -1,13 +1,13 @@
-﻿using PswManager.ConsoleUI.Inner;
-using PswManager.ConsoleUI.Inner.Interfaces;
-using PswManager.Core.Services;
+﻿using PswManager.Core.Services;
 using PswManager.Database;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using PswManager.UI.Console.Inner.Interfaces;
+using PswManager.UI.Console.Inner;
 
-namespace PswManager.ConsoleUI;
+namespace PswManager.UI.Console;
 
 /// <summary>
 /// A wrapper of <see cref="IAccountCreator"/>, <see cref="IAccountReader"/>, <see cref="IAccountDeleter"/>, and <see cref="IAccountEditor"/>.

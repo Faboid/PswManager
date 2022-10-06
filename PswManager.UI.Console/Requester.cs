@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using PswManager.ConsoleUI.Attributes;
 using PswManager.Extensions;
+using PswManager.UI.Console.Attributes;
 
-namespace PswManager.ConsoleUI;
+namespace PswManager.UI.Console;
 
 /// <summary>
 /// Uses reflection to get a list of properties from the given type, then sets up a request to the user for each.

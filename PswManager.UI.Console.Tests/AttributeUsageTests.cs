@@ -2,7 +2,7 @@
 using System.Reflection;
 using Xunit.Abstractions;
 
-namespace PswManager.ConsoleUI.Tests;
+namespace PswManager.UI.Console.Tests;
 public class AttributesUsageTests {
 
     public AttributesUsageTests(ITestOutputHelper output) {

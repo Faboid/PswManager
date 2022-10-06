@@ -2,7 +2,7 @@
 using PswManager.Commands.Validation.Attributes;
 using System.Reflection;
 
-namespace PswManager.ConsoleUI.Tests.Commands.Helper;
+namespace PswManager.UI.Console.Tests.Commands.Helper;
 internal static class ErrorReader {
 
     //all nullables are ignored. Since this is for tests, it's fine for it to throw an exception on null

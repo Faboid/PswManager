@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PswManager.ConsoleUI;
+namespace PswManager.UI.Console;
 public class LogInService {
 
     public LogInService(IUserInput userInput, ITokenService tokenService, ICryptoAccountServiceFactory cryptoAccountServiceFactory) {

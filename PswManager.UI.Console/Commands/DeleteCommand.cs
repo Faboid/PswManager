@@ -1,10 +1,11 @@
 ﻿using PswManager.Commands;
 using PswManager.Commands.AbstractCommands;
 using System.Threading.Tasks;
-using PswManager.ConsoleUI.Commands.ArgsModels;
 using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.ConsoleUI.Inner.Interfaces;
-namespace PswManager.ConsoleUI.Commands;
+using PswManager.UI.Console.Inner.Interfaces;
+using PswManager.UI.Console.Commands.ArgsModels;
+
+namespace PswManager.UI.Console.Commands;
 
 /// <summary>
 /// Command used to delete an account.

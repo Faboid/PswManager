@@ -1,9 +1,9 @@
 ﻿using PswManager.Commands.Validation.Attributes;
 using PswManager.Commands.Validation.Models;
-using PswManager.ConsoleUI.Commands.Validation.Attributes;
+using PswManager.UI.Console.Commands.Validation.Attributes;
 using System.Linq;
 
-namespace PswManager.ConsoleUI.Commands.Validation.ValidationTypes;
+namespace PswManager.UI.Console.Commands.Validation.ValidationTypes;
 
 /// <summary>
 /// Splits the property string with ' ', then ensures that the split parts do not hold any duplicate.

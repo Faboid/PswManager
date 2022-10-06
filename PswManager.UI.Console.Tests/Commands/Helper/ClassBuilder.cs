@@ -1,8 +1,8 @@
 ﻿using PswManager.Commands;
-using PswManager.ConsoleUI.Attributes;
+using PswManager.UI.Console.Attributes;
 using System.Reflection;
 
-namespace PswManager.ConsoleUI.Tests.Commands.Helper;
+namespace PswManager.UI.Console.Tests.Commands.Helper;
 internal class ClassBuilder {
 
     //note: this will crash if given a TCommand whose parent doesn't implement a generic.

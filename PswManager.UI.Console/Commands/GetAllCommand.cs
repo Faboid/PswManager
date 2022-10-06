@@ -6,13 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using PswManager.ConsoleUI.Commands.Validation.ValidationTypes;
-using PswManager.ConsoleUI.Commands.ArgsModels;
 using PswManager.Extensions;
 using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.ConsoleUI.Inner.Interfaces;
+using PswManager.UI.Console.Commands.Validation.ValidationTypes;
+using PswManager.UI.Console.Commands.ArgsModels;
+using PswManager.UI.Console.Inner.Interfaces;
 
-namespace PswManager.ConsoleUI.Commands;
+namespace PswManager.UI.Console.Commands;
 
 /// <summary>
 /// A command to get all existing accounts.

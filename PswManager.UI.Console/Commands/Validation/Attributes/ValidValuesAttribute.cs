@@ -1,6 +1,6 @@
 ﻿using PswManager.Commands.Validation.Attributes;
 
-namespace PswManager.ConsoleUI.Commands.Validation.Attributes;
+namespace PswManager.UI.Console.Commands.Validation.Attributes;
 
 /// <summary>
 /// Provides a set of allowed values.

@@ -1,9 +1,9 @@
 ﻿using Moq;
 using PswManager.Commands;
-using PswManager.ConsoleUI.Commands;
-using PswManager.ConsoleUI.Tests.Commands.Helper;
+using PswManager.UI.Console.Commands;
+using PswManager.UI.Console.Tests.Commands.Helper;
 
-namespace PswManager.ConsoleUI.Tests.Commands;
+namespace PswManager.UI.Console.Tests.Commands;
 public class HelpCommandTests {
 
     public HelpCommandTests() {

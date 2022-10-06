@@ -1,7 +1,7 @@
 ﻿using PswManager.Commands.Validation.Attributes;
 using System;
 
-namespace PswManager.ConsoleUI.Commands.Validation.Attributes;
+namespace PswManager.UI.Console.Commands.Validation.Attributes;
 
 /// <summary>
 /// Metadata on whether the account is expected to exist.

@@ -1,12 +1,12 @@
 ﻿using PswManager.Commands;
 using PswManager.Commands.AbstractCommands;
 using PswManager.Commands.Validation.Builders;
-using PswManager.ConsoleUI.Attributes;
+using PswManager.UI.Console.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace PswManager.ConsoleUI.Commands;
+namespace PswManager.UI.Console.Commands;
 
 /// <summary>
 /// A command to get a list of commands, or help regarding a specific command.

@@ -1,10 +1,10 @@
 ﻿using PswManager.Commands.Validation.Attributes;
 using PswManager.Commands.Validation.Models;
-using PswManager.ConsoleUI.Commands.Validation.Attributes;
+using PswManager.UI.Console.Commands.Validation.Attributes;
 using System;
 using System.Linq;
 
-namespace PswManager.ConsoleUI.Commands.Validation.ValidationTypes;
+namespace PswManager.UI.Console.Commands.Validation.ValidationTypes;
 
 /// <summary>
 /// Splits the string on ' ', then ensures the split values are all valid by checking if they match <see cref="ValidValuesAttribute.ValidValues"/>.
