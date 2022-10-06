@@ -3,6 +3,9 @@ using System.Windows.Controls;
 
 namespace PswManager.UI.WPF.Components;
 
+/// <summary>
+/// Provides a <see cref="TextBox"/> that can have preview text.
+/// </summary>
 public class TextBoxWithPreview : TextBox {
 
     public string PreviewText {

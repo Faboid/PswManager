@@ -1,5 +1,4 @@
 using PswManager.Core.Services;
-using System.Threading.Tasks;
 
 namespace PswManager.UI.WPF.Services;
 
@@ -8,6 +7,6 @@ namespace PswManager.UI.WPF.Services;
 /// </summary>
 public class CryptoContainerService {
 
-	public ICryptoAccountService? CryptoAccountService { get; set; }
+    public ICryptoAccountService? CryptoAccountService { get; set; }
 
 }

@@ -8,6 +8,9 @@ using static PswManager.Core.Services.ITokenService;
 
 namespace PswManager.UI.WPF.Commands;
 
+/// <summary>
+/// Provides the capability of logging in. To be used when initializing the application after the first time.
+/// </summary>
 public class LoginAsyncCommand : AsyncCommandBase {
 
     private readonly ICryptoAccountServiceFactory _cryptoAccountServiceFactory;
@@ -17,11 +20,11 @@ public class LoginAsyncCommand : AsyncCommandBase {
     private readonly CryptoContainerService _cryptoContainerService;
     private readonly Func<string> _getPassword;
 
-    public LoginAsyncCommand(Func<string> getPassword, 
-                            INotificationService notificationService, 
-                            CryptoContainerService cryptoContainerService, 
-                            ICryptoAccountServiceFactory cryptoServiceFactory, 
-                            NavigationService<AccountsListingViewModel> navigationService, 
+    public LoginAsyncCommand(Func<string> getPassword,
+                            INotificationService notificationService,
+                            CryptoContainerService cryptoContainerService,
+                            ICryptoAccountServiceFactory cryptoServiceFactory,
+                            NavigationService<AccountsListingViewModel> navigationService,
                             ILoggerFactory? loggerFactory = null) {
 
         _logger = loggerFactory?.CreateLogger<LoginAsyncCommand>();

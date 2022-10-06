@@ -107,7 +107,7 @@ public class AccountFactoryTests {
         Assert.Equal(name, account.Name);
         Assert.Equal(expectedMessage, account.Password);
         Assert.Equal(expectedMessage, account.Email);
-    
+
     }
 
     private static EncryptedAccount CreateDefaultEncrypted() => new("SomeName", "SomePassword", "AnEmail@com", ICryptoAccountMocks.GetReversedAndSummingCryptor());

@@ -4,8 +4,16 @@ using System.IO.Abstractions;
 
 namespace PswManager.UI.WPF.HostBuilders;
 
+/// <summary>
+/// Provides extension methods to add the IO abstraction.
+/// </summary>
 public static class AddIOAbstractionsHostBuilderExtensions {
 
+    /// <summary>
+    /// Injects the concrete classes to interact with the file system.
+    /// </summary>
+    /// <param name="hostBuilder"></param>
+    /// <returns></returns>
     public static IHostBuilder AddIOAbstractions(this IHostBuilder hostBuilder) {
         return hostBuilder.ConfigureServices(services => {
 

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
 using PswManager.Async.Locks;
 using PswManager.Core.AccountModels;
 using PswManager.Core.Validators;
@@ -84,7 +83,7 @@ public class AccountFactory : IAccountFactory {
                 },
                 () => throw new NotSupportedException("Tried to initialize a None account.")
             );
-           
+
         }
     }
 

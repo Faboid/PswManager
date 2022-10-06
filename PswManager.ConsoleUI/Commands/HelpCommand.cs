@@ -7,6 +7,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace PswManager.ConsoleUI.Commands;
+
+/// <summary>
+/// A command to get a list of commands, or help regarding a specific command.
+/// </summary>
 public class HelpCommand : BaseCommand<HelpCommand.Args> {
 
     private readonly IReadOnlyDictionary<string, ICommand> commands;

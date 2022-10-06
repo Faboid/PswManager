@@ -3,6 +3,9 @@ using System.Windows.Input;
 
 namespace PswManager.UI.WPF.Components;
 
+/// <summary>
+/// Provides a <see cref="TextBoxWithPreview"/> with a bindable button.
+/// </summary>
 public class TextBoxWithButton : TextBoxWithPreview {
 
     public ICommand ButtonCommand {

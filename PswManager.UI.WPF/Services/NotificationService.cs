@@ -2,10 +2,12 @@ using System;
 
 namespace PswManager.UI.WPF.Services;
 
+/// <summary>
+/// Provides methods to communicate to the user using a built-in message view.
+/// </summary>
 public class NotificationService : INotificationService {
 
     public event Action<string>? NewMessage;
-    public string Message { get; private set; } = "";
 
     private void OnNewMessage(string message) {
         NewMessage?.Invoke(message);

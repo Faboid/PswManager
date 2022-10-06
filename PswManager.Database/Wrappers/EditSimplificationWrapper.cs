@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 namespace PswManager.Database.Wrappers;
 
 /// <summary>
-/// Ensures that all values in update are valid by calling Get and substituting the invalid ones for those
+/// Ensures that all values in <see cref="UpdateAccountAsync(string, IReadOnlyAccountModel)"/> are valid by 
+/// calling <see cref="GetAccountAsync(string)"/> and substituting null/empty values with the current ones.
 /// </summary>
 internal class EditSimplificationWrapper : IDBConnection {
 

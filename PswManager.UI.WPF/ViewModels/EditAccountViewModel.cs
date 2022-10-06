@@ -10,6 +10,9 @@ using System.Windows.Input;
 
 namespace PswManager.UI.WPF.ViewModels;
 
+/// <summary>
+/// A viewmodel to edit an account.
+/// </summary>
 public class EditAccountViewModel : ViewModelBase, INotifyDataErrorInfo {
 
     private readonly DecryptedAccount _account;

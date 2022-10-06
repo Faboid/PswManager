@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace PswManager.Database.Wrappers;
 
+/// <summary>
+/// This wrapper ensures that the accounts exist/don't exist for each request. If the status is not what's expected, they return an errorstatus/code.
+/// </summary>
 internal class CheckExistenceWrapper : IDBConnection {
 
     private readonly IDBConnection _connection;

@@ -7,6 +7,10 @@ using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.ConsoleUI.Inner.Interfaces;
 
 namespace PswManager.ConsoleUI.Commands;
+
+/// <summary>
+/// A command to get a single account.
+/// </summary>
 public class GetCommand : BaseCommand<GetCommandArgs> {
 
     private readonly IAccountReader dataReader;

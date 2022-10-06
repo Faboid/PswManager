@@ -1,10 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace PswManager.Commands.Validation.Models;
+
+/// <summary>
+/// Represents a generic condition.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class Condition<T> : ICondition<T> {
 
+    /// <summary>
+    /// Instantiates <see cref="Condition{T}"/>.
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="logic"></param>
+    /// <param name="errorMessage"></param>
     public Condition(IndexHelper index, Func<T, bool> logic, string errorMessage) {
         Index = index;
         Logic = logic;
@@ -17,27 +26,12 @@ public class Condition<T> : ICondition<T> {
 
     public string GetErrorMessage() => ErrorMessage;
 
-    public bool IsValid(T obj) => IsValid(obj, new List<int>());
-    public bool IsValid(T obj, IList<int> failedConditions) {
-
-        //if a required condition has failed, return true
-        //reason being that it's unecessary to pile the user with unnecessary error messages
-        if(Index.RequiredSuccesses.Any(x => failedConditions.Contains(x))) {
-            return true;
-        }
-
+    public bool IsValid(T obj) {
         try {
-
-            //if the validation passes, return true
-            if(Logic.Invoke(obj)) {
-                return true;
-            }
+            return Logic.Invoke(obj);
         } catch {
             return false;
         }
-
-        failedConditions.Add(Index.Index);
-        return false;
     }
 
 }

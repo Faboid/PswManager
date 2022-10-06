@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace PswManager.UI.WPF.Commands;
 
+/// <summary>
+/// When executes, tries to delete the account with the corresponding account name.
+/// </summary>
 public class DeleteAccountCommand : AsyncCommandBase {
 
     private readonly string _accountName;
@@ -24,7 +27,7 @@ public class DeleteAccountCommand : AsyncCommandBase {
 
         _logger?.LogInformation("Beginning to delete {Name}.", _accountName);
         var result = await _accountsStore.DeleteAccountAsync(_accountName);
-        
+
         if(result is not DeleteAccountResponse.Success) {
             var message = result switch {
                 DeleteAccountResponse.AccountNotFound => $"{_accountName} doesn't exist.",

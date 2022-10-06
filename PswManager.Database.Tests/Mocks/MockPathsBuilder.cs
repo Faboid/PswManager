@@ -1,4 +1,3 @@
-using Moq;
 using PswManager.Paths;
 using System.IO.Abstractions.TestingHelpers;
 

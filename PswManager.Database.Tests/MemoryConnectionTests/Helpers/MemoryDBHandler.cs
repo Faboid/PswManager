@@ -1,5 +1,4 @@
 ﻿using PswManager.Database.Models;
-using PswManager.Extensions;
 using PswManager.Database.Tests.Generic;
 
 namespace PswManager.Database.Tests.MemoryConnectionTests.Helpers;

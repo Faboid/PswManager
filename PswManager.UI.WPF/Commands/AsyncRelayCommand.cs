@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace PswManager.UI.WPF.Commands;
 
+/// <summary>
+/// Executes the given <see cref="Func{TResult}"/> when executed.
+/// </summary>
 public class AsyncRelayCommand : AsyncCommandBase {
 
     private readonly Func<Task> _callback;
@@ -20,6 +23,10 @@ public class AsyncRelayCommand : AsyncCommandBase {
 
 }
 
+/// <summary>
+/// Executes the given <see cref="Func{T, TResult}"/> when executed.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class AsyncRelayCommand<T> : AsyncCommandBase {
 
     private readonly Func<T, Task> _callback;

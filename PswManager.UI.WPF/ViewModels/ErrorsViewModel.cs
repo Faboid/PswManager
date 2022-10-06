@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace PswManager.UI.WPF.ViewModels;
 
+/// <summary>
+/// Acts as a composite class to reduce boilerplate when dealing with errors and validation.
+/// </summary>
 public class ErrorsViewModel : INotifyDataErrorInfo {
 
     private readonly Dictionary<string, List<string>> _propertyErrors = new();

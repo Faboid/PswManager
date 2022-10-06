@@ -22,6 +22,11 @@ public class DataFactory : IDataFactory {
 
     private readonly IDataConnection dataConnection;
 
+    /// <summary>
+    /// Instances <see cref="DataFactory"/> that contains an <see cref="IDataConnection"/> of the given <paramref name="dbType"/>.
+    /// </summary>
+    /// <param name="dbType"></param>
+    /// <exception cref="ArgumentException"></exception>
     public DataFactory(DatabaseType dbType) {
 
         IDBConnection dbConnection = dbType switch {

@@ -1,5 +1,4 @@
-﻿using PswManager.Core.AccountModels;
-using PswManager.Database.Models;
+﻿using PswManager.Database.Models;
 
 namespace PswManager.Core.Tests.Asserts;
 public class AccountModelAsserts {

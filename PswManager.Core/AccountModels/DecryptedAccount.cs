@@ -1,5 +1,4 @@
 ﻿using PswManager.Core.Services;
-using PswManager.Database.Models;
 using System.Threading.Tasks;
 
 namespace PswManager.Core.AccountModels;

@@ -29,13 +29,8 @@ internal class Validator<T> : IValidator<T> {
             yield return err;
         }
 
-        List<int> failedConditions = new();
-        if(errors.Any()) {
-            failedConditions.Add(-1);
-        }
-
         foreach(var cond in conditions) {
-            if(!cond.IsValid(obj, failedConditions)) {
+            if(!cond.IsValid(obj)) {
                 yield return cond.GetErrorMessage();
             }
         }

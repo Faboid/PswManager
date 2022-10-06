@@ -3,9 +3,6 @@ using PswManager.ConsoleUI.Inner;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Interfaces;
 using PswManager.Extensions;
-using PswManager.TestUtils;
-using PswManager.Utils;
-using PswManager.Utils.Options;
 
 namespace PswManager.ConsoleUI.Tests.Inner;
 public class AccountDeleterTests {

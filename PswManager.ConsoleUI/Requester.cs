@@ -6,11 +6,17 @@ using PswManager.ConsoleUI.Attributes;
 using PswManager.Extensions;
 
 namespace PswManager.ConsoleUI;
+
+/// <summary>
+/// Uses reflection to get a list of properties from the given type, then sets up a request to the user for each.
+/// </summary>
 public class Requester {
 
     private readonly IReadOnlyCollection<(PropertyInfo prop, RequestAttribute attr)> required;
     private readonly IReadOnlyCollection<(PropertyInfo prop, RequestAttribute attr)> optional;
     readonly private IUserInput userInput;
+
+    //note: the reason this isn't a generic Requester<T> is that it is used with types not known at compile-time
     readonly private Type type;
 
     public Requester(Type type, IUserInput userInput) {
@@ -30,6 +36,10 @@ public class Requester {
             .ToList();
     }
 
+    /// <summary>
+    /// Requests to the user the values to insert for each property of the type <see cref="type"/>.
+    /// </summary>
+    /// <returns></returns>
     public (bool success, object obj) Build() {
         var output = Activator.CreateInstance(type);
 

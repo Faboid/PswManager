@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PswManager.Core;
 using PswManager.Core.Services;
 using PswManager.Paths;
 using PswManager.UI.WPF.HostBuilders;
-using PswManager.UI.WPF.Services;
 using PswManager.UI.WPF.Stores;
 using PswManager.UI.WPF.ViewModels;
 using Serilog;
@@ -17,7 +15,7 @@ namespace PswManager.UI.WPF;
 /// </summary>
 public partial class App : Application {
 
-    private readonly IHost _host;
+	private readonly IHost _host;
 
 	public App() {
 		_host = Host.CreateDefaultBuilder()
@@ -45,14 +43,14 @@ public partial class App : Application {
 		ViewModelBase startingVm;
 		if(tokenService.IsSet()) {
 			startingVm = _host.Services.GetRequiredService<LoginViewModel>();
-        } else {
+		} else {
 			startingVm = _host.Services.GetRequiredService<SignUpViewModel>();
-        }
+		}
 
 		_host.Services.GetRequiredService<NavigationStore>().CurrentViewModel = startingVm;
 
 
-        MainWindow = _host.Services.GetRequiredService<MainWindow>();
+		MainWindow = _host.Services.GetRequiredService<MainWindow>();
 		MainWindow.Show();
 
 		base.OnStartup(e);

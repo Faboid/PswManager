@@ -13,6 +13,10 @@ using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.ConsoleUI.Inner.Interfaces;
 
 namespace PswManager.ConsoleUI.Commands;
+
+/// <summary>
+/// A command to get all existing accounts.
+/// </summary>
 public class GetAllCommand : BaseCommand<GetAllCommandArgs> {
 
     static readonly string[] validKeys = new string[] { "names", "passwords", "emails" };
@@ -41,6 +45,9 @@ public class GetAllCommand : BaseCommand<GetAllCommandArgs> {
     //it would allow returning without enumerating everything; which would be quite expensive when dealing with
     //huge datasets
 
+    /// <summary>
+    /// A simple model for the possible values to retrieve.
+    /// </summary>
     private record ValuesToGet() {
         public ValuesToGet(GetAllCommandArgs args) : this() {
             Names = args.SplitKeys().Contains(validKeys[0]);

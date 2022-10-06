@@ -7,22 +7,22 @@ using System.Threading.Tasks;
 using PswManager.ConsoleUI.Commands;
 using PswManager.Core.Services;
 
-namespace PswManager.ConsoleUI;
 //todo - this class is doing too much. Split it into multiple classes and use proper DI
+namespace PswManager.ConsoleUI;
+
+/// <summary>
+/// Provides a loop for the execution of the command application's main loop.
+/// </summary>
 public class CommandLoop {
 
     private readonly Dictionary<Type, Requester> cachedRequesters = new();
     private readonly IUserInput userInput;
-    private CommandQuery query;
+    private readonly CommandQuery query;
+    private readonly string _exitCommand = "exit";
 
     public CommandLoop(IUserInput userInput, ICryptoAccountService cryptoAccount, IReadOnlyDictionary<string, ICommand> extraCommands = null) {
         extraCommands ??= new Dictionary<string, ICommand>();
-
         this.userInput = userInput;
-        SetUp(cryptoAccount, extraCommands);
-    }
-
-    private void SetUp(ICryptoAccountService cryptoAccount, IReadOnlyDictionary<string, ICommand> extraCommands) {
 
         var dbType = DatabaseType.TextFile;
 
@@ -51,7 +51,7 @@ public class CommandLoop {
     public void Start() {
 
         string cmdType;
-        while((cmdType = userInput.RequestAnswer().ToLowerInvariant()) != "exit") {
+        while((cmdType = userInput.RequestAnswer().ToLowerInvariant()) != _exitCommand) {
 
             if(!TryGetInput(cmdType, out string errorMessage, out var obj)) {
                 userInput.SendMessage(errorMessage);
@@ -62,9 +62,13 @@ public class CommandLoop {
         }
     }
 
+    /// <summary>
+    /// Starts the loop asynchonously. Will continue until the the user gives <see cref="_exitCommand"/>.
+    /// </summary>
+    /// <returns></returns>
     public async Task StartAsync() {
         string cmdType;
-        while((cmdType = userInput.RequestAnswer().ToLowerInvariant()) != "exit") {
+        while((cmdType = userInput.RequestAnswer().ToLowerInvariant()) != _exitCommand) {
 
             if(!TryGetInput(cmdType, out string errorMessage, out var obj)) {
                 userInput.SendMessage(errorMessage);
@@ -98,11 +102,22 @@ public class CommandLoop {
         return true;
     }
 
+    /// <summary>
+    /// Sends a single query.
+    /// </summary>
+    /// <param name="cmdType"></param>
+    /// <param name="inputArgs"></param>
     public void SingleQuery(string cmdType, ICommandInput inputArgs) {
         var result = query.Query(cmdType, inputArgs);
         HandleQueryResult(result);
     }
 
+    /// <summary>
+    /// Sends a single query asynchonously.
+    /// </summary>
+    /// <param name="cmdType"></param>
+    /// <param name="inputArgs"></param>
+    /// <returns></returns>
     public async Task SingleQueryAsync(string cmdType, ICommandInput inputArgs) {
         var result = await query.QueryAsync(cmdType, inputArgs);
         HandleQueryResult(result);

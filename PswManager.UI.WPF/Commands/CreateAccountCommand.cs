@@ -2,11 +2,13 @@ using PswManager.Core.AccountModels;
 using PswManager.UI.WPF.Services;
 using PswManager.UI.WPF.Stores;
 using PswManager.UI.WPF.ViewModels;
-using PswManager.UI.WPF.Views;
 using System.Threading.Tasks;
 
 namespace PswManager.UI.WPF.Commands;
 
+/// <summary>
+/// When executed, attempts to create a new account using the values in the properties of the given <see cref="CreateAccountViewModel"/>.
+/// </summary>
 public class CreateAccountCommand : AsyncCommandBase {
 
     private readonly IAccountModelFactory _accountModelFactory;
@@ -38,7 +40,7 @@ public class CreateAccountCommand : AsyncCommandBase {
         };
 
         _notificationService.Send(message);
-        
+
         if(result is CreateAccountResponse.Success) {
             _toAccountsListingViewModel.Navigate(true);
         }

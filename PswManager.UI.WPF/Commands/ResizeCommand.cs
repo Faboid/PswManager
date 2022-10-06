@@ -2,6 +2,9 @@
 
 namespace PswManager.UI.WPF.Commands;
 
+/// <summary>
+/// Resizes the window. If it's <see cref="WindowState.Maximized"/>, it's set to <see cref="WindowState.Normal"/>; else, it's set to <see cref="WindowState.Maximized"/>.
+/// </summary>
 public class ResizeCommand : CommandBase {
 
     private readonly Window _window;

@@ -2,9 +2,21 @@
 
 namespace PswManager.Paths;
 
+/// <summary>
+/// <inheritdoc cref="IPathsBuilder"/>
+/// </summary>
 public class PathsBuilder : IPathsBuilder {
 
-    public PathsBuilder() : this(new FileSystem().DirectoryInfo) {}
+    /// <summary>
+    /// Initializes <see cref="PathsBuilder"/> and creates all non-existing directories among the paths.
+    /// </summary>
+    public PathsBuilder() : this(new FileSystem().DirectoryInfo) { }
+
+    /// <summary>
+    /// Initializes <see cref="PathsBuilder"/> and creates all non-existing directories 
+    /// with <see cref="IDirectoryInfoFactory.FromDirectoryName(string)"/>'s <see cref="IDirectoryInfo.Create"/>.
+    /// </summary>
+    /// <param name="directoryInfoFactory"></param>
     public PathsBuilder(IDirectoryInfoFactory directoryInfoFactory) {
         directoryInfoFactory.FromDirectoryName(GetDataDirectory()).Create();
         directoryInfoFactory.FromDirectoryName(GetLogsDirectory()).Create();

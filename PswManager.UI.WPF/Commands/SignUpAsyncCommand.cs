@@ -1,28 +1,25 @@
-using Microsoft.Extensions.Logging;
-using PswManager.Async.Locks;
 using PswManager.Core.Services;
-using PswManager.Encryption.Cryptography;
-using PswManager.Encryption.Services;
 using PswManager.UI.WPF.Services;
 using PswManager.UI.WPF.ViewModels;
-using PswManager.Utils;
-using Serilog;
 using System;
 using System.Threading.Tasks;
 
 namespace PswManager.UI.WPF.Commands;
 
+/// <summary>
+/// Provides a way to set up the application's encryption capabilities.
+/// </summary>
 public class SignUpAsyncCommand : AsyncCommandBase {
 
-    private readonly ICryptoAccountServiceFactory _cryptoAccountServiceFactory;    
+    private readonly ICryptoAccountServiceFactory _cryptoAccountServiceFactory;
     private readonly NavigationService<AccountsListingViewModel> _navigationService;
     private readonly INotificationService _notificationService;
     private readonly CryptoContainerService _cryptoContainerService;
     private readonly Func<string> _getPassword;
 
-    public SignUpAsyncCommand(Func<string> getPassword, 
-                            INotificationService notificationService, CryptoContainerService cryptoContainerService, 
-                            ICryptoAccountServiceFactory cryptoAccountServiceFactory, 
+    public SignUpAsyncCommand(Func<string> getPassword,
+                            INotificationService notificationService, CryptoContainerService cryptoContainerService,
+                            ICryptoAccountServiceFactory cryptoAccountServiceFactory,
                             NavigationService<AccountsListingViewModel> navigationService) {
 
         _notificationService = notificationService;

@@ -1,4 +1,8 @@
 ﻿namespace PswManager.Encryption.Random;
+
+/// <summary>
+/// Acts as an integer that can stay only within a given range. Additions over the max value will loop back to the min value and vice versa.
+/// </summary>
 internal class IntRange {
 
     readonly int min;
@@ -34,6 +38,8 @@ internal class IntRange {
         var summedValue = Value + remainder;
         if(summedValue > max) {
             summedValue -= range;
+        } else if(summedValue < min) {
+            summedValue += range;
         }
         Value = summedValue;
 

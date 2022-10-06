@@ -12,8 +12,16 @@ using System.Windows;
 
 namespace PswManager.UI.WPF.HostBuilders;
 
+/// <summary>
+/// Provides extension methods to inject viewmodels.
+/// </summary>
 public static class AddViewModelsHostBuilderExtensions {
 
+    /// <summary>
+    /// Injects the main window.
+    /// </summary>
+    /// <param name="hostBuilder"></param>
+    /// <returns></returns>
     public static IHostBuilder AddMainWindow(this IHostBuilder hostBuilder) {
         return hostBuilder.ConfigureServices(services => {
 
@@ -28,7 +36,11 @@ public static class AddViewModelsHostBuilderExtensions {
         });
     }
 
-
+    /// <summary>
+    /// Injects the viewmodels, the func(s) used to instantiate them, and the navigation services.
+    /// </summary>
+    /// <param name="hostBuilder"></param>
+    /// <returns></returns>
     public static IHostBuilder AddViewModels(this IHostBuilder hostBuilder) {
         return hostBuilder.ConfigureServices(services => {
 
@@ -41,7 +53,7 @@ public static class AddViewModelsHostBuilderExtensions {
             services.AddSingleton<Func<AccountsListingViewModel>>(s => s.GetRequiredService<AccountsListingViewModel>);
             services.AddSingleton<Func<IAccount, AccountViewModel>>(s => {
                 return account => new AccountViewModel(
-                    account, s.GetRequiredService<IAccountModelFactory>(), 
+                    account, s.GetRequiredService<IAccountModelFactory>(),
                     s.GetRequiredService<Func<string, DeleteAccountCommand>>(),
                     s.GetRequiredService<NavigationService<EditAccountViewModel, DecryptedAccount>>());
             });
@@ -49,7 +61,7 @@ public static class AddViewModelsHostBuilderExtensions {
             services.AddSingleton<Func<DecryptedAccount, EditAccountViewModel>>(s => {
                 return account => new EditAccountViewModel(
                     account, s.GetRequiredService<AccountsStore>(), s.GetRequiredService<IAccountModelFactory>(),
-                    s.GetRequiredService<INotificationService>(), s.GetRequiredService<NavigationService<AccountsListingViewModel>>(), 
+                    s.GetRequiredService<INotificationService>(), s.GetRequiredService<NavigationService<AccountsListingViewModel>>(),
                     s.GetRequiredService<ILoggerFactory>());
             });
 

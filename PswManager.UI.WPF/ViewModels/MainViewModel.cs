@@ -6,6 +6,9 @@ using System.Windows.Input;
 
 namespace PswManager.UI.WPF.ViewModels;
 
+/// <summary>
+/// The main viewmodel of the application. Stores data on the current view model, the notification mechanism, and commands to interact with the window.
+/// </summary>
 public class MainViewModel : ViewModelBase {
 
     private readonly INotificationService _notificationService;

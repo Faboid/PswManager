@@ -2,7 +2,6 @@ using PswManager.Core;
 using PswManager.Core.AccountModels;
 using PswManager.UI.WPF.Commands;
 using PswManager.UI.WPF.Services;
-using PswManager.UI.WPF.Stores;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -10,6 +9,9 @@ using System.Windows.Input;
 
 namespace PswManager.UI.WPF.ViewModels;
 
+/// <summary>
+/// Represents a single account. Provides commands to edit, delete, and get its values.
+/// </summary>
 public class AccountViewModel : ViewModelBase {
 
     public event Action<AccountViewModel>? ShowDetails;
@@ -24,8 +26,8 @@ public class AccountViewModel : ViewModelBase {
     public string EncryptedEmail => _account.Email;
 
     private IExtendedAccountModel _extendedAccount;
-    public string Password => IsDecrypted? _extendedAccount.Password : "Loading...";
-    public string Email => IsDecrypted? _extendedAccount.Email : "Loading...";
+    public string Password => IsDecrypted ? _extendedAccount.Password : "Loading...";
+    public string Email => IsDecrypted ? _extendedAccount.Email : "Loading...";
 
     public bool IsDecrypted => !_extendedAccount.IsEncrypted;
 
@@ -40,7 +42,7 @@ public class AccountViewModel : ViewModelBase {
     public ICommand CopyEmailToClipboard { get; }
     public ICommand DetailsCommand { get; }
     public ICommand CloseDetailsCommand { get; }
-    
+
     private ICommand? _editCommand;
     public ICommand EditCommand {
         get => _editCommand!;

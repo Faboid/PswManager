@@ -2,6 +2,9 @@
 
 namespace PswManager.UI.WPF.Commands;
 
+/// <summary>
+/// Minimizes the window when executed.
+/// </summary>
 public class MinimizeCommand : CommandBase {
 
     private readonly Window _window;

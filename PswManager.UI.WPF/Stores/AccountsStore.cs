@@ -8,16 +8,31 @@ using static PswManager.Core.IAccountFactory;
 
 namespace PswManager.UI.WPF.Stores;
 
+/// <summary>
+/// Provides a centralized place to keep, load, edit, delete, and create accounts.
+/// </summary>
 public class AccountsStore {
 
     private readonly ILogger<AccountsStore>? _logger;
     private readonly IAccountFactory _accountFactory;
     private readonly Dictionary<string, IAccount> _accounts = new();
-    public IEnumerable<IAccount> Accounts => _accounts.Values;
     private readonly Lazy<Task> _initializationTask;
 
+    /// <summary>
+    /// The accounts loaded in cache. Will be empty if called before <see cref="Load"/> has finished.
+    /// </summary>
+    public IEnumerable<IAccount> Accounts => _accounts.Values;
+
+    /// <summary>
+    /// Raised when one or more accounts are created, deleted, edited, or loaded.
+    /// </summary>
     public event Action? AccountsChanged;
 
+    /// <summary>
+    /// Initializes <see cref="AccountsStore"/>.
+    /// </summary>
+    /// <param name="accountFactory"></param>
+    /// <param name="loggerFactory"></param>
     public AccountsStore(IAccountFactory accountFactory, ILoggerFactory? loggerFactory = null) {
         _initializationTask = new(Initialize);
         _logger = loggerFactory?.CreateLogger<AccountsStore>();
@@ -26,6 +41,10 @@ public class AccountsStore {
 
     private void OnAccountsChanged() => AccountsChanged?.Invoke();
 
+    /// <summary>
+    /// Loads the accounts from the database. Will return immediately if they have already been loaded.
+    /// </summary>
+    /// <returns></returns>
     public Task Load() => _initializationTask.Value;
 
     private async Task Initialize() {
@@ -39,8 +58,17 @@ public class AccountsStore {
         _logger?.LogInformation("The accounts have been loaded.");
     }
 
+    /// <summary>
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns>Whether the account exists in the cache.</returns>
     public bool AccountExists(string name) => _accounts.ContainsKey(name);
 
+    /// <summary>
+    /// Attempts creating an account with the given values and returns the result.
+    /// </summary>
+    /// <param name="accountModel">The values used to create the new account.</param>
+    /// <returns>The result of the operation.</returns>
     public async Task<CreateAccountResponse> CreateAccountAsync(IExtendedAccountModel accountModel) {
 
         if(AccountExists(accountModel.Name)) { return CreateAccountResponse.NameIsOccupied; }
@@ -72,6 +100,12 @@ public class AccountsStore {
             });
     }
 
+    /// <summary>
+    /// Attempts updating the account <paramref name="name"/> with the given <paramref name="model"/> values.
+    /// </summary>
+    /// <param name="name">The name of the account to be edited.</param>
+    /// <param name="model">The model containing the new values.</param>
+    /// <returns>A <see cref="UpdateAccountResponse"/> detailing the result of the operation.</returns>
     public async Task<UpdateAccountResponse> UpdateAccountAsync(string name, IExtendedAccountModel model) {
 
         if(string.IsNullOrWhiteSpace(name)) {
@@ -103,6 +137,11 @@ public class AccountsStore {
         };
     }
 
+    /// <summary>
+    /// Attempts deleting the account named <paramref name="name"/>.
+    /// </summary>
+    /// <param name="name">The name of the account to delete.</param>
+    /// <returns>A response indicating the result of the operation.</returns>
     public async Task<DeleteAccountResponse> DeleteAccountAsync(string name) {
 
         if(string.IsNullOrWhiteSpace(name)) {
@@ -125,11 +164,14 @@ public class AccountsStore {
             return DeleteAccountResponse.Failure;
 
         }
-        
+
     }
 
 }
 
+/// <summary>
+/// Represents the result of a <see cref="AccountsStore.CreateAccountAsync(IExtendedAccountModel)"/> operation.
+/// </summary>
 public enum CreateAccountResponse {
     Unknown,
     Success,
@@ -140,6 +182,9 @@ public enum CreateAccountResponse {
     NameIsOccupied,
 }
 
+/// <summary>
+/// Represents the result of a <see cref="AccountsStore.UpdateAccountAsync(string, IExtendedAccountModel)"/> operation.
+/// </summary>
 public enum UpdateAccountResponse {
     Unknown,
     Success,
@@ -151,6 +196,9 @@ public enum UpdateAccountResponse {
     NameIsEmpty,
 }
 
+/// <summary>
+/// Represents the result of a <see cref="AccountsStore.DeleteAccountAsync(string)"/> operation.
+/// </summary>
 public enum DeleteAccountResponse {
     Unknown,
     Success,

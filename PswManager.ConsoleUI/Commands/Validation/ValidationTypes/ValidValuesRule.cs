@@ -5,6 +5,10 @@ using System;
 using System.Linq;
 
 namespace PswManager.ConsoleUI.Commands.Validation.ValidationTypes;
+
+/// <summary>
+/// Splits the string on ' ', then ensures the split values are all valid by checking if they match <see cref="ValidValuesAttribute.ValidValues"/>.
+/// </summary>
 internal class ValidValuesRule : ValidationRule {
 
     public ValidValuesRule() : base(typeof(ValidValuesAttribute), typeof(string)) {

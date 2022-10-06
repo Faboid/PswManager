@@ -2,6 +2,9 @@ using PswManager.Database.DataAccess;
 
 namespace PswManager.Database.Wrappers;
 
+/// <summary>
+/// Builds all the wrappers in the correct sequence.
+/// </summary>
 internal class WrappersBuilder {
 
     private readonly IDBConnection _connection;
