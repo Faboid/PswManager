@@ -15,7 +15,7 @@ namespace PswManager.UI.WPF;
 /// </summary>
 public partial class App : Application {
 
-    private readonly IHost _host;
+	private readonly IHost _host;
 
 	public App() {
 		_host = Host.CreateDefaultBuilder()
@@ -43,14 +43,14 @@ public partial class App : Application {
 		ViewModelBase startingVm;
 		if(tokenService.IsSet()) {
 			startingVm = _host.Services.GetRequiredService<LoginViewModel>();
-        } else {
+		} else {
 			startingVm = _host.Services.GetRequiredService<SignUpViewModel>();
-        }
+		}
 
 		_host.Services.GetRequiredService<NavigationStore>().CurrentViewModel = startingVm;
 
 
-        MainWindow = _host.Services.GetRequiredService<MainWindow>();
+		MainWindow = _host.Services.GetRequiredService<MainWindow>();
 		MainWindow.Show();
 
 		base.OnStartup(e);

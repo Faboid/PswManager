@@ -26,12 +26,12 @@ public interface IPathsBuilder {
     /// Gets the database directory used for the json database.
     /// </summary>
     string GetJsonDatabaseDirectory();
-    
+
     /// <summary>
     /// Gets the database directory for saving with .txt files.
     /// </summary>
     string GetTextDatabaseDirectory();
-    
+
     /// <summary>
     /// Gets the database directory for saving with a SQLite database.
     /// </summary>

@@ -52,7 +52,7 @@ public class CreateAccountViewModel : ViewModelBase, INotifyDataErrorInfo {
 
     public string Email {
         get { return _email; }
-        set { 
+        set {
             SetAndRaise(nameof(Email), ref _email, value);
             _errorsViewModel.ClearErrors(nameof(Email));
             if(string.IsNullOrWhiteSpace(Email)) {

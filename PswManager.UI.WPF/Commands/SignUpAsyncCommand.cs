@@ -11,15 +11,15 @@ namespace PswManager.UI.WPF.Commands;
 /// </summary>
 public class SignUpAsyncCommand : AsyncCommandBase {
 
-    private readonly ICryptoAccountServiceFactory _cryptoAccountServiceFactory;    
+    private readonly ICryptoAccountServiceFactory _cryptoAccountServiceFactory;
     private readonly NavigationService<AccountsListingViewModel> _navigationService;
     private readonly INotificationService _notificationService;
     private readonly CryptoContainerService _cryptoContainerService;
     private readonly Func<string> _getPassword;
 
-    public SignUpAsyncCommand(Func<string> getPassword, 
-                            INotificationService notificationService, CryptoContainerService cryptoContainerService, 
-                            ICryptoAccountServiceFactory cryptoAccountServiceFactory, 
+    public SignUpAsyncCommand(Func<string> getPassword,
+                            INotificationService notificationService, CryptoContainerService cryptoContainerService,
+                            ICryptoAccountServiceFactory cryptoAccountServiceFactory,
                             NavigationService<AccountsListingViewModel> navigationService) {
 
         _notificationService = notificationService;

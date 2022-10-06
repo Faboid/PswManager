@@ -83,7 +83,7 @@ public class AccountFactory : IAccountFactory {
                 },
                 () => throw new NotSupportedException("Tried to initialize a None account.")
             );
-           
+
         }
     }
 

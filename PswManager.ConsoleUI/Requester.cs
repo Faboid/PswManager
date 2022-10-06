@@ -15,7 +15,7 @@ public class Requester {
     private readonly IReadOnlyCollection<(PropertyInfo prop, RequestAttribute attr)> required;
     private readonly IReadOnlyCollection<(PropertyInfo prop, RequestAttribute attr)> optional;
     readonly private IUserInput userInput;
-    
+
     //note: the reason this isn't a generic Requester<T> is that it is used with types not known at compile-time
     readonly private Type type;
 

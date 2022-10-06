@@ -164,7 +164,7 @@ public class AccountsStore {
             return DeleteAccountResponse.Failure;
 
         }
-        
+
     }
 
 }

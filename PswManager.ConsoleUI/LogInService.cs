@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PswManager.ConsoleUI;
 public class LogInService {
-    
+
     public LogInService(IUserInput userInput, ITokenService tokenService, ICryptoAccountServiceFactory cryptoAccountServiceFactory) {
         _userInput = userInput;
         _tokenService = tokenService;

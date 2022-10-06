@@ -30,13 +30,13 @@ public interface IDataFactory {
     /// </summary>
     /// <returns></returns>
     IDataEditor GetDataEditor();
-    
+
     /// <summary>
     /// Returns a shared instance of <see cref="IDataDeleter"/>.
     /// </summary>
     /// <returns></returns>
     IDataDeleter GetDataDeleter();
-    
+
     /// <summary>
     /// Returns a shared instance of <see cref="IDataHelper"/>.
     /// </summary>

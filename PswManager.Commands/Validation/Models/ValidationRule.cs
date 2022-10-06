@@ -12,7 +12,7 @@ public abstract class ValidationRule {
     /// The type of the attribute linked to this rule.
     /// </summary>
     public Type GetAttributeType;
-    
+
     /// <summary>
     /// The data type of the property/field the linked attribute is used on.
     /// </summary>

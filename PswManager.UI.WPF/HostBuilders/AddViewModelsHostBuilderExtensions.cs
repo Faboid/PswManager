@@ -53,7 +53,7 @@ public static class AddViewModelsHostBuilderExtensions {
             services.AddSingleton<Func<AccountsListingViewModel>>(s => s.GetRequiredService<AccountsListingViewModel>);
             services.AddSingleton<Func<IAccount, AccountViewModel>>(s => {
                 return account => new AccountViewModel(
-                    account, s.GetRequiredService<IAccountModelFactory>(), 
+                    account, s.GetRequiredService<IAccountModelFactory>(),
                     s.GetRequiredService<Func<string, DeleteAccountCommand>>(),
                     s.GetRequiredService<NavigationService<EditAccountViewModel, DecryptedAccount>>());
             });
@@ -61,7 +61,7 @@ public static class AddViewModelsHostBuilderExtensions {
             services.AddSingleton<Func<DecryptedAccount, EditAccountViewModel>>(s => {
                 return account => new EditAccountViewModel(
                     account, s.GetRequiredService<AccountsStore>(), s.GetRequiredService<IAccountModelFactory>(),
-                    s.GetRequiredService<INotificationService>(), s.GetRequiredService<NavigationService<AccountsListingViewModel>>(), 
+                    s.GetRequiredService<INotificationService>(), s.GetRequiredService<NavigationService<AccountsListingViewModel>>(),
                     s.GetRequiredService<ILoggerFactory>());
             });
 

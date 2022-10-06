@@ -40,7 +40,7 @@ public class CreateAccountCommand : AsyncCommandBase {
         };
 
         _notificationService.Send(message);
-        
+
         if(result is CreateAccountResponse.Success) {
             _toAccountsListingViewModel.Navigate(true);
         }

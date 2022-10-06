@@ -14,43 +14,43 @@ namespace PswManager.UI.WPF.ViewModels;
 /// </summary>
 public class SignUpViewModel : ViewModelBase, INotifyDataErrorInfo {
 
-	private readonly ErrorsViewModel _errorsViewModel = new();
+    private readonly ErrorsViewModel _errorsViewModel = new();
 
-	private string _Password = "";
-	public string Password {
-		get { return _Password; }
-		set { 
-			SetAndRaise(nameof(Password), ref _Password, value);
-			CheckErrors();
-		}
-	}
+    private string _Password = "";
+    public string Password {
+        get { return _Password; }
+        set {
+            SetAndRaise(nameof(Password), ref _Password, value);
+            CheckErrors();
+        }
+    }
 
-	private string _repeatPassword = "";
-	public string RepeatPassword {
-		get { return _repeatPassword; }
-		set { 
-			SetAndRaise(nameof(RepeatPassword), ref _repeatPassword, value);
-			CheckErrors();
-		}
-	}
+    private string _repeatPassword = "";
+    public string RepeatPassword {
+        get { return _repeatPassword; }
+        set {
+            SetAndRaise(nameof(RepeatPassword), ref _repeatPassword, value);
+            CheckErrors();
+        }
+    }
 
-	public bool CanSignUp => !HasErrors && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(RepeatPassword);
+    public bool CanSignUp => !HasErrors && !string.IsNullOrWhiteSpace(Password) && !string.IsNullOrWhiteSpace(RepeatPassword);
 
-	public SignUpAsyncCommand SendCommand { get; }
+    public SignUpAsyncCommand SendCommand { get; }
 
-	public SignUpViewModel(CryptoContainerService cryptoContainerService, INotificationService notificationService, ICryptoAccountServiceFactory cryptoAccountServiceFactory, NavigationService<AccountsListingViewModel> navigationToListingViewModel, ILoggerFactory? loggerFactory = null) {
-		SendCommand = new SignUpAsyncCommand(() => Password, notificationService, cryptoContainerService, cryptoAccountServiceFactory, navigationToListingViewModel);
-		_errorsViewModel.ErrorsChanged += OnErrorsChanged;
+    public SignUpViewModel(CryptoContainerService cryptoContainerService, INotificationService notificationService, ICryptoAccountServiceFactory cryptoAccountServiceFactory, NavigationService<AccountsListingViewModel> navigationToListingViewModel, ILoggerFactory? loggerFactory = null) {
+        SendCommand = new SignUpAsyncCommand(() => Password, notificationService, cryptoContainerService, cryptoAccountServiceFactory, navigationToListingViewModel);
+        _errorsViewModel.ErrorsChanged += OnErrorsChanged;
 
 #if DEBUG
-		Password = Debugging.MasterKey;
-		RepeatPassword = Debugging.MasterKey;
+        Password = Debugging.MasterKey;
+        RepeatPassword = Debugging.MasterKey;
 #endif
-	}
+    }
 
     private void OnErrorsChanged(object? sender, DataErrorsChangedEventArgs e) {
         ErrorsChanged?.Invoke(this, e);
-		OnPropertyChanged(nameof(CanSignUp));
+        OnPropertyChanged(nameof(CanSignUp));
     }
 
     public bool HasErrors => _errorsViewModel.HasErrors;
@@ -62,11 +62,11 @@ public class SignUpViewModel : ViewModelBase, INotifyDataErrorInfo {
 
     protected override void Dispose(bool disposed) {
         _errorsViewModel.ErrorsChanged -= OnErrorsChanged;
-		SendCommand.Dispose();
+        SendCommand.Dispose();
         base.Dispose(disposed);
     }
 
-	private void CheckErrors() {
+    private void CheckErrors() {
 
         _errorsViewModel.ClearErrors(nameof(Password));
         if(Password.Length < 20) {
@@ -78,7 +78,7 @@ public class SignUpViewModel : ViewModelBase, INotifyDataErrorInfo {
             _errorsViewModel.AddError(nameof(RepeatPassword), "The password and repeated password must be equal.");
         }
 
-		OnPropertyChanged(nameof(CanSignUp));
+        OnPropertyChanged(nameof(CanSignUp));
 
     }
 

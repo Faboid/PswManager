@@ -27,7 +27,7 @@ public class AccountsListingViewModel : ViewModelBase {
     private string _search = "";
     public string Search {
         get { return _search; }
-        set { 
+        set {
             SetAndRaise(nameof(Search), ref _search, value);
             _collectionView.Refresh();
         }
@@ -48,9 +48,9 @@ public class AccountsListingViewModel : ViewModelBase {
     public ICommand CreateAccountCommand { get; }
     public ICommand LoadAccountsCommand { get; }
 
-    public AccountsListingViewModel(AccountsStore accountsStore, INotificationService notificationService, 
-                                    Func<IAccount, AccountViewModel> createAccountViewModel, 
-                                    NavigationService<SettingsViewModel> navigationServiceToSettingsViewModel, NavigationService<CreateAccountViewModel> navigationServiceToCreateAccountViewModel, 
+    public AccountsListingViewModel(AccountsStore accountsStore, INotificationService notificationService,
+                                    Func<IAccount, AccountViewModel> createAccountViewModel,
+                                    NavigationService<SettingsViewModel> navigationServiceToSettingsViewModel, NavigationService<CreateAccountViewModel> navigationServiceToCreateAccountViewModel,
                                     ILoggerFactory? loggerFactory = null) {
         _createAccountViewModel = createAccountViewModel;
         _accountsStore = accountsStore;

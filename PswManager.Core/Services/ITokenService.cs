@@ -11,7 +11,7 @@ public interface ITokenService {
     /// </summary>
     /// <returns>Whether the token is already set.</returns>
     bool IsSet();
-    
+
     /// <summary>
     /// Sets a new token or overwrites an existing one.
     /// </summary>

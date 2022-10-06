@@ -26,8 +26,8 @@ public class AccountViewModel : ViewModelBase {
     public string EncryptedEmail => _account.Email;
 
     private IExtendedAccountModel _extendedAccount;
-    public string Password => IsDecrypted? _extendedAccount.Password : "Loading...";
-    public string Email => IsDecrypted? _extendedAccount.Email : "Loading...";
+    public string Password => IsDecrypted ? _extendedAccount.Password : "Loading...";
+    public string Email => IsDecrypted ? _extendedAccount.Email : "Loading...";
 
     public bool IsDecrypted => !_extendedAccount.IsEncrypted;
 
@@ -42,7 +42,7 @@ public class AccountViewModel : ViewModelBase {
     public ICommand CopyEmailToClipboard { get; }
     public ICommand DetailsCommand { get; }
     public ICommand CloseDetailsCommand { get; }
-    
+
     private ICommand? _editCommand;
     public ICommand EditCommand {
         get => _editCommand!;

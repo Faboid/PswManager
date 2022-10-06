@@ -10,7 +10,7 @@ public class PathsBuilder : IPathsBuilder {
     /// <summary>
     /// Initializes <see cref="PathsBuilder"/> and creates all non-existing directories among the paths.
     /// </summary>
-    public PathsBuilder() : this(new FileSystem().DirectoryInfo) {}
+    public PathsBuilder() : this(new FileSystem().DirectoryInfo) { }
 
     /// <summary>
     /// Initializes <see cref="PathsBuilder"/> and creates all non-existing directories 

@@ -7,6 +7,6 @@ namespace PswManager.UI.WPF.Services;
 /// </summary>
 public class CryptoContainerService {
 
-	public ICryptoAccountService? CryptoAccountService { get; set; }
+    public ICryptoAccountService? CryptoAccountService { get; set; }
 
 }

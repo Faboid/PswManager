@@ -20,11 +20,11 @@ public class LoginAsyncCommand : AsyncCommandBase {
     private readonly CryptoContainerService _cryptoContainerService;
     private readonly Func<string> _getPassword;
 
-    public LoginAsyncCommand(Func<string> getPassword, 
-                            INotificationService notificationService, 
-                            CryptoContainerService cryptoContainerService, 
-                            ICryptoAccountServiceFactory cryptoServiceFactory, 
-                            NavigationService<AccountsListingViewModel> navigationService, 
+    public LoginAsyncCommand(Func<string> getPassword,
+                            INotificationService notificationService,
+                            CryptoContainerService cryptoContainerService,
+                            ICryptoAccountServiceFactory cryptoServiceFactory,
+                            NavigationService<AccountsListingViewModel> navigationService,
                             ILoggerFactory? loggerFactory = null) {
 
         _logger = loggerFactory?.CreateLogger<LoginAsyncCommand>();

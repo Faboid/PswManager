@@ -11,7 +11,7 @@ namespace PswManager.UI.WPF.Commands;
 /// When executed, uses the properties from the given <see cref="EditAccountViewModel"/> to attempt updating the account.
 /// </summary>
 public class EditAccountCommand : AsyncCommandBase {
-    
+
     private readonly ILogger<EditAccountCommand>? _logger;
 
     private readonly IAccountModelFactory _accountModelFactory;

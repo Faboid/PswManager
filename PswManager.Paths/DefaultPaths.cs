@@ -33,8 +33,8 @@ public static class DefaultPaths {
     /// <summary>
     /// The database directory for saving with a SQLite database.
     /// </summary>
-    public static string SQLDatabaseDirectory { get; } = Path.Combine(DatabaseDirectory, "SQLite");    
-    
+    public static string SQLDatabaseDirectory { get; } = Path.Combine(DatabaseDirectory, "SQLite");
+
     /// <summary>
     /// The database file for saving with a SQLite database.
     /// </summary>

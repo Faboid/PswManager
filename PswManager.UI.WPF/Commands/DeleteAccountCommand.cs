@@ -27,7 +27,7 @@ public class DeleteAccountCommand : AsyncCommandBase {
 
         _logger?.LogInformation("Beginning to delete {Name}.", _accountName);
         var result = await _accountsStore.DeleteAccountAsync(_accountName);
-        
+
         if(result is not DeleteAccountResponse.Success) {
             var message = result switch {
                 DeleteAccountResponse.AccountNotFound => $"{_accountName} doesn't exist.",
