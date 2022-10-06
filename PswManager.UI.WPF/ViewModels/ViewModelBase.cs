@@ -2,6 +2,9 @@ using System;
 using System.ComponentModel;
 namespace PswManager.UI.WPF.ViewModels;
 
+/// <summary>
+/// The base viewmodel to reduce boilerplate.
+/// </summary>
 public class ViewModelBase : INotifyPropertyChanged, IDisposable {
 
     public event PropertyChangedEventHandler? PropertyChanged;

@@ -2,7 +2,6 @@ using PswManager.Core;
 using PswManager.Core.AccountModels;
 using PswManager.UI.WPF.Commands;
 using PswManager.UI.WPF.Services;
-using PswManager.UI.WPF.Stores;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -10,6 +9,9 @@ using System.Windows.Input;
 
 namespace PswManager.UI.WPF.ViewModels;
 
+/// <summary>
+/// Represents a single account. Provides commands to edit, delete, and get its values.
+/// </summary>
 public class AccountViewModel : ViewModelBase {
 
     public event Action<AccountViewModel>? ShowDetails;

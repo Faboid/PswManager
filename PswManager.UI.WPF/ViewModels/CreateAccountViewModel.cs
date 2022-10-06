@@ -9,6 +9,9 @@ using PswManager.Core.AccountModels;
 
 namespace PswManager.UI.WPF.ViewModels;
 
+/// <summary>
+/// A viewmodel to create a new account.
+/// </summary>
 public class CreateAccountViewModel : ViewModelBase, INotifyDataErrorInfo {
 
     private readonly AccountsStore _accountsStore;

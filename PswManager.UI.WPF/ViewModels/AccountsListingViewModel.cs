@@ -13,6 +13,9 @@ using System.Windows.Input;
 
 namespace PswManager.UI.WPF.ViewModels;
 
+/// <summary>
+/// Represents a list of accounts. Acts as the "home" viewmodel of this application.
+/// </summary>
 public class AccountsListingViewModel : ViewModelBase {
 
     private readonly AccountsStore _accountsStore;

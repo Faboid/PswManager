@@ -9,6 +9,9 @@ using System.ComponentModel;
 
 namespace PswManager.UI.WPF.ViewModels;
 
+/// <summary>
+/// A viewmodel that handles signing up in the application for the first time. This will overwrite existing master keys, so use only on first time setup.
+/// </summary>
 public class SignUpViewModel : ViewModelBase, INotifyDataErrorInfo {
 
 	private readonly ErrorsViewModel _errorsViewModel = new();

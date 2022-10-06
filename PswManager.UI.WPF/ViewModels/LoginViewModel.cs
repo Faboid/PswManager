@@ -6,6 +6,9 @@ using PswManager.UI.WPF.Services;
 
 namespace PswManager.UI.WPF.ViewModels;
 
+/// <summary>
+/// Viewmodel that handles login in the application and setting up the cryptography master key.
+/// </summary>
 public class LoginViewModel : ViewModelBase {
 
 
