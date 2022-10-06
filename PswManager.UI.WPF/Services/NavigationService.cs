@@ -5,6 +5,10 @@ using System;
 
 namespace PswManager.UI.WPF.Services;
 
+/// <summary>
+/// Provides methods to navigate to <typeparamref name="T"/>.
+/// </summary>
+/// <typeparam name="T">The viewmodel to navigate to.</typeparam>
 public class NavigationService<T> where T : ViewModelBase {
 
     private readonly ILogger _logger = Log.Logger;
@@ -16,6 +20,10 @@ public class NavigationService<T> where T : ViewModelBase {
         _navigationFunction = navigationFunction;
     }
 
+    /// <summary>
+    /// Navigates to <typeparamref name="T"/>.
+    /// </summary>
+    /// <param name="disposeCurrent">Whether the current viewmodel should be disposed.</param>
     public void Navigate(bool disposeCurrent) {
         if(disposeCurrent) {
             _navigationStore.CurrentViewModel?.Dispose();
@@ -27,6 +35,11 @@ public class NavigationService<T> where T : ViewModelBase {
 
 }
 
+/// <summary>
+/// Provides methods to navigate to <typeparamref name="TViewModel"/>, by giving it a <typeparamref name="TArgument"/>.
+/// </summary>
+/// <typeparam name="TViewModel">The viewmodel to navigate to.</typeparam>
+/// <typeparam name="TArgument">The argument type to give to the viewmodel.</typeparam>
 public class NavigationService<TViewModel, TArgument> where TViewModel : ViewModelBase {
 
     private readonly ILogger _logger = Log.Logger;
@@ -38,6 +51,11 @@ public class NavigationService<TViewModel, TArgument> where TViewModel : ViewMod
         _navigationFunction = navigationFunction;
     }
 
+    /// <summary>
+    /// Navigates to <typeparamref name="TViewModel"/> by giving it <typeparamref name="TArgument"/>.
+    /// </summary>
+    /// <param name="argument">The argument given to the <see cref="Func{T, TResult}"/> returning the viewmodel.</param>
+    /// <param name="disposeCurrent">Whether the current viewmodel should be disposed.</param>
     public void Navigate(TArgument argument, bool disposeCurrent) {
         if(disposeCurrent) {
             _navigationStore.CurrentViewModel?.Dispose();
