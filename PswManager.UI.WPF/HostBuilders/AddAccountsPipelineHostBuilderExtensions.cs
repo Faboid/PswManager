@@ -11,8 +11,20 @@ using System;
 
 namespace PswManager.UI.WPF.HostBuilders;
 
+/// <summary>
+/// Provides extension methods to add the account pipeline to a <see cref="IHostBuilder"/>.
+/// </summary>
 public static class AddAccountsPipelineHostBuilderExtensions {
 
+    /// <summary>
+    /// Injects the backend neeeded to set up all the accounts. This includes their factories, objects, database, and encryption.
+    /// </summary>
+    /// <remarks>
+    /// Supports different types of database initialization.
+    /// </remarks>
+    /// <param name="hostBuilder"></param>
+    /// <param name="dbType">The type of database to use.</param>
+    /// <returns></returns>
     public static IHostBuilder AddAccountsPipeline(this IHostBuilder hostBuilder, DatabaseType dbType) {
         return hostBuilder.ConfigureServices(services => {
 

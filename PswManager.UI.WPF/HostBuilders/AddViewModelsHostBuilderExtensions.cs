@@ -12,8 +12,16 @@ using System.Windows;
 
 namespace PswManager.UI.WPF.HostBuilders;
 
+/// <summary>
+/// Provides extension methods to inject viewmodels.
+/// </summary>
 public static class AddViewModelsHostBuilderExtensions {
 
+    /// <summary>
+    /// Injects the main window.
+    /// </summary>
+    /// <param name="hostBuilder"></param>
+    /// <returns></returns>
     public static IHostBuilder AddMainWindow(this IHostBuilder hostBuilder) {
         return hostBuilder.ConfigureServices(services => {
 
@@ -28,7 +36,11 @@ public static class AddViewModelsHostBuilderExtensions {
         });
     }
 
-
+    /// <summary>
+    /// Injects the viewmodels, the func(s) used to instantiate them, and the navigation services.
+    /// </summary>
+    /// <param name="hostBuilder"></param>
+    /// <returns></returns>
     public static IHostBuilder AddViewModels(this IHostBuilder hostBuilder) {
         return hostBuilder.ConfigureServices(services => {
 
