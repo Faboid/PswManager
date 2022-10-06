@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Core", "PswManager.Core\PswManager.Core.csproj", "{02353A73-B60B-4434-9819-AC8A3ADDE864}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.ConsoleUI", "PswManager.ConsoleUI\PswManager.ConsoleUI.csproj", "{E0FC07AF-04D3-41FA-8E3A-F53939B52ABC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.UI.Console", "PswManager.UI.Console\PswManager.UI.Console.csproj", "{E0FC07AF-04D3-41FA-8E3A-F53939B52ABC}"
 	ProjectSection(ProjectDependencies) = postProject
 		{EDC2911F-7A40-4BD5-9999-17CB72517BDB} = {EDC2911F-7A40-4BD5-9999-17CB72517BDB}
 	EndProjectSection
@@ -22,7 +22,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Async", "PswMana
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Core.Tests", "PswManager.Core.Tests\PswManager.Core.Tests.csproj", "{824857BD-69C7-4C37-8F5A-FD19533CB0E6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.ConsoleUI.Tests", "PswManager.ConsoleUI.Tests\PswManager.ConsoleUI.Tests.csproj", "{9F0F3BC5-E3DF-428D-A7D4-A6E5EF798D8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.UI.Console.Tests", "PswManager.UI.Console.Tests\PswManager.UI.Console.Tests.csproj", "{9F0F3BC5-E3DF-428D-A7D4-A6E5EF798D8F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.TestUtils", "PswManager.TestUtils\PswManager.TestUtils.csproj", "{4DA452E8-3234-4A17-8F3A-44629BBBBE74}"
 EndProject
@@ -45,7 +45,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Commands.Tests",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.UI.WPF", "PswManager.UI.WPF\PswManager.UI.WPF.csproj", "{FF16A93E-01EC-468A-925A-7A52CFF29F33}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PswManager.Paths", "PswManager.Paths\PswManager.Paths.csproj", "{CC2EF4FE-C156-4C5F-B537-060E6AED8B5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PswManager.Paths", "PswManager.Paths\PswManager.Paths.csproj", "{CC2EF4FE-C156-4C5F-B537-060E6AED8B5D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
