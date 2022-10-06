@@ -17,10 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PswManager.ConsoleUI\PswManager.ConsoleUI.csproj" />
+    <ProjectReference Include="..\PswManager.UI.Console\PswManager.UI.Console.csproj" />
     <ProjectReference Include="..\PswManager.Core.Tests\PswManager.Core.Tests.csproj" />
     <ProjectReference Include="..\PswManager.TestUtils\PswManager.TestUtils.csproj" />
-      <Using Include="Xunit"/>
+      <Using Include="Xunit" />
   </ItemGroup>
 
 </Project>
