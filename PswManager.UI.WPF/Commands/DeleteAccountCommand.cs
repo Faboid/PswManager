@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace PswManager.UI.WPF.Commands;
 
+/// <summary>
+/// When executes, tries to delete the account with the corresponding account name.
+/// </summary>
 public class DeleteAccountCommand : AsyncCommandBase {
 
     private readonly string _accountName;

@@ -5,13 +5,14 @@ using PswManager.Encryption.Cryptography;
 using PswManager.Encryption.Services;
 using PswManager.UI.WPF.Services;
 using PswManager.UI.WPF.ViewModels;
-using PswManager.Utils;
-using Serilog;
 using System;
 using System.Threading.Tasks;
 
 namespace PswManager.UI.WPF.Commands;
 
+/// <summary>
+/// Provides a way to set up the application's encryption capabilities.
+/// </summary>
 public class SignUpAsyncCommand : AsyncCommandBase {
 
     private readonly ICryptoAccountServiceFactory _cryptoAccountServiceFactory;    

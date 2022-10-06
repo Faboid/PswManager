@@ -4,6 +4,10 @@ using System;
 
 namespace PswManager.UI.WPF.Commands;
 
+/// <summary>
+/// Used to navigate between <see cref="ViewModelBase"/>.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class NavigateCommand<T> : LinkableCommandBase where T : ViewModelBase {
 
     private readonly NavigationService<T> _navigationService;
@@ -24,6 +28,11 @@ public class NavigateCommand<T> : LinkableCommandBase where T : ViewModelBase {
     }
 }
 
+/// <summary>
+/// Used to navigate between <see cref="ViewModelBase"/> by giving an argument.
+/// </summary>
+/// <typeparam name="TViewModel">The viewmodel to navigate to.</typeparam>
+/// <typeparam name="TArgument">The type of argument to give to the new viewmodel.</typeparam>
 public class NavigateCommand<TViewModel, TArgument> : LinkableCommandBase where TViewModel : ViewModelBase {
 
     private readonly Func<TArgument> _getArgument;

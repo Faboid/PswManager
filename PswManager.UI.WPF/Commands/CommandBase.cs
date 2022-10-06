@@ -2,6 +2,10 @@
 using System.Windows.Input;
 
 namespace PswManager.UI.WPF.Commands;
+
+/// <summary>
+/// Represents a generic command's framework.
+/// </summary>
 public abstract class CommandBase : ICommand {
 
     public event EventHandler? CanExecuteChanged;

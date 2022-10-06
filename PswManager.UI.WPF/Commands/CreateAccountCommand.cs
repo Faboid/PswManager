@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace PswManager.UI.WPF.Commands;
 
+/// <summary>
+/// When executed, attempts to create a new account using the values in the properties of the given <see cref="CreateAccountViewModel"/>.
+/// </summary>
 public class CreateAccountCommand : AsyncCommandBase {
 
     private readonly IAccountModelFactory _accountModelFactory;

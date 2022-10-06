@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace PswManager.UI.WPF.Commands;
 
+/// <summary>
+/// Loads all accounts asynchronously, then calls the given action with them as parameter.
+/// </summary>
 public class LoadAccountsCommand : AsyncCommandBase {
 
     private readonly ILogger<LoadAccountsCommand>? _logger;

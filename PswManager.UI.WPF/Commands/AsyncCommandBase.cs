@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 
 namespace PswManager.UI.WPF.Commands;
 
+/// <summary>
+/// Represents a linkable asynchronous command.
+/// </summary>
 public abstract class AsyncCommandBase : AsyncLinkableCommandBase {
 
     public AsyncCommandBase() { }

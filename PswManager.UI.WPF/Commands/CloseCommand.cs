@@ -2,6 +2,9 @@
 
 namespace PswManager.UI.WPF.Commands;
 
+/// <summary>
+/// Shuts down the window.
+/// </summary>
 public class CloseCommand : CommandBase {
 
     private readonly Window _window;
