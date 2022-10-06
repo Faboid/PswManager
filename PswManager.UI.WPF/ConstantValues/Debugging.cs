@@ -6,6 +6,9 @@ namespace PswManager.UI.WPF.ConstantValues;
 /// </summary>
 public static class Debugging {
 
+    /// <summary>
+    /// A constant master key to use for debugging. Does not exist in Release.
+    /// </summary>
     public const string MasterKey = "ThisisAValidPassword, Only to be used for debugging";
 
 }
