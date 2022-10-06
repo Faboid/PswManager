@@ -7,9 +7,6 @@ using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Interfaces;
 using PswManager.Database.Models;
 using PswManager.Extensions;
-using PswManager.TestUtils;
-using PswManager.Utils;
-using PswManager.Utils.Options;
 
 namespace PswManager.ConsoleUI.Tests.Inner;
 public class AccountEditorTests {

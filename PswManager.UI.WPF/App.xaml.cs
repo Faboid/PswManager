@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PswManager.Core;
 using PswManager.Core.Services;
 using PswManager.Paths;
 using PswManager.UI.WPF.HostBuilders;
-using PswManager.UI.WPF.Services;
 using PswManager.UI.WPF.Stores;
 using PswManager.UI.WPF.ViewModels;
 using Serilog;

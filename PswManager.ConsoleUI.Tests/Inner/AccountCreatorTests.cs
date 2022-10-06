@@ -6,8 +6,6 @@ using PswManager.Core.Tests.Mocks;
 using PswManager.Database.DataAccess.ErrorCodes;
 using PswManager.Database.Interfaces;
 using PswManager.Database.Models;
-using PswManager.TestUtils;
-using PswManager.Utils.Options;
 
 namespace PswManager.ConsoleUI.Tests.Inner;
 public class AccountCreatorTests {

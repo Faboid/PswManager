@@ -2,7 +2,6 @@ using PswManager.Core.AccountModels;
 using PswManager.UI.WPF.Services;
 using PswManager.UI.WPF.Stores;
 using PswManager.UI.WPF.ViewModels;
-using PswManager.UI.WPF.Views;
 using System.Threading.Tasks;
 
 namespace PswManager.UI.WPF.Commands;

@@ -3,7 +3,6 @@ using System.Threading;
 using PswManager.ConsoleUI;
 using PswManager.Core.Services;
 using System.IO.Abstractions;
-using PswManager.Core;
 using PswManager.Paths;
 
 UserInput userInput = new();

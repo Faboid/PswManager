@@ -1,7 +1,6 @@
 using PswManager.Async.Locks;
 using PswManager.Database.DataAccess;
 using PswManager.Database.DataAccess.ErrorCodes;
-using PswManager.Database.Interfaces;
 using PswManager.Database.Models;
 using PswManager.Utils;
 using System.Collections.Generic;
