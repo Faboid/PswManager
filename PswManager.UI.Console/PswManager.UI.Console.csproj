@@ -4,12 +4,17 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <StartupObject></StartupObject>
+    <ApplicationIcon>PswManager.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="PswManager.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PswManager.Commands\PswManager.Commands.csproj" />
     <ProjectReference Include="..\PswManager.Core\PswManager.Core.csproj" />
-    <Using Include="PswManager.Utils"/>
+    <Using Include="PswManager.Utils" />
   </ItemGroup>
 
 </Project>
