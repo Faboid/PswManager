@@ -18,6 +18,12 @@ public interface IPathsBuilder {
     string GetDataDirectory();
 
     /// <summary>
+    /// Gets the directory used as a temporary backup to change the main password.
+    /// </summary>
+    /// <returns></returns>
+    string GetBufferDataDirectory();
+
+    /// <summary>
     /// Gets the directory that contains ALL databases.
     /// </summary>
     string GetDatabaseDirectory();
@@ -51,5 +57,4 @@ public interface IPathsBuilder {
     /// Gets the directory that contains all logs.
     /// </summary>
     string GetLogsDirectory();
-
 }
