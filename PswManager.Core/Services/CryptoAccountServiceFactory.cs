@@ -63,6 +63,12 @@ public class CryptoAccountServiceFactory : ICryptoAccountServiceFactory {
 
     }
 
+    async Task<ICryptoAccountService> ICryptoAccountServiceFactory.BuildCryptoAccountService(char[] password) {
+        KeyGeneratorService generatorService = _createGeneratorService.Invoke(password);
+        _ = await generatorService.GenerateKeyAsync().ConfigureAwait(false); //while not used, the token key must be generated to obtain consistent results
+        return CreateCryptoAccountAsync(generatorService);
+    }
+
 
     private ICryptoAccountService CreateCryptoAccountAsync(KeyGeneratorService generator) {
         var lockerReference = new RefCount<Locker>(new());
@@ -83,5 +89,4 @@ public class CryptoAccountServiceFactory : ICryptoAccountServiceFactory {
             }
         }
     }
-
 }

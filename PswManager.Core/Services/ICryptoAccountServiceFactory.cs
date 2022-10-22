@@ -21,4 +21,12 @@ public interface ICryptoAccountServiceFactory {
     /// <param name="password"></param>
     /// <returns></returns>
     Task<ICryptoAccountService> SignUpAccountAsync(char[] password);
+
+    /// <summary>
+    /// Builds a <see cref="ICryptoAccountService"/>, but doesn't save it to the token.
+    /// </summary>
+    /// <param name="password"></param>
+    /// <returns></returns>
+    internal Task<ICryptoAccountService> BuildCryptoAccountService(char[] password);
+
 }
