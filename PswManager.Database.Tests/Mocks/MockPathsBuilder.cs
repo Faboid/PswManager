@@ -25,4 +25,5 @@ public class MockPathsBuilder : IPathsBuilder {
     public string GetWorkingDirectory() => _pathsBuilder.GetWorkingDirectory();
     public string GetLogsDirectory() => throw new NotSupportedException();
     public string GetTokenPath() => throw new NotSupportedException();
+    public string GetBufferDataDirectory() => throw new NotImplementedException();
 }
