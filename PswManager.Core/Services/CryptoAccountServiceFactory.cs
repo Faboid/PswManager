@@ -58,6 +58,7 @@ public class CryptoAccountServiceFactory : ICryptoAccountServiceFactory {
 
         if(result != TokenResult.Success) {
             _logger?.LogInformation("Login was unsuccessful. Result: {ErrorCode}", result);
+            await generatorService.DisposeAsync();
             return result;
         }
 
