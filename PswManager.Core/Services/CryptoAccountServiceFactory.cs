@@ -12,29 +12,32 @@ namespace PswManager.Core.Services;
 public class CryptoAccountServiceFactory : ICryptoAccountServiceFactory {
 
     private readonly ILogger<CryptoAccountServiceFactory>? _logger;
+    private readonly ICryptoServiceFactory _cryptoServiceFactory;
     private readonly ITokenService _tokenService;
     private readonly Func<char[], KeyGeneratorService> _createGeneratorService;
 
-    public CryptoAccountServiceFactory(ITokenService tokenService, ILoggerFactory? loggerFactory = null) {
+    public CryptoAccountServiceFactory(ITokenService tokenService, ICryptoServiceFactory cryptoServiceFactory, ILoggerFactory? loggerFactory = null) {
         _logger = loggerFactory?.CreateLogger<CryptoAccountServiceFactory>();
         _tokenService = tokenService;
         _createGeneratorService = x => new(x);
+        _cryptoServiceFactory = cryptoServiceFactory;
     }
 
     /// <summary>
     /// This constructor is meant to be used only for tests. Do not use outside of them.
     /// </summary>
     /// <param name="customGeneratorServiceFunc"></param>
-    internal CryptoAccountServiceFactory(ITokenService tokenService, Func<char[], KeyGeneratorService> customGeneratorServiceFunc) {
+    internal CryptoAccountServiceFactory(ITokenService tokenService, ICryptoServiceFactory cryptoServiceFactory, Func<char[], KeyGeneratorService> customGeneratorServiceFunc) {
         _createGeneratorService = customGeneratorServiceFunc;
         _tokenService = tokenService;
+        _cryptoServiceFactory = cryptoServiceFactory;
     }
 
     public async Task<ICryptoAccountService> SignUpAccountAsync(char[] password) {
 
         KeyGeneratorService generatorService = _createGeneratorService.Invoke(password);
         var masterKey = await generatorService.GenerateKeyAsync().ConfigureAwait(false);
-        var cryptoService = new CryptoService(masterKey);
+        var cryptoService = _cryptoServiceFactory.GetCryptoService(masterKey);
         _logger?.LogInformation("Setting up new token.");
         _tokenService.SetToken(cryptoService);
         _logger?.LogInformation("A new token has been set up.");
@@ -48,7 +51,7 @@ public class CryptoAccountServiceFactory : ICryptoAccountServiceFactory {
 
         KeyGeneratorService generatorService = _createGeneratorService.Invoke(password);
         var masterKey = await generatorService.GenerateKeyAsync().ConfigureAwait(false);
-        var cryptoService = new CryptoService(masterKey);
+        var cryptoService = _cryptoServiceFactory.GetCryptoService(masterKey);
 
         _logger?.LogInformation("Checking login token");
         var result = _tokenService.VerifyToken(cryptoService);

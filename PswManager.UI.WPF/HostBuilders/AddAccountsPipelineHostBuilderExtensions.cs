@@ -5,6 +5,7 @@ using PswManager.Core.AccountModels;
 using PswManager.Core.Services;
 using PswManager.Core.Validators;
 using PswManager.Database;
+using PswManager.Encryption.Services;
 using PswManager.Paths;
 using PswManager.UI.WPF.Services;
 using System;
@@ -32,6 +33,7 @@ public static class AddAccountsPipelineHostBuilderExtensions {
             services.AddSingleton(s => s.GetRequiredService<IDataFactory>().GetDataConnection());
             services.AddSingleton<IAccountValidator, AccountValidator>();
 
+            services.AddSingleton<ICryptoServiceFactory, CryptoServiceFactory>();
             services.AddSingleton<IPathsBuilder, PathsBuilder>();
             services.AddSingleton<TokenServiceFactory>();
             services.AddSingleton(s => s.GetRequiredService<TokenServiceFactory>().CreateTokenService("a99521fb-a649-4066-bba1-22414444d227"));
