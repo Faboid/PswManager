@@ -12,7 +12,7 @@ namespace PswManager.Encryption.Services;
 /// <summary>
 /// Provides methods to generate a number of keys. The keys will be consistent across instances as long as they use the same master key.
 /// </summary>
-public class KeyGeneratorService : IAsyncDisposable {
+public class KeyGeneratorService : IKeyGeneratorService {
 
     /// <summary>
     /// Instantiates a <see cref="KeyGeneratorService"/> with a fixed salt. 

@@ -34,6 +34,7 @@ public static class AddAccountsPipelineHostBuilderExtensions {
             services.AddSingleton<IAccountValidator, AccountValidator>();
 
             services.AddSingleton<ICryptoServiceFactory, CryptoServiceFactory>();
+            services.AddSingleton<IKeyGeneratorServiceFactory, KeyGeneratorServiceFactory>();
             services.AddSingleton<IPathsBuilder, PathsBuilder>();
             services.AddSingleton<TokenServiceFactory>();
             services.AddSingleton(s => s.GetRequiredService<TokenServiceFactory>().CreateTokenService("a99521fb-a649-4066-bba1-22414444d227"));
