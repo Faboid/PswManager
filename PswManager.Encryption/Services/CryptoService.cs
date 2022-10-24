@@ -51,7 +51,7 @@ public class CryptoService : ICryptoService, IDisposable {
         return Encoding.Unicode.GetString(ms.ToArray());
     }
 
-    private Aes GetAes(byte[] salt, string version) { //todo - this is very slow. Attempt optimizing
+    private Aes GetAes(byte[] salt, string version) {
         Aes aes = Aes.Create();
         using var rfc = new Rfc2898DeriveBytes(Encoding.Unicode.GetBytes(key.Get()), salt, Versioning.GetRfcDerivedBytesIterations(version));
         aes.Key = rfc.GetBytes(32);
@@ -70,5 +70,16 @@ public class CryptoService : ICryptoService, IDisposable {
     public void Dispose() {
         key.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    public static bool operator ==(CryptoService? left, CryptoService? right) => left?.key == right?.key;
+    public static bool operator !=(CryptoService? left, CryptoService? right) => !(left == right);
+
+    public override bool Equals(object? obj) {
+        return obj is CryptoService service && this == service;
+    }
+
+    public override int GetHashCode() {
+        return key.GetHashCode();
     }
 }
