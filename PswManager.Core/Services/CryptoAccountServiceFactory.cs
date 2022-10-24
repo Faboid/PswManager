@@ -68,16 +68,20 @@ public class CryptoAccountServiceFactory : ICryptoAccountServiceFactory {
 
     private ICryptoAccountService CreateCryptoAccountAsync(IKeyGeneratorService generator) {
         var lockerReference = new RefCount<Locker>(new());
-        return new CryptoAccountService(GenerateKeyAndDisposeGenerator(generator, lockerReference), GenerateKeyAndDisposeGenerator(generator, lockerReference));
+        var passLock = lockerReference.GetRef();
+        var emaLock = lockerReference.GetRef();
+        return new CryptoAccountService(GenerateKeyAndDisposeGenerator(generator, lockerReference, passLock), GenerateKeyAndDisposeGenerator(generator, lockerReference, emaLock));
     }
 
-    private async Task<Key> GenerateKeyAndDisposeGenerator(IKeyGeneratorService generator, RefCount<Locker> lockerRef) {
+    private async Task<Key> GenerateKeyAndDisposeGenerator(IKeyGeneratorService generator, RefCount<Locker> lockerRef, RefCount<Locker>.Ref thisLock) {
 
         try {
-            using var reference = lockerRef.GetRef();
-            using var lockhere = await reference.Value.GetLockAsync().ConfigureAwait(false);
+            using var lockhere = await thisLock.Value.GetLockAsync().ConfigureAwait(false);
             return await generator.GenerateKeyAsync().ConfigureAwait(false);
         } finally {
+            
+            thisLock.Dispose();
+
             if(!lockerRef.IsInUse) {
                 _logger?.LogInformation("Disposing of KeyGeneratorService...");
                 await generator.DisposeAsync().ConfigureAwait(false);
