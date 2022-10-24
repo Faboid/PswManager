@@ -1,4 +1,7 @@
 ﻿using PswManager.Encryption.Cryptography;
+using System.Runtime.CompilerServices;
+
+[assembly:InternalsVisibleTo("DynamicProxyGenAssembly2")]
 namespace PswManager.Encryption.Services;
 
 public interface ICryptoServiceFactory {
