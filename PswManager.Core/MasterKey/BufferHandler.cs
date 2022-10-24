@@ -3,7 +3,7 @@ using System.IO;
 using System.IO.Abstractions;
 using System.Threading.Tasks;
 
-namespace PswManager.Core.Password;
+namespace PswManager.Core.MasterKey;
 
 internal class BufferHandler {
 

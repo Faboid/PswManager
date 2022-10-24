@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using System;
 using System.IO.Abstractions;
 
-namespace PswManager.Core.Password;
+namespace PswManager.Core.MasterKey;
 
 internal class PasswordStatusChecker {
 

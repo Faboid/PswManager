@@ -8,9 +8,9 @@ using System;
 using System.IO;
 using System.IO.Abstractions;
 using System.Threading.Tasks;
-using static PswManager.Core.Password.PasswordStatusChecker;
+using static PswManager.Core.MasterKey.PasswordStatusChecker;
 
-namespace PswManager.Core.Password;
+namespace PswManager.Core.MasterKey;
 
 public class PasswordEditor {
 
@@ -27,7 +27,7 @@ public class PasswordEditor {
 						ILoggerFactory loggerFactory) {
 		var bufferDir = directoryInfoFactory.FromDirectoryName(pathsBuilder.GetBufferDataDirectory());
 		_dataDirectory = directoryInfoFactory.FromDirectoryName(pathsBuilder.GetDataDirectory());
-        _bufferHandler = new(bufferDir, _dataDirectory);
+		_bufferHandler = new(bufferDir, _dataDirectory);
 		_accountsHandler = new(dataConnection, currentModelFactory);
 		_passwordStatusChecker = new(fileInfoFactory.FromFileName(Path.Combine(pathsBuilder.GetWorkingDirectory(), "DoNotTouch.txt")));
 		_cryptoAccountServiceFactory = cryptoAccountServiceFactory;
@@ -53,17 +53,17 @@ public class PasswordEditor {
 		var newFactory = await GetNewFactory(password);
 		var accounts = await _accountsHandler.GetAccounts();
 		var rebuiltAccounts = await _accountsHandler.RebuildAccounts(accounts, newFactory);
-        using var threads = ThreadsHandler.SetScopedForeground();
+		using var threads = ThreadsHandler.SetScopedForeground();
 
 		try {
 
-            await _passwordStatusChecker.SetStatusTo(PasswordStatus.Pending);
+			await _passwordStatusChecker.SetStatusTo(PasswordStatus.Pending);
 			await ExecuteUpdate(password, accounts, rebuiltAccounts);
-            FreeResources();
+			FreeResources();
 			_accountsHandler.UpdateModelFactory(newFactory);
 			return PasswordChangeResult.Success;
 
-        } catch(Exception ex) {
+		} catch(Exception ex) {
 
 			_logger.LogCritical(ex, "An exception has been thrown during the {Pending} phase of changing passwords.", PasswordStatus.Pending);
 			_logger.LogWarning("Starting to restore the data to its previous state.");
@@ -96,7 +96,7 @@ public class PasswordEditor {
 		await _accountsHandler.DeleteAccounts(accountsToDelete);
 		await _accountsHandler.RecreateAccounts(newAccounts);
 		_ = await _cryptoAccountServiceFactory.SignUpAccountAsync(password);
-    }
+	}
 
 	/// <summary>
 	/// Returns whether the password-changing operation is currently in action.
@@ -107,7 +107,7 @@ public class PasswordEditor {
 			return false;
 		}
 
-        return await (_passwordStatusChecker.GetStatus()) is PasswordStatus.Pending or PasswordStatus.Failed;
+		return await _passwordStatusChecker.GetStatus() is PasswordStatus.Pending or PasswordStatus.Failed;
 	}
 
 	/// <summary>
@@ -116,9 +116,9 @@ public class PasswordEditor {
 	/// <param name="password"></param>
 	/// <returns></returns>
 	private async Task<IAccountModelFactory> GetNewFactory(char[] password) {
-        var cryptoAccount = await _cryptoAccountServiceFactory.BuildCryptoAccountService(password);
-        return new AccountModelFactory(cryptoAccount);
-    }
+		var cryptoAccount = await _cryptoAccountServiceFactory.BuildCryptoAccountService(password);
+		return new AccountModelFactory(cryptoAccount);
+	}
 
 }
 

@@ -3,7 +3,7 @@ using PswManager.Database;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PswManager.Core.Password;
+namespace PswManager.Core.MasterKey;
 
 internal class AccountsHandler {
 
