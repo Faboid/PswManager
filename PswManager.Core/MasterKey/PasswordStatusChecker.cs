@@ -60,7 +60,7 @@ internal class PasswordStatusChecker {
     /// <returns></returns>
     internal async Task<PasswordStatus> GetStatus() {
 
-        if(!_passwordStatusFile.Exists) {
+        if(!_passwordStatusFile.FileSystem.File.Exists(_passwordStatusFile.FullName)) {
             return PasswordStatus.None;
         }
 
