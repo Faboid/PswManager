@@ -1,16 +1,15 @@
 using PswManager.Core.IO;
 using System.IO;
-using System.IO.Abstractions;
 using System.Threading.Tasks;
 
 namespace PswManager.Core.MasterKey;
 
 internal class BufferHandler {
 
-    private readonly IDirectoryInfo _bufferDirectory;
-    private readonly IDirectoryInfo _dataDirectory;
+    private readonly IDirectoryInfoWrapper _bufferDirectory;
+    private readonly IDirectoryInfoWrapper _dataDirectory;
 
-    public BufferHandler(IDirectoryInfo bufferDirectory, IDirectoryInfo dataDirectory) {
+    public BufferHandler(IDirectoryInfoWrapper bufferDirectory, IDirectoryInfoWrapper dataDirectory) {
         _bufferDirectory = bufferDirectory;
         _dataDirectory = dataDirectory;
     }

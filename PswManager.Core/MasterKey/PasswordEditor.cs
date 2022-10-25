@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using PswManager.Core.AccountModels;
+using PswManager.Core.IO;
 using PswManager.Core.Services;
 using PswManager.Database;
 using PswManager.Paths;
@@ -15,13 +16,13 @@ namespace PswManager.Core.MasterKey;
 public class PasswordEditor {
 
 	private readonly ILogger<PasswordEditor> _logger;
-	private readonly IDirectoryInfo _dataDirectory;
+	private readonly IDirectoryInfoWrapper _dataDirectory;
 	private readonly ICryptoAccountServiceFactory _cryptoAccountServiceFactory;
 	private readonly PasswordStatusChecker _passwordStatusChecker;
 	private readonly BufferHandler _bufferHandler;
 	private readonly AccountsHandler _accountsHandler;
 
-	public PasswordEditor(IDirectoryInfoFactory directoryInfoFactory, IFileInfoFactory fileInfoFactory,
+	public PasswordEditor(IDirectoryInfoWrapperFactory directoryInfoFactory, IFileInfoFactory fileInfoFactory,
 						PathsBuilder pathsBuilder, IDataConnection dataConnection,
 						IAccountModelFactory currentModelFactory, ICryptoAccountServiceFactory cryptoAccountServiceFactory,
 						ILoggerFactory loggerFactory) {
