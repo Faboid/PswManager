@@ -82,6 +82,7 @@ public class PasswordEditor {
 			await _bufferHandler.Restore();
 			_logger.LogWarning("The data has been restored successfully.");
 			FreeResources();
+			_logger.LogInformation("The backups have been freed.");
 			return PasswordChangeResult.Failure;
 
 		}
