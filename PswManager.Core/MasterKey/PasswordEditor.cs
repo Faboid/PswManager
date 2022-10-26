@@ -16,7 +16,6 @@ namespace PswManager.Core.MasterKey;
 public class PasswordEditor {
 
 	private readonly ILogger<PasswordEditor> _logger;
-	private readonly IDirectoryInfoWrapper _dataDirectory;
 	private readonly ICryptoAccountServiceFactory _cryptoAccountServiceFactory;
 	private readonly PasswordStatusChecker _passwordStatusChecker;
 	private readonly BufferHandler _bufferHandler;
@@ -26,9 +25,7 @@ public class PasswordEditor {
 						PathsBuilder pathsBuilder, IDataConnection dataConnection,
 						IAccountModelFactory currentModelFactory, ICryptoAccountServiceFactory cryptoAccountServiceFactory,
 						ILoggerFactory loggerFactory) {
-		var bufferDir = directoryInfoFactory.FromDirectoryName(pathsBuilder.GetBufferDataDirectory());
-		_dataDirectory = directoryInfoFactory.FromDirectoryName(pathsBuilder.GetDataDirectory());
-		_bufferHandler = new(bufferDir, _dataDirectory);
+		_bufferHandler = new(directoryInfoFactory, pathsBuilder);
 		_accountsHandler = new(dataConnection, currentModelFactory);
 		_passwordStatusChecker = new(fileInfoFactory.FromFileName(Path.Combine(pathsBuilder.GetWorkingDirectory(), "DoNotTouch.txt")));
 		_cryptoAccountServiceFactory = cryptoAccountServiceFactory;

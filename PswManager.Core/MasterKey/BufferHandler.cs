@@ -1,4 +1,5 @@
 using PswManager.Core.IO;
+using PswManager.Paths;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -8,10 +9,12 @@ internal class BufferHandler {
 
     private readonly IDirectoryInfoWrapper _bufferDirectory;
     private readonly IDirectoryInfoWrapper _dataDirectory;
+    private readonly IDirectoryInfoWrapper _logsDirectory;
 
-    public BufferHandler(IDirectoryInfoWrapper bufferDirectory, IDirectoryInfoWrapper dataDirectory) {
-        _bufferDirectory = bufferDirectory;
-        _dataDirectory = dataDirectory;
+    public BufferHandler(IDirectoryInfoWrapperFactory directoryInfoWrapperFactory, PathsBuilder pathsBuilder) {
+        _bufferDirectory = directoryInfoWrapperFactory.FromDirectoryName(pathsBuilder.GetBufferDataDirectory());
+        _dataDirectory = directoryInfoWrapperFactory.FromDirectoryName(pathsBuilder.GetDataDirectory());
+        _logsDirectory = directoryInfoWrapperFactory.FromDirectoryName(pathsBuilder.GetLogsDirectory());
     }
 
     public bool Exists => _bufferDirectory.Exists;
@@ -37,8 +40,14 @@ internal class BufferHandler {
             throw new DirectoryNotFoundException("Tried to restore the data directory, but the buffer directory does not exist.");
         }
 
+        await BackupLogs();
         _dataDirectory.Delete(true);
         await _bufferDirectory.CopyToAsync(_dataDirectory.FullName);
+    }
+
+    private async Task BackupLogs() {
+        var path = _logsDirectory.FullName.Replace(_dataDirectory.FullName, _bufferDirectory.FullName);
+        await _logsDirectory.CopyToAsync(path);
     }
 
 }
