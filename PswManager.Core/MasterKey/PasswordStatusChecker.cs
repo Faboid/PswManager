@@ -4,7 +4,7 @@ using System.IO.Abstractions;
 
 namespace PswManager.Core.MasterKey;
 
-internal class PasswordStatusChecker {
+internal class PasswordStatusChecker : IPasswordStatusChecker {
 
     internal enum PasswordStatus {
 
@@ -50,7 +50,7 @@ internal class PasswordStatusChecker {
     /// </summary>
     /// <param name="status"></param>
     /// <returns></returns>
-    internal Task SetStatusTo(PasswordStatus status) {
+    public Task SetStatusTo(PasswordStatus status) {
         return _passwordStatusFile.FileSystem.File.WriteAllTextAsync(_passwordStatusFile.FullName, status.ToString());
     }
 
@@ -58,7 +58,7 @@ internal class PasswordStatusChecker {
     /// Gets the current status.
     /// </summary>
     /// <returns></returns>
-    internal async Task<PasswordStatus> GetStatus() {
+    public async Task<PasswordStatus> GetStatus() {
 
         if(!_passwordStatusFile.FileSystem.File.Exists(_passwordStatusFile.FullName)) {
             return PasswordStatus.None;
@@ -71,7 +71,7 @@ internal class PasswordStatusChecker {
     /// <summary>
     /// Deletes the status file.
     /// </summary>
-    internal void Free() {
+    public void Free() {
         _passwordStatusFile.Delete();
     }
 

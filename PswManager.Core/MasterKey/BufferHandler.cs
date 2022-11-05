@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PswManager.Core.MasterKey;
 
-internal class BufferHandler {
+internal class BufferHandler : IBufferHandler {
 
     private readonly IDirectoryInfoWrapper _bufferDirectory;
     private readonly IDirectoryInfoWrapper _dataDirectory;
