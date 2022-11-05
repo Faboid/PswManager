@@ -8,9 +8,11 @@ using PswManager.Utils;
 using System;
 using System.IO;
 using System.IO.Abstractions;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using static PswManager.Core.MasterKey.PasswordStatusChecker;
 
+[assembly:InternalsVisibleTo("DynamicProxyGenAssembly2")]
 namespace PswManager.Core.MasterKey;
 
 public class PasswordEditor {
