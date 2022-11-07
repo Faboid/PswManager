@@ -21,14 +21,14 @@ public class PasswordEditor {
 	private readonly ICryptoAccountServiceFactory _cryptoAccountServiceFactory;
 	private readonly IPasswordStatusChecker _passwordStatusChecker;
 	private readonly IBufferHandler _bufferHandler;
-	private readonly AccountsHandler _accountsHandler;
+	private readonly IAccountsHandler _accountsHandler;
 
 	public PasswordEditor(IDirectoryInfoWrapperFactory directoryInfoFactory, IFileInfoFactory fileInfoFactory,
 						PathsBuilder pathsBuilder, IDataConnection dataConnection,
 						IAccountModelFactory currentModelFactory, ICryptoAccountServiceFactory cryptoAccountServiceFactory,
 						ILoggerFactory? loggerFactory) {
 		_bufferHandler = new BufferHandler(directoryInfoFactory, pathsBuilder);
-		_accountsHandler = new(dataConnection, currentModelFactory);
+		_accountsHandler = new AccountsHandler(dataConnection, currentModelFactory);
 		_passwordStatusChecker = new PasswordStatusChecker(fileInfoFactory.FromFileName(Path.Combine(pathsBuilder.GetWorkingDirectory(), "DoNotTouch.txt")));
 		_cryptoAccountServiceFactory = cryptoAccountServiceFactory;
 		_logger = loggerFactory?.CreateLogger<PasswordEditor>();
@@ -37,12 +37,10 @@ public class PasswordEditor {
 	/// <summary>
 	/// Constructor used for testing.
 	/// </summary>
-	internal PasswordEditor(IBufferHandler bufferHandler, IPasswordStatusChecker passwordStatusChecker, 
-							IDataConnection dataConnection, IAccountModelFactory currentModelFactory, 
-							ICryptoAccountServiceFactory cryptoAccountServiceFactory) {
+	internal PasswordEditor(IBufferHandler bufferHandler, IPasswordStatusChecker passwordStatusChecker, IAccountsHandler accountsHandler, ICryptoAccountServiceFactory cryptoAccountServiceFactory) {
 		_bufferHandler = bufferHandler;
 		_passwordStatusChecker = passwordStatusChecker;
-		_accountsHandler = new(dataConnection, currentModelFactory);
+		_accountsHandler = accountsHandler;
 		_cryptoAccountServiceFactory = cryptoAccountServiceFactory;
 	}
 
@@ -73,7 +71,7 @@ public class PasswordEditor {
 		await _bufferHandler.Backup();
 		_logger?.LogInformation("Completed backup of the current data.");
 		var newFactory = await GetNewFactory(password);
-		await _accountsHandler.SetupAccounts(newFactory);
+		var accountsHandlerExecutable = await _accountsHandler.SetupAccounts(newFactory);
 		_logger?.LogInformation("The accounts have been rebuilt with the new password.");
 		using var threads = ThreadsHandler.SetScopedForeground();
 
@@ -81,7 +79,7 @@ public class PasswordEditor {
 
 			_logger?.LogInformation("Completed the {Starting} phase. Beginning the {Pending} phase.", PasswordStatus.Starting, PasswordStatus.Pending);
 			await _passwordStatusChecker.SetStatusTo(PasswordStatus.Pending);
-			await ExecuteUpdate(password);
+			await ExecuteUpdate(password, accountsHandlerExecutable);
 			FreeResources();
 			_accountsHandler.UpdateModelFactory(newFactory);
 			_logger?.LogInformation("The password has been changed successfully.");
@@ -117,10 +115,10 @@ public class PasswordEditor {
 	/// <param name="accountsToDelete"></param>
 	/// <param name="newAccounts"></param>
 	/// <returns></returns>
-	private async Task ExecuteUpdate(char[] password) {
+	private async Task ExecuteUpdate(char[] password, IAccountsHandlerExecutable accountsHandler) {
 
 		_logger?.LogInformation("Beginning updating the accounts and setting up new token.");
-		await _accountsHandler.ExecuteUpdate();
+		await accountsHandler.ExecuteUpdate();
 		_logger?.LogInformation("Updated the accounts successfully.");
 		
 		_ = await _cryptoAccountServiceFactory.SignUpAccountAsync(password);

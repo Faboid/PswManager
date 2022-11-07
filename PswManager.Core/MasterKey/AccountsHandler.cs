@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PswManager.Core.MasterKey;
 
-internal class AccountsHandler {
+internal class AccountsHandler : IAccountsHandler, IAccountsHandlerExecutable {
 
     private readonly IDataConnection _dataConnection;
     private IAccountModelFactory _currentModelFactory;
@@ -31,7 +31,7 @@ internal class AccountsHandler {
     /// Retrieves all accounts and filters to keep only the valid ones.
     /// </summary>
     /// <returns></returns>
-    public async Task SetupAccounts(IAccountModelFactory newFactory) {
+    public async Task<IAccountsHandlerExecutable> SetupAccounts(IAccountModelFactory newFactory) {
         var accountsTask = await _dataConnection
             .EnumerateAccountsAsync()
             .Select(x => x.Or(null))
@@ -41,7 +41,7 @@ internal class AccountsHandler {
             .ToArrayAsync();
 
         _accounts = await Task.WhenAll(accountsTask);
-
+        return this;
     }
 
     public async Task ExecuteUpdate() {
