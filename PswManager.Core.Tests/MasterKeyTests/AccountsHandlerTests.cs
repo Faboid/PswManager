@@ -61,76 +61,45 @@ public class AccountsHandlerTests {
     }
 
     [Fact]
-    public async Task GetsAccountsRetrievesAll() {
+    public async Task SetupAccounts_AreEncryptedWithNewCrypto() {
 
         await Reset();
-        var accounts = await _sut.GetAccounts();
+        await _sut.SetupAccounts(_newFactory);
+        var accounts = GetPrivateArray(_sut);
 
-        Assert.Equal(_accounts.Length, accounts.Length);
-        
+        Assert.Equal(_extendedAccounts.Length, accounts.Length);
         for(int i = 0; i < _accounts.Length; i++) {
-            AssertEqualAccounts(_accounts[i], accounts[i]);
+            TestNewlyEncrypted(_extendedAccounts[i], _rawAccounts[i], accounts[i]);
         }
-
     }
 
     [Fact]
-    public async Task DeleteAccounts_DeleteAll() {
+    public async Task ExecuteUpdate_CreatesNewlyEncryptedAccounts() {
 
         await Reset();
-        await _sut.DeleteAccounts(_extendedAccounts);
-        Assert.False(await _dataConnection.EnumerateAccountsAsync().AnyAsync());
-
-    }
-
-    [Fact]
-    public async Task RecreateAccounts() {
-
-        await Reset();
+        await _sut.SetupAccounts(_newFactory);
+        await _sut.ExecuteUpdate();
         var accounts = await _dataConnection
             .EnumerateAccountsAsync()
             .Select(x => x.OrDefault())
-            .Where(x => x is not null).
-            ToListAsync();
-
-        //delete all
-        var tasks = accounts.Select(x => _dataConnection.DeleteAccountAsync(x.Name));
-        await Task.WhenAll(tasks);
-
-        await _sut.RecreateAccounts(_extendedAccounts);
-
-        var recreatedAccounts = await _dataConnection
-            .EnumerateAccountsAsync()
-            .Select(x => x.OrDefault()).Where(x => x is not null)
-            .OrderBy(x => x.Name)
             .ToArrayAsync();
 
-        Assert.Equal(_extendedAccounts.Length, recreatedAccounts.Length);
+        Assert.Equal(_extendedAccounts.Length, accounts.Length);
         for(int i = 0; i < _accounts.Length; i++) {
-            AssertEqualAccounts(_extendedAccounts[i], recreatedAccounts[i]);
+            TestNewlyEncrypted(_extendedAccounts[i], _rawAccounts[i], accounts[i]);
         }
 
     }
 
-    [Fact]
-    public async Task RebuildAccounts_AreEncryptedWithNewCrypto() {
-
-        await Reset();
-        var accounts = (await _sut.RebuildAccounts(_extendedAccounts, _newFactory)).OrderBy(x => x.Name).ToArray();
-
+    private void TestNewlyEncrypted(IReadOnlyAccountModel expected, IReadOnlyAccountModel expectedDecrypted, IReadOnlyAccountModel actual) {
         //to test if they're using the new encryption
-        Assert.Equal(_extendedAccounts.Length, accounts.Length);
-        for(int i = 0; i < _accounts.Length; i++) {
-            AssertNotEqualAccounts(_extendedAccounts[i], accounts[i]);
+        AssertNotEqualAccounts(expected, actual);
 
-            //create an encrypted model with the new factory and try to decrypt it to check if it's using the new crypto
-            var account = accounts[i];
-            var model = _newFactory.CreateEncryptedAccount(account);
-            var decrypted = model.GetDecryptedAccount();
-            AssertEqualAccounts(_rawAccounts[i], decrypted);
-
-        }
-
+        //create an encrypted model with the new factory and try to decrypt it to check if it's using the new crypto
+        var account = actual;
+        var model = _newFactory.CreateEncryptedAccount(account);
+        var decrypted = model.GetDecryptedAccount();
+        AssertEqualAccounts(expectedDecrypted, decrypted);
     }
 
     private static void AssertEqualAccounts(IReadOnlyAccountModel expected, IReadOnlyAccountModel actual) {
@@ -147,6 +116,11 @@ public class AccountsHandlerTests {
         Assert.Equal(expected.Name, actual.Name);
         Assert.NotEqual(expected.Password, actual.Password);
         Assert.NotEqual(expected.Email, actual.Email);
+    }
+
+    private static IExtendedAccountModel[] GetPrivateArray(AccountsHandler accountsHandler) {
+        var prop = accountsHandler.GetType().GetField("_accounts", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        return (IExtendedAccountModel[])prop!.GetValue(accountsHandler)!;
     }
 
 }

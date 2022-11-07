@@ -73,8 +73,7 @@ public class PasswordEditor {
 		await _bufferHandler.Backup();
 		_logger?.LogInformation("Completed backup of the current data.");
 		var newFactory = await GetNewFactory(password);
-		var accounts = await _accountsHandler.GetAccounts();
-		var rebuiltAccounts = await _accountsHandler.RebuildAccounts(accounts, newFactory);
+		await _accountsHandler.SetupAccounts(newFactory);
 		_logger?.LogInformation("The accounts have been rebuilt with the new password.");
 		using var threads = ThreadsHandler.SetScopedForeground();
 
@@ -82,7 +81,7 @@ public class PasswordEditor {
 
 			_logger?.LogInformation("Completed the {Starting} phase. Beginning the {Pending} phase.", PasswordStatus.Starting, PasswordStatus.Pending);
 			await _passwordStatusChecker.SetStatusTo(PasswordStatus.Pending);
-			await ExecuteUpdate(password, accounts, rebuiltAccounts);
+			await ExecuteUpdate(password);
 			FreeResources();
 			_accountsHandler.UpdateModelFactory(newFactory);
 			_logger?.LogInformation("The password has been changed successfully.");
@@ -118,14 +117,15 @@ public class PasswordEditor {
 	/// <param name="accountsToDelete"></param>
 	/// <param name="newAccounts"></param>
 	/// <returns></returns>
-	private async Task ExecuteUpdate(char[] password, IExtendedAccountModel[] accountsToDelete, IExtendedAccountModel[] newAccounts) {
-		_logger?.LogInformation("Beginning deleting, recreating the accounts, and setting up new token.");
-		await _accountsHandler.DeleteAccounts(accountsToDelete);
-		_logger?.LogInformation("Deleted the accounts successfully.");
-		await _accountsHandler.RecreateAccounts(newAccounts);
-		_logger?.LogInformation("Recreated the accounts successfully.");
+	private async Task ExecuteUpdate(char[] password) {
+
+		_logger?.LogInformation("Beginning updating the accounts and setting up new token.");
+		await _accountsHandler.ExecuteUpdate();
+		_logger?.LogInformation("Updated the accounts successfully.");
+		
 		_ = await _cryptoAccountServiceFactory.SignUpAccountAsync(password);
 		_logger?.LogInformation("Set up new token successfully.");
+
 	}
 
 	/// <summary>
