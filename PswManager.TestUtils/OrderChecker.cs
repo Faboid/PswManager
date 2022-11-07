@@ -17,7 +17,24 @@ public class OrderChecker : IDisposable {
         lock(lockObj) {
             CurrentOperation++;
             if(CurrentOperation != operationNum) {
-                throw new OrderException($"The operation number {operationNum} has occurred instead of the number {CurrentOperation}");
+                throw new OrderException($"The operation number {operationNum} has occurred instead of the number {CurrentOperation}.");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Signals that one operation within the range of <paramref name="minOperationNum"/> and <paramref name="maxOperationNum"/> has been completed.
+    /// <br/>This method will ensure that the <see cref="CurrentOperation"/> + 1 is within the given range(inclusive).
+    /// If it's not, an <see cref="OrderException"/> will be thrown.
+    /// </summary>
+    /// <param name="minOperationNum"></param>
+    /// <param name="maxOperationNum"></param>
+    /// <exception cref="OrderException"></exception>
+    public void Done(int minOperationNum, int maxOperationNum) {
+        lock(lockObj) {
+            CurrentOperation++;
+            if(CurrentOperation < minOperationNum || CurrentOperation > maxOperationNum) {
+                throw new OrderException($"The operation in the group [{minOperationNum}]-[{maxOperationNum}] has occurred instead of the number {CurrentOperation}.");
             }
         }
     }
