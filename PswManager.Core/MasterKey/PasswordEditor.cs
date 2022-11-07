@@ -66,16 +66,17 @@ public class PasswordEditor {
 	/// <returns></returns>
 	public async Task<PasswordChangeResult> ChangePasswordTo(char[] password) {
 
-		_logger?.LogInformation("Beginning the password-changing operation.");
-		await _passwordStatusChecker.SetStatusTo(PasswordStatus.Starting);
-		await _bufferHandler.Backup();
-		_logger?.LogInformation("Completed backup of the current data.");
-		var newFactory = await GetNewFactory(password);
-		var accountsHandlerExecutable = await _accountsHandler.SetupAccounts(newFactory);
-		_logger?.LogInformation("The accounts have been rebuilt with the new password.");
-		using var threads = ThreadsHandler.SetScopedForeground();
-
 		try {
+
+			_logger?.LogInformation("Beginning the password-changing operation.");
+			await _passwordStatusChecker.SetStatusTo(PasswordStatus.Starting);
+			await _bufferHandler.Backup();
+			_logger?.LogInformation("Completed backup of the current data.");
+			var newFactory = await GetNewFactory(password);
+			var accountsHandlerExecutable = await _accountsHandler.SetupAccounts(newFactory);
+			_logger?.LogInformation("The accounts have been rebuilt with the new password.");
+			using var threads = ThreadsHandler.SetScopedForeground();
+
 
 			_logger?.LogInformation("Completed the {Starting} phase. Beginning the {Pending} phase.", PasswordStatus.Starting, PasswordStatus.Pending);
 			await _passwordStatusChecker.SetStatusTo(PasswordStatus.Pending);
@@ -87,7 +88,7 @@ public class PasswordEditor {
 
 		} catch(Exception ex) {
 
-			_logger?.LogCritical(ex, "An exception has been thrown during the {Pending} phase of changing passwords.", PasswordStatus.Pending);
+			_logger?.LogCritical(ex, "An exception has been thrown while changing passwords.");
 			_logger?.LogWarning("Starting to restore the data to its previous state.");
 			await _passwordStatusChecker.SetStatusTo(PasswordStatus.Failed);
 			await _bufferHandler.Restore();
