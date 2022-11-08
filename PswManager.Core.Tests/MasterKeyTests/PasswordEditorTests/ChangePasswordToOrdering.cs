@@ -48,8 +48,10 @@ public class ChangePasswordToOrdering {
         _passwordStatusCheckerMock.Setup(x => x.Free()).Callback(() => orderChecker.Done(7, 9));
         _accountsHandlerMock.Setup(x => x.UpdateModelFactory(It.IsAny<IAccountModelFactory>())).Callback(() => orderChecker.Done(7, 9));
 
-        await _sut.ChangePasswordTo("SomePassword".ToCharArray());
+        var result = await _sut.ChangePasswordTo("SomePassword".ToCharArray());
         orderChecker.Done(10);
+
+        Assert.Equal(PasswordChangeResult.Success, result);
 
     }
 
@@ -78,8 +80,10 @@ public class ChangePasswordToOrdering {
         _passwordStatusCheckerMock.Setup(x => x.Free()).Callback(() => orderChecker.Done(9, 10));
         _accountsHandlerMock.Setup(x => x.UpdateModelFactory(It.IsAny<IAccountModelFactory>())).Callback(() => OrderChecker.Never());
 
-        await _sut.ChangePasswordTo("SomePassword".ToCharArray());
+        var result = await _sut.ChangePasswordTo("SomePassword".ToCharArray());
         orderChecker.Done(11);
+
+        Assert.Equal(PasswordChangeResult.Failure, result);
 
     }
 
