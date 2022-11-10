@@ -24,7 +24,7 @@ public class PasswordEditor {
 	private readonly IAccountsHandler _accountsHandler;
 
 	public PasswordEditor(IDirectoryInfoWrapperFactory directoryInfoFactory, IFileInfoFactory fileInfoFactory,
-						PathsBuilder pathsBuilder, IDataConnection dataConnection,
+						IPathsBuilder pathsBuilder, IDataConnection dataConnection,
 						IAccountModelFactory currentModelFactory, ICryptoAccountServiceFactory cryptoAccountServiceFactory,
 						ILoggerFactory? loggerFactory) {
 		_bufferHandler = new BufferHandler(directoryInfoFactory, pathsBuilder);

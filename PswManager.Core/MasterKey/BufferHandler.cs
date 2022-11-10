@@ -11,7 +11,7 @@ internal class BufferHandler : IBufferHandler {
     private readonly IDirectoryInfoWrapper _dataDirectory;
     private readonly IDirectoryInfoWrapper _logsDirectory;
 
-    public BufferHandler(IDirectoryInfoWrapperFactory directoryInfoWrapperFactory, PathsBuilder pathsBuilder) {
+    public BufferHandler(IDirectoryInfoWrapperFactory directoryInfoWrapperFactory, IPathsBuilder pathsBuilder) {
         _bufferDirectory = directoryInfoWrapperFactory.FromDirectoryName(pathsBuilder.GetBufferDataDirectory());
         _dataDirectory = directoryInfoWrapperFactory.FromDirectoryName(pathsBuilder.GetDataDirectory());
         _logsDirectory = directoryInfoWrapperFactory.FromDirectoryName(pathsBuilder.GetLogsDirectory());
