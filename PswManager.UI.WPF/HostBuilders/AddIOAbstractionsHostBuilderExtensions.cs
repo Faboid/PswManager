@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PswManager.Core.IO;
 using System.IO.Abstractions;
 
 namespace PswManager.UI.WPF.HostBuilders;
@@ -20,6 +21,7 @@ public static class AddIOAbstractionsHostBuilderExtensions {
             services.AddSingleton<FileSystem>();
             services.AddSingleton(s => s.GetRequiredService<FileSystem>().DirectoryInfo);
             services.AddSingleton(s => s.GetRequiredService<FileSystem>().FileInfo);
+            services.AddSingleton<IDirectoryInfoWrapperFactory, DirectoryInfoWrapperFactory>();
 
         });
     }
