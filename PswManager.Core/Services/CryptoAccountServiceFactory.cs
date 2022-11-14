@@ -4,6 +4,7 @@ using PswManager.Encryption.Cryptography;
 using PswManager.Encryption.Services;
 using PswManager.Utils;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using static PswManager.Core.Services.ITokenService;
 
@@ -88,5 +89,27 @@ public class CryptoAccountServiceFactory : ICryptoAccountServiceFactory {
                 _logger?.LogInformation("Disposed KeyGeneratorService.");
             }
         }
+    }
+
+    async Task<ICryptoService> ICryptoAccountServiceFactory.GetTokenCrypto(char[] password) {
+        var keygen = _keyGeneratorServiceFactory.CreateGeneratorService(password);
+        var key = await keygen.GenerateKeyAsync();
+        await keygen.DisposeAsync();
+        var crypto = _cryptoServiceFactory.GetCryptoService(key);
+        return crypto;
+    }
+
+    async Task<ICryptoService> ICryptoAccountServiceFactory.GetPassCrypto(char[] password) {
+        var keygen = _keyGeneratorServiceFactory.CreateGeneratorService(password);
+        var key = (await keygen.GenerateKeysAsync(2)).Last();
+        await keygen.DisposeAsync();
+        return _cryptoServiceFactory.GetCryptoService(key);
+    }
+
+    async Task<ICryptoService> ICryptoAccountServiceFactory.GetEmaCrypto(char[] password) {
+        var keygen = _keyGeneratorServiceFactory.CreateGeneratorService(password);
+        var key = (await keygen.GenerateKeysAsync(3)).Last();
+        await keygen.DisposeAsync();
+        return _cryptoServiceFactory.GetCryptoService(key);
     }
 }

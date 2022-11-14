@@ -19,6 +19,7 @@ public class CryptoAccountServiceFactoryTests {
     private readonly Mock<IKeyGeneratorServiceInternalFactory> _keyGeneratorServiceFactoryMock = new();
     private readonly Mock<IKeyGeneratorService> _keyGeneratorServiceMock = new();
 
+    private readonly ICryptoServiceFactory _cryptoServiceFactory = new TestCryptoServiceFactory();
     private readonly ICryptoAccountServiceFactory _sut;
 
     private void ResetAllMocks() {
@@ -152,6 +153,61 @@ public class CryptoAccountServiceFactoryTests {
         AssertEqual(loginPassCrypto, signupPassCrypto, buildPassCrypto);
 
     }
+
+    [Fact]
+    public async Task GetTokenCryptoReturnsCorrectCrypto() {
+
+        ResetAllMocks();
+        static char[] GetPassword() => "hello".ToCharArray();
+        var pass = GetPassword();
+        _keyGeneratorServiceFactoryMock.Setup(x => x.CreateGeneratorService(pass)).Returns<char[]>(x => GetKeyGeneratorService(GetPassword()));
+        _cryptoServiceFactoryMock.Setup(x => x.GetCryptoService(It.IsAny<Key>())).Returns<Key>(x => _cryptoServiceFactory.GetCryptoService(x));
+
+        var keyGen = GetKeyGeneratorService(GetPassword());
+        var expectedKey =  await keyGen.GenerateKeyAsync();
+        var expected = _cryptoServiceFactory.GetCryptoService(expectedKey);
+        
+        var actual = await _sut.GetTokenCrypto(GetPassword());
+        Assert.Equal(expected, actual);
+
+    }
+
+    [Fact]
+    public async Task GetPassCryptoReturnsCorrectCrypto() {
+
+        ResetAllMocks();
+        static char[] GetPassword() => "hello".ToCharArray();
+        var pass = GetPassword();
+        _keyGeneratorServiceFactoryMock.Setup(x => x.CreateGeneratorService(pass)).Returns<char[]>(x => GetKeyGeneratorService(GetPassword()));
+        _cryptoServiceFactoryMock.Setup(x => x.GetCryptoService(It.IsAny<Key>())).Returns<Key>(x => _cryptoServiceFactory.GetCryptoService(x));
+
+        var keyGen = GetKeyGeneratorService(GetPassword());
+        var expectedKey = (await keyGen.GenerateKeysAsync(2)).Last();
+        var expected = _cryptoServiceFactory.GetCryptoService(expectedKey);
+
+        var actual = await _sut.GetPassCrypto(GetPassword());
+        Assert.Equal(expected, actual);
+
+    }
+
+    [Fact]
+    public async Task GetEmaCryptoReturnsCorrectCrypto() {
+
+        ResetAllMocks();
+        static char[] GetPassword() => "hello".ToCharArray();
+        var pass = GetPassword();
+        _keyGeneratorServiceFactoryMock.Setup(x => x.CreateGeneratorService(pass)).Returns<char[]>(x => GetKeyGeneratorService(GetPassword()));
+        _cryptoServiceFactoryMock.Setup(x => x.GetCryptoService(It.IsAny<Key>())).Returns<Key>(x => _cryptoServiceFactory.GetCryptoService(x));
+
+        var keyGen = GetKeyGeneratorService(GetPassword());
+        var expectedKey = (await keyGen.GenerateKeysAsync(3)).Last();
+        var expected = _cryptoServiceFactory.GetCryptoService(expectedKey);
+
+        var actual = await _sut.GetEmaCrypto(GetPassword());
+        Assert.Equal(expected, actual);
+
+    }
+
 
     private static void AssertEqual(ICryptoService loginCrypto, ICryptoService signupCrypto, ICryptoService buildCrypto) {
         Assert.Equal(loginCrypto, signupCrypto);
