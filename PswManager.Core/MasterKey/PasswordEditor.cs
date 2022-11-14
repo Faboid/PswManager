@@ -26,7 +26,7 @@ public class PasswordEditor {
 	public PasswordEditor(IDirectoryInfoWrapperFactory directoryInfoFactory, IFileInfoFactory fileInfoFactory,
 						IPathsBuilder pathsBuilder, IDataConnection dataConnection,
 						IAccountModelFactory currentModelFactory, ICryptoAccountServiceFactory cryptoAccountServiceFactory,
-						ILoggerFactory? loggerFactory) {
+						ILoggerFactory? loggerFactory = null) {
 		_bufferHandler = new BufferHandler(directoryInfoFactory, pathsBuilder);
 		_accountsHandler = new AccountsHandler(dataConnection, currentModelFactory);
 		_passwordStatusChecker = new PasswordStatusChecker(fileInfoFactory.FromFileName(Path.Combine(pathsBuilder.GetWorkingDirectory(), "DoNotTouch.txt")));
