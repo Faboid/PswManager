@@ -36,7 +36,7 @@ internal class BufferHandler : IBufferHandler {
     /// <returns></returns>
     /// <exception cref="DirectoryNotFoundException"></exception>
     public async Task Restore() {
-        if(!_bufferDirectory.Exists) {
+        if(!_bufferDirectory.FileSystem.Directory.Exists(_bufferDirectory.FullName)) {
             throw new DirectoryNotFoundException("Tried to restore the data directory, but the buffer directory does not exist.");
         }
 
