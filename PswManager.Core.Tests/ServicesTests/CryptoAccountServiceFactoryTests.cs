@@ -19,7 +19,7 @@ public class CryptoAccountServiceFactoryTests {
     private readonly Mock<IKeyGeneratorServiceInternalFactory> _keyGeneratorServiceFactoryMock = new();
     private readonly Mock<IKeyGeneratorService> _keyGeneratorServiceMock = new();
 
-    private readonly ICryptoServiceFactory _cryptoServiceFactory = new TestCryptoServiceFactory();
+    private readonly ICryptoServiceFactory _cryptoServiceFactory = new MockCryptoServiceFactory();
     private readonly ICryptoAccountServiceFactory _sut;
 
     private void ResetAllMocks() {
