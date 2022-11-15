@@ -33,7 +33,7 @@ public class ErrorHandling {
         ResetMocks();
         _bufferHandlerMock.Setup(x => x.Backup()).Throws(new InvalidDataException());
 
-        await Assert.ThrowsAsync<InvalidDataException>(() => _sut.ChangePasswordTo("Something".ToCharArray()));
+        await Assert.ThrowsAsync<InvalidDataException>(() => _sut.ChangePasswordTo("Something"));
 
     }
 
@@ -43,7 +43,7 @@ public class ErrorHandling {
         ResetMocks();
         _accountsHandlerExecutableMock.Setup(x => x.ExecuteUpdate()).Throws(new InvalidCastException());
 
-        var result = await _sut.ChangePasswordTo("Something".ToCharArray());
+        var result = await _sut.ChangePasswordTo("Something");
         Assert.Equal(PasswordChangeResult.Failure, result);
 
     }
@@ -55,7 +55,7 @@ public class ErrorHandling {
         _accountsHandlerExecutableMock.Setup(x => x.ExecuteUpdate()).Throws(new InvalidOperationException());
         _bufferHandlerMock.Setup(x => x.Restore()).Throws(new InvalidDataException());
 
-        await Assert.ThrowsAsync<InvalidDataException>(() => _sut.ChangePasswordTo("Something".ToCharArray()));
+        await Assert.ThrowsAsync<InvalidDataException>(() => _sut.ChangePasswordTo("Something"));
 
     }
 

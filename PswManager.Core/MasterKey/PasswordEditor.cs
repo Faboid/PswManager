@@ -64,7 +64,7 @@ public class PasswordEditor {
 	/// </summary>
 	/// <param name="password"></param>
 	/// <returns></returns>
-	public async Task<PasswordChangeResult> ChangePasswordTo(char[] password) {
+	public async Task<PasswordChangeResult> ChangePasswordTo(string password) {
 
 		_logger?.LogInformation("Beginning the password-changing operation.");
 		await _passwordStatusChecker.SetStatusTo(PasswordStatus.Starting);
@@ -115,13 +115,13 @@ public class PasswordEditor {
 	/// <param name="accountsToDelete"></param>
 	/// <param name="newAccounts"></param>
 	/// <returns></returns>
-	private async Task ExecuteUpdate(char[] password, IAccountsHandlerExecutable accountsHandler) {
+	private async Task ExecuteUpdate(string password, IAccountsHandlerExecutable accountsHandler) {
 
 		_logger?.LogInformation("Beginning updating the accounts and setting up new token.");
 		await accountsHandler.ExecuteUpdate();
 		_logger?.LogInformation("Updated the accounts successfully.");
 		
-		_ = await _cryptoAccountServiceFactory.SignUpAccountAsync(password);
+		_ = await _cryptoAccountServiceFactory.SignUpAccountAsync(password.ToCharArray());
 		_logger?.LogInformation("Set up new token successfully.");
 
 	}
@@ -143,8 +143,8 @@ public class PasswordEditor {
 	/// </summary>
 	/// <param name="password"></param>
 	/// <returns></returns>
-	private async Task<IAccountModelFactory> GetNewFactory(char[] password) {
-		var cryptoAccount = await _cryptoAccountServiceFactory.BuildCryptoAccountService(password);
+	private async Task<IAccountModelFactory> GetNewFactory(string password) {
+		var cryptoAccount = await _cryptoAccountServiceFactory.BuildCryptoAccountService(password.ToCharArray());
 		return new AccountModelFactory(cryptoAccount);
 	}
 

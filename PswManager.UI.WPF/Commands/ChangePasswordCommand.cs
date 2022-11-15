@@ -28,7 +28,7 @@ public class ChangePasswordCommand : AsyncCommandBase {
 
     protected override async Task ExecuteAsync(object? parameter) {
 
-        var newPassword = _settingsViewModel.NewPassword.ToCharArray();
+        var newPassword = _settingsViewModel.NewPassword;
 
         _logger?.LogInformation("Requested change of password.");
         _notificationService.Send("The password-changing operation is starting. Please don't close the application.");
@@ -38,7 +38,7 @@ public class ChangePasswordCommand : AsyncCommandBase {
         if(result is PasswordChangeResult.Success) {
 
             _logger?.LogInformation("The password has been changed successfully.");
-            var loginResult = await _cryptoAccountServiceFactory.LogInAccountAsync(newPassword);
+            var loginResult = await _cryptoAccountServiceFactory.LogInAccountAsync(newPassword.ToCharArray());
 
             var cryptoAccountService = loginResult.OrDefault();
             if(cryptoAccountService is null) {
