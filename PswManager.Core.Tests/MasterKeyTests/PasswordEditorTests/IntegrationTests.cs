@@ -93,4 +93,28 @@ public class IntegrationTests {
 
     }
 
+	[Fact]
+	public async Task ChangePasswords_AccountsAreEncryptedWithNewPassword() {
+
+		await Reset();
+		string password = "StartingPassword";
+		string newPassword = "NewPassword";
+        var cryptoAccService = await _cryptoAccountServiceFactory.SignUpAccountAsync(password.ToCharArray());
+		var sut = await GetEditor(password);
+
+        var model = new AccountModel("Name", "Password", "Email");
+		await _dataConnection.CreateAccountAsync(cryptoAccService.Encrypt(model));
+
+		await sut.ChangePasswordTo(newPassword);
+
+		var newCryptoAccService = await _cryptoAccountServiceFactory.BuildCryptoAccountService(newPassword.ToCharArray());
+		var accountOption = await _dataConnection.EnumerateAccountsAsync().FirstAsync();
+		var decryptedAcc = newCryptoAccService.Decrypt(accountOption.OrDefault());
+
+		Assert.Equal(model.Name, decryptedAcc.Name);
+		Assert.Equal(model.Password, decryptedAcc.Password);
+		Assert.Equal(model.Email, decryptedAcc.Email);
+
+    }
+
 }
