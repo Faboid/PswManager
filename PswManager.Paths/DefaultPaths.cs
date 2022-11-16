@@ -53,7 +53,7 @@ public static class DefaultPaths {
     /// <summary>
     /// The directory that contains all logs.
     /// </summary>
-    public static string LogsDirectory { get; } = Path.Combine(DataDirectory, "Logs");
+    public static string LogsDirectory { get; } = Path.Combine(WorkingDirectory, "Logs");
 
     /// <summary>
     /// The settings file.
