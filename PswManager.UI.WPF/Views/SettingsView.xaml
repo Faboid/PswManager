@@ -16,6 +16,7 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -45,6 +46,7 @@
                 Grid.Column="2"
                 Content="Confirm"
                 Command="{Binding ChangePasswordCommand}"
+                IsEnabled="{Binding CanChangePassword}"
                 />
 
         </Grid>
@@ -53,8 +55,15 @@
             Grid.Row="3"
             PreviewText="Insert new password here..."
             Margin="0, 5"
-            Text="{Binding NewPassword}"
+            Text="{Binding NewPassword, UpdateSourceTrigger=PropertyChanged}"
             />
-        
+
+        <components:TextBoxWithPreview
+            Grid.Row="4"
+            PreviewText="Repeat the new password here."
+            Margin="0,5"
+            Text="{Binding RepeatNewPassword, UpdateSourceTrigger=PropertyChanged}"
+            />
+
     </Grid>
 </UserControl>
