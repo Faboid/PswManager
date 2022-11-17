@@ -3,6 +3,7 @@ using PswManager.Core.MasterKey;
 using PswManager.Core.Services;
 using PswManager.UI.WPF.Commands;
 using PswManager.UI.WPF.Services;
+using PswManager.UI.WPF.Stores;
 using System.Windows.Input;
 
 namespace PswManager.UI.WPF.ViewModels;
@@ -22,13 +23,14 @@ public class SettingsViewModel : ViewModelBase {
     }
 
     public SettingsViewModel(NavigationService<AccountsListingViewModel> navigationServiceToListingViewModel, 
+                            AccountsStore accountsStore,
                             PasswordEditor passwordEditor, CryptoContainerService cryptoContainerService, 
                             INotificationService notificationService, 
                             ICryptoAccountServiceFactory cryptoAccountServiceFactory, 
                             ILoggerFactory? loggerFactory) {
 
         HomeButton = new NavigateCommand<AccountsListingViewModel>(true, navigationServiceToListingViewModel);
-        ChangePasswordCommand = new ChangePasswordCommand(this, passwordEditor, cryptoContainerService, notificationService, cryptoAccountServiceFactory, loggerFactory);
+        ChangePasswordCommand = new ChangePasswordCommand(this, accountsStore, passwordEditor, cryptoContainerService, notificationService, cryptoAccountServiceFactory, loggerFactory);
     }
 
 }

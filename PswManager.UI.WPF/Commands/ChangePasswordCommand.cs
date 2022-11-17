@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using PswManager.Core.MasterKey;
 using PswManager.Core.Services;
 using PswManager.UI.WPF.Services;
+using PswManager.UI.WPF.Stores;
 using PswManager.UI.WPF.ViewModels;
 using System;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace PswManager.UI.WPF.Commands;
 
 public class ChangePasswordCommand : AsyncCommandBase {
 
+    private readonly AccountsStore _accountsStore;
     private readonly SettingsViewModel _settingsViewModel;
     private readonly PasswordEditor _passwordEditor;
     private readonly CryptoContainerService _cryptoContainerService;
@@ -17,7 +19,8 @@ public class ChangePasswordCommand : AsyncCommandBase {
     private readonly ICryptoAccountServiceFactory _cryptoAccountServiceFactory;
     private readonly ILogger<ChangePasswordCommand>? _logger;
 
-    public ChangePasswordCommand(SettingsViewModel settingsViewModel, PasswordEditor passwordEditor, CryptoContainerService cryptoContainerService, INotificationService notificationService, ICryptoAccountServiceFactory cryptoAccountServiceFactory, ILoggerFactory? loggerFactory = null) {
+    public ChangePasswordCommand(SettingsViewModel settingsViewModel, AccountsStore accountsStore, PasswordEditor passwordEditor, CryptoContainerService cryptoContainerService, INotificationService notificationService, ICryptoAccountServiceFactory cryptoAccountServiceFactory, ILoggerFactory? loggerFactory = null) {
+        _accountsStore = accountsStore;
         _settingsViewModel = settingsViewModel;
         _passwordEditor = passwordEditor;
         _cryptoContainerService = cryptoContainerService;
@@ -50,6 +53,7 @@ public class ChangePasswordCommand : AsyncCommandBase {
 
             _cryptoContainerService.CryptoAccountService = cryptoAccountService;
             _notificationService.Send("The password has been changed successfully.");
+            _accountsStore.Reset();
             return;
 
         }
