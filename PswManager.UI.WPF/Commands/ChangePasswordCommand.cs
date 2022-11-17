@@ -19,7 +19,14 @@ public class ChangePasswordCommand : AsyncCommandBase {
     private readonly ICryptoAccountServiceFactory _cryptoAccountServiceFactory;
     private readonly ILogger<ChangePasswordCommand>? _logger;
 
-    public ChangePasswordCommand(SettingsViewModel settingsViewModel, AccountsStore accountsStore, PasswordEditor passwordEditor, CryptoContainerService cryptoContainerService, INotificationService notificationService, ICryptoAccountServiceFactory cryptoAccountServiceFactory, ILoggerFactory? loggerFactory = null) {
+    public ChangePasswordCommand(SettingsViewModel settingsViewModel, 
+                                AccountsStore accountsStore, 
+                                PasswordEditor passwordEditor, 
+                                CryptoContainerService cryptoContainerService, 
+                                INotificationService notificationService, 
+                                ICryptoAccountServiceFactory cryptoAccountServiceFactory, 
+                                BusyService busyService,
+                                ILoggerFactory? loggerFactory = null) : base(busyService) {
         _accountsStore = accountsStore;
         _settingsViewModel = settingsViewModel;
         _passwordEditor = passwordEditor;

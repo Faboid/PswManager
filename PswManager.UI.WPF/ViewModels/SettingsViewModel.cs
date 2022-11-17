@@ -29,8 +29,9 @@ public class SettingsViewModel : ViewModelBase {
                             ICryptoAccountServiceFactory cryptoAccountServiceFactory, 
                             ILoggerFactory? loggerFactory) {
 
-        HomeButton = new NavigateCommand<AccountsListingViewModel>(true, navigationServiceToListingViewModel);
-        ChangePasswordCommand = new ChangePasswordCommand(this, accountsStore, passwordEditor, cryptoContainerService, notificationService, cryptoAccountServiceFactory, loggerFactory);
+        var busyService = new BusyService();
+        HomeButton = new NavigateCommand<AccountsListingViewModel>(true, navigationServiceToListingViewModel, busyService);
+        ChangePasswordCommand = new ChangePasswordCommand(this, accountsStore, passwordEditor, cryptoContainerService, notificationService, cryptoAccountServiceFactory, busyService, loggerFactory);
     }
 
 }
