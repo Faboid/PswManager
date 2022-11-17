@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace PswManager.Encryption.Cryptography;
@@ -52,5 +53,32 @@ public class Key : IDisposable {
         Clear(key);
         gcHandle.Free();
         GC.SuppressFinalize(this);
+    }
+
+    public static bool operator ==(Key? left, Key? right) {
+
+        //true if both are null, false if only one is null
+        if(left is null || right is null) {
+            return left is null && right is null;
+        }
+
+        var l = left.Get();
+        var r = right.Get();
+
+        if(l.Length != r.Length) {
+            return false;
+        }
+
+        return l.SequenceEqual(r);
+    }
+
+    public static bool operator !=(Key left, Key right) => !(left == right);
+
+    public override bool Equals(object? obj) {
+        return obj is Key key && this == key;    
+    }
+
+    public override int GetHashCode() {
+        return key.GetHashCode();
     }
 }

@@ -16,7 +16,7 @@ public class AccountsStore {
     private readonly ILogger<AccountsStore>? _logger;
     private readonly IAccountFactory _accountFactory;
     private readonly Dictionary<string, IAccount> _accounts = new();
-    private readonly Lazy<Task> _initializationTask;
+    private Lazy<Task> _initializationTask;
 
     /// <summary>
     /// The accounts loaded in cache. Will be empty if called before <see cref="Load"/> has finished.
@@ -46,6 +46,15 @@ public class AccountsStore {
     /// </summary>
     /// <returns></returns>
     public Task Load() => _initializationTask.Value;
+
+    /// <summary>
+    /// Erases all cached data.
+    /// </summary>
+    public void Reset() {
+        _accounts.Clear();
+        OnAccountsChanged();
+        _initializationTask = new(Initialize);
+    }
 
     private async Task Initialize() {
 

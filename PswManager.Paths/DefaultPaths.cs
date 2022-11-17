@@ -16,6 +16,11 @@ public static class DefaultPaths {
     public static string DataDirectory { get; } = Path.Combine(WorkingDirectory, "Data");
 
     /// <summary>
+    /// Acts as a temporary directory backup to change the master password.
+    /// </summary>
+    public static string BufferDataDirectory { get; } = Path.Combine(WorkingDirectory, "Buffer");
+
+    /// <summary>
     /// The directory that contains ALL databases.
     /// </summary>
     public static string DatabaseDirectory { get; } = Path.Combine(DataDirectory, "Saves");
@@ -48,7 +53,7 @@ public static class DefaultPaths {
     /// <summary>
     /// The directory that contains all logs.
     /// </summary>
-    public static string LogsDirectory { get; } = Path.Combine(DataDirectory, "Logs");
+    public static string LogsDirectory { get; } = Path.Combine(WorkingDirectory, "Logs");
 
     /// <summary>
     /// The settings file.

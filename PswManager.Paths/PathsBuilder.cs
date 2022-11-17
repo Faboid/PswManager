@@ -29,6 +29,7 @@ public class PathsBuilder : IPathsBuilder {
     public string GetTokenPath() => DefaultPaths.TokenFile;
     public string GetWorkingDirectory() => DefaultPaths.WorkingDirectory;
     public string GetDataDirectory() => DefaultPaths.DataDirectory;
+    public string GetBufferDataDirectory() => DefaultPaths.BufferDataDirectory;
     public string GetLogsDirectory() => DefaultPaths.LogsDirectory;
     public string GetDatabaseDirectory() => DefaultPaths.DatabaseDirectory;
     public string GetJsonDatabaseDirectory() => DefaultPaths.JsonDatabaseDirectory;

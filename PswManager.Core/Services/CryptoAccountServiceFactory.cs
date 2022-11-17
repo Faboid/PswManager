@@ -4,6 +4,7 @@ using PswManager.Encryption.Cryptography;
 using PswManager.Encryption.Services;
 using PswManager.Utils;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using static PswManager.Core.Services.ITokenService;
 
@@ -12,29 +13,25 @@ namespace PswManager.Core.Services;
 public class CryptoAccountServiceFactory : ICryptoAccountServiceFactory {
 
     private readonly ILogger<CryptoAccountServiceFactory>? _logger;
+    private readonly ICryptoServiceFactory _cryptoServiceFactory;
+    private readonly IKeyGeneratorServiceFactory _keyGeneratorServiceFactory;
     private readonly ITokenService _tokenService;
-    private readonly Func<char[], KeyGeneratorService> _createGeneratorService;
 
-    public CryptoAccountServiceFactory(ITokenService tokenService, ILoggerFactory? loggerFactory = null) {
+    public CryptoAccountServiceFactory(ITokenService tokenService, 
+                                       ICryptoServiceFactory cryptoServiceFactory, 
+                                       IKeyGeneratorServiceFactory keyGeneratorServiceFactory, 
+                                       ILoggerFactory? loggerFactory = null) {
         _logger = loggerFactory?.CreateLogger<CryptoAccountServiceFactory>();
         _tokenService = tokenService;
-        _createGeneratorService = x => new(x);
-    }
-
-    /// <summary>
-    /// This constructor is meant to be used only for tests. Do not use outside of them.
-    /// </summary>
-    /// <param name="customGeneratorServiceFunc"></param>
-    internal CryptoAccountServiceFactory(ITokenService tokenService, Func<char[], KeyGeneratorService> customGeneratorServiceFunc) {
-        _createGeneratorService = customGeneratorServiceFunc;
-        _tokenService = tokenService;
+        _cryptoServiceFactory = cryptoServiceFactory;
+        _keyGeneratorServiceFactory = keyGeneratorServiceFactory;
     }
 
     public async Task<ICryptoAccountService> SignUpAccountAsync(char[] password) {
 
-        KeyGeneratorService generatorService = _createGeneratorService.Invoke(password);
+        IKeyGeneratorService generatorService = _keyGeneratorServiceFactory.CreateGeneratorService(password);
         var masterKey = await generatorService.GenerateKeyAsync().ConfigureAwait(false);
-        var cryptoService = new CryptoService(masterKey);
+        var cryptoService = _cryptoServiceFactory.GetCryptoService(masterKey);
         _logger?.LogInformation("Setting up new token.");
         _tokenService.SetToken(cryptoService);
         _logger?.LogInformation("A new token has been set up.");
@@ -45,16 +42,16 @@ public class CryptoAccountServiceFactory : ICryptoAccountServiceFactory {
 
     public async Task<Option<ICryptoAccountService, TokenResult>> LogInAccountAsync(char[] password) {
 
-
-        KeyGeneratorService generatorService = _createGeneratorService.Invoke(password);
+        IKeyGeneratorService generatorService = _keyGeneratorServiceFactory.CreateGeneratorService(password);
         var masterKey = await generatorService.GenerateKeyAsync().ConfigureAwait(false);
-        var cryptoService = new CryptoService(masterKey);
+        var cryptoService = _cryptoServiceFactory.GetCryptoService(masterKey);
 
         _logger?.LogInformation("Checking login token");
         var result = _tokenService.VerifyToken(cryptoService);
 
         if(result != TokenResult.Success) {
             _logger?.LogInformation("Login was unsuccessful. Result: {ErrorCode}", result);
+            await generatorService.DisposeAsync();
             return result;
         }
 
@@ -63,19 +60,29 @@ public class CryptoAccountServiceFactory : ICryptoAccountServiceFactory {
 
     }
 
-
-    private ICryptoAccountService CreateCryptoAccountAsync(KeyGeneratorService generator) {
-        var lockerReference = new RefCount<Locker>(new());
-        return new CryptoAccountService(GenerateKeyAndDisposeGenerator(generator, lockerReference), GenerateKeyAndDisposeGenerator(generator, lockerReference));
+    async Task<ICryptoAccountService> ICryptoAccountServiceFactory.BuildCryptoAccountService(char[] password) {
+        IKeyGeneratorService generatorService = _keyGeneratorServiceFactory.CreateGeneratorService(password);
+        _ = await generatorService.GenerateKeyAsync().ConfigureAwait(false); //while not used, the token key must be generated to obtain consistent results
+        return CreateCryptoAccountAsync(generatorService);
     }
 
-    private async Task<Key> GenerateKeyAndDisposeGenerator(KeyGeneratorService generator, RefCount<Locker> lockerRef) {
+
+    private ICryptoAccountService CreateCryptoAccountAsync(IKeyGeneratorService generator) {
+        var lockerReference = new RefCount<Locker>(new());
+        var passLock = lockerReference.GetRef();
+        var emaLock = lockerReference.GetRef();
+        return new CryptoAccountService(GenerateKeyAndDisposeGenerator(generator, lockerReference, passLock), GenerateKeyAndDisposeGenerator(generator, lockerReference, emaLock));
+    }
+
+    private async Task<Key> GenerateKeyAndDisposeGenerator(IKeyGeneratorService generator, RefCount<Locker> lockerRef, RefCount<Locker>.Ref thisLock) {
 
         try {
-            using var reference = lockerRef.GetRef();
-            using var lockhere = await reference.Value.GetLockAsync().ConfigureAwait(false);
+            using var lockhere = await thisLock.Value.GetLockAsync().ConfigureAwait(false);
             return await generator.GenerateKeyAsync().ConfigureAwait(false);
         } finally {
+            
+            thisLock.Dispose();
+
             if(!lockerRef.IsInUse) {
                 _logger?.LogInformation("Disposing of KeyGeneratorService...");
                 await generator.DisposeAsync().ConfigureAwait(false);
@@ -84,4 +91,25 @@ public class CryptoAccountServiceFactory : ICryptoAccountServiceFactory {
         }
     }
 
+    async Task<ICryptoService> ICryptoAccountServiceFactory.GetTokenCrypto(char[] password) {
+        var keygen = _keyGeneratorServiceFactory.CreateGeneratorService(password);
+        var key = await keygen.GenerateKeyAsync();
+        await keygen.DisposeAsync();
+        var crypto = _cryptoServiceFactory.GetCryptoService(key);
+        return crypto;
+    }
+
+    async Task<ICryptoService> ICryptoAccountServiceFactory.GetPassCrypto(char[] password) {
+        var keygen = _keyGeneratorServiceFactory.CreateGeneratorService(password);
+        var key = (await keygen.GenerateKeysAsync(2)).Last();
+        await keygen.DisposeAsync();
+        return _cryptoServiceFactory.GetCryptoService(key);
+    }
+
+    async Task<ICryptoService> ICryptoAccountServiceFactory.GetEmaCrypto(char[] password) {
+        var keygen = _keyGeneratorServiceFactory.CreateGeneratorService(password);
+        var key = (await keygen.GenerateKeysAsync(3)).Last();
+        await keygen.DisposeAsync();
+        return _cryptoServiceFactory.GetCryptoService(key);
+    }
 }

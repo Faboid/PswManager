@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PswManager.UI.WPF.Views"
              mc:Ignorable="d" 
-             xmlns:viewmodels="clr-namespace:PswManager.UI.WPF.ViewModels" 
+             xmlns:viewmodels="clr-namespace:PswManager.UI.WPF.ViewModels" xmlns:components="clr-namespace:PswManager.UI.WPF.Components"
              d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -13,16 +13,57 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <Button
+            Grid.Row="0"
             Content="Back"
             Command="{Binding HomeButton}"
+            HorizontalAlignment="Left"
+            Height="30"
+            Width="150"
             />
 
-        <Label
-            Grid.Row="1"
-            Content="This page is currently only a placeholder in case an update adds some settings."
+        <Grid VerticalAlignment="Center" Grid.Row="2">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Label
+                Grid.Column="0"
+                Content="Change Password:"
+                />
+
+            <Button
+                Grid.Column="2"
+                Content="Confirm"
+                Command="{Binding ChangePasswordCommand}"
+                IsEnabled="{Binding CanChangePassword}"
+                />
+
+        </Grid>
+
+        <components:TextBoxWithPreview 
+            Grid.Row="3"
+            PreviewText="Insert new password here..."
+            Margin="0, 5"
+            Text="{Binding NewPassword, UpdateSourceTrigger=PropertyChanged}"
             />
+
+        <components:TextBoxWithPreview
+            Grid.Row="4"
+            PreviewText="Repeat the new password here."
+            Margin="0,5"
+            Text="{Binding RepeatNewPassword, UpdateSourceTrigger=PropertyChanged}"
+            />
+
     </Grid>
 </UserControl>
