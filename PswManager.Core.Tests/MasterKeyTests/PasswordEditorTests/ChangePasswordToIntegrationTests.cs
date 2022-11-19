@@ -12,9 +12,9 @@ using static PswManager.Core.Services.ITokenService;
 
 namespace PswManager.Core.Tests.MasterKeyTests.PasswordEditorTests;
 
-public class IntegrationTests {
+public class ChangePasswordToIntegrationTests {
 
-	public IntegrationTests() {
+	public ChangePasswordToIntegrationTests() {
 		_fileSystem = new();
 		_fileInfoFactory = new MockFileInfoFactory(_fileSystem);
 		_directoryInfoFactory = new MockDirectoryInfoFactory(_fileSystem);
