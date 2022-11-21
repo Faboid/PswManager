@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PswManager.Core.MasterKey;
 using PswManager.Core.Services;
 using PswManager.Paths;
 using PswManager.UI.WPF.HostBuilders;
@@ -45,9 +46,10 @@ public partial class App : Application {
 		logger.LogCritical(ex, "There has been an unhandled exception.");
 	}
 
-	protected override void OnStartup(StartupEventArgs e) {
+	protected override async void OnStartup(StartupEventArgs e) {
 		_host.Start();
 
+		await _host.Services.GetRequiredService<PasswordEditorFactory>().StartupCheckup();
 		var tokenService = _host.Services.GetRequiredService<ITokenService>();
 		ViewModelBase startingVm;
 		if(tokenService.IsSet()) {
