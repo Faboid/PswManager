@@ -1,28 +1,24 @@
-using PswManager.Core.AccountModels;
 using PswManager.Core.MasterKey;
 using PswManager.Core.Services;
 using PswManager.Database;
-using PswManager.Encryption.Services;
 using PswManager.TestUtils;
 using static PswManager.Core.MasterKey.PasswordStatusChecker;
 
-namespace PswManager.Core.Tests.MasterKeyTests.PasswordEditorTests;
+namespace PswManager.Core.Tests.MasterKeyTests.PasswordEditorFactoryTests;
 
 public class StartupCheck {
 
     public StartupCheck() {
-        _sut = new(_bufferHandlerMock.Object, _passwordStatusCheckerMock.Object, _accountsHandlerMock.Object, _cryptoAccountServiceFactoryMock.Object);
+        _sut = new(_bufferHandlerMock.Object, _passwordStatusCheckerMock.Object, _cryptoAccountServiceFactoryMock.Object, Mock.Of<IDataConnection>());
     }
 
     private readonly Mock<ICryptoAccountServiceFactory> _cryptoAccountServiceFactoryMock = new();
-    private readonly Mock<IAccountsHandler> _accountsHandlerMock = new();
     private readonly Mock<IBufferHandler> _bufferHandlerMock = new();
     private readonly Mock<IPasswordStatusChecker> _passwordStatusCheckerMock = new();
-    private readonly PasswordEditor _sut;
+    private readonly PasswordEditorFactory _sut;
 
     private void ResetMocks() {
         _cryptoAccountServiceFactoryMock.Reset();
-        _accountsHandlerMock.Reset();
         _bufferHandlerMock.Reset();
         _passwordStatusCheckerMock.Reset();
     }

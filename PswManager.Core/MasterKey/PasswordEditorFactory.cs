@@ -31,6 +31,19 @@ public class PasswordEditorFactory {
         _logger = _loggerFactory?.CreateLogger<PasswordEditorFactory>();
     }
 
+    /// <summary>
+    /// Testing constructor.
+    /// </summary>
+    internal PasswordEditorFactory(IBufferHandler bufferHandler,
+                        IPasswordStatusChecker passwordStatusChecker,
+                        ICryptoAccountServiceFactory cryptoAccountServiceFactory,
+                        IDataConnection dataConnection) {
+        _bufferHandler = bufferHandler;
+        _passwordStatusChecker = passwordStatusChecker;
+        _cryptoAccountServiceFactory = cryptoAccountServiceFactory;
+        _dataConnection = dataConnection;
+    }
+
     public IPasswordEditor BuildPasswordEditor(IAccountModelFactory currentFactory) 
         => new PasswordEditor(_bufferHandler, _passwordStatusChecker, new AccountsHandler(_dataConnection, currentFactory), _cryptoAccountServiceFactory);
 
