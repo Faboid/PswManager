@@ -82,23 +82,4 @@ public class BufferHandlerTests {
 
     }
 
-    [Fact]
-    public async Task EnsureLogsArePreserved() {
-
-        var orderList = new List<int>();
-        ResetMocks();
-        _directoryMock.Setup(x => x.Exists(It.IsAny<string>())).Returns(true);
-
-        _logsDirectoryMock.Setup(x => x.CopyToAsync(Path.Combine(_bufferDirectoryMock.Object.FullName, "Logs"))).Callback(() => orderList.Add(0));
-        _dataDirectoryMock.Setup(x => x.Delete(true)).Callback(() => orderList.Add(1));
-        _bufferDirectoryMock.Setup(x => x.CopyToAsync(_dataDirectoryMock.Object.FullName)).Callback(() => orderList.Add(2));
-        
-        await _sut.Restore();
-
-        Assert.Equal(0, orderList[0]);
-        Assert.Equal(1, orderList[1]);
-        Assert.Equal(2, orderList[2]);
-
-    }
-
 }
