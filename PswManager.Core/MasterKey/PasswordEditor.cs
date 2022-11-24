@@ -15,7 +15,7 @@ using static PswManager.Core.MasterKey.PasswordStatusChecker;
 [assembly:InternalsVisibleTo("DynamicProxyGenAssembly2")]
 namespace PswManager.Core.MasterKey;
 
-public class PasswordEditor {
+public class PasswordEditor : IPasswordEditor {
 
 	private readonly ILogger<PasswordEditor>? _logger;
 	private readonly ICryptoAccountServiceFactory _cryptoAccountServiceFactory;
@@ -34,28 +34,16 @@ public class PasswordEditor {
 		_logger = loggerFactory?.CreateLogger<PasswordEditor>();
 	}
 
-	/// <summary>
-	/// Constructor used for testing.
-	/// </summary>
-	internal PasswordEditor(IBufferHandler bufferHandler, IPasswordStatusChecker passwordStatusChecker, IAccountsHandler accountsHandler, ICryptoAccountServiceFactory cryptoAccountServiceFactory) {
+	internal PasswordEditor(IBufferHandler bufferHandler, 
+							IPasswordStatusChecker passwordStatusChecker, 
+							IAccountsHandler accountsHandler, 
+							ICryptoAccountServiceFactory cryptoAccountServiceFactory, 
+							ILoggerFactory? loggerFactory = null) {
 		_bufferHandler = bufferHandler;
 		_passwordStatusChecker = passwordStatusChecker;
 		_accountsHandler = accountsHandler;
 		_cryptoAccountServiceFactory = cryptoAccountServiceFactory;
-	}
-
-	/// <summary>
-	/// Checks if the previous session was interrupted during a password-edit.
-	/// If it was, it reverts everything.
-	/// </summary>
-	/// <returns></returns>
-	public async Task StartupCheckup() {
-		if(await IsPending()) {
-			_logger?.LogWarning("The startup check has found out that the last session's password-changing operation has been interrupted. Trying to restore...");
-			await _bufferHandler.Restore();
-			FreeResources();
-			_logger?.LogWarning("Everything has been restored successfully.");
-		}
+		_logger = loggerFactory?.CreateLogger<PasswordEditor>();
 	}
 
 	/// <summary>
@@ -120,22 +108,10 @@ public class PasswordEditor {
 		_logger?.LogInformation("Beginning updating the accounts and setting up new token.");
 		await accountsHandler.ExecuteUpdate();
 		_logger?.LogInformation("Updated the accounts successfully.");
-		
+
 		_ = await _cryptoAccountServiceFactory.SignUpAccountAsync(password.ToCharArray());
 		_logger?.LogInformation("Set up new token successfully.");
 
-	}
-
-	/// <summary>
-	/// Returns whether the password-changing operation is currently in action.
-	/// This could either mean it's being currently executed, or that it crashed while trying to execute.
-	/// </summary>
-	private async Task<bool> IsPending() {
-		if(!_bufferHandler.Exists) {
-			return false;
-		}
-
-		return await _passwordStatusChecker.GetStatus() is PasswordStatus.Pending or PasswordStatus.Failed;
 	}
 
 	/// <summary>

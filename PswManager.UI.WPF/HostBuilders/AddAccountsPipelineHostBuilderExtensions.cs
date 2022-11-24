@@ -42,15 +42,19 @@ public static class AddAccountsPipelineHostBuilderExtensions {
             services.AddSingleton<ICryptoAccountServiceFactory, CryptoAccountServiceFactory>();
 
             services.AddSingleton<CryptoContainerService>();
+            services.AddSingleton<PasswordEditorFactory>();
 
             //these are transient as they need to change whenever the master key is changed
-            services.AddTransient<PasswordEditor>();
+            services.AddTransient(InitializePasswordEditor);
             services.AddTransient<IAccountModelFactory, AccountModelFactory>(InitializeModelFactory);
             services.AddTransient<IAccountFactory, AccountFactory>();
 
         });
     }
 
+    private static IPasswordEditor InitializePasswordEditor(IServiceProvider s) {
+        return s.GetRequiredService<PasswordEditorFactory>().BuildPasswordEditor(s.GetRequiredService<IAccountModelFactory>());
+    }
 
     private static AccountModelFactory InitializeModelFactory(IServiceProvider s) {
         var cryptoAccount = s.GetService<CryptoContainerService>()!.CryptoAccountService;
