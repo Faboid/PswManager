@@ -39,7 +39,7 @@ public class SettingsViewModel : ViewModelBase {
 
     public SettingsViewModel(NavigationService<AccountsListingViewModel> navigationServiceToListingViewModel, 
                             AccountsStore accountsStore,
-                            PasswordEditor passwordEditor, CryptoContainerService cryptoContainerService, 
+                            IPasswordEditor passwordEditor, CryptoContainerService cryptoContainerService, 
                             INotificationService notificationService, 
                             ICryptoAccountServiceFactory cryptoAccountServiceFactory, 
                             ILoggerFactory? loggerFactory) {

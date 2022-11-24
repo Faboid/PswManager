@@ -13,7 +13,7 @@ public class ChangePasswordCommand : AsyncCommandBase {
 
     private readonly AccountsStore _accountsStore;
     private readonly SettingsViewModel _settingsViewModel;
-    private readonly PasswordEditor _passwordEditor;
+    private readonly IPasswordEditor _passwordEditor;
     private readonly CryptoContainerService _cryptoContainerService;
     private readonly INotificationService _notificationService;
     private readonly ICryptoAccountServiceFactory _cryptoAccountServiceFactory;
@@ -21,7 +21,7 @@ public class ChangePasswordCommand : AsyncCommandBase {
 
     public ChangePasswordCommand(SettingsViewModel settingsViewModel, 
                                 AccountsStore accountsStore, 
-                                PasswordEditor passwordEditor, 
+                                IPasswordEditor passwordEditor, 
                                 CryptoContainerService cryptoContainerService, 
                                 INotificationService notificationService, 
                                 ICryptoAccountServiceFactory cryptoAccountServiceFactory, 
